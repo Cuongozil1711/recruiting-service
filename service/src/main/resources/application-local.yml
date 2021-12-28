@@ -1,0 +1,154 @@
+server:
+  port: 8087
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_trace_param
+    include-exception: false
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    date-format: "yyyy-MM-dd'T'HH:mm:ssZ"
+    time-zone: "Asia/Ho_Chi_Minh"
+    default-property-inclusion: non_null
+
+  output:
+    ansi:
+      enabled: always
+  messages:
+    basename: language/message
+    encoding: UTF-8
+    cache-duration: -1
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: recruiting_service
+        jdbc:
+          lob.non_contextual_creation: true
+          fetch_size: 50
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:172.16.101.23}:${DB_PORT:5432}/${DB_NAME:nspace}?stringtype=unspecified
+    username: postgres
+    password: 72HqMyAxuAGYmwQaaDqKbK
+  flyway:
+    schemas:
+      - recruiting_service
+    enabled: false
+
+  kafka:
+    bootstrap-servers: 172.16.101.22:9092
+    group: recruiting-service
+  management:
+    endpoints:
+      enabled-by-default: false
+      web:
+        exposure:
+          include: prometheus, health
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoint:
+    health:
+      enabled: true
+      show-components: always
+    prometheus:
+      enabled: true
+
+  logging:
+    level:
+      io.eventuate: debug
+      io.eventuate.tram: trace
+      org.springframework.orm.jpa: trace
+      org.hibernate.SQL: debug
+      org.springframework.jdbc.core: debug
+      org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+eventuatelocal:
+  kafka:
+    bootstrap:
+      servers: ${DOCKER_HOST_IP:172.16.101.22}:9092
+  zookeeper:
+    connection:
+      string: ${DOCKER_HOST_IP:172.16.101.22}:2181
+
+nspace:
+  policy: false
+  cache:
+    config: '{"singleServerConfig":{"tcpNoDelay":true,"idleConnectionTimeout":10000,"connectTimeout":10000,"timeout":3000,"retryAttempts":3,"retryInterval":1500,"password":null,"subscriptionsPerConnection":100,"clientName":${nspace.application},"address":"redis://172.16.101.22:6379","subscriptionConnectionMinimumIdleSize":1,"subscriptionConnectionPoolSize":50,"connectionMinimumIdleSize":10,"connectionPoolSize":64,"database":0,"dnsMonitoringInterval":5000},"threads":2,"nettyThreads":2}'
+  application: "recruiting-service"
+  service:
+    storage:
+      key: test
+      URL: http://api.ngs.vn/nspace/storage
+      #URL: http://localhost:8080
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/storage
+      #URL: https://api.ngdox.vn/nspace/storage
+    signature:
+      key: test
+      URL: http://api.ngs.vn/nspace/signature
+      #URL: http://localhost:8091
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/signature
+      #URL: https://api.ngdox.vn/nspace/signature
+    user:
+      headers: '{"key":"test","cid":0,"uid":"system"}'
+      URL: http://api.ngs.vn/nspace/account
+      cache:
+        expires: 5
+        expiresAfter: write
+      #URL: http://localhost:8082/
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/account
+      #URL: https://api.ngdox.vn/nspace/account
+    event:
+      key: test
+      URL: http://api.ngs.vn/nspace/event
+      #URL: http://localhost:8082/
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/event
+      #URL: https://api.ngdox.vn/nspace/event
+    config:
+      headers: '{"key":"test","cid":0,"uid":"0"}'
+      url: http://api.ngs.vn/nspace/config
+      key: test
+      cache:
+        expires: 5
+        expiresAfter: write
+      #URL: http://api.ngs.vn/nspace/config
+    workflow:
+      key: test
+      URL: http://localhost:8093/
+      #URL: http://api.ngs.vn/nspace/config
+    task:
+      key: test
+      #URL: http://localhost:8093/
+      URL: http://api.ngs.vn/nspace/task
+      cache:
+        expires: 5
+        expiresAfter: write
+    project:
+      key: test
+#      URL: http://localhost:8092
+#      URL: http://api.ngs.vn/nspace/project
+      URL: http://api.gateway.svc.cluster.local:8082/nspace/project
+    ticket:
+      key: test
+#      URL: http://localhost:8092
+#      URL: http://api.ngs.vn/nspace/ticket
+      URL: http://api.gateway.svc.cluster.local:8082/nspace/ticket
+    person:
+      headers: '{"key":"test","cid":0,"uid":"system"}'
+      url: http://api.ngs.vn/nspace/person
+      #URL: http://localhost:8088/
+      cache:
+        expires: 5
+        expiresAfter: write

@@ -1,0 +1,102 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "http://oss.ngs.vn/repository/maven-releases/"
+            allowInsecureProtocol = true
+            credentials {
+                username 'ndu6'
+                password 'Nzp5ekwXTScGdVKThTNgL44DnUJnUNez'
+            }
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+
+      
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "io.spring.gradle:dependency-management-plugin:${springDependenciesManagementVersion}"
+        classpath "gradle.plugin.com.avast.gradle:gradle-docker-compose-plugin:${dockerComposePluginVersion}"
+
+    }
+}
+
+subprojects {
+    apply plugin: "io.spring.dependency-management"
+    apply plugin: "java-library"
+    apply plugin: 'idea'
+
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+
+    group = group
+    version = version
+
+    idea {
+        module {
+            downloadJavadoc = true
+            downloadSources = true
+        }
+    }
+
+    dependencyManagement {
+        imports { mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}" }
+        imports { mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}" }
+        imports { mavenBom "org.keycloak.bom:keycloak-adapter-bom:${keycloakVersion}" }
+
+        dependencies {
+            dependency "io.springfox:springfox-boot-starter:${springfoxVersion}"
+            dependency "io.springfox:springfox-swagger-ui:${springfoxVersion}"
+
+            dependency "vn.ngs.nspace:person-share:${personShareVersion}"
+            dependency "vn.ngs.nspace:ns-permission:${permissionVersion}"
+            dependency "vn.ngs.nspace:config-share:${configShareVersion}"
+            dependency "vn.ngs.nspace:user-share:${userShareVersion}"
+            dependency "vn.ngs.nspace:ns-cache:${cacheVersion}"
+            dependency "vn.ngs.nspace:ns-utils:${utilsVersion}"
+            dependency "vn.ngs.nspace:ns-lib:${libVersion}"
+            dependency "vn.ngs.nspace:task-core:${taskCoreVersion}"
+            dependency "vn.ngs.nspace:ns-kafka:${kafkaVersion}"
+            dependency "com.esotericsoftware:kryo:${kryoVersion}"
+
+            dependency "commons-lang:commons-lang:${commonsLangVersion}"
+            dependency "commons-validator:commons-validator:${commonsValidatorVersion}"
+            dependency "com.google.guava:guava:${guavaVersion}"
+
+            dependency "org.camunda.bpm:camunda-engine:${camundaEngineVersion}"
+            dependency "com.vladmihalcea:hibernate-types-52:${vladmihalceaVersion}"
+            dependency "org.awaitility:awaitility:${awaitilityVersion}"
+            dependency "io.vertx:vertx-core:${vertxVersion}"
+            dependency "org.hibernate:hibernate-envers:${hibernateEnvers}"
+        }
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    repositories {
+
+        mavenCentral()
+
+        jcenter()
+        maven {
+            url "http://oss.ngs.vn/repository/maven-releases/"
+            allowInsecureProtocol = true
+            credentials {
+                username 'ndu6'
+                password 'Nzp5ekwXTScGdVKThTNgL44DnUJnUNez'
+            }
+        }
+
+    }
+}

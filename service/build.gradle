@@ -1,0 +1,32 @@
+apply plugin: "org.springframework.boot"
+dependencies {
+    implementation 'vn.ngs.nspace:ns-lib'
+    implementation "vn.ngs.nspace:ns-kafka"
+    implementation "vn.ngs.nspace:config-share"
+    implementation "vn.ngs.nspace:user-share"
+    implementation 'vn.ngs.nspace:ns-cache'
+    implementation "vn.ngs.nspace:ns-utils"
+    implementation "com.esotericsoftware:kryo"
+    implementation 'vn.ngs.nspace:task-core'
+    implementation "vn.ngs.nspace:ns-utils"
+    implementation "vn.ngs.nspace:ns-permission"
+    implementation "vn.ngs.nspace:person-share"
+
+    implementation "org.hibernate:hibernate-envers"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "com.vladmihalcea:hibernate-types-52"
+    implementation "commons-lang:commons-lang"
+    implementation "commons-io:commons-io:2.5"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "com.github.ben-manes.caffeine:caffeine"
+
+    implementation "org.camunda.bpm:camunda-engine"
+    implementation "org.awaitility:awaitility"
+    implementation "io.vertx:vertx-core"
+    implementation "jakarta.validation:jakarta.validation-api"
+    implementation "org.springframework.kafka:spring-kafka"
+    implementation group: 'com.lmax', name: 'disruptor', version: '3.4.4'
+    runtimeOnly "org.postgresql:postgresql"
+}
