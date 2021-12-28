@@ -1,0 +1,50 @@
+stages:
+  - dev-deploy
+  - qas-deploy
+  - release-deploy
+  - prod-deploy
+dev-deploy:
+  stage: dev-deploy
+  tags:
+    - nspace
+  script:
+    - gradle build
+    - docker build -t registry.nspace.vn:5000/recruiting-service:1.0.0 --rm=true  -f Dockerfile recruiting-service/
+    - docker push registry.nspace.vn:5000/recruiting-service:1.0.0
+    - kubectl -n service rollout restart deployment recruiting-service
+  only:
+    - dev
+
+qas-deploy:
+  stage: qas-deploy
+  tags:
+    - nspace
+  script:
+    - gradle build
+    - docker build -t registry.nspace.vn:5000/recruiting-service:qas-1.0.0 --rm=true  -f Dockerfile recruiting-service/
+    - docker push registry.nspace.vn:5000/recruiting-service:qas-1.0.0
+  only:
+    - qas
+
+release-deploy:
+  stage: release-deploy
+  tags:
+    - nspace
+  script:
+    - gradle build
+    - docker build -t registry.nspace.vn:5000/recruiting-service:prod-$CI_COMMIT_TAG --rm=true  -f Dockerfile recruiting-service/
+    - docker push registry.nspace.vn:5000/recruiting-service:prod-$CI_COMMIT_TAG
+  only:
+    - tags
+
+prod-deploy:
+  stage: prod-deploy
+  tags:
+    - nspace
+  script:
+    - gradle build
+    - docker build -t registry.nspace.vn:5000/recruiting-service:prod-1.0.0 --rm=true  -f Dockerfile recruiting-service/
+    - docker push registry.nspace.vn:5000/recruiting-service:prod-1.0.0
+
+  only:
+    - master
