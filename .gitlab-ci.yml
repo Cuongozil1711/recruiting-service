@@ -9,7 +9,7 @@ dev-deploy:
     - nspace
   script:
     - gradle build
-    - docker build -t registry.nspace.vn:5000/recruiting-service:1.0.0 --rm=true  -f Dockerfile recruiting-service/
+    - docker build -t registry.nspace.vn:5000/recruiting-service:1.0.0 --rm=true  -f Dockerfile service/
     - docker push registry.nspace.vn:5000/recruiting-service:1.0.0
     - kubectl -n hcm rollout restart deployment recruiting-service
   only:
@@ -21,7 +21,7 @@ qas-deploy:
     - nspace
   script:
     - gradle build
-    - docker build -t registry.nspace.vn:5000/recruiting-service:qas-1.0.0 --rm=true  -f Dockerfile recruiting-service/
+    - docker build -t registry.nspace.vn:5000/recruiting-service:qas-1.0.0 --rm=true  -f Dockerfile service/
     - docker push registry.nspace.vn:5000/recruiting-service:qas-1.0.0
   only:
     - qas
@@ -32,7 +32,7 @@ release-deploy:
     - nspace
   script:
     - gradle build
-    - docker build -t registry.nspace.vn:5000/recruiting-service:prod-$CI_COMMIT_TAG --rm=true  -f Dockerfile recruiting-service/
+    - docker build -t registry.nspace.vn:5000/recruiting-service:prod-$CI_COMMIT_TAG --rm=true  -f Dockerfile service/
     - docker push registry.nspace.vn:5000/recruiting-service:prod-$CI_COMMIT_TAG
   only:
     - tags
@@ -43,7 +43,7 @@ prod-deploy:
     - nspace
   script:
     - gradle build
-    - docker build -t registry.nspace.vn:5000/recruiting-service:prod-1.0.0 --rm=true  -f Dockerfile recruiting-service/
+    - docker build -t registry.nspace.vn:5000/recruiting-service:prod-1.0.0 --rm=true  -f Dockerfile service/
     - docker push registry.nspace.vn:5000/recruiting-service:prod-1.0.0
 
   only:
