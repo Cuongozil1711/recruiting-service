@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import vn.ngs.nspace.recruiting.dto.EmployeeDTO;
 import vn.ngs.nspace.person.share.dto.*;
 
 import java.util.Map;
