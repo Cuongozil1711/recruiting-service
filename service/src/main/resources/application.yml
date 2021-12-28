@@ -1,0 +1,100 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    date-format: "yyyy-MM-dd'T'HH:mm:ssZ"
+    time-zone: "Asia/Ho_Chi_Minh"
+    default-property-inclusion: non_null
+  application:
+    name: recruiting-service
+  profiles:
+    active: local
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 20MB
+      max-request-size: 200MB
+  messages:
+    basename: language/message
+    encoding: UTF-8
+    cache-duration: -1
+    jpa:
+      open-in-view: false
+      hibernate:
+        ddl-auto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
+          default_schema: recruiting_service
+          use-new-id-generator-mappings: false
+          jdbc:
+            lob:
+              non_contextual_creation: true
+    datasource:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://${DB_HOST:172.16.101.23}:${DB_PORT:5432}/${DB_NAME:nspace}?stringtype=unspecified
+      username: postgres
+      password: 72HqMyAxuAGYmwQaaDqKbK
+    kafka:
+      bootstrap-servers: 172.16.101.22:9092
+      group: recruiting-service
+hibernate:
+  id:
+    new_generator_mappings: false
+  hbm2ddl:
+    auto: update
+  show-sql: true
+  listeners:
+    envers:
+      autoRegister: true
+  envers:
+    autoRegisterListeners: true
+org:
+  hibernate:
+    envers:
+      audit_table_suffix: _aud
+
+
+nspace:
+  policy: false
+  cache:
+    config: '{"singleServerConfig":{"tcpNoDelay":true,"idleConnectionTimeout":10000,"connectTimeout":10000,"timeout":3000,"retryAttempts":3,"retryInterval":1500,"password":null,"subscriptionsPerConnection":100,"clientName":${nspace.application},"address":"redis://172.16.101.22:6379","subscriptionConnectionMinimumIdleSize":1,"subscriptionConnectionPoolSize":50,"connectionMinimumIdleSize":10,"connectionPoolSize":64,"database":0,"dnsMonitoringInterval":5000},"threads":2,"nettyThreads":2}'
+  application: "recruiting-service"
+
+  service:
+    config:
+      headers: '{"key":"test","cid":0,"uid":"1"}'
+      url: http://api.ngs.vn/nspace/config
+    storage:
+      key: test
+      URL: http://api.ngs.vn/nspace/storage
+      #URL: http://localhost:8080
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/storage
+    signature:
+      key: test
+      URL: http://api.ngs.vn/nspace/signature
+      #URL: http://localhost:8091
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/signature
+    user:
+      headers: '{"key":"test","cid":0,"uid":"system"}'
+      key: test
+      URL: http://api.ngs.vn/nspace/account
+      #URL: http://localhost:8082/
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/account
+    event:
+      key: test
+      URL: http://api.ngs.vn/nspace/event
+      #URL: http://localhost:8082/
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/event
+cache:
+  expries: 5
+  expireAfter: write
+logging:
+  level:
+    io.eventuate: debug
+    io.eventuate.tram: trace
+    org.springframework.orm.jpa: trace
+    org.hibernate.SQL: debug
+    org.springframework.jdbc.core: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace

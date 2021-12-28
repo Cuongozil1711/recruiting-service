@@ -1,0 +1,91 @@
+#KEYCLOAK_FRONTEND_URL=https://id.ngdox.vn/auth
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+spring:
+  main.allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+  jackson:
+    date-format: ${DATE_FORMAT}
+    time-zone: ${TZ}
+  application:
+    name: task-service
+  output:
+    ansi:
+      enabled: always
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    group: recruiting-service
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: recruiting_service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+  flyway:
+    schemas:
+      - task_service
+    enabled: false
+eventuatelocal:
+  kafka:
+    bootstrap:
+      servers: ${KAFKA_URL}
+  zookeeper:
+    connection:
+      string: ${ZOOKEEPER_URL}
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: prometheus, health
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoint:
+    health:
+      enabled: true
+      show-components: always
+    prometheus:
+      enabled: true
+cache:
+  expries: 5
+  expireAfter: write
+logging:
+  level:
+    io.eventuate: info
+    io.eventuate.tram: info
+    org.springframework.orm.jpa: info
+    org.hibernate.SQL: info
+    org.springframework.jdbc.core: info
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+nspace:
+  service:
+    storage:
+      key: ${API_KEY}
+      URL: ${ROUTE_CONTEXT}/storage
+    signature:
+      key: ${API_KEY}
+      URL: ${ROUTE_CONTEXT}/signature
+    notice:
+      key: ${API_KEY}
+      URL: ${ROUTE_CONTEXT}/notice
+    user:
+      key: ${API_KEY}
+      URL: ${ROUTE_CONTEXT}/account
+    event:
+      key: ${API_KEY}
+      URL: ${ROUTE_CONTEXT}/event
