@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-v2
+  namespace: service
+spec:
+  type: ClusterIP
+  selector:
+    app: task-v2
+  publishNotReadyAddresses: true
+  sessionAffinity: None
+  ports:
+    -  name: tcp
+       port: 8080
+       protocol: TCP
+       targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-v2
+  namespace: service
+spec:
+  progressDeadlineSeconds: 60
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: task-v2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: task-v2
+    spec:
+      containers:
+          image: registry.nspace.vn:5000/task-v2:1.0.0
+          imagePullPolicy: Always
+          name: service
+          ports:
+            - containerPort: 8080
+              name: tcp
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 2
+            successThreshold: 1
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 2
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 2
+            successThreshold: 2
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {}
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 10
