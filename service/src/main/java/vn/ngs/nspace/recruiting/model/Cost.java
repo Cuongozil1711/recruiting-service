@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.CostDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,3 +31,5 @@ public class Cost extends PersistableEntity<Long> {
     private Date startDate;
     private Date endDate;
 }
+
+

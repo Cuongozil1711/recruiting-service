@@ -1,0 +1,27 @@
+version '1.0.16'
+apply plugin: 'maven-publish'
+
+dependencies {
+    implementation 'vn.ngs.nspace:ns-lib'
+    implementation 'vn.ngs.nspace:ns-cache'
+    implementation "vn.ngs.nspace:ns-utils"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3"
+}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "http://oss.ngs.vn/repository/maven-releases/"
+            allowInsecureProtocol = true
+            credentials {
+                username  'ndu6'
+                password 'Nzp5ekwXTScGdVKThTNgL44DnUJnUNez'
+            }
+        }
+    }
+}

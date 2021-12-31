@@ -11,6 +11,7 @@ dependencies {
     implementation "vn.ngs.nspace:ns-utils"
     implementation "vn.ngs.nspace:ns-permission"
     implementation "vn.ngs.nspace:person-share"
+    implementation project(":recruiting-share")
 
     implementation "org.hibernate:hibernate-envers"
     implementation "org.springframework.boot:spring-boot-starter-validation"
