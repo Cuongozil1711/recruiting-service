@@ -2,11 +2,11 @@ package vn.ngs.nspace.recruiting.model;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import vn.ngs.nspace.lib.converter.HashMapConverter;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Map;
 
 @Entity
 @Data
@@ -20,4 +20,11 @@ public class RecruitmentChannel extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
+    private String type;
+    private String code;
+    private String name;
+    private String description;
+    @Convert(converter = HashMapConverter.class)
+    @Column(columnDefinition = "text")
+    private Map<String, Object> configs;
 }
