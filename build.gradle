@@ -51,6 +51,7 @@ subprojects {
             dependency "io.springfox:springfox-swagger-ui:${springfoxVersion}"
 
             dependency "vn.ngs.nspace:person-share:${personShareVersion}"
+            dependency "vn.ngs.space:hcm-share:${hcmVersion}"
             dependency "vn.ngs.nspace:ns-permission:${permissionVersion}"
             dependency "vn.ngs.nspace:config-share:${configShareVersion}"
             dependency "vn.ngs.nspace:user-share:${userShareVersion}"
@@ -60,6 +61,7 @@ subprojects {
             dependency "vn.ngs.nspace:task-core:${taskCoreVersion}"
             dependency "vn.ngs.nspace:ns-kafka:${kafkaVersion}"
             dependency "com.esotericsoftware:kryo:${kryoVersion}"
+
 
             dependency "commons-lang:commons-lang:${commonsLangVersion}"
             dependency "commons-validator:commons-validator:${commonsValidatorVersion}"

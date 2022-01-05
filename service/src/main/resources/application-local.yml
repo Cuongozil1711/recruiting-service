@@ -152,3 +152,8 @@ nspace:
       cache:
         expires: 5
         expiresAfter: write
+
+    hcm:
+#     URL: URL: http://api.ngs.vn/nspace/hcm
+      URL: http://localhost:8087/
+      key: test

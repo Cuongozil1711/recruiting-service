@@ -11,6 +11,7 @@ dependencies {
     implementation "vn.ngs.nspace:ns-utils"
     implementation "vn.ngs.nspace:ns-permission"
     implementation "vn.ngs.nspace:person-share"
+    implementation "vn.ngs.space:hcm-share"
     implementation project(":recruiting-share")
 
     implementation "org.hibernate:hibernate-envers"

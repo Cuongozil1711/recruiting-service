@@ -89,6 +89,12 @@ nspace:
       URL: http://api.ngs.vn/nspace/event
       #URL: http://localhost:8082/
       #URL: http://api.gateway.svc.cluster.local:8082/nspace/event
+
+    hcm:
+      key: test
+      URL: http://api.ngs.vn/nspace/hcm
+#     URL: http://localhost:8087/
+
 cache:
   expries: 5
   expireAfter: write
