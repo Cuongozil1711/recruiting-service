@@ -14,9 +14,11 @@ import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 @Log4j2
 public class RecruitmentPlanOrderService {
     private final RecruitmentPlanOrderRepo repo;
+    private final ExecuteHcmService _hcmService;
 
-    public RecruitmentPlanOrderService(RecruitmentPlanOrderRepo repo) {
+    public RecruitmentPlanOrderService(RecruitmentPlanOrderRepo repo, ExecuteHcmService hcmService) {
         this.repo = repo;
+        _hcmService = hcmService;
     }
     public void valid(RecruitmentPlanOrderDTO dto){
         if(dto.getCode() == null){
@@ -52,16 +54,18 @@ public class RecruitmentPlanOrderService {
     }
 
     public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws Exception {
-        RecruitmentPlanOrder recruitmentPlanOrder = RecruitmentPlanOrder.of(cid, uid, dto);
         valid(dto);
+        RecruitmentPlanOrder recruitmentPlanOrder = RecruitmentPlanOrder.of(cid, uid, dto);
+
         repo.save(recruitmentPlanOrder);
         return MapperUtils.map(recruitmentPlanOrder,dto);
     }
 
     public RecruitmentPlanOrderDTO updateRecruitmentPlanOrder(Long cid, Long id, RecruitmentPlanOrderDTO recruitmentPlanOrderDTO) {
+        valid(recruitmentPlanOrderDTO);
         RecruitmentPlanOrder curr = repo.findByCompanyIdAndId(cid, id).orElse(new RecruitmentPlanOrder());
         MapperUtils.copy(recruitmentPlanOrderDTO,curr,"version", "status", "createBy", "createDate", "updateBy", "modifiedDate", "id", "companyId", "categoryType");
-        valid(recruitmentPlanOrderDTO);
+
         repo.save(curr);
         return MapperUtils.map(curr,RecruitmentPlanOrderDTO.class);
     }

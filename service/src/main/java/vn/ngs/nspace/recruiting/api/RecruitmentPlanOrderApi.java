@@ -2,12 +2,12 @@ package vn.ngs.nspace.recruiting.api;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.DateUtil;
@@ -16,6 +16,7 @@ import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
+import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
 import vn.ngs.nspace.recruiting.service.RecruitmentPlanOrderService;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
@@ -27,6 +28,7 @@ import java.util.*;
 public class RecruitmentPlanOrderApi {
     private final RecruitmentPlanOrderService _service;
     private final RecruitmentPlanOrderRepo _repo;
+    private final ExecuteHcmService _hcmService;
 
 
     @PostMapping()
@@ -63,50 +65,40 @@ public class RecruitmentPlanOrderApi {
             , @RequestBody Map<String,Object> filter
             , Pageable pageable){
         try{
-            Set<Long> orgIds = new HashSet<>();
-            Set<Long> positionIds = new HashSet<>();
-            Date fromDate = DateUtils.truncate(new Date(), Calendar.DATE);
-            Date toDate = DateUtils.truncate(new Date(), Calendar.DATE);
+            Long orgId = null;
+            Long positionId = null;
+            Date startDate = DateUtils.truncate(new Date(), Calendar.DATE);
+            Date deadline = DateUtils.truncate(new Date(), Calendar.DATE);
             if(filter != null){
-                if(filter.get("orgIds") != null){
-                    List ids = (List) filter.get("orgIds");
-                    if (ids != null && !ids.isEmpty()) {
-                        for (Object id : ids) {
-                            orgIds.add(Long.valueOf(String.valueOf(id)));
-                        }
-                    } else {
-                        orgIds.add(0L);
-                    }
+                if(filter.get("orgId") != null){
+                    orgId = (Long) filter.get("orgId");
                 } else {
-                    orgIds.add(0L);
+                    orgId = -1l;
                 }
 
-                if(filter.get("positionIds") != null){
-                    List ids = (List) filter.get("positionIds");
-                    if (ids != null && !ids.isEmpty()) {
-                        for (Object id : ids) {
-                            orgIds.add(Long.valueOf(String.valueOf(id)));
-                        }
-                    } else {
-                        positionIds.add(0L);
-                    }
+                if(filter.get("positionId") != null){
+                    positionId = (Long) filter.get("positionId");
                 } else {
-                    positionIds.add(0L);
+                    positionId = -1l;
                 }
 
-                if(filter.get("fromDate") != null){
-                    fromDate = DateUtil.toDate(String.valueOf(filter.get("fromDate")), DateUtil.ISO_8601);
-                    fromDate = DateUtils.truncate(fromDate, Calendar.DATE);
+                if(filter.get("startDate") != null){
+                    startDate = DateUtil.toDate(String.valueOf(filter.get("startDate")), DateUtil.ISO_8601);
+                    startDate = DateUtils.truncate(startDate, Calendar.DATE);
+                }else {
+                    startDate = DateUtils.truncate(new Date(), Calendar.YEAR);
                 }
-                if(filter.get("toDate") != null){
-                    toDate = DateUtil.toDate(String.valueOf(filter.get("toDate")), DateUtil.ISO_8601);
-                    toDate = DateUtils.truncate(toDate, Calendar.DATE);
+                if(filter.get("deadline") != null){
+                    deadline = DateUtil.toDate(String.valueOf(filter.get("deadline")), DateUtil.ISO_8601);
+                    deadline = DateUtils.truncate(deadline, Calendar.DATE);
+                }else {
+                    deadline = DateUtils.truncate(new Date(), Calendar.YEAR);
                 }
 
             }
-            Page<Map<String,Object>> search = _repo.searchRecruitingPlanOrder(cid,orgIds,positionIds,fromDate,toDate,pageable);
-            List<Map<String,Object>> data = MapperUtils.underscoreToCamelcase(search.getContent());
-            Page<Map<String,Object>>resp =new PageImpl(data, pageable, search.getTotalElements());
+            Page<RecruitmentPlanOrder> search = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,startDate,deadline,pageable);
+//            List<Map<String,Object>> data = MapperUtils.underscoreToCamelcase(search.getContent());
+            Page<Map<String,Object>>resp =new PageImpl(search.getContent(), pageable, search.getTotalElements());
             return ResponseUtils.handlerSuccess(resp);
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);

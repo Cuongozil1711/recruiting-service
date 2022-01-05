@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 
 import java.util.Date;
 @Data
@@ -29,4 +30,5 @@ public class RecruitmentPlanOrderDTO {
     private Long reasonId;
     private String description;
     private String state;
+    private OrgResp orgResp;
 }

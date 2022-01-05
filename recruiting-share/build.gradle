@@ -2,6 +2,7 @@ version '1.0.16'
 apply plugin: 'maven-publish'
 
 dependencies {
+    implementation "vn.ngs.space:hcm-share"
     implementation 'vn.ngs.nspace:ns-lib'
     implementation 'vn.ngs.nspace:ns-cache'
     implementation "vn.ngs.nspace:ns-utils"
