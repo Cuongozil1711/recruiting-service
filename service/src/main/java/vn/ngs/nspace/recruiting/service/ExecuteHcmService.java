@@ -37,7 +37,7 @@ public class ExecuteHcmService {
     public OrgResp getOrgResp(String requestUserId, long companyId) {
         HttpEntity<ResponseEntity> request = getRequest(requestUserId, companyId);
         try {
-//            String uri = UserServiceURL + "/user/get-user-permission";
+
             String uri = HcmServiceURL + "/hcm/org/byIds";
             BaseResponse<OrgResp> response = HttpUtils.internalRequest(uri, HttpMethod.GET, request, OrgResp.class);
             return response.getData();

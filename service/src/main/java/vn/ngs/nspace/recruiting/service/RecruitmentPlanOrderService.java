@@ -9,6 +9,9 @@ import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Transactional
 @Log4j2
@@ -52,10 +55,18 @@ public class RecruitmentPlanOrderService {
             throw new BusinessException("invalid-deadline");
         }
     }
+    public List<RecruitmentPlanOrderDTO> create(Long cid, String uid, List<RecruitmentPlanOrderDTO> dtos) throws BusinessException{
+        List<RecruitmentPlanOrderDTO> list = new ArrayList<>();
+        for(RecruitmentPlanOrderDTO dto : dtos){
+            list.add(create(cid, uid, dto));
+        }
+        return list;
+    }
 
-    public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws Exception {
+    public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
         valid(dto);
         RecruitmentPlanOrder recruitmentPlanOrder = RecruitmentPlanOrder.of(cid, uid, dto);
+
 
         repo.save(recruitmentPlanOrder);
         return MapperUtils.map(recruitmentPlanOrder,dto);
@@ -64,8 +75,7 @@ public class RecruitmentPlanOrderService {
     public RecruitmentPlanOrderDTO updateRecruitmentPlanOrder(Long cid, Long id, RecruitmentPlanOrderDTO recruitmentPlanOrderDTO) {
         valid(recruitmentPlanOrderDTO);
         RecruitmentPlanOrder curr = repo.findByCompanyIdAndId(cid, id).orElse(new RecruitmentPlanOrder());
-        MapperUtils.copy(recruitmentPlanOrderDTO,curr,"version", "status", "createBy", "createDate", "updateBy", "modifiedDate", "id", "companyId", "categoryType");
-
+        MapperUtils.copyWithoutAudit(recruitmentPlanOrderDTO,curr);
         repo.save(curr);
         return MapperUtils.map(curr,RecruitmentPlanOrderDTO.class);
     }

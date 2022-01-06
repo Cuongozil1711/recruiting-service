@@ -2,6 +2,7 @@ package vn.ngs.nspace.recruiting.model;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
@@ -44,7 +45,7 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     private String state;//trang thai
 
 
-        public static RecruitmentPlanOrder of(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws Exception{
+        public static RecruitmentPlanOrder of(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
         RecruitmentPlanOrder recruitmentPlanOrder = RecruitmentPlanOrder.builder().build();
             MapperUtils.map(dto, recruitmentPlanOrder);
             recruitmentPlanOrder.setCompanyId(cid);

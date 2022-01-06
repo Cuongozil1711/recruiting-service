@@ -30,6 +30,19 @@ public class RecruitmentPlanOrderApi {
     private final RecruitmentPlanOrderRepo _repo;
     private final ExecuteHcmService _hcmService;
 
+    @PostMapping({"/create"})
+    @ActionMapping(action = Permission.CREATE)
+    protected ResponseEntity createRecruitingPlanOrders(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody List<RecruitmentPlanOrderDTO> recruitmentPlanOrderDTOS){
+        try {
+            List<RecruitmentPlanOrderDTO> list =  _service.create(cid, uid, recruitmentPlanOrderDTOS);
+            return ResponseUtils.handlerSuccess(list);
+        }catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
+
+    }
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
@@ -92,13 +105,13 @@ public class RecruitmentPlanOrderApi {
                     deadline = DateUtil.toDate(String.valueOf(filter.get("deadline")), DateUtil.ISO_8601);
                     deadline = DateUtils.truncate(deadline, Calendar.DATE);
                 }else {
-                    deadline = DateUtils.truncate(new Date(), Calendar.YEAR);
+                    deadline = DateUtils.truncate(new Date(), Calendar.DATE);
                 }
 
             }
             Page<RecruitmentPlanOrder> search = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,startDate,deadline,pageable);
 //            List<Map<String,Object>> data = MapperUtils.underscoreToCamelcase(search.getContent());
-            Page<Map<String,Object>>resp =new PageImpl(search.getContent(), pageable, search.getTotalElements());
+            Page<Map<String,Object>>resp = new PageImpl(search.getContent(), pageable, search.getTotalElements());
             return ResponseUtils.handlerSuccess(resp);
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
@@ -116,6 +129,23 @@ public class RecruitmentPlanOrderApi {
             RecruitmentPlanOrderDTO dto = _service.updateRecruitmentPlanOrder(cid,id,recruitmentPlanOrderDTO);
              return ResponseUtils.handlerSuccess(dto);
         } catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
+
+    }
+
+    @GetMapping("/byIds")
+    @ActionMapping(action = Permission.VIEW)
+    protected ResponseEntity getOrgs(@RequestHeader String requestUserId
+            , @RequestHeader Long companyId
+            , @RequestBody OrgResp resp){
+        try {
+
+           OrgResp orgResp = _hcmService.getOrgResp(requestUserId, companyId);
+
+            return ResponseUtils.handlerSuccess(orgResp);
+
+        }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }
 

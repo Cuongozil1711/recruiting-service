@@ -1,5 +1,5 @@
 server:
-  port: 8087
+  port: 8086
   error:
     include-message: always
     include-binding-errors: always
@@ -154,6 +154,6 @@ nspace:
         expiresAfter: write
 
     hcm:
-#     URL: URL: http://api.ngs.vn/nspace/hcm
+#     URL: http://api.ngs.vn/nspace/hcm
       URL: http://localhost:8087/
       key: test
