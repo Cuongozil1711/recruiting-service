@@ -35,3 +35,5 @@ out/
 .vscode/
 /_development/postgres_data/
 /_development/elasticsearch_data/
+/.gradle/buildOutputCleanup/
+/.gradle/checksums/
