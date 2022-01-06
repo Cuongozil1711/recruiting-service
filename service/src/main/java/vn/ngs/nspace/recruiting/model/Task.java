@@ -21,4 +21,5 @@ public class Task extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long onboardTrainingId;
+
 }
