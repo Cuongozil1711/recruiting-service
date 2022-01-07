@@ -37,3 +37,4 @@ out/
 /_development/elasticsearch_data/
 /.gradle/buildOutputCleanup/
 /.gradle/checksums/
+/.gradle/
