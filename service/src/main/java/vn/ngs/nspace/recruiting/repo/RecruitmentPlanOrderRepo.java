@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 
@@ -19,10 +18,8 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            " where (p.companyId = :companyId)" +
            " and (p.orgId in :orgId or :orgId = -1) " +
            " and (p.positionId in :positionId or :positionId = -1) " +
-           " and (p.startDate = COALESCE(:startDate, now()) or COALESCE(:startDate, now()) = now()) " +
-           " and (p.deadline = COALESCE(:deadline, now()) or COALESCE(:deadline, now()) = now()) " +
-//           " and (p.startDate >= :startDate and p.deadline <= :deadline )" +
-           " order by p.orgId, p.positionId, p.quantity")
+           " and (p.startDate >= :startDate )" +
+           " and (p.deadline <= :deadline ) ")
    Page<RecruitmentPlanOrder> searchRecruitingPlanOrder(@Param("companyId") Long cid
            ,@Param("orgId") Long orgId
            ,@Param("positionId") Long positionId

@@ -1,14 +1,24 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.utils.HttpUtils;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
+
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 public class ExecuteHcmService {
@@ -34,13 +44,23 @@ public class ExecuteHcmService {
         return request;
     }
 
-    public OrgResp getOrgResp(String requestUserId, long companyId) {
-        HttpEntity<ResponseEntity> request = getRequest(requestUserId, companyId);
+    public List<OrgResp> getOrgResp(String requestUserId, long companyId, Set<Long> ids) {
         try {
 
-            String uri = HcmServiceURL + "/hcm/org/byIds";
-            BaseResponse<OrgResp> response = HttpUtils.internalRequest(uri, HttpMethod.GET, request, OrgResp.class);
+            URI uri = new URI(HcmServiceURL + "/generic/org/byIds") ;
+            HttpMethod method = HttpMethod.POST;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            Map<String,Object> payload = new HashMap<>();
+            payload.put("orgIds",ids);
+
+            HttpEntity request = new HttpEntity<>(payload,headers);
+
+            ParameterizedTypeReference<BaseResponse<List<OrgResp>>> responeType = new ParameterizedTypeReference<BaseResponse<List<OrgResp>>>() {};
+            ResponseEntity resp = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<List<OrgResp>> response = (BaseResponse<List<OrgResp>>) resp.getBody();
             return response.getData();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

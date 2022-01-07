@@ -30,7 +30,7 @@ public class RecruitmentPlanOrderApi {
     private final RecruitmentPlanOrderRepo _repo;
     private final ExecuteHcmService _hcmService;
 
-    @PostMapping({"/create"})
+    @PostMapping("/create")
     @ActionMapping(action = Permission.CREATE)
     protected ResponseEntity createRecruitingPlanOrders(@RequestHeader Long cid
             , @RequestHeader String uid
@@ -65,6 +65,9 @@ public class RecruitmentPlanOrderApi {
             , @PathVariable(value = "id") Long id){
         try{
             RecruitmentPlanOrder recruitmentPlanOrder =_repo.findByCompanyIdAndId(cid,id).orElseThrow(() -> new EntityNotFoundException(RecruitmentPlanOrder.class, id));
+
+
+
             return ResponseUtils.handlerSuccess(recruitmentPlanOrder);
         } catch (Exception ex){
             return ResponseUtils.handlerException(ex);
@@ -109,6 +112,8 @@ public class RecruitmentPlanOrderApi {
                 }
 
             }
+
+
             Page<RecruitmentPlanOrder> search = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,startDate,deadline,pageable);
 //            List<Map<String,Object>> data = MapperUtils.underscoreToCamelcase(search.getContent());
             Page<Map<String,Object>>resp = new PageImpl(search.getContent(), pageable, search.getTotalElements());
@@ -129,23 +134,6 @@ public class RecruitmentPlanOrderApi {
             RecruitmentPlanOrderDTO dto = _service.updateRecruitmentPlanOrder(cid,id,recruitmentPlanOrderDTO);
              return ResponseUtils.handlerSuccess(dto);
         } catch (Exception ex){
-            return ResponseUtils.handlerException(ex);
-        }
-
-    }
-
-    @GetMapping("/byIds")
-    @ActionMapping(action = Permission.VIEW)
-    protected ResponseEntity getOrgs(@RequestHeader String requestUserId
-            , @RequestHeader Long companyId
-            , @RequestBody OrgResp resp){
-        try {
-
-           OrgResp orgResp = _hcmService.getOrgResp(requestUserId, companyId);
-
-            return ResponseUtils.handlerSuccess(orgResp);
-
-        }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }
 
