@@ -54,7 +54,6 @@ public class RecruitmentPlanOrderApi {
             return ResponseUtils.handlerSuccess(dto);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
-
         }
     }
 
