@@ -36,6 +36,5 @@ public class AssetCheckList extends PersistableEntity<Long> {
         assetCheckList.setUpdateBy(uid);
         assetCheckList.setCreateBy(uid);
         return assetCheckList;
-
     }
 }

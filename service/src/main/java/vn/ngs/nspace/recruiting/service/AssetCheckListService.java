@@ -20,7 +20,6 @@ public class AssetCheckListService {
         _hcmService = hcmService;
     }
 
-
     public void valid(AssetCheckListDTO dto){
     }
 

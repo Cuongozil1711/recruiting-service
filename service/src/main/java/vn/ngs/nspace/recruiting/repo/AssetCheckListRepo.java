@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface AssetCheckListRepo extends BaseRepo<AssetCheckList,Long> {
+
     Optional<AssetCheckList> findByCompanyIdAndId(long cid, Long id);
 }
 
