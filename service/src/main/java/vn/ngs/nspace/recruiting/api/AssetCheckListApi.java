@@ -45,6 +45,7 @@ public class AssetCheckListApi {
     , @RequestBody AssetCheckListDTO assetCheckListDTO){ {
         try {
            AssetCheckListDTO dto = _service.updateAssetChecklist(cid,id,assetCheckListDTO);
+
             return ResponseUtils.handlerSuccess(dto);
 
         } catch (Exception ex) {

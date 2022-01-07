@@ -17,4 +17,5 @@ public class AssetCheckListDTO {
     private Long senderId; // nguoi giao
     private Long employeeId; // nguoi nhan
     private String description;
+
 }

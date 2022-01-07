@@ -22,7 +22,6 @@ public class AssetCheckListService {
 
 
     public void valid(AssetCheckListDTO dto){
-
     }
 
     public AssetCheckListDTO create(Long cid, String uid, AssetCheckListDTO dto) throws Exception {
