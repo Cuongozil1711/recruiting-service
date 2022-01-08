@@ -9,9 +9,9 @@ dev-deploy:
     - nspace
   script:
     - gradle build
-    - docker build -t registry.nspace.vn:5000/recruiting-service:1.0.0 --rm=true  -f Dockerfile service/
+    - docker build -t registry.nspace.vn:5000/recruiting-service:1.0.0 --rm=true  -f Dockerfile recruiting-service/
     - docker push registry.nspace.vn:5000/recruiting-service:1.0.0
-    - kubectl -n hcm rollout restart deployment recruiting-service
+    - kubectl -n service rollout restart deployment recruiting-service
   only:
     - dev
 
