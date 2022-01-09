@@ -1,25 +1,15 @@
-package vn.ngs.nspace.recruiting.model;
+package vn.ngs.nspace.recruiting.share.dto;
 
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-import vn.ngs.nspace.lib.models.PersistableEntity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Date;
 
-@Entity
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-//Danh sách ứng viên, được nhập hoặc import từ hệ thống
-public class Candicate extends PersistableEntity<Long> {
-    @Id
-    @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
-    @GeneratedValue(generator = "id")
+@AllArgsConstructor
+public class CandidateDTO {
     private Long id;
     private String fullName;
     private String avatar;

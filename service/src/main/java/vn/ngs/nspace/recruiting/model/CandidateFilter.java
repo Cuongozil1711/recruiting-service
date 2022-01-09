@@ -6,7 +6,6 @@ import vn.ngs.nspace.lib.converter.HashMapConverter;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.Map;
 
 @Entity
@@ -15,16 +14,15 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-//Danh sách ứng viên, được nhập hoặc import từ hệ thống
-public class CandicateActivity extends PersistableEntity<Long> {
+//Lưu tìm kiếm ứng viên
+public class CandidateFilter extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long candicateId;
-    private Date date;
-    private String action;
+    private String code;
+    private String name;
     @Convert(converter = HashMapConverter.class)
     @Column(columnDefinition = "text")
-    private Map<String, Object> activity;
+    private Map<String, Object> configs;
 }
