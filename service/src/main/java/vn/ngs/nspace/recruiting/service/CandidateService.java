@@ -21,9 +21,12 @@ public class CandidateService {
         _hcmService = hcmService;
     }
 
+    /* logic validate data before insert model */
     public void valid(CandidateDTO dto) throws BusinessException {
+
     }
 
+    /* create object */
     public CandidateDTO create(Long cid, String uid, CandidateDTO dto) throws BusinessException {
         valid(dto);
         Candidate candidate = Candidate.of(cid, uid, dto);
@@ -32,6 +35,7 @@ public class CandidateService {
         return toDTO(candidate);
     }
 
+    /* update by id object */
     public CandidateDTO update(Long cid, String uid, Long id, CandidateDTO dto) throws BusinessException {
         valid(dto);
         Candidate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(Candidate.class, id));
@@ -40,6 +44,7 @@ public class CandidateService {
         return toDTO(curr);
     }
 
+    /* convert model object to DTO before response */
     public CandidateDTO toDTO(Candidate candidate){
         CandidateDTO dto = MapperUtils.map(candidate, CandidateDTO.class);
         return dto;
