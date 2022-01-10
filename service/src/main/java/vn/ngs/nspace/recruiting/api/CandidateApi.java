@@ -10,6 +10,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.Candidate;
+import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
@@ -83,6 +84,17 @@ public class CandidateApi {
         }
     }
 
+    @PutMapping("/update-filter")
+    @ActionMapping(action = Permission.VIEW)
+    protected ResponseEntity updateFilter(@RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @RequestBody CandidateFilter request){
+        try {
+            return ResponseUtils.handlerSuccess(_service.updateFilter(cid, uid, request));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
 
 

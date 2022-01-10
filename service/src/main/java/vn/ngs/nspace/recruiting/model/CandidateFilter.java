@@ -25,4 +25,14 @@ public class CandidateFilter extends PersistableEntity<Long> {
     @Convert(converter = HashMapConverter.class)
     @Column(columnDefinition = "text")
     private Map<String, Object> configs;
+
+    public static CandidateFilter of(Long cid, String uid, CandidateFilter obj){
+        CandidateFilter candidateFilter = CandidateFilter.builder()
+                .id(obj.getId())
+                .code(obj.getCode())
+                .name(obj.getName())
+                .configs(obj.getConfigs())
+                .build();
+        return candidateFilter;
+    }
 }

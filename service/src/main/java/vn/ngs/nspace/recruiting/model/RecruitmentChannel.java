@@ -21,10 +21,24 @@ public class RecruitmentChannel extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private String type;
+    private String avatar;
     private String code;
     private String name;
     private String description;
     @Convert(converter = HashMapConverter.class)
     @Column(columnDefinition = "text")
     private Map<String, Object> configs;
+
+    public static RecruitmentChannel of(Long cid, String uid, RecruitmentChannel request){
+        RecruitmentChannel builder = RecruitmentChannel.builder()
+                .id(request.getId())
+                .type(request.getType())
+                .avatar(request.getAvatar())
+                .code(request.getCode())
+                .name(request.getName())
+                .description(request.getDescription())
+                .configs(request.getConfigs())
+                .build();
+        return builder;
+    }
 }
