@@ -116,9 +116,9 @@ public class RecruitmentPlanOrderService {
         List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
-        dtos.stream().map(dto -> {
+        for(RecruitmentPlanOrderDTO dto : dtos){
             if(dto.getPositionId() != null){
-                dto.setPosition(mapCategory.get(dto.getPositionId()));
+                dto.setPositionObj(mapCategory.get(dto.getPositionId()));
             }
             if(dto.getTitleId() != null){
                 dto.setTitleObj(mapCategory.get(dto.getTitleId()));
@@ -126,21 +126,19 @@ public class RecruitmentPlanOrderService {
             if(dto.getLevelId() != null){
                 dto.setLevelObj(mapCategory.get(dto.getLevelId()));
             }
-           if(dto.getOrgId() != null){
-               OrgResp org = orgs.stream().filter(o -> CompareUtil.compare(o.getId(), dto.getOrgId())).findAny().orElse(new OrgResp());
-               dto.setOrgResp(org);
-           }
+            if(dto.getOrgId() != null){
+                OrgResp org = orgs.stream().filter(o -> CompareUtil.compare(o.getId(), dto.getOrgId())).findAny().orElse(new OrgResp());
+                dto.setOrgResp(org);
+            }
             if (dto.getPic() != null){
                 EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getPic())).findAny().orElse(new EmployeeDTO());
-                dto.setEmployeeDTO(emp);
+                dto.setPicObj(emp);
             }
             if (dto.getSupporterId() != null){
                 EmployeeDTO employeeDTO = employees.stream().filter(emp -> CompareUtil.compare(emp.getId(),dto.getSupporterId())).findAny().orElse(new EmployeeDTO());
-                dto.setEmployeeDTO(employeeDTO);
+                dto.setSupporterObj(employeeDTO);
             }
-           return dto;
-        });
-
+        }
         return dtos;
     }
 

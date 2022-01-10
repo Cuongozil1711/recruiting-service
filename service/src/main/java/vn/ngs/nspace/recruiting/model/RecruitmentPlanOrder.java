@@ -62,6 +62,10 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
                 .description(dto.getDescription())
                 .state(dto.getState())
                 .build();
+
+        build.setCompanyId(cid);
+        build.setCreateBy(uid);
+        build.setUpdateBy(uid);
             return build;
     }
 }

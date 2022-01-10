@@ -95,7 +95,7 @@ public class RecruitmentPlanOrderApi {
                 }
 
                 if (filter.get("positionId") != null) {
-                      positionId = (Long) filter.get("positionId");
+                      positionId = Long.valueOf(String.valueOf(filter.get("positionId")));
                 } else {
                     positionId = -1l;
                 }

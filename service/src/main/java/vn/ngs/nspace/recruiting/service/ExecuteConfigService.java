@@ -21,7 +21,7 @@ import java.util.Set;
 
 @Component
 public class ExecuteConfigService {
-    @Value("${nspace.service.config.URL:nothing}")
+    @Value("${nspace.service.config.url:nothing}")
     public String ConfigServiceURL;
     @Value("${nspace.service.config.key:nothing}")
     public String ConfigServiceKey;

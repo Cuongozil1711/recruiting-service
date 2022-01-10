@@ -13,7 +13,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
    Optional<RecruitmentPlanOrder>  findByCompanyIdAndId(Long cid, Long id);
 
 
-   @Query(" select p " +
+   @Query(value = " select p " +
            " from RecruitmentPlanOrder p " +
            " where (p.companyId = :companyId)" +
            " and (p.orgId in :orgId or :orgId = -1) " +
@@ -22,7 +22,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            " and (p.deadline <= :deadline ) ")
    Page<RecruitmentPlanOrder> searchRecruitingPlanOrder(@Param("companyId") Long cid
            ,@Param("orgId") Long orgId
-           ,@Param("positionId") Long positionId
+           ,@Param("positionId") Object positionId
            ,@Param("startDate") Date startDate
            ,@Param("deadline") Date deadline
            , Pageable pageable);

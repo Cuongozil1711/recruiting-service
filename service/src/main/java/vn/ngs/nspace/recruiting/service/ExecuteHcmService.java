@@ -71,11 +71,11 @@ public class ExecuteHcmService {
     public List<EmployeeDTO> getEmployees(String requestUserId, Long companyId, Set<Long> empIds){
         try {
             URI uri = new URI(HcmServiceURL + "/generic/employee-profile/byIds");
-            HttpMethod method = HttpMethod.GET;
+            HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = createHeader(requestUserId,companyId);
             Map<String,Object> payload  = new HashMap<>();
-            payload.put("empIds", empIds);
+            payload.put("ids", empIds);
 
             HttpEntity request = new HttpEntity<>(payload,headers);
 

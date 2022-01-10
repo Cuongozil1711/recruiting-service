@@ -34,9 +34,9 @@ public class RecruitmentPlanOrderDTO {
     private String description;
     private String state;
     private OrgResp orgResp;
-    private EmployeeDTO employeeDTO;
-
-    private Map<String, Object> position;
+    private EmployeeDTO picObj;
+    private EmployeeDTO supporterObj;
+    private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;
     private Map<String, Object> levelObj;
 }
