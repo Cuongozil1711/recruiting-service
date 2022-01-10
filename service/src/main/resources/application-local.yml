@@ -154,6 +154,7 @@ nspace:
         expiresAfter: write
 
     hcm:
-      URL: http://api.ngs.vn/nspace/hcm
+      # URL: http://api.ngs.vn/nspace/hcm
+      URL: http://api.gateway.svc.cluster.local:8082/nspace/hcm
 #      URL: http://localhost:8087/
       key: test
