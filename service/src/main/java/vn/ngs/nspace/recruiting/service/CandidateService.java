@@ -9,6 +9,8 @@ import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -24,6 +26,15 @@ public class CandidateService {
     /* logic validate data before insert model */
     public void valid(CandidateDTO dto) throws BusinessException {
 
+    }
+
+    /* create list object */
+    public List<CandidateDTO> create(Long cid, String uid, List<CandidateDTO> dtos) throws BusinessException {
+        List<CandidateDTO> data = new ArrayList<>();
+        for(CandidateDTO dto : dtos){
+            data.add(create(cid, uid, dto));
+        }
+        return data;
     }
 
     /* create object */
@@ -42,6 +53,15 @@ public class CandidateService {
         MapperUtils.copyWithoutAudit(dto, curr);
         curr = repo.save(curr);
         return toDTO(curr);
+    }
+
+    /* convert list model object to DTO before response */
+    public List<CandidateDTO> toDTOs(Long cid, String uid, List<Candidate> objs){
+        List<CandidateDTO> dtos = new ArrayList<>();
+        objs.forEach(obj -> {
+            dtos.add(toDTO(obj));
+        });
+        return dtos;
     }
 
     /* convert model object to DTO before response */

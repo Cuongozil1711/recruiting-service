@@ -14,6 +14,7 @@ import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -44,6 +45,18 @@ public class CandidateApi {
         }
     }
 
+    @PostMapping()
+    @ActionMapping(action = Permission.CREATE)
+    protected ResponseEntity create(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody List<CandidateDTO> dtos) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.create(cid, uid, dtos));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
     @PutMapping("{id}")
     @ActionMapping(action = Permission.UPDATE)
     protected ResponseEntity updateById(@RequestHeader("cid") long cid
@@ -61,7 +74,7 @@ public class CandidateApi {
     @ActionMapping(action = Permission.VIEW)
     protected ResponseEntity getById(@RequestHeader("cid") long cid
         , @RequestHeader("uid") String uid
-        , @PathVariable(value = "id") Long id){ {
+        , @PathVariable(value = "id") Long id){
         try {
             Candidate candidate = _repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(Candidate.class, id));
             return ResponseUtils.handlerSuccess(_service.toDTO(candidate));
@@ -73,6 +86,7 @@ public class CandidateApi {
 
 
 
+
 //    @PostMapping("/by-cycle")
 //    @ActionMapping(action = Permission.VIEW)
 //    protected ResponseEntity getAssetCheckList(@RequestHeader Long cid
@@ -80,5 +94,5 @@ public class CandidateApi {
 //            , @RequestBody Map<String, Object> filter) {
 //
 //        return null;
-    }
+
 }
