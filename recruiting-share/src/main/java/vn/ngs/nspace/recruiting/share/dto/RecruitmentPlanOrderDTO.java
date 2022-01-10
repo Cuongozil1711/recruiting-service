@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 
 import java.util.Date;
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,4 +34,9 @@ public class RecruitmentPlanOrderDTO {
     private String description;
     private String state;
     private OrgResp orgResp;
+    private EmployeeDTO employeeDTO;
+
+    private Map<String, Object> position;
+    private Map<String, Object> titleObj;
+    private Map<String, Object> levelObj;
 }

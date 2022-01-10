@@ -1,16 +1,19 @@
 package vn.ngs.nspace.recruiting.service;
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
+import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
+import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -18,19 +21,21 @@ import java.util.List;
 public class RecruitmentPlanOrderService {
     private final RecruitmentPlanOrderRepo repo;
     private final ExecuteHcmService _hcmService;
+    private final ExecuteConfigService _configService;
 
-    public RecruitmentPlanOrderService(RecruitmentPlanOrderRepo repo, ExecuteHcmService hcmService) {
+    public RecruitmentPlanOrderService(RecruitmentPlanOrderRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         this.repo = repo;
         _hcmService = hcmService;
+        _configService = configService;
     }
     public void valid(RecruitmentPlanOrderDTO dto){
-        if(dto.getCode() == null){
+        if(StringUtils.isEmpty(dto.getCode())){
             throw new BusinessException("invalid-code");
         }
-        if (dto.getType() == null){
+        if (StringUtils.isEmpty(dto.getType())){
             throw new BusinessException("invalid-type");
         }
-        if (dto.getSolutionSuggestType() == null){
+        if (StringUtils.isEmpty(dto.getSolutionSuggestType())){
             throw new BusinessException("invalid-solutionSuggestType");
         }
         if (dto.getPositionId() == null){
@@ -66,17 +71,80 @@ public class RecruitmentPlanOrderService {
     public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
         valid(dto);
         RecruitmentPlanOrder recruitmentPlanOrder = RecruitmentPlanOrder.of(cid, uid, dto);
-
-
+        recruitmentPlanOrder.setCreateBy(uid);
+        recruitmentPlanOrder.setCompanyId(cid);
         repo.save(recruitmentPlanOrder);
-        return MapperUtils.map(recruitmentPlanOrder,dto);
+        return toDTO(recruitmentPlanOrder);
     }
 
-    public RecruitmentPlanOrderDTO updateRecruitmentPlanOrder(Long cid, Long id, RecruitmentPlanOrderDTO recruitmentPlanOrderDTO) {
+    public RecruitmentPlanOrderDTO update(Long cid, Long id, RecruitmentPlanOrderDTO recruitmentPlanOrderDTO) {
         valid(recruitmentPlanOrderDTO);
         RecruitmentPlanOrder curr = repo.findByCompanyIdAndId(cid, id).orElse(new RecruitmentPlanOrder());
         MapperUtils.copyWithoutAudit(recruitmentPlanOrderDTO,curr);
-        repo.save(curr);
-        return MapperUtils.map(curr,RecruitmentPlanOrderDTO.class);
+        curr = repo.save(curr);
+        return toDTO(curr);
+    }
+
+    public List<RecruitmentPlanOrderDTO> toDTOs(Long cid, String uid, List<RecruitmentPlanOrder> objs){
+        List<RecruitmentPlanOrderDTO> dtos = new ArrayList<>();
+        Set<Long> orgIds = new HashSet<>();
+        Set<Long> categoryIds = new HashSet<>();
+        Set<Long> empIds = new HashSet<>();
+
+        objs.forEach(obj -> {
+            if(obj.getOrgId() != null){
+                orgIds.add(obj.getOrgId());
+            }
+            if(obj.getPositionId() != null){
+                categoryIds.add(obj.getPositionId());
+            }
+            if(obj.getTitleId() != null){
+                categoryIds.add(obj.getTitleId());
+            }
+            if(obj.getLevelId() != null){
+                categoryIds.add(obj.getLevelId());
+            }
+            if (obj.getPic() != null){
+                empIds.add(obj.getPic());
+            }
+            if (obj.getSupporterId() != null){
+                empIds.add(obj.getSupporterId());
+            }
+            dtos.add(toDTO(obj));
+        });
+
+        List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
+        Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
+        List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
+        dtos.stream().map(dto -> {
+            if(dto.getPositionId() != null){
+                dto.setPosition(mapCategory.get(dto.getPositionId()));
+            }
+            if(dto.getTitleId() != null){
+                dto.setTitleObj(mapCategory.get(dto.getTitleId()));
+            }
+            if(dto.getLevelId() != null){
+                dto.setLevelObj(mapCategory.get(dto.getLevelId()));
+            }
+           if(dto.getOrgId() != null){
+               OrgResp org = orgs.stream().filter(o -> CompareUtil.compare(o.getId(), dto.getOrgId())).findAny().orElse(new OrgResp());
+               dto.setOrgResp(org);
+           }
+            if (dto.getPic() != null){
+                EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getPic())).findAny().orElse(new EmployeeDTO());
+                dto.setEmployeeDTO(emp);
+            }
+            if (dto.getSupporterId() != null){
+                EmployeeDTO employeeDTO = employees.stream().filter(emp -> CompareUtil.compare(emp.getId(),dto.getSupporterId())).findAny().orElse(new EmployeeDTO());
+                dto.setEmployeeDTO(employeeDTO);
+            }
+           return dto;
+        });
+
+        return dtos;
+    }
+
+    public RecruitmentPlanOrderDTO toDTO(RecruitmentPlanOrder obj){
+        return MapperUtils.map(obj, RecruitmentPlanOrderDTO.class);
     }
 }

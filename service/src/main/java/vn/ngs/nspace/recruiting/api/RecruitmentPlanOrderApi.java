@@ -11,15 +11,16 @@ import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.DateUtil;
-import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
+import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
 import vn.ngs.nspace.recruiting.service.RecruitmentPlanOrderService;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
+import javax.swing.*;
 import java.util.*;
 
 @RestController
@@ -29,6 +30,7 @@ public class RecruitmentPlanOrderApi {
     private final RecruitmentPlanOrderService _service;
     private final RecruitmentPlanOrderRepo _repo;
     private final ExecuteHcmService _hcmService;
+    private final ExecuteConfigService configService;
 
     @PostMapping("/create")
     @ActionMapping(action = Permission.CREATE)
@@ -92,8 +94,8 @@ public class RecruitmentPlanOrderApi {
                     orgId = -1l;
                 }
 
-                if(filter.get("positionId") != null){
-                    positionId = (Long) filter.get("positionId");
+                if (filter.get("positionId") != null) {
+                      positionId = (Long) filter.get("positionId");
                 } else {
                     positionId = -1l;
                 }
@@ -110,28 +112,11 @@ public class RecruitmentPlanOrderApi {
                 }else {
                     deadline = DateUtils.truncate(new Date(), Calendar.DATE);
                 }
-
             }
-            List<RecruitmentPlanOrderDTO> request = new ArrayList<>();
-            Set<Long> orgIds = new HashSet<>();
-
-            orgIds.add(orgId);
-
-            List<OrgResp> list =  _hcmService.getOrgResp(uid,cid,orgIds);
-
-            list.forEach(orgid -> {
-                RecruitmentPlanOrderDTO recruitmentPlanOrderDTO = new RecruitmentPlanOrderDTO();
-                recruitmentPlanOrderDTO.setOrgId(orgid.getId());
-                recruitmentPlanOrderDTO.setOrgResp(orgid);
-                request.add(recruitmentPlanOrderDTO);
-            });
-
-
-
 
             Page<RecruitmentPlanOrder> search = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,startDate,deadline,pageable);
-//            List<Map<String,Object>> data = MapperUtils.underscoreToCamelcase(search.getContent());
-            Page<Map<String,Object>>resp = new PageImpl(request, pageable, search.getTotalElements());
+            List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, search.getContent());
+            Page<Map<String,Object>>resp = new PageImpl(dtos, pageable, dtos.size());
             return ResponseUtils.handlerSuccess(resp);
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
@@ -146,7 +131,7 @@ public class RecruitmentPlanOrderApi {
             , @PathVariable Long id
             , @RequestBody RecruitmentPlanOrderDTO recruitmentPlanOrderDTO){
         try{
-            RecruitmentPlanOrderDTO dto = _service.updateRecruitmentPlanOrder(cid,id,recruitmentPlanOrderDTO);
+            RecruitmentPlanOrderDTO dto = _service.update(cid,id,recruitmentPlanOrderDTO);
              return ResponseUtils.handlerSuccess(dto);
         } catch (Exception ex){
             return ResponseUtils.handlerException(ex);
