@@ -2,13 +2,12 @@ package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
-import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
-import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
-import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
+import vn.ngs.nspace.recruiting.model.CandidateFilter;
+import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 
@@ -19,11 +18,13 @@ import java.util.*;
 @Transactional
 public class CandidateService {
     private final CandidateRepo repo;
+    private final CandidateFilterRepo filterRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
 
-    public CandidateService(CandidateRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         this.repo = repo;
+        this.filterRepo = filterRepo;
         _hcmService = hcmService;
         _configService = configService;
     }
@@ -63,6 +64,19 @@ public class CandidateService {
         curr = repo.save(curr);
 
         return toDTOWithObj(cid, uid, curr);
+    }
+
+    /* update by id object */
+    public CandidateFilter updateFilter(Long cid, String uid, CandidateFilter request) throws BusinessException {
+        if(request.getId() != null && request.getId() != 0l){
+            request = filterRepo.findByCompanyIdAndId(cid, request.getId()).orElse(new CandidateFilter());
+        }
+        CandidateFilter obj = CandidateFilter.of(cid, uid, request);
+        if(obj.isNew()){
+            obj.setCreateBy(uid);
+        }
+        obj.setUpdateBy(uid);
+        return filterRepo.save(obj);
     }
 
     /* convert list model object to DTO before response */
