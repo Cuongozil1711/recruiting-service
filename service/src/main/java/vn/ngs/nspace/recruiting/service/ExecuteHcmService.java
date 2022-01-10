@@ -8,11 +8,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.utils.HttpUtils;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
@@ -62,6 +64,27 @@ public class ExecuteHcmService {
             return response.getData();
 
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<EmployeeDTO> getEmployees(String requestUserId, Long companyId, Set<Long> empIds){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/byIds");
+            HttpMethod method = HttpMethod.GET;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            Map<String,Object> payload  = new HashMap<>();
+            payload.put("empIds", empIds);
+
+            HttpEntity request = new HttpEntity<>(payload,headers);
+
+            ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>> responeType = new ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<List<EmployeeDTO>> resp = (BaseResponse<List<EmployeeDTO>>) response.getBody();
+            return resp.getData();
+
+        } catch (Exception e){
             throw new RuntimeException(e);
         }
     }
