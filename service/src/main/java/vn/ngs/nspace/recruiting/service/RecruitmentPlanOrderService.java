@@ -135,8 +135,8 @@ public class RecruitmentPlanOrderService {
                 dto.setPicObj(emp);
             }
             if (dto.getSupporterId() != null){
-                EmployeeDTO employeeDTO = employees.stream().filter(emp -> CompareUtil.compare(emp.getId(),dto.getSupporterId())).findAny().orElse(new EmployeeDTO());
-                dto.setSupporterObj(employeeDTO);
+                EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getSupporterId())).findAny().orElse(new EmployeeDTO());
+                dto.setSupporterObj(emp);
             }
         }
         return dtos;
