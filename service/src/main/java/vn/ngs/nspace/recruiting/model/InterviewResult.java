@@ -21,7 +21,7 @@ public class InterviewResult extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long candicateId;
+    private Long candidateId;
     private Date interviewDate;
     private String name;
     private String state;

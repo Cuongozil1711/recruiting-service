@@ -20,6 +20,6 @@ public class JobApplication extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long candicateId;
+    private Long candidateId;
     private Long state; // interview, offer, requested, cancelled, done
 }
