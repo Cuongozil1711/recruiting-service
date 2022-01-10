@@ -45,7 +45,7 @@ public class CandidateApi {
         }
     }
 
-    @PostMapping()
+    @PostMapping("/creates")
     @ActionMapping(action = Permission.CREATE)
     protected ResponseEntity create(@RequestHeader Long cid
             , @RequestHeader String uid
