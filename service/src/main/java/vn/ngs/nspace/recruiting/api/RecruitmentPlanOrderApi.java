@@ -77,6 +77,7 @@ public class RecruitmentPlanOrderApi {
     @ActionMapping(action = Permission.VIEW)
     protected ResponseEntity searchRecruitingPlanOrder(@RequestHeader Long cid
             , @RequestHeader String uid
+
             , @RequestBody Map<String,Object> filter
             , Pageable pageable){
         try{
@@ -111,11 +112,26 @@ public class RecruitmentPlanOrderApi {
                 }
 
             }
+            List<RecruitmentPlanOrderDTO> request = new ArrayList<>();
+            Set<Long> orgIds = new HashSet<>();
+
+            orgIds.add(orgId);
+
+            List<OrgResp> list =  _hcmService.getOrgResp(uid,cid,orgIds);
+
+            list.forEach(orgid -> {
+                RecruitmentPlanOrderDTO recruitmentPlanOrderDTO = new RecruitmentPlanOrderDTO();
+                recruitmentPlanOrderDTO.setOrgId(orgid.getId());
+                recruitmentPlanOrderDTO.setOrgResp(orgid);
+                request.add(recruitmentPlanOrderDTO);
+            });
+
+
 
 
             Page<RecruitmentPlanOrder> search = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,startDate,deadline,pageable);
 //            List<Map<String,Object>> data = MapperUtils.underscoreToCamelcase(search.getContent());
-            Page<Map<String,Object>>resp = new PageImpl(search.getContent(), pageable, search.getTotalElements());
+            Page<Map<String,Object>>resp = new PageImpl(request, pageable, search.getTotalElements());
             return ResponseUtils.handlerSuccess(resp);
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
