@@ -1,26 +1,31 @@
 package vn.ngs.nspace.recruiting.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
+import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
 public class CandidateService {
     private final CandidateRepo repo;
     private final ExecuteHcmService _hcmService;
+    private final ExecuteConfigService _configService;
 
-    public CandidateService(CandidateRepo repo, ExecuteHcmService hcmService) {
+    public CandidateService(CandidateRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         this.repo = repo;
         _hcmService = hcmService;
+        _configService = configService;
     }
 
     /* logic validate data before insert model */
@@ -42,8 +47,11 @@ public class CandidateService {
         valid(dto);
         Candidate candidate = Candidate.of(cid, uid, dto);
         candidate.setCreateBy(uid);
-        repo.save(candidate);
-        return toDTO(candidate);
+        candidate.setUpdateBy(uid);
+        candidate.setCompanyId(cid);
+        candidate = repo.save(candidate);
+
+        return toDTOWithObj(cid, uid, candidate);
     }
 
     /* update by id object */
@@ -51,17 +59,66 @@ public class CandidateService {
         valid(dto);
         Candidate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(Candidate.class, id));
         MapperUtils.copyWithoutAudit(dto, curr);
+        curr.setUpdateBy(uid);
         curr = repo.save(curr);
-        return toDTO(curr);
+
+        return toDTOWithObj(cid, uid, curr);
     }
 
     /* convert list model object to DTO before response */
     public List<CandidateDTO> toDTOs(Long cid, String uid, List<Candidate> objs){
         List<CandidateDTO> dtos = new ArrayList<>();
+        Set<String> territoryCodes = new HashSet<>();
+        Set<Long> categoryIds = new HashSet<>();
+
         objs.forEach(obj -> {
+            if(!StringUtils.isEmpty(obj.getWardCode())){
+                territoryCodes.add(obj.getWardCode());
+            }
+            if(!StringUtils.isEmpty(obj.getDistrictCode())){
+                territoryCodes.add(obj.getDistrictCode());
+            }
+            if(!StringUtils.isEmpty(obj.getProvinceCode())){
+                territoryCodes.add(obj.getProvinceCode());
+            }
+            if(!StringUtils.isEmpty(obj.getCountryCode())){
+                territoryCodes.add(obj.getCountryCode());
+            }
+            if(obj.getEducationLevel() != null){
+                categoryIds.add(obj.getEducationLevel());
+            }
+
             dtos.add(toDTO(obj));
         });
+
+        Map<String, Map<String, Object>> mapTerritory = _configService.getTerritories(uid, cid, territoryCodes);
+        Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
+
+        dtos.stream().map(dto -> {
+            if(!StringUtils.isEmpty(dto.getWardCode())){
+                dto.setWardCodeObj(mapTerritory.get(dto.getWardCode()));
+            }
+            if(!StringUtils.isEmpty(dto.getDistrictCode())){
+                dto.setDistrictCodeObj(mapTerritory.get(dto.getDistrictCode()));
+            }
+            if(!StringUtils.isEmpty(dto.getProvinceCode())){
+                dto.setProvinceCodeObj(mapTerritory.get(dto.getProvinceCode()));
+            }
+            if(!StringUtils.isEmpty(dto.getCountryCode())){
+                dto.setCountryCodeObj(mapTerritory.get(dto.getCountryCode()));
+            }
+            if(dto.getEducationLevel() != null){
+                dto.setEducateLevelObj(mapCategory.get(dto.getEducationLevel()));
+            }
+            return dto;
+        });
+
         return dtos;
+    }
+
+    /* convert model object to DTO with data before response */
+    public CandidateDTO toDTOWithObj(Long cid, String uid, Candidate candidate){
+        return toDTOs(cid, uid, Collections.singletonList(candidate)).get(0);
     }
 
     /* convert model object to DTO before response */

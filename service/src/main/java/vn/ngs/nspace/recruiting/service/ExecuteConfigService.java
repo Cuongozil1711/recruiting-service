@@ -64,6 +64,24 @@ public class ExecuteConfigService {
 
     }
 
+    public Map<String, Map<String, Object>> getTerritories(String uid, Long cid, Set<String> codes){
+        try {
+            URI uri = new URI(ConfigServiceURL + "/territory/by-codes");
+            HttpMethod method = HttpMethod.POST;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(uid,cid);
+            Map<String,Object> payload = new HashMap<>();
+            payload.put("codes",codes);
+            HttpEntity request = new HttpEntity<>(payload,headers);
+
+            ParameterizedTypeReference<BaseResponse<Map<String, Map<String, Object>>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<String, Map<String, Object>>>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<Map<String, Map<String, Object>>> resp = (BaseResponse<Map<String, Map<String, Object>>>) response.getBody();
+            return resp.getData();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 }
