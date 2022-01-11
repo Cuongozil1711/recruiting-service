@@ -26,7 +26,7 @@ public class AssetCheckListApi {
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
-    protected ResponseEntity createAssetCheckList(@RequestHeader Long cid
+    protected ResponseEntity create(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody AssetCheckListDTO _dto) {
         try {
@@ -39,36 +39,42 @@ public class AssetCheckListApi {
 
     @PutMapping("{id}")
     @ActionMapping(action = Permission.UPDATE)
-    protected ResponseEntity getAssetCheckList(@RequestHeader("cid") long cid
+    protected ResponseEntity update(@RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
             , @PathVariable(value = "id") Long id
-    , @RequestBody AssetCheckListDTO assetCheckListDTO){ {
+            , @RequestBody AssetCheckListDTO assetCheckListDTO){
         try {
-           AssetCheckListDTO dto = _service.updateAssetChecklist(cid,id,assetCheckListDTO);
+           AssetCheckListDTO dto = _service.update(cid, uid, id,assetCheckListDTO);
             return ResponseUtils.handlerSuccess(dto);
 
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
     }
-;
-//    @PostMapping("/search")
-//    @ActionMapping(action = Permission.VIEW)
-//    protected ResponseEntity searchAssetCheckList(@RequestHeader Long cid
-//            , @RequestHeader String uid
-//            , @RequestBody Map<String, Object> filter
-//            , Pageable pageable) {
-//
-//        return null;
-//    }
 
+    @GetMapping("/get-by-onboarding/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    protected ResponseEntity getByOnboardOrder(@RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable(value = "id") Long id){
+        try {
+            List<AssetCheckList> datas = repo.findByCompanyIdAndOnboardOrderId(cid, id);
+            return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, datas));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
-//    @PostMapping("/by-cycle")
-//    @ActionMapping(action = Permission.VIEW)
-//    protected ResponseEntity getAssetCheckList(@RequestHeader Long cid
-//            , @RequestHeader String uid
-//            , @RequestBody Map<String, Object> filter) {
-//
-//        return null;
+    @GetMapping("/get-by-employee/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    protected ResponseEntity getByEmployee(@RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable(value = "id") Long id){
+        try {
+            List<AssetCheckList> datas = repo.findByCompanyIdAndEmployeeId(cid, id);
+            return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, datas));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
     }
 }
