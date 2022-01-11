@@ -88,4 +88,46 @@ public class ExecuteHcmService {
             throw new RuntimeException(e);
         }
     }
+
+    public Map<Long, EmployeeDTO> getMapEmployees(String requestUserId, Long companyId, Set<Long> empIds){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/mapByIds");
+            HttpMethod method = HttpMethod.POST;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            Map<String,Object> payload  = new HashMap<>();
+            payload.put("ids", empIds);
+
+            HttpEntity request = new HttpEntity<>(payload,headers);
+
+            ParameterizedTypeReference<BaseResponse<Map<Long, EmployeeDTO>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<Long, EmployeeDTO>>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<Map<Long, EmployeeDTO>> resp = (BaseResponse<Map<Long, EmployeeDTO>>) response.getBody();
+            return resp.getData();
+
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Map<Long, OrgResp> getMapOrgs(String requestUserId, Long companyId, Set<Long> orgIds){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/mapByIds");
+            HttpMethod method = HttpMethod.POST;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            Map<String,Object> payload  = new HashMap<>();
+            payload.put("orgIds", orgIds);
+
+            HttpEntity request = new HttpEntity<>(payload,headers);
+
+            ParameterizedTypeReference<BaseResponse<Map<Long, OrgResp>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<Long, OrgResp>>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<Map<Long, OrgResp>> resp = (BaseResponse<Map<Long, OrgResp>>) response.getBody();
+            return resp.getData();
+
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 }

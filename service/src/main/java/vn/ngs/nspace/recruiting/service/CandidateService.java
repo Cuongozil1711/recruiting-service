@@ -110,7 +110,7 @@ public class CandidateService {
         Map<String, Map<String, Object>> mapTerritory = _configService.getTerritories(uid, cid, territoryCodes);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
 
-        dtos.stream().map(dto -> {
+        for(CandidateDTO dto : dtos){
             if(!StringUtils.isEmpty(dto.getWardCode())){
                 dto.setWardCodeObj(mapTerritory.get(dto.getWardCode()));
             }
@@ -126,8 +126,7 @@ public class CandidateService {
             if(dto.getEducationLevel() != null){
                 dto.setEducateLevelObj(mapCategory.get(dto.getEducationLevel()));
             }
-            return dto;
-        });
+        }
 
         return dtos;
     }
