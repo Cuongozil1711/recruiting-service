@@ -22,7 +22,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AssetCheckListApi {
     private final AssetCheckListService _service;
-    private AssetCheckListRepo repo;
+    private final AssetCheckListRepo repo;
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
@@ -51,7 +51,7 @@ public class AssetCheckListApi {
             return ResponseUtils.handlerException(ex);
         }
     }
-
+;
 //    @PostMapping("/search")
 //    @ActionMapping(action = Permission.VIEW)
 //    protected ResponseEntity searchAssetCheckList(@RequestHeader Long cid

@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
@@ -33,6 +34,7 @@ public class RecruitmentChannelService {
         RecruitmentChannel obj = RecruitmentChannel.of(cid, uid, request);
         if(obj.isNew()){
             obj.setCreateBy(uid);
+            obj.setStatus(Constants.ENTITY_ACTIVE);
         }
         obj.setUpdateBy(uid);
         return repo.save(obj);
