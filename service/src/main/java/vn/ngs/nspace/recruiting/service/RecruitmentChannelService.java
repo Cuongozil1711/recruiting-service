@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.mapping.Map;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
@@ -12,6 +13,7 @@ import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentChannelRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentChannelDTO;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -25,16 +27,26 @@ public class RecruitmentChannelService {
         this.repo = repo;
     }
 
-    /* update by id object */
-    public RecruitmentChannel update(Long cid, String uid, RecruitmentChannel request) throws BusinessException {
-        if(request.getId() != null && request.getId() != 0l){
-            request = repo.findByCompanyIdAndId(cid, request.getId()).orElse(new RecruitmentChannel());
+
+    public RecruitmentChannelDTO createOrUpdate(Long cid, String uid, RecruitmentChannelDTO request){
+        if (request.getId() != null){
+            RecruitmentChannel curr = repo.findByCompanyIdAndId(cid, request.getId()).orElseThrow(() -> new EntityNotFoundException(Candidate.class,request));
+            MapperUtils.copyWithoutAudit(request,curr );
+            if (curr.isNew()){
+                curr.setUpdateBy(uid);
+            }
+
+            curr = repo.save(curr);
+
         }
-        RecruitmentChannel obj = RecruitmentChannel.of(cid, uid, request);
-        if(obj.isNew()){
-            obj.setCreateBy(uid);
+        else {
+            RecruitmentChannel recruitmentChannel = RecruitmentChannel.of(cid, uid, request);
+            recruitmentChannel.setCompanyId(cid);
+            recruitmentChannel.setCreateBy(uid);
+
+            repo.save(recruitmentChannel);
         }
-        obj.setUpdateBy(uid);
-        return repo.save(obj);
+        return request;
     }
+
 }

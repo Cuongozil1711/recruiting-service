@@ -13,9 +13,12 @@ import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.model.RecruitmentChannel;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
+import vn.ngs.nspace.recruiting.repo.RecruitmentChannelRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.service.RecruitmentChannelService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.utils.Constants;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentChannelDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -25,17 +28,28 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RecruitmentChannelApi {
     private final RecruitmentChannelService _service;
+    private final RecruitmentChannelRepo _repo;
 
     @PutMapping("/update")
     @ActionMapping(action = Permission.VIEW)
     protected ResponseEntity updateFilter(@RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
-            , @RequestBody RecruitmentChannel request){
+            , @RequestBody RecruitmentChannelDTO request){
         try {
-            return ResponseUtils.handlerSuccess(_service.update(cid, uid, request));
+            return ResponseUtils.handlerSuccess(_service.createOrUpdate(cid, uid, request));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
     }
 
+    @GetMapping("/all")
+    @ActionMapping(action = Permission.VIEW)
+    protected ResponseEntity getFilters(@RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid){
+        try {
+            return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndStatus(cid, Constants.ENTITY_ACTIVE));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 }

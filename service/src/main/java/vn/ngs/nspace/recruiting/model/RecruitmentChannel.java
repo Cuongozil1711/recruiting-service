@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.converter.HashMapConverter;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentChannelDTO;
 
 import javax.persistence.*;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class RecruitmentChannel extends PersistableEntity<Long> {
     @Column(columnDefinition = "text")
     private Map<String, Object> configs;
 
-    public static RecruitmentChannel of(Long cid, String uid, RecruitmentChannel request){
+    public static RecruitmentChannel of(Long cid, String uid, RecruitmentChannelDTO request){
         RecruitmentChannel builder = RecruitmentChannel.builder()
                 .id(request.getId())
                 .type(request.getType())
