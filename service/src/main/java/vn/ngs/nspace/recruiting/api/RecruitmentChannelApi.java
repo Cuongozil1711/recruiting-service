@@ -18,6 +18,7 @@ import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.service.RecruitmentChannelService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.utils.Constants;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentChannelDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -33,9 +34,9 @@ public class RecruitmentChannelApi {
     @ActionMapping(action = Permission.VIEW)
     protected ResponseEntity updateFilter(@RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
-            , @RequestBody RecruitmentChannel request){
+            , @RequestBody RecruitmentChannelDTO request){
         try {
-            return ResponseUtils.handlerSuccess(_service.update(cid, uid, request));
+            return ResponseUtils.handlerSuccess(_service.createOrUpdate(cid, uid, request));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

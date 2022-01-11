@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.JobRequirementDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,13 +34,13 @@ public class JobRequirement extends PersistableEntity<Long> {
 
     private Long quantity;
     private Long industryId; // danh muc dung chung
-    private Long collaborationType; //full-time, part-time, free-time
-    private Long minExperience; // kinh nghiem toi thieu
-    private String gender;
-    private String salaryRange; //in-range, more-than, equals
+    private Long collaborationType; //full-time, part-time, free-time:enum
+    private Long minExperience; // kinh nghiem toi thieu:enum
+    private Long gender;
+    private String salaryRange; //in-range, more-than, equals:enum
     private Double salaryFrom;
     private Double salaryTo;
-    private Long currencyId;
+    private Long currencyId;//danh muc dung chung
     private String location; //mutil-text
 
     @Column(columnDefinition = "text")
@@ -54,8 +55,42 @@ public class JobRequirement extends PersistableEntity<Long> {
     private String benefitDescription;
 
     private Date receiptDeadline;
-    private String receiptName;
+    private Long receiptName;//empId
     @Size(max=15)
     private String receiptPhone;
     private String receiptEmail;
+
+
+    public static JobRequirement of(Long cid, String uid, JobRequirementDTO dto){
+        JobRequirement jobRequirement = JobRequirement.builder()
+                .id(dto.getId())
+                .code(dto.getCode())
+                .title(dto.getTitle())
+                .titleId(dto.getTitleId())
+                .positionId(dto.getPositionId())
+                .levelId(dto.getLevelId())
+                .quantity(dto.getQuantity())
+                .industryId(dto.getIndustryId())
+                .collaborationType(dto.getCollaborationType())
+                .minExperience(dto.getMinExperience())
+                .gender(dto.getGender())
+                .salaryRange(dto.getSalaryRange())
+                .salaryFrom(dto.getSalaryFrom())
+                .salaryTo(dto.getSalaryTo())
+                .currencyId(dto.getCurrencyId())
+                .location(dto.getLocation())
+                .description(dto.getDescription())
+                .jobRequirement(dto.getJobRequirement())
+                .skillRequirement(dto.getSkillRequirement())
+                .benefitDescription(dto.getBenefitDescription())
+                .receiptDeadline(dto.getReceiptDeadline())
+                .receiptName(dto.getReceiptName())
+                .receiptPhone(dto.getReceiptPhone())
+                .receiptEmail(dto.getReceiptEmail())
+                .build();
+        jobRequirement.setCompanyId(cid);
+        jobRequirement.setCreateBy(uid);
+        jobRequirement.setUpdateBy(uid);
+        return jobRequirement;
+    }
 }
