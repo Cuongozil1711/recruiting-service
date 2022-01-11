@@ -48,5 +48,4 @@ public class RecruitmentChannelService {
         }
         return request;
     }
-
 }

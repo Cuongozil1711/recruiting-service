@@ -25,6 +25,7 @@ public class InterviewCheckList extends PersistableEntity<Long> {
     private Long checkListId;
     private Long interviewerId;
     private Double rating;
+    private String result;
     private Date interviewDate;
 
 }

@@ -10,6 +10,7 @@ import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -47,6 +48,7 @@ public class CandidateService {
     public CandidateDTO create(Long cid, String uid, CandidateDTO dto) throws BusinessException {
         valid(dto);
         Candidate candidate = Candidate.of(cid, uid, dto);
+        candidate.setStatus(Constants.ENTITY_ACTIVE);
         candidate.setCreateBy(uid);
         candidate.setUpdateBy(uid);
         candidate.setCompanyId(cid);
@@ -108,7 +110,7 @@ public class CandidateService {
         Map<String, Map<String, Object>> mapTerritory = _configService.getTerritories(uid, cid, territoryCodes);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
 
-        dtos.stream().map(dto -> {
+        for(CandidateDTO dto : dtos){
             if(!StringUtils.isEmpty(dto.getWardCode())){
                 dto.setWardCodeObj(mapTerritory.get(dto.getWardCode()));
             }
@@ -124,8 +126,7 @@ public class CandidateService {
             if(dto.getEducationLevel() != null){
                 dto.setEducateLevelObj(mapCategory.get(dto.getEducationLevel()));
             }
-            return dto;
-        });
+        }
 
         return dtos;
     }

@@ -3,6 +3,8 @@ package vn.ngs.nspace.recruiting.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
+import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateItemDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,7 +23,23 @@ public class ProfileCheckListTemplate extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long checklistId; // dm dung chung
+    private String name;
+    private Long positionId; // vi tri
+    private Long titleId; // chuc danh
+    private Long contractTypeId; // danh muc dung chung
     private Date startDate;
     private Date endDate;
+
+    public static ProfileCheckListTemplate of(Long cid, String uid, ProfileCheckListTemplateDTO dto){
+        ProfileCheckListTemplate obj = ProfileCheckListTemplate.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .positionId(dto.getPositionId())
+                .titleId(dto.getTitleId())
+                .contractTypeId(dto.getContractTypeId())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
+                .build();
+        return obj;
+    }
 }

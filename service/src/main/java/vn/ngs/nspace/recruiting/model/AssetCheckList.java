@@ -23,6 +23,7 @@ public class AssetCheckList extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
+    private Long onboardOrderId; // yeu cau onboarding
     private Long assetId; //dm dung chung
     private Date receiptDate; // ngay nhan
     private Long senderId; // nguoi giao
@@ -30,11 +31,15 @@ public class AssetCheckList extends PersistableEntity<Long> {
     private String description;
 
     public static AssetCheckList of(Long cid, String uid, AssetCheckListDTO dto) {
-        AssetCheckList assetCheckList = AssetCheckList.builder().build();
-        MapperUtils.map(dto, assetCheckList);
-        assetCheckList.setCompanyId(cid);
-        assetCheckList.setUpdateBy(uid);
-        assetCheckList.setCreateBy(uid);
+        AssetCheckList assetCheckList = AssetCheckList.builder()
+                .id(dto.getId())
+                .onboardOrderId(dto.getOnboardOrderId())
+                .assetId(dto.getAssetId())
+                .receiptDate(dto.getReceiptDate())
+                .senderId(dto.getSenderId())
+                .employeeId(dto.getEmployeeId())
+                .description(dto.getDescription())
+                .build();
         return assetCheckList;
     }
 }
