@@ -22,8 +22,10 @@ public class JobRequirementDTO {
     private Long levelId;
     private Long quantity;
     private Long industryId; // danh muc dung chung
-    private Long collaborationType; //full-time, part-time, free-time
+    private String specialized;
+    private String collaborationType; //full-time, part-time, free-time
     private Long minExperience; // kinh nghiem toi thieu
+    private String minExperienceUnit;
     private Long gender;
     private String salaryRange; //in-range, more-than, equals
     private Double salaryFrom;

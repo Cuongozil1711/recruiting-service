@@ -31,11 +31,12 @@ public class JobRequirement extends PersistableEntity<Long> {
     private Long titleId;
     private Long positionId;
     private Long levelId;
-
+    private String specialized;
     private Long quantity;
     private Long industryId; // danh muc dung chung
-    private Long collaborationType; //full-time, part-time, free-time:enum
+    private String collaborationType; //full-time, part-time, free-time:enum
     private Long minExperience; // kinh nghiem toi thieu:enum
+    private String minExperienceUnit;//don vi
     private Long gender;
     private String salaryRange; //in-range, more-than, equals:enum
     private Double salaryFrom;
@@ -71,8 +72,10 @@ public class JobRequirement extends PersistableEntity<Long> {
                 .levelId(dto.getLevelId())
                 .quantity(dto.getQuantity())
                 .industryId(dto.getIndustryId())
+                .specialized(dto.getSpecialized())
                 .collaborationType(dto.getCollaborationType())
                 .minExperience(dto.getMinExperience())
+                .minExperienceUnit(dto.getMinExperienceUnit())
                 .gender(dto.getGender())
                 .salaryRange(dto.getSalaryRange())
                 .salaryFrom(dto.getSalaryFrom())
