@@ -15,6 +15,7 @@ import vn.ngs.nspace.recruiting.repo.RecruitmentChannelRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentChannelDTO;
 
+
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -29,23 +30,19 @@ public class RecruitmentChannelService {
 
 
     public RecruitmentChannelDTO createOrUpdate(Long cid, String uid, RecruitmentChannelDTO request){
+        RecruitmentChannel curr = new RecruitmentChannel();
         if (request.getId() != null){
-            RecruitmentChannel curr = repo.findByCompanyIdAndId(cid, request.getId()).orElseThrow(() -> new EntityNotFoundException(Candidate.class,request));
-            MapperUtils.copyWithoutAudit(request,curr );
-            if (curr.isNew()){
-                curr.setUpdateBy(uid);
-            }
-
-            curr = repo.save(curr);
-
+            curr = repo.findByCompanyIdAndId(cid, request.getId()).orElseThrow(() -> new EntityNotFoundException(RecruitmentChannel.class,request));
         }
-        else {
-            RecruitmentChannel recruitmentChannel = RecruitmentChannel.of(cid, uid, request);
-            recruitmentChannel.setCompanyId(cid);
-            recruitmentChannel.setCreateBy(uid);
-
-            repo.save(recruitmentChannel);
+//        if(!StringUtils.isEmpty(request.getCode())){
+//            curr = repo.findByCompanyIdAndCode(cid, request.getCode()).orElse(new RecruitmentChannel());
+//        }
+        if(curr.isNew()){
+            curr.setCompanyId(cid);
+            curr.setCreateBy(uid);
         }
-        return request;
+        curr.setUpdateBy(uid);
+        MapperUtils.copyWithoutAudit(request, curr);
+        return MapperUtils.map(repo.save(curr), RecruitmentChannelDTO.class);
     }
 }

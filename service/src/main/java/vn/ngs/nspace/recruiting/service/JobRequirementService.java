@@ -150,7 +150,7 @@ public class JobRequirementService {
                 categoryIds.add(obj.getIndustryId());
             }
             if(obj.getReceiptName() != null){
-                categoryIds.add(obj.getReceiptName());
+                empIds.add(obj.getReceiptName());
             }
 
 
