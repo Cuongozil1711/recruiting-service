@@ -11,5 +11,6 @@ public interface RecruitmentChannelRepo extends BaseRepo<RecruitmentChannel,Long
 
     Optional<RecruitmentChannel> findByCompanyIdAndId(long cid, Long id);
     List<RecruitmentChannel> findByCompanyIdAndStatus(long cid, int status);
+    Optional<RecruitmentChannel> findByCompanyIdAndCode(long cid, String code);
 }
 

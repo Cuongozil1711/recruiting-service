@@ -51,7 +51,7 @@ public class JobRequirementApi {
         }
     }
 
-    @GetMapping("/byIds")
+    @GetMapping("/get-all")
     @ActionMapping(action = Permission.VIEW)
     protected ResponseEntity getByIds(@RequestHeader Long cid
             , @RequestHeader String uid
