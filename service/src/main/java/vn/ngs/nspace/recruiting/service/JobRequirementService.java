@@ -111,13 +111,13 @@ public class JobRequirementService {
 
 
     }
-    public JobRequirement create(Long cid, String uid, JobRequirementDTO jobRequirementDTO) {
+    public JobRequirementDTO create(Long cid, String uid, JobRequirementDTO jobRequirementDTO) {
         valid(jobRequirementDTO);
         JobRequirement jobRequirement = JobRequirement.of(cid,uid,jobRequirementDTO);
         jobRequirement.setCompanyId(cid);
         jobRequirement.setCreateBy(uid);
         jobRequirement = _repo.save(jobRequirement);
-        return jobRequirement;
+        return toDTO(jobRequirement);
     }
 
     public JobRequirementDTO update(Long cid, String uid, Long id, JobRequirementDTO dto) {

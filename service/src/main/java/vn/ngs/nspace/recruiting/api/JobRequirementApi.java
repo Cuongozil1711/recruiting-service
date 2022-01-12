@@ -32,7 +32,7 @@ public class JobRequirementApi {
             , @RequestHeader String uid
             , @RequestBody JobRequirementDTO jobRequirementDTO){
        try {
-           JobRequirement jobRequirement = service.create(cid, uid, jobRequirementDTO);
+           JobRequirementDTO jobRequirement = service.create(cid, uid, jobRequirementDTO);
            return ResponseUtils.handlerSuccess(jobRequirement);
        }catch (Exception e){
           return ResponseUtils.handlerException(e);
@@ -52,7 +52,7 @@ public class JobRequirementApi {
         }
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
     protected ResponseEntity search(@RequestHeader Long cid
             , @RequestHeader String uid
