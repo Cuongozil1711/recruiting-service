@@ -36,10 +36,10 @@ public class JobRequirementService {
 
 
     public void valid(JobRequirementDTO dto){
-        if (StringUtils.isEmpty(String.valueOf(dto.getCode() == null))){
+        if (StringUtils.isEmpty(dto.getCode())){
             throw new BusinessException("invalid-code");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getTitle() == null))){
+        if(StringUtils.isEmpty(dto.getTitle())) {
             throw new BusinessException("title-is-empty");
         }
         if(dto.getTitleId() == null){
@@ -63,10 +63,13 @@ public class JobRequirementService {
         if(dto.getMinExperience() == null){
             throw new BusinessException("invalid-experience");
         }
+        if(dto.getMinExperienceUnit() == null){
+            throw new BusinessException("invalid-MinExperienceUnit");
+        }
         if (dto.getGender() == null){
             throw new BusinessException("invalid-gender");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getSalaryRange() == null))){
+        if(StringUtils.isEmpty(dto.getSalaryRange() )){
             throw new BusinessException("invalid-salaryRange");
         }
         if(dto.getSalaryFrom() == null){
@@ -78,31 +81,31 @@ public class JobRequirementService {
         if(dto.getCurrencyId() == null){
             throw new BusinessException("invalid-currency");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getLocation() == null))){
+        if(StringUtils.isEmpty(dto.getLocation())){
             throw new BusinessException("invalid-location");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getDescription() == null))){
+        if(StringUtils.isEmpty(dto.getDescription())){
             throw new BusinessException("invalid-description");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getJobRequirement() == null))){
+        if(StringUtils.isEmpty(dto.getJobRequirement() )){
             throw new BusinessException("invalid-jobRequirement");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getSkillRequirement() == null))){
+        if(StringUtils.isEmpty(dto.getSkillRequirement())){
             throw new BusinessException("invalid-skillRequirement");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getBenefitDescription() == null))){
+        if(StringUtils.isEmpty(dto.getBenefitDescription())){
             throw new BusinessException("invalid-benefitDescription");
         }
         if(dto.getReceiptDeadline() == null){
             throw new BusinessException("invalid-receiptDeadline");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getReceiptName() == null))){
+        if(dto.getReceiptName() == null){
             throw new BusinessException("invalid-receiptname");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getReceiptPhone() == null))){
+        if(StringUtils.isEmpty(dto.getReceiptPhone())){
             throw new BusinessException("invalid-phone");
         }
-        if(StringUtils.isEmpty(String.valueOf(dto.getReceiptEmail() == null))){
+        if(StringUtils.isEmpty(dto.getReceiptEmail())){
             throw new BusinessException("invalid-email");
         }
 

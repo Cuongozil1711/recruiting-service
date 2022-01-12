@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.api;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -51,13 +52,19 @@ public class JobRequirementApi {
         }
     }
 
-    @GetMapping("/get-all")
+    @GetMapping("/search")
     @ActionMapping(action = Permission.VIEW)
-    protected ResponseEntity getByIds(@RequestHeader Long cid
+    protected ResponseEntity search(@RequestHeader Long cid
             , @RequestHeader String uid
+            , @RequestBody Map<String,Object> condition
             , Pageable pageable){
         try{
-          Page<JobRequirement> jobRequirement = (Page<JobRequirement>) repo.getAllByCompanyAndStatus(cid, pageable);
+            String title = MapUtils.getString(condition, "title", "all");
+            String code = MapUtils.getString(condition, "code", "all");
+            Long positionId = MapUtils.getLong(condition,"positionId", -1l);
+
+
+          Page<JobRequirement> jobRequirement =  repo.search(cid,title,code,positionId, pageable);
           List<JobRequirementDTO> dtos = service.toDTOs(cid,uid,jobRequirement.getContent());
           Page<Map<String,Object>> resp = new PageImpl(dtos,pageable, dtos.size());
 
