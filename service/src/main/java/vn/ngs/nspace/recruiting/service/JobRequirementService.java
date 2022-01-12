@@ -9,6 +9,7 @@ import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
+import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobRequirement;
@@ -118,6 +119,13 @@ public class JobRequirementService {
         jobRequirement.setCreateBy(uid);
         jobRequirement = _repo.save(jobRequirement);
         return toDTO(jobRequirement);
+    }
+
+    public void delete(Long cid, String uid, List<JobRequirementDTO> dtos) {
+        for (JobRequirementDTO dto : dtos) {
+            dto.setStatus(Constants.ENTITY_INACTIVE);
+            update(cid, uid, dto.getId(), dto);
+        }
     }
 
     public JobRequirementDTO update(Long cid, String uid, Long id, JobRequirementDTO dto) {

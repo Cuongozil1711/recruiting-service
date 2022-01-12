@@ -46,5 +46,6 @@ public class JobRequirementDTO {
     Map<String,Object> currencyObj;
     Map<String,Object> industryObj;
     private EmployeeDTO receiptNameObj;
+    private Integer status;
 
 }
