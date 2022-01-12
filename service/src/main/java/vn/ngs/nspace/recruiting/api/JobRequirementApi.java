@@ -88,4 +88,18 @@ public class JobRequirementApi {
         }
     }
 
+    @PutMapping("/delete")
+    @ActionMapping(action = Permission.UPDATE)
+    protected ResponseEntity delete(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody List<JobRequirementDTO> dtos){
+        try {
+            service.delete(cid, uid, dtos);
+            return ResponseUtils.handlerSuccess();
+
+        }catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
 }
