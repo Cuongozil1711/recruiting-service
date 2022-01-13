@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.converter.HashMapConverter;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.EmailSettingDTO;
 
 import javax.persistence.*;
 import java.util.Map;
@@ -24,4 +25,14 @@ public class EmailSetting extends PersistableEntity<Long> {
     @Convert(converter = HashMapConverter.class)
     @Column(columnDefinition = "text")
     private Map<String, Object> configs;
+
+    public static EmailSetting of(Long cid, String uid, EmailSettingDTO dto){
+        EmailSetting builder = EmailSetting.builder()
+                .id(dto.getId())
+                .code(dto.getCode())
+                .configs(dto.getConfigs())
+                .build();
+
+        return builder;
+    }
 }

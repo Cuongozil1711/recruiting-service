@@ -22,7 +22,7 @@ public class InterviewCheckList extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long interviewResultId;
-    private Long checkListId;
+    private Long checkListId; // tu interview check list
     private Long interviewerId;
     private Double rating;
     private String result;
