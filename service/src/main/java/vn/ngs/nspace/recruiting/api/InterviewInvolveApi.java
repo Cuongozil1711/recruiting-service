@@ -41,8 +41,9 @@ public class InterviewInvolveApi {
             Long supporterId = MapUtils.getLong(condition, "supporterId", -1l);
             Long orgId = MapUtils.getLong(condition, "orgId", -1l);
             Long positionId = MapUtils.getLong(condition, "positionId", -1l);
+            Long titleId = MapUtils.getLong(condition,"titleId", -1l);
 
-            Page<InterviewInvolve> page = _repo.search(cid, interviewId, orgId, positionId, interviewerId, supporterId, pageable);
+            Page<InterviewInvolve> page = _repo.search(cid, interviewId, orgId, positionId,titleId, interviewerId, supporterId, pageable);
             List<InterviewInvolveDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {
@@ -97,12 +98,26 @@ public class InterviewInvolveApi {
             Long interviewId = MapUtils.getLong(condition, "interviewId", -1l);
             Long orgId = MapUtils.getLong(condition, "orgId", -1l);
             Long positionId = MapUtils.getLong(condition, "positionId", -1l);
+            Long titleId = MapUtils.getLong(condition, "titleId", -1l);
 
-            List<InterviewInvolve> data = _repo.readConfig(cid, interviewId, orgId, positionId);
+            List<InterviewInvolve> data = _repo.readConfig(cid, interviewId, orgId, positionId, titleId);
             List<InterviewInvolveDTO> dtos = _service.toDTOs(cid, uid, data);
             return ResponseUtils.handlerSuccess(dtos);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PostMapping("/apply-involves")
+    @ActionMapping(action = Permission.CREATE)
+    protected ResponseEntity applyInvolves(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody List<InterviewInvolveDTO> dtos){
+        try {
+            dtos = _service.applyInvolves(cid,uid,dtos);
+            return ResponseUtils.handlerSuccess(dtos);
+        }catch (Exception e){
+            return ResponseUtils.handlerException(e);
         }
     }
 }
