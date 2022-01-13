@@ -46,8 +46,8 @@ subprojects {
         imports { mavenBom "org.keycloak.bom:keycloak-adapter-bom:${keycloakVersion}" }
 
         dependencies {
-            dependency "org.springdoc:springdoc-openapi-ui:1.2.32"
-            dependency "org.springframework.boot:spring-boot-starter-web:2.5.5"
+            dependency "org.springdoc:springdoc-openapi-ui:${springDocOpenApiVersion}"
+            dependency "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
 
 //            dependency 'io.springfox:springfox-swagger2:2.7.0'
 //            dependency 'io.springfox:springfox-swagger-ui:2.7.0'

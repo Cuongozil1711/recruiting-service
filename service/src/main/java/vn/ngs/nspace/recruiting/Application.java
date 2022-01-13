@@ -2,6 +2,7 @@ package vn.ngs.nspace.recruiting;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import org.springdoc.core.GroupedOpenApi;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -20,11 +21,9 @@ import vn.ngs.nspace.lib.annotation.GlobalException;
 @EnableAsync
 @EnableJpaRepositories("vn.ngs.nspace")
 @EntityScan(basePackages = "vn.ngs.nspace")
-@OpenAPIDefinition(info = @Info(title = "Recruitment-service", version = "0.1", description = "Employees Information"))
+@OpenAPIDefinition(info = @Info(title = "Recruitment-service", version = "0.1", description = "Recruiting Information"))
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
-
 }

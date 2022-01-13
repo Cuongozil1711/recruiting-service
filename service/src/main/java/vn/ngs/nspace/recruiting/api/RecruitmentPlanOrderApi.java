@@ -1,5 +1,11 @@
 package vn.ngs.nspace.recruiting.api;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.data.domain.Page;
@@ -34,6 +40,8 @@ public class RecruitmentPlanOrderApi {
 
     @PostMapping("/create")
     @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "create recruiting plan order",
+            description = "can add list to create")
     protected ResponseEntity createRecruitingPlanOrders(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody List<RecruitmentPlanOrderDTO> recruitmentPlanOrderDTOS){
