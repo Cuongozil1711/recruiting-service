@@ -3,6 +3,10 @@ package vn.ngs.nspace.recruiting.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
@@ -12,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
+import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
@@ -33,7 +38,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("profile-template")
 @RequiredArgsConstructor
-@Tag(name = "Profile Template Config", description = "Define template to get profile from Employee")
+@Tag(name = "TemplateConfig", description = "Define template to get profile from Employee")
 public class ProfileCheckListTemplateApi {
     private final ProfileCheckListTemplateService _service;
     private final ProfileCheckListTemplateRepo _repo;
@@ -42,11 +47,16 @@ public class ProfileCheckListTemplateApi {
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Search all profile template"
             , description = "Profile search by %name% format"
-            , tags = { "profile", "template" })
+            , tags = { "TemplateConfig" }
+    )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
-    protected ResponseEntity search(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @RequestBody Map<String, Object> condition
+    protected ResponseEntity search(
+            @Parameter(description="id of company")
+                @RequestHeader("cid") long cid
+            , @Parameter(description="id of user")
+                @RequestHeader("uid") String uid
+            , @Parameter(description="Payload to search with positionId, titleId, contractTypeId")
+                @RequestBody Map<String, Object> condition
             , Pageable pageable) {
         try{
             Long positionId = MapUtils.getLong(condition, "positionId", -1l);
@@ -62,9 +72,15 @@ public class ProfileCheckListTemplateApi {
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
-    protected ResponseEntity create(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @RequestBody ProfileCheckListTemplateDTO dto) {
+    @Operation(summary = "Create profile template"
+            , description = "API for create profile template"
+            , tags = { "TemplateConfig" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
+    protected ResponseEntity create(
+            @Parameter(description="id of company") @RequestHeader("cid") long cid
+            , @Parameter(description="id of user") @RequestHeader("uid") String uid
+            , @Parameter(description="Payload DTO to create")  @RequestBody ProfileCheckListTemplateDTO dto) {
         try {
             return ResponseUtils.handlerSuccess(_service.create(cid, uid, dto));
         } catch (Exception ex) {
@@ -74,9 +90,15 @@ public class ProfileCheckListTemplateApi {
 
     @PutMapping("/{id}")
     @ActionMapping(action = Permission.UPDATE)
-    protected ResponseEntity update(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @PathVariable(value = "id") Long id
+    @Operation(summary = "Update profile template"
+            , description = "API for update profile template"
+            , tags = { "TemplateConfig" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
+    protected ResponseEntity update(
+            @Parameter(description="id of company") @RequestHeader("cid") long cid
+            , @Parameter(description="id of user") @RequestHeader("uid") String uid
+            , @Parameter(description="param in path")  @PathVariable(value = "id") Long id
             , @RequestBody ProfileCheckListTemplateDTO dto) {
         try {
             return ResponseUtils.handlerSuccess(_service.update(cid, uid, id, dto));
@@ -87,9 +109,22 @@ public class ProfileCheckListTemplateApi {
 
     @GetMapping("{id}")
     @ActionMapping(action = Permission.VIEW)
-    protected ResponseEntity getById(@RequestHeader("cid") long cid
-        , @RequestHeader("uid") String uid
-        , @PathVariable(value = "id") Long id){
+    @Operation(summary = "Get profile by Id"
+            , description = "API for get Profile template by Id"
+            , tags = { "TemplateConfig" }
+            , responses = {
+                    @ApiResponse(description = "Profile with id is response OK Wrap in BaseResponse"
+                                , content = @Content(mediaType = "application/json"
+                                                    , schema = @Schema(implementation = BaseResponse.class ))),
+                    @ApiResponse(content = @Content(mediaType = "application/json"
+                                                    , schema = @Schema(implementation = ProfileCheckListTemplateDTO.class))
+                                                    , responseCode = "200"
+                                                    , description = "success" )})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
+    protected ResponseEntity getById(
+           @Parameter(description="id of company") @RequestHeader("cid") long cid
+            , @Parameter(description="id of user") @RequestHeader("uid") String uid
+            , @Parameter(description="param in path") @PathVariable(value = "id") Long id){
         try {
             ProfileCheckListTemplate template = _repo.findByCompanyIdAndId(cid, id).orElse(new ProfileCheckListTemplate());
             return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, Collections.singletonList(template)));

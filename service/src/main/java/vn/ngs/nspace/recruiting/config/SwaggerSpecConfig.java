@@ -13,6 +13,7 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.servers.ServerVariable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -22,14 +23,14 @@ import java.util.Map;
 
 @Configuration
 public class SwaggerSpecConfig {
+    @Value("${server.port:8080}")
+    public String localPort;
+    @Value("${nspace.rootContext:localhost}")
+    public String domain;
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList("key"))
-                .addServersItem(new Server().url("http://localhost:8087"))
-                .addServersItem(new Server().url("http://api.ngs.vn/nspace/recruiting"))
-                .components(new Components().addParameters("key", new Parameter().in(ParameterIn.HEADER.toString())))
-                .info(new Info().title("Contact Application API").description(
-                        "This is a sample Spring Boot RESTful service using springdoc-openapi and OpenAPI 3."));
+                .addServersItem(new Server().url("http://localhost:" + localPort).description("Local test"))
+                .addServersItem(new Server().url(domain + "recruiting").description("Server test"));
     }
 }

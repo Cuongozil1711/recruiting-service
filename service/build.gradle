@@ -35,8 +35,8 @@ dependencies {
 //    implementation 'io.springfox:springfox-swagger2'
 //    implementation 'io.springfox:springfox-swagger-ui'
 
-    implementation "org.springdoc:springdoc-openapi-ui"
-    implementation "org.springframework.boot:spring-boot-starter-web"
+//    implementation "org.springdoc:springdoc-openapi-ui"
+//    implementation "org.springframework.boot:spring-boot-starter-web"
 
     implementation group: 'com.lmax', name: 'disruptor', version: '3.4.4'
     runtimeOnly "org.postgresql:postgresql"
