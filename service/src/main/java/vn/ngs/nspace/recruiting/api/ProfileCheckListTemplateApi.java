@@ -1,5 +1,9 @@
 package vn.ngs.nspace.recruiting.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
@@ -29,12 +33,17 @@ import java.util.Map;
 @RestController
 @RequestMapping("profile-template")
 @RequiredArgsConstructor
+@Tag(name = "Profile Template Config", description = "Define template to get profile from Employee")
 public class ProfileCheckListTemplateApi {
     private final ProfileCheckListTemplateService _service;
     private final ProfileCheckListTemplateRepo _repo;
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Search all profile template"
+            , description = "Profile search by %name% format"
+            , tags = { "profile", "template" })
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
     protected ResponseEntity search(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody Map<String, Object> condition
