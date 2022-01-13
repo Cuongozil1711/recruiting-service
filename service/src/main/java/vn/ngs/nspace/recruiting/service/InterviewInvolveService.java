@@ -35,6 +35,18 @@ public class InterviewInvolveService {
 
     /* logic validate data before insert model */
     public void valid(InterviewInvolveDTO dto) throws BusinessException {
+        if (dto.getOrgId() == null){
+            throw new BusinessException("invalid-org");
+        }
+        if(dto.getPositionId() == null){
+            throw new BusinessException("invalid-position");
+        }
+        if(dto.getTitleId() == null){
+            throw new BusinessException("invalid-title");
+        }
+        if(dto.getInterviewerId() == null){
+            throw new BusinessException("invalid-interviewer");
+        }
 
     }
 
@@ -75,13 +87,19 @@ public class InterviewInvolveService {
                 orgIds.add(obj.getOrgId());
             }
             if(obj.getInterviewerId() != null){
-                employeeIds.add(obj.getInterviewId());
+                obj.getInterviewerId().forEach(interviewer -> {
+                    employeeIds.add(Long.valueOf(interviewer));
+                });
+
             }
             if(obj.getSupporterId() != null){
                 employeeIds.add(obj.getSupporterId());
             }
             if(obj.getPositionId() != null){
                 categoryIds.add(obj.getPositionId());
+            }
+            if(obj.getTitleId() != null){
+                categoryIds.add(obj.getTitleId());
             }
 
             dtos.add(toDTO(obj));
@@ -92,8 +110,10 @@ public class InterviewInvolveService {
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
 
         for(InterviewInvolveDTO dto : dtos){
-            if(dto.getInterviewId() != null){
-                dto.setInterviewerObj(mapEmployee.get(dto.getInterviewerId()));
+            if(dto.getInterviewerId() != null){
+                List<EmployeeDTO> interviewerIds = new ArrayList<>();
+                employeeIds.forEach(empId -> interviewerIds.add(mapEmployee.get(empId)));
+                dto.setInterviewerObj(interviewerIds);
             }
             if(dto.getSupporterId() != null){
                 dto.setSupporterObj(mapEmployee.get(dto.getSupporterId()));
@@ -103,6 +123,9 @@ public class InterviewInvolveService {
             }
             if(dto.getPositionId() != null){
                 dto.setPositionObj(mapCategory.get(dto.getPositionId()));
+            }
+            if(dto.getTitleId() != null){
+                dto.setTitleObj(mapCategory.get(dto.getTitleId()));
             }
         }
 
@@ -118,5 +141,17 @@ public class InterviewInvolveService {
     public InterviewInvolveDTO toDTO(InterviewInvolve involve){
         InterviewInvolveDTO dto = MapperUtils.map(involve, InterviewInvolveDTO.class);
         return dto;
+    }
+
+    public List<InterviewInvolveDTO> applyInvolves(Long cid, String uid, List<InterviewInvolveDTO> dtos) {
+        List<InterviewInvolveDTO> list = new ArrayList<>();
+        for (InterviewInvolveDTO dto : dtos){
+            if (dto.getId() != null) {
+                list.add(update(cid,uid, dto.getId(),dto));
+            } else {
+                list.add(create(cid,uid,dto));
+            }
+        }
+        return list;
     }
 }

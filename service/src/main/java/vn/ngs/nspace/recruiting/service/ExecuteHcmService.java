@@ -112,7 +112,7 @@ public class ExecuteHcmService {
 
     public Map<Long, OrgResp> getMapOrgs(String requestUserId, Long companyId, Set<Long> orgIds){
         try {
-            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/mapByIds");
+            URI uri = new URI(HcmServiceURL + "/generic/org/mapByIds");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = createHeader(requestUserId,companyId);

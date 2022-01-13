@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -18,13 +19,15 @@ public class InterviewInvolveDTO {
     private Long interviewId;
     private Long orgId;
     private Long positionId;
-    private Long interviewerId; //empId
+    private Long titleId;
+    private List<String> interviewerId;
     private Long supporterId; //empId
 
     private Integer status;
 
-    private EmployeeDTO interviewerObj;
+    private List<EmployeeDTO> interviewerObj;
     private EmployeeDTO supporterObj;
     private OrgResp org;
     private Map<String, Object> positionObj;
+    private Map<String,Object> titleObj;
 }

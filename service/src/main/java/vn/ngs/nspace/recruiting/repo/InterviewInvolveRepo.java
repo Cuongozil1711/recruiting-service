@@ -21,12 +21,14 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             " and (p.interviewId = :interviewId or :interviewId = -1) " +
             " and (p.orgId = :orgId or :orgId = -1) " +
             " and (p.positionId = :positionId or :positionId = -1) " +
+            " and (p.titleId = :titleId or :titleId = -1)" +
             " and (p.interviewerId = :interviewerId or :interviewerId = -1) " +
             " and (p.supporterId = :supporterId or :supporterId = -1) ")
     Page<InterviewInvolve> search(@Param("companyId") Long cid
             , @Param("interviewId") Long interviewId
             , @Param("orgId") Long orgId
             , @Param("positionId") Long positionId
+            , @Param("titleId") Long titleId
             , @Param("interviewerId") Long interviewerId
             , @Param("supporterId") Long supporterId
             , Pageable pageable);
@@ -37,12 +39,15 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             " and (p.interviewId = :interviewId or coalesce(p.interviewId, 0)  = 0) " +
             " and (p.orgId = :orgId or coalesce(p.orgId, 0)  = 0) " +
             " and (p.positionId = :positionId or coalesce(p.positionId, 0)  = 0)" +
+            " and (p.titleId = :titleId or coalesce (p.titleId, 0) = 0)" +
             " order by  coalesce(p.interviewId, 0) desc " +
             "           , coalesce(p.positionId, 0) desc " +
-            "           , coalesce(p.orgId, 0) desc ")
+            "           , coalesce(p.orgId, 0) desc " +
+            "           , coalesce(p.titleId, 0) desc ")
     List<InterviewInvolve> readConfig(@Param("companyId") Long cid
             , @Param("interviewId") Long interviewId
             , @Param("orgId") Long orgId
-            , @Param("positionId") Long positionId);
+            , @Param("positionId") Long positionId
+            , @Param("titleId") Long titleId);
 }
 
