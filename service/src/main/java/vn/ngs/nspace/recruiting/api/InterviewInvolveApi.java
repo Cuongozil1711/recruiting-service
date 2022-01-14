@@ -37,13 +37,13 @@ public class InterviewInvolveApi {
             , Pageable pageable) {
         try{
             Long interviewId = MapUtils.getLong(condition, "interviewId", -1l);
-            Long interviewerId = MapUtils.getLong(condition, "interviewerId", -1l);
+            String interviewerId = MapUtils.getString(condition, "interviewerId", "#");
             Long supporterId = MapUtils.getLong(condition, "supporterId", -1l);
             Long orgId = MapUtils.getLong(condition, "orgId", -1l);
             Long positionId = MapUtils.getLong(condition, "positionId", -1l);
             Long titleId = MapUtils.getLong(condition,"titleId", -1l);
 
-            Page<InterviewInvolve> page = _repo.search(cid, interviewId, orgId, positionId,titleId, interviewerId, supporterId, pageable);
+            Page<InterviewInvolve> page = _repo.search(cid, interviewId, orgId, positionId, titleId, interviewerId, supporterId, pageable);
             List<InterviewInvolveDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {
@@ -58,6 +58,18 @@ public class InterviewInvolveApi {
             , @RequestBody InterviewInvolveDTO dto) {
         try {
             return ResponseUtils.handlerSuccess(_service.create(cid, uid, dto));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PostMapping("/create-list")
+    @ActionMapping(action = Permission.CREATE)
+    protected ResponseEntity createList(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody List<InterviewInvolveDTO> dtos) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.create(cid, uid, dtos));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
@@ -108,13 +120,14 @@ public class InterviewInvolveApi {
         }
     }
 
-    @PostMapping("/apply-involves")
+    @PostMapping("/apply-involves/{id}")
     @ActionMapping(action = Permission.CREATE)
     protected ResponseEntity applyInvolves(@RequestHeader Long cid
             , @RequestHeader String uid
+            , @PathVariable Long id
             , @RequestBody List<InterviewInvolveDTO> dtos){
         try {
-            dtos = _service.applyInvolves(cid,uid,dtos);
+            dtos = _service.applyInvolves(cid,uid, id, dtos);
             return ResponseUtils.handlerSuccess(dtos);
         }catch (Exception e){
             return ResponseUtils.handlerException(e);

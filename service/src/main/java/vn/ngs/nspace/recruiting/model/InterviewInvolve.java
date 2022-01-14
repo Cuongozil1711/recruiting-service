@@ -36,7 +36,7 @@ public class InterviewInvolve extends PersistableEntity<Long> {
     private Long titleId;
 
     @Type(type = "list-array")
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text[]", length = 4000)
     List<String> interviewerId; //empId
     private Long supporterId; //empId
 
