@@ -1,5 +1,9 @@
 package vn.ngs.nspace.recruiting.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +36,17 @@ public class RecruitmentChannelApi {
 
     @PutMapping("/update")
     @ActionMapping(action = Permission.VIEW)
-    protected ResponseEntity updateFilter(@RequestHeader("cid") long cid
-            , @RequestHeader("uid") String uid
-            , @RequestBody RecruitmentChannelDTO request){
+    @Operation(summary = "Update or create channel"
+            , description = "API for update or create ")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity updateFilter(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of user")
+             @RequestHeader("uid") String uid
+            , @Parameter(description="Payload dto to create or update")
+             @RequestBody RecruitmentChannelDTO request){
         try {
             return ResponseUtils.handlerSuccess(_service.createOrUpdate(cid, uid, request));
         } catch (Exception ex) {
@@ -44,6 +56,10 @@ public class RecruitmentChannelApi {
 
     @GetMapping("/all")
     @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get all channel"
+            , description = "Get all channel ")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity getFilters(@RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid){
         try {

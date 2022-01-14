@@ -2,6 +2,8 @@ package vn.ngs.nspace.recruiting.api;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,11 +42,15 @@ public class RecruitmentPlanOrderApi {
 
     @PostMapping("/create")
     @ActionMapping(action = Permission.CREATE)
-    @Operation(summary = "create recruiting plan order",
+    @Operation(summary = "create many records recruiting plan order",
             description = "can add list to create")
-    protected ResponseEntity createRecruitingPlanOrders(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @RequestBody List<RecruitmentPlanOrderDTO> recruitmentPlanOrderDTOS){
+
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity createRecruitingPlanOrders(
+            @Parameter(description="id of company") @RequestHeader Long cid
+            , @Parameter(description="id of user") @RequestHeader String uid
+            ,@Parameter(description="Payload DTO to create") @RequestBody List<RecruitmentPlanOrderDTO> recruitmentPlanOrderDTOS){
         try {
             List<RecruitmentPlanOrderDTO> list =  _service.create(cid, uid, recruitmentPlanOrderDTOS);
             return ResponseUtils.handlerSuccess(list);
@@ -56,9 +62,14 @@ public class RecruitmentPlanOrderApi {
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
-    protected ResponseEntity createRecruitingPlanOrder(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @RequestBody RecruitmentPlanOrderDTO _dto) {
+    @Operation( summary = "create recruiting plan order"
+            , description = "API for create recruiting plan order")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity createRecruitingPlanOrder(
+            @Parameter(description="id of company") @RequestHeader Long cid
+            ,@Parameter(description="id of user") @RequestHeader String uid
+            ,@Parameter(description="Payload DTO to create") @RequestBody RecruitmentPlanOrderDTO _dto) {
         try {
             RecruitmentPlanOrderDTO dto = _service.create(cid, uid, _dto);
             return ResponseUtils.handlerSuccess(dto);
@@ -69,14 +80,16 @@ public class RecruitmentPlanOrderApi {
 
     @GetMapping("{id}")
     @ActionMapping(action = Permission.VIEW)
-    protected ResponseEntity getRecruitingPlanOrder(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @PathVariable(value = "id") Long id){
+    @Operation(summary = "Get RecruitingPlanOrder by Id"
+            , description = "API for get Recruiting Plan Order  by Id")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getRecruitingPlanOrder(
+            @Parameter(description="id of company") @RequestHeader Long cid
+            ,@Parameter(description="id of user") @RequestHeader String uid
+            ,@Parameter(description="param in path") @PathVariable(value = "id") Long id){
         try{
             RecruitmentPlanOrder recruitmentPlanOrder =_repo.findByCompanyIdAndId(cid,id).orElseThrow(() -> new EntityNotFoundException(RecruitmentPlanOrder.class, id));
-
-
-
             return ResponseUtils.handlerSuccess(recruitmentPlanOrder);
         } catch (Exception ex){
             return ResponseUtils.handlerException(ex);
@@ -85,10 +98,18 @@ public class RecruitmentPlanOrderApi {
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
-    protected ResponseEntity searchRecruitingPlanOrder(@RequestHeader Long cid
-            , @RequestHeader String uid
+    @Operation(summary = "Search all recruiting plan order"
+            , description = "Profile search by %name% format")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
 
-            , @RequestBody Map<String,Object> filter
+    protected ResponseEntity searchRecruitingPlanOrder(
+            @Parameter(description="ID of company")
+            @RequestHeader Long cid
+             ,@Parameter(description="ID of user")
+             @RequestHeader String uid
+            , @Parameter(description="Payload to search with positionId, orgId, fromDate, deadline")
+             @RequestBody Map<String,Object> filter
             , Pageable pageable){
         try{
             Long orgId = null;
@@ -134,9 +155,17 @@ public class RecruitmentPlanOrderApi {
 
     @PutMapping("{id}")
     @ActionMapping(action = Permission.UPDATE)
-    protected ResponseEntity updateRecruitingPlanOrder(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @PathVariable Long id
+    @Operation(summary = "Update recruiting plan order "
+            , description = "API for update recruiting plan order template")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity updateRecruitingPlanOrder(
+            @Parameter(description="ID of company")
+            @RequestHeader Long cid
+            ,@Parameter(description="ID of User")
+             @RequestHeader String uid
+            ,@Parameter(description = "param in path")
+             @PathVariable Long id
             , @RequestBody RecruitmentPlanOrderDTO recruitmentPlanOrderDTO){
         try{
             RecruitmentPlanOrderDTO dto = _service.update(cid,id,recruitmentPlanOrderDTO);
