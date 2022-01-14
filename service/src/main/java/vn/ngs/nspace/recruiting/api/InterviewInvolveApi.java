@@ -1,5 +1,9 @@
 package vn.ngs.nspace.recruiting.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
@@ -31,6 +35,10 @@ public class InterviewInvolveApi {
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "search interview involve",
+            description = "search list interview involve by interviewerId, supporterId,orgId,positionId, titleId")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity search(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody Map<String, Object> condition
@@ -53,6 +61,10 @@ public class InterviewInvolveApi {
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "create interview involve",
+            description = "API for create interview involve ")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity create(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody InterviewInvolveDTO dto) {
@@ -65,6 +77,10 @@ public class InterviewInvolveApi {
 
     @PostMapping("/create-list")
     @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "create list interview involve",
+            description = "API for create list interview involve ")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity createList(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody List<InterviewInvolveDTO> dtos) {
@@ -77,6 +93,10 @@ public class InterviewInvolveApi {
 
     @PutMapping("/{id}")
     @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "update interview involve",
+            description = "API for update interview involve by Id ")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity update(@RequestHeader Long cid
             , @RequestHeader String uid
             , @PathVariable(value = "id") Long id
@@ -90,6 +110,10 @@ public class InterviewInvolveApi {
 
     @GetMapping("{id}")
     @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "get interview involve",
+            description = "API for get interview involve by Id")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity getById(@RequestHeader("cid") long cid
         , @RequestHeader("uid") String uid
         , @PathVariable(value = "id") Long id){
@@ -103,6 +127,10 @@ public class InterviewInvolveApi {
 
     @PostMapping("/read-config")
     @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "config interview involve",
+            description = "API for config interview involve ")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity readConfig(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody Map<String, Object> condition) {
@@ -122,6 +150,10 @@ public class InterviewInvolveApi {
 
     @PostMapping("/apply-involves/{id}")
     @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "apply interview involve",
+            description = "API for aplly interview involve for list org, position and title")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity applyInvolves(@RequestHeader Long cid
             , @RequestHeader String uid
             , @PathVariable Long id

@@ -1,5 +1,9 @@
 package vn.ngs.nspace.recruiting.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
@@ -28,9 +32,17 @@ public class JobRequirementApi {
 
     @PostMapping("")
     @ActionMapping(action = Permission.CREATE)
-    protected ResponseEntity create(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @RequestBody JobRequirementDTO jobRequirementDTO){
+    @Operation( summary = "create Job Requirement"
+            , description = "API for create Job Requirement")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity create(
+            @Parameter(description="ID of company")
+            @RequestHeader Long cid
+            , @Parameter(description="ID of user")
+             @RequestHeader String uid
+            ,  @Parameter(description="Payload dto to create")
+             @RequestBody JobRequirementDTO jobRequirementDTO){
        try {
            JobRequirementDTO jobRequirement = service.create(cid, uid, jobRequirementDTO);
            return ResponseUtils.handlerSuccess(jobRequirement);
@@ -41,8 +53,15 @@ public class JobRequirementApi {
 
     @GetMapping("{id}")
     @ActionMapping(action = Permission.VIEW)
-    protected ResponseEntity getById(@RequestHeader Long cid
-            , @RequestHeader String uid
+    @Operation( summary = "get one Job Requirement by Id"
+            , description = "API for get Job Requirement by Id")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getById(
+            @Parameter(description="ID of company")
+            @RequestHeader Long cid
+             ,@Parameter(description="ID of user")
+             @RequestHeader String uid
             , @PathVariable(value = "id") Long id){
         try{
             JobRequirement jobRequirement = repo.findByCompanyIdAndId(cid,id).orElseThrow(() -> new EntityNotFoundException(JobRequirement.class, id));
@@ -54,6 +73,9 @@ public class JobRequirementApi {
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
+    @Operation( summary = "search Job Requirement "
+            , description = "API for get all Job Requirement by title, code and positionId")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
     protected ResponseEntity search(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody Map<String,Object> condition
@@ -76,6 +98,9 @@ public class JobRequirementApi {
 
     @PutMapping("{id}")
     @ActionMapping(action = Permission.UPDATE)
+    @Operation( summary = "update Job Requirement "
+            , description = "API for update Job Requirement ")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
     protected ResponseEntity update(@RequestHeader Long cid
             , @RequestHeader String uid
             , @PathVariable(value = "id") Long id
@@ -90,6 +115,10 @@ public class JobRequirementApi {
 
     @PutMapping("/delete")
     @ActionMapping(action = Permission.UPDATE)
+    @Operation( summary = "delete Job Requirement "
+            , description = "API for delete List Job Requirement ")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
+
     protected ResponseEntity delete(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody List<JobRequirementDTO> dtos){
