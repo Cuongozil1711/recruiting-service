@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -49,11 +50,12 @@ public class ProfileCheckListTemplateApi {
             , description = "Profile search by %name% format"
             , tags = { "TemplateConfig" }
     )
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity search(
-            @Parameter(description="id of company")
+            @Parameter(description="ID of company")
                 @RequestHeader("cid") long cid
-            , @Parameter(description="id of user")
+            , @Parameter(description="ID of company")
                 @RequestHeader("uid") String uid
             , @Parameter(description="Payload to search with positionId, titleId, contractTypeId")
                 @RequestBody Map<String, Object> condition
@@ -76,10 +78,13 @@ public class ProfileCheckListTemplateApi {
             , description = "API for create profile template"
             , tags = { "TemplateConfig" }
     )
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity create(
-            @Parameter(description="id of company") @RequestHeader("cid") long cid
-            , @Parameter(description="id of user") @RequestHeader("uid") String uid
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
             , @Parameter(description="Payload DTO to create")  @RequestBody ProfileCheckListTemplateDTO dto) {
         try {
             return ResponseUtils.handlerSuccess(_service.create(cid, uid, dto));
@@ -94,10 +99,13 @@ public class ProfileCheckListTemplateApi {
             , description = "API for update profile template"
             , tags = { "TemplateConfig" }
     )
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity update(
-            @Parameter(description="id of company") @RequestHeader("cid") long cid
-            , @Parameter(description="id of user") @RequestHeader("uid") String uid
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
             , @Parameter(description="param in path")  @PathVariable(value = "id") Long id
             , @RequestBody ProfileCheckListTemplateDTO dto) {
         try {
@@ -120,10 +128,13 @@ public class ProfileCheckListTemplateApi {
                                                     , schema = @Schema(implementation = ProfileCheckListTemplateDTO.class))
                                                     , responseCode = "200"
                                                     , description = "success" )})
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity getById(
-           @Parameter(description="id of company") @RequestHeader("cid") long cid
-            , @Parameter(description="id of user") @RequestHeader("uid") String uid
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
             , @Parameter(description="param in path") @PathVariable(value = "id") Long id){
         try {
             ProfileCheckListTemplate template = _repo.findByCompanyIdAndId(cid, id).orElse(new ProfileCheckListTemplate());
