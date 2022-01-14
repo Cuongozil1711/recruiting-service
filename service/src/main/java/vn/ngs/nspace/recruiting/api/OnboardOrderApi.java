@@ -1,5 +1,10 @@
 package vn.ngs.nspace.recruiting.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
@@ -26,15 +31,23 @@ import java.util.Map;
 @RestController
 @RequestMapping("onboard-order")
 @RequiredArgsConstructor
+@Tag(name = "OnboardOrder", description = "Onboard Order API ")
 public class OnboardOrderApi {
     private final OnboardOrderService _service;
     private final OnboardOrderRepo _repo;
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
-    protected ResponseEntity search(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @RequestBody Map<String, Object> condition
+    @Operation(summary = "Search all Onboard Order"
+            , description = "Search by condition : employeeId, buddy, jobApplicationId"
+            , tags = { "OnboardOrder" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity search(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Payload filter") @RequestBody Map<String, Object> condition
             , Pageable pageable) {
         try{
             Long employeeId = MapUtils.getLong(condition, "employeeId", -1l);
@@ -50,8 +63,15 @@ public class OnboardOrderApi {
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
-    protected ResponseEntity create(@RequestHeader Long cid
-            , @RequestHeader String uid
+    @Operation(summary = "Create single Onboard Order"
+            , description = "Create single Onboard Order"
+            , tags = { "OnboardOrder" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity create(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
             , @RequestBody OnboardOrderDTO dto) {
         try {
             return ResponseUtils.handlerSuccess(_service.create(cid, uid, dto));
@@ -62,9 +82,16 @@ public class OnboardOrderApi {
 
     @PutMapping("/{id}")
     @ActionMapping(action = Permission.UPDATE)
-    protected ResponseEntity update(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @PathVariable(value = "id") Long id
+    @Operation(summary = "Update Onboard Order by Id "
+            , description = "Create single Onboard Order, path param is OnboardOrderId"
+            , tags = { "OnboardOrder" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity update(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
             , @RequestBody OnboardOrderDTO dto) {
         try {
             return ResponseUtils.handlerSuccess(_service.update(cid, uid, id, dto));
@@ -75,9 +102,16 @@ public class OnboardOrderApi {
 
     @GetMapping("{id}")
     @ActionMapping(action = Permission.VIEW)
-    protected ResponseEntity getById(@RequestHeader("cid") long cid
-        , @RequestHeader("uid") String uid
-        , @PathVariable(value = "id") Long id){
+    @Operation(summary = "View Onboard Order by Id "
+            , description = "View single Onboard Order, path param is OnboardOrderId"
+            , tags = { "OnboardOrder" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getById(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id){
         try {
             OnboardOrder order = _repo.findByCompanyIdAndId(cid, id).orElse(new OnboardOrder());
             return ResponseUtils.handlerSuccess(_service.toDTOWithObj(cid, uid, order));
