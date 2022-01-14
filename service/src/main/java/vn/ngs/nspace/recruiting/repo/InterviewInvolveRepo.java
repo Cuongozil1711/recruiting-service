@@ -15,21 +15,21 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
 
     Optional<InterviewInvolve> findByCompanyIdAndId(long cid, Long id);
 
-    @Query(value = " select p " +
-            " from InterviewInvolve p " +
-            " where (p.companyId = :companyId)" +
-            " and (p.interviewId = :interviewId or :interviewId = -1) " +
-            " and (p.orgId = :orgId or :orgId = -1) " +
-            " and (p.positionId = :positionId or :positionId = -1) " +
-            " and (p.titleId = :titleId or :titleId = -1)" +
-            " and (p.interviewerId = :interviewerId or :interviewerId = -1) " +
-            " and (p.supporterId = :supporterId or :supporterId = -1) ")
+    @Query(value = " select p.* " +
+            " from recruiting_service.Interview_Involve p " +
+            " where (p.company_Id = :companyId)" +
+            " and (p.interview_Id = :interviewId or :interviewId = -1) " +
+            " and (p.org_Id = :orgId or :orgId = -1) " +
+            " and (p.position_Id = :positionId or :positionId = -1) " +
+            " and (p.title_Id = :titleId or :titleId = -1)" +
+            " and (:interviewerId = any(p.interviewer_Id) or :interviewerId = '#') " +
+            " and (p.supporter_Id = :supporterId or :supporterId = -1) ", nativeQuery = true)
     Page<InterviewInvolve> search(@Param("companyId") Long cid
             , @Param("interviewId") Long interviewId
             , @Param("orgId") Long orgId
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId
-            , @Param("interviewerId") Long interviewerId
+            , @Param("interviewerId") String interviewerId
             , @Param("supporterId") Long supporterId
             , Pageable pageable);
 

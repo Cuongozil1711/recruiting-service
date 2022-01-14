@@ -50,6 +50,15 @@ public class InterviewInvolveService {
 
     }
 
+    /* create list object */
+    public List<InterviewInvolveDTO> create(Long cid, String uid, List<InterviewInvolveDTO> request) throws BusinessException {
+        List<InterviewInvolveDTO> dtos = new ArrayList<>();
+        for(InterviewInvolveDTO dto : dtos){
+            dtos.add(create(cid, uid, dto));
+        }
+        return dtos;
+    }
+
     /* create object */
     public InterviewInvolveDTO create(Long cid, String uid, InterviewInvolveDTO dto) throws BusinessException {
         valid(dto);
@@ -143,15 +152,17 @@ public class InterviewInvolveService {
         return dto;
     }
 
-    public List<InterviewInvolveDTO> applyInvolves(Long cid, String uid, List<InterviewInvolveDTO> dtos) {
-        List<InterviewInvolveDTO> list = new ArrayList<>();
+    public List<InterviewInvolveDTO> applyInvolves(Long cid, String uid, Long id, List<InterviewInvolveDTO> dtos) {
+        InterviewInvolve template = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewInvolve.class, id));
+        List<InterviewInvolveDTO> returnDTOs = new ArrayList<>();
         for (InterviewInvolveDTO dto : dtos){
-            if (dto.getId() != null) {
-                list.add(update(cid,uid, dto.getId(),dto));
-            } else {
-                list.add(create(cid,uid,dto));
-            }
+            InterviewInvolveDTO clone = toDTO(template);
+            clone.setPositionId(dto.getPositionId());
+            clone.setTitleId(dto.getTitleId());
+            clone.setOrgId(dto.getOrgId());
+
+            returnDTOs.add(create(cid, uid, clone));
         }
-        return list;
+        return returnDTOs;
     }
 }
