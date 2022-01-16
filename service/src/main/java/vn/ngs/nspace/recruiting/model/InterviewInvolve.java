@@ -39,6 +39,7 @@ public class InterviewInvolve extends PersistableEntity<Long> {
     @Column(columnDefinition = "text[]", length = 4000)
     List<String> interviewerId; //empId
     private Long supporterId; //empId
+    private String description;
 
     public static InterviewInvolve of(Long cid, String uid, InterviewInvolveDTO dto){
         InterviewInvolve involve = InterviewInvolve.builder()
@@ -49,6 +50,7 @@ public class InterviewInvolve extends PersistableEntity<Long> {
                 .titleId(dto.getTitleId())
                 .interviewerId(dto.getInterviewerId())
                 .supporterId(dto.getSupporterId())
+                .description(dto.getDescription())
                 .build();
         return involve;
     }

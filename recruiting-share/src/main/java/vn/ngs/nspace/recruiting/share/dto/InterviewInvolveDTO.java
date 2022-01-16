@@ -22,7 +22,7 @@ public class InterviewInvolveDTO {
     private Long titleId;
     private List<String> interviewerId;
     private Long supporterId; //empId
-
+    private String description;
     private Integer status;
 
     private List<EmployeeDTO> interviewerObj;

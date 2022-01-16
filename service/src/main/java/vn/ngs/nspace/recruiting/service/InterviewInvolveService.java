@@ -35,16 +35,16 @@ public class InterviewInvolveService {
 
     /* logic validate data before insert model */
     public void valid(InterviewInvolveDTO dto) throws BusinessException {
-        if (dto.getOrgId() == null){
+        if (dto.getOrgId() == null) {
             throw new BusinessException("invalid-org");
         }
-        if(dto.getPositionId() == null){
+        if (dto.getPositionId() == null) {
             throw new BusinessException("invalid-position");
         }
-        if(dto.getTitleId() == null){
+        if (dto.getTitleId() == null) {
             throw new BusinessException("invalid-title");
         }
-        if(dto.getInterviewerId() == null){
+        if (dto.getInterviewerId() == null) {
             throw new BusinessException("invalid-interviewer");
         }
 
@@ -53,7 +53,7 @@ public class InterviewInvolveService {
     /* create list object */
     public List<InterviewInvolveDTO> create(Long cid, String uid, List<InterviewInvolveDTO> request) throws BusinessException {
         List<InterviewInvolveDTO> dtos = new ArrayList<>();
-        for(InterviewInvolveDTO dto : dtos){
+        for (InterviewInvolveDTO dto : dtos) {
             dtos.add(create(cid, uid, dto));
         }
         return dtos;
@@ -84,7 +84,7 @@ public class InterviewInvolveService {
     }
 
     /* convert list model object to DTO before response */
-    public List<InterviewInvolveDTO> toDTOs(Long cid, String uid, List<InterviewInvolve> objs){
+    public List<InterviewInvolveDTO> toDTOs(Long cid, String uid, List<InterviewInvolve> objs) {
         List<InterviewInvolveDTO> dtos = new ArrayList<>();
 
         Set<Long> orgIds = new HashSet<>();
@@ -92,22 +92,22 @@ public class InterviewInvolveService {
         Set<Long> employeeIds = new HashSet<>();
 
         objs.forEach(obj -> {
-            if(obj.getOrgId() != null){
+            if (obj.getOrgId() != null) {
                 orgIds.add(obj.getOrgId());
             }
-            if(obj.getInterviewerId() != null){
+            if (obj.getInterviewerId() != null) {
                 obj.getInterviewerId().forEach(interviewer -> {
                     employeeIds.add(Long.valueOf(interviewer));
                 });
 
             }
-            if(obj.getSupporterId() != null){
+            if (obj.getSupporterId() != null) {
                 employeeIds.add(obj.getSupporterId());
             }
-            if(obj.getPositionId() != null){
+            if (obj.getPositionId() != null) {
                 categoryIds.add(obj.getPositionId());
             }
-            if(obj.getTitleId() != null){
+            if (obj.getTitleId() != null) {
                 categoryIds.add(obj.getTitleId());
             }
 
@@ -118,22 +118,22 @@ public class InterviewInvolveService {
         Map<Long, OrgResp> mapOrg = _hcmService.getMapOrgs(uid, cid, orgIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
 
-        for(InterviewInvolveDTO dto : dtos){
-            if(dto.getInterviewerId() != null){
+        for (InterviewInvolveDTO dto : dtos) {
+            if (dto.getInterviewerId() != null) {
                 List<EmployeeDTO> interviewerIds = new ArrayList<>();
                 employeeIds.forEach(empId -> interviewerIds.add(mapEmployee.get(empId)));
                 dto.setInterviewerObj(interviewerIds);
             }
-            if(dto.getSupporterId() != null){
+            if (dto.getSupporterId() != null) {
                 dto.setSupporterObj(mapEmployee.get(dto.getSupporterId()));
             }
-            if(dto.getOrgId() != null){
+            if (dto.getOrgId() != null) {
                 dto.setOrg(mapOrg.get(dto.getOrgId()));
             }
-            if(dto.getPositionId() != null){
+            if (dto.getPositionId() != null) {
                 dto.setPositionObj(mapCategory.get(dto.getPositionId()));
             }
-            if(dto.getTitleId() != null){
+            if (dto.getTitleId() != null) {
                 dto.setTitleObj(mapCategory.get(dto.getTitleId()));
             }
         }
@@ -142,12 +142,12 @@ public class InterviewInvolveService {
     }
 
     /* convert model object to DTO with data before response */
-    public InterviewInvolveDTO toDTOWithObj(Long cid, String uid, InterviewInvolve involve){
+    public InterviewInvolveDTO toDTOWithObj(Long cid, String uid, InterviewInvolve involve) {
         return toDTOs(cid, uid, Collections.singletonList(involve)).get(0);
     }
 
     /* convert model object to DTO before response */
-    public InterviewInvolveDTO toDTO(InterviewInvolve involve){
+    public InterviewInvolveDTO toDTO(InterviewInvolve involve) {
         InterviewInvolveDTO dto = MapperUtils.map(involve, InterviewInvolveDTO.class);
         return dto;
     }
@@ -155,7 +155,7 @@ public class InterviewInvolveService {
     public List<InterviewInvolveDTO> applyInvolves(Long cid, String uid, Long id, List<InterviewInvolveDTO> dtos) {
         InterviewInvolve template = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewInvolve.class, id));
         List<InterviewInvolveDTO> returnDTOs = new ArrayList<>();
-        for (InterviewInvolveDTO dto : dtos){
+        for (InterviewInvolveDTO dto : dtos) {
             InterviewInvolveDTO clone = toDTO(template);
             clone.setPositionId(dto.getPositionId());
             clone.setTitleId(dto.getTitleId());
@@ -164,5 +164,15 @@ public class InterviewInvolveService {
             returnDTOs.add(create(cid, uid, clone));
         }
         return returnDTOs;
+    }
+
+    public void delete(Long cid, String uid, List<InterviewInvolveDTO> dtos) {
+        List<Long> listId = new ArrayList();
+        for (InterviewInvolveDTO dto : dtos
+        ) {
+            listId.add(dto.getId());
+            dto.setStatus(Constants.ENTITY_INACTIVE);
+            update(cid,uid, dto.getId(), dto);
+        }
     }
 }

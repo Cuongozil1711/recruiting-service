@@ -23,7 +23,8 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             " and (p.position_Id = :positionId or :positionId = -1) " +
             " and (p.title_Id = :titleId or :titleId = -1)" +
             " and (:interviewerId = any(p.interviewer_Id) or :interviewerId = '#') " +
-            " and (p.supporter_Id = :supporterId or :supporterId = -1) ", nativeQuery = true)
+            " and (p.supporter_Id = :supporterId or :supporterId = -1) " +
+            " and (p.status = 1 )", nativeQuery = true)
     Page<InterviewInvolve> search(@Param("companyId") Long cid
             , @Param("interviewId") Long interviewId
             , @Param("orgId") Long orgId
@@ -49,5 +50,7 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             , @Param("orgId") Long orgId
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId);
+
+
 }
 
