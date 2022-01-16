@@ -154,14 +154,38 @@ public class InterviewInvolveApi {
             description = "API for aplly interview involve for list org, position and title")
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity applyInvolves(@RequestHeader Long cid
-            , @RequestHeader String uid
-            , @PathVariable Long id
+    protected ResponseEntity applyInvolves(
+            @Parameter(description = "ID of company")
+            @RequestHeader Long cid
+            ,@Parameter(description = "ID of userID")
+            @RequestHeader String uid
+            ,@Parameter(description = "param in path")
+            @PathVariable Long id
             , @RequestBody List<InterviewInvolveDTO> dtos){
         try {
             dtos = _service.applyInvolves(cid,uid, id, dtos);
             return ResponseUtils.handlerSuccess(dtos);
         }catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PutMapping("/delete")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "update list interview involve",
+            description = "API for update list interview involve")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity deteleList(
+            @Parameter(description = "ID of company")
+            @RequestHeader Long cid
+            ,@Parameter(description = "ID of userID")
+            @RequestHeader String uid
+            , @RequestBody List<InterviewInvolveDTO> dtos){
+        try {
+            _service.delete(cid, uid ,dtos);
+            return ResponseUtils.handlerSuccess();
+        } catch (Exception e){
             return ResponseUtils.handlerException(e);
         }
     }
