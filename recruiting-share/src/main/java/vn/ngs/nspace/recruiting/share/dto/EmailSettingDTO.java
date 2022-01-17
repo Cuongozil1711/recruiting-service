@@ -20,4 +20,5 @@ public class EmailSettingDTO {
     private Long id;
     private String code;
     private Map<String, Object> configs;
+    private Integer status;
 }
