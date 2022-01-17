@@ -90,6 +90,7 @@ public class InterviewInvolveService {
         InterviewInvolve curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewInvolve.class, id));
         MapperUtils.copyWithoutAudit(dto, curr);
         curr.setUpdateBy(uid);
+        curr.setStatus(dto.getStatus() != null ? dto.getStatus() : Constants.ENTITY_INACTIVE);
         curr = repo.save(curr);
 
         return toDTOWithObj(cid, uid, curr);
