@@ -180,13 +180,16 @@ public class InterviewInvolveService {
         return returnDTOs;
     }
 
-    public void delete(Long cid, String uid, List<InterviewInvolveDTO> dtos) {
-        List<Long> listId = new ArrayList();
-        for (InterviewInvolveDTO dto : dtos
-        ) {
-            listId.add(dto.getId());
-            dto.setStatus(Constants.ENTITY_INACTIVE);
-            update(cid,uid, dto.getId(), dto);
-        }
+    public void delete(Long cid, String uid, List<Long> ids) {
+        ids.stream().forEach(i -> {
+            InterviewInvolve involve = repo.findByCompanyIdAndId(cid, i).orElse(new InterviewInvolve());
+            if(!involve.isNew()){
+                involve.setStatus(Constants.ENTITY_INACTIVE);
+                involve.setUpdateBy(uid);
+                involve.setModifiedDate(new Date());
+
+                repo.save(involve);
+            }
+        });
     }
 }

@@ -181,9 +181,9 @@ public class InterviewInvolveApi {
             @RequestHeader Long cid
             ,@Parameter(description = "ID of userID")
             @RequestHeader String uid
-            , @RequestBody List<InterviewInvolveDTO> dtos){
+            , @RequestBody List<Long> ids){
         try {
-            _service.delete(cid, uid ,dtos);
+            _service.delete(cid, uid , ids);
             return ResponseUtils.handlerSuccess();
         } catch (Exception e){
             return ResponseUtils.handlerException(e);
