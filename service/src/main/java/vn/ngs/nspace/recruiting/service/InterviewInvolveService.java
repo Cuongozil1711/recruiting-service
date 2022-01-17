@@ -53,7 +53,7 @@ public class InterviewInvolveService {
     /* create list object */
     public List<InterviewInvolveDTO> create(Long cid, String uid, List<InterviewInvolveDTO> request) throws BusinessException {
         List<InterviewInvolveDTO> dtos = new ArrayList<>();
-        for (InterviewInvolveDTO dto : dtos) {
+        for (InterviewInvolveDTO dto : request) {
             dtos.add(create(cid, uid, dto));
         }
         return dtos;
@@ -62,14 +62,26 @@ public class InterviewInvolveService {
     /* create object */
     public InterviewInvolveDTO create(Long cid, String uid, InterviewInvolveDTO dto) throws BusinessException {
         valid(dto);
-        InterviewInvolve involve = InterviewInvolve.of(cid, uid, dto);
-        involve.setStatus(Constants.ENTITY_ACTIVE);
-        involve.setCreateBy(uid);
-        involve.setUpdateBy(uid);
-        involve.setCompanyId(cid);
-        involve = repo.save(involve);
+        List<InterviewInvolve> exists = repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, dto.getPositionId(), dto.getTitleId(), dto.getOrgId(), Constants.ENTITY_ACTIVE);
+        if(exists == null || exists.isEmpty()){
+            InterviewInvolve involve = InterviewInvolve.of(cid, uid, dto);
+            involve.setStatus(Constants.ENTITY_ACTIVE);
+            involve.setCreateBy(uid);
+            involve.setUpdateBy(uid);
+            involve.setCompanyId(cid);
+            involve = repo.save(involve);
 
-        return toDTOWithObj(cid, uid, involve);
+            return toDTOWithObj(cid, uid, involve);
+        }
+        else{
+            InterviewInvolve involve = exists.get(0);
+            List<String> currInterviewIds = involve.getInterviewerId();
+            currInterviewIds.addAll(new ArrayList<>(dto.getInterviewerId()));
+            involve.setInterviewerId(new ArrayList<>(new HashSet<>(currInterviewIds)));
+            involve = repo.save(involve);
+
+            return toDTOWithObj(cid, uid, involve);
+        }
     }
 
     /* update by id object */
