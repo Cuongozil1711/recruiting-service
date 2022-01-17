@@ -11,12 +11,14 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobRequirement;
 import vn.ngs.nspace.recruiting.repo.JobRequirementRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.JobRequirementDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
+import vn.ngs.nspace.task.core.data.UserData;
 
 import java.util.*;
 
@@ -149,8 +151,12 @@ public class JobRequirementService {
         List<JobRequirementDTO> dtos = new ArrayList<>();
         Set<Long> categoryIds = new HashSet<>();
         Set<Long> empIds = new HashSet<>();
+        Set<String> userIds = new HashSet<>();
 
         objs.forEach(obj -> {
+            if(!StringUtils.isEmpty(obj.getCreateBy())){
+                userIds.add(obj.getCreateBy());
+            }
             if (obj.getPositionId() != null) {
                 categoryIds.add(obj.getPositionId());
             }
@@ -176,6 +182,7 @@ public class JobRequirementService {
 
         List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
+        Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
 
         for (JobRequirementDTO dto : dtos) {
             if (dto.getPositionId() != null) {
@@ -197,7 +204,9 @@ public class JobRequirementService {
                 EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getReceiptName())).findAny().orElse(new EmployeeDTO());
                 dto.setReceiptNameObj(emp);
             }
-
+            if(!StringUtils.isEmpty(dto.getCreateBy())){
+                dto.setCreateByObj((Map<String, Object>) mapperUser.get(dto.getCreateBy()));
+            }
         }
         return dtos;
 

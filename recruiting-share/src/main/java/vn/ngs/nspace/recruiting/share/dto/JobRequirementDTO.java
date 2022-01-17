@@ -15,6 +15,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class JobRequirementDTO {
     private Long id;
+    private String createBy;
     private String title;
     private String code;
     private Long titleId;
@@ -40,12 +41,13 @@ public class JobRequirementDTO {
     private Long receiptName;
     private String receiptPhone;
     private String receiptEmail;
-    Map<String,Object> positionObj;
-    Map<String,Object> titleObj;
-    Map<String,Object> levelObj;
-    Map<String,Object> currencyObj;
-    Map<String,Object> industryObj;
+    private Map<String,Object> positionObj;
+    private Map<String,Object> titleObj;
+    private Map<String,Object> levelObj;
+    private Map<String,Object> currencyObj;
+    private Map<String,Object> industryObj;
     private EmployeeDTO receiptNameObj;
+    private Map<String,Object> createByObj;
+    private Date createDate;
     private Integer status;
-
 }
