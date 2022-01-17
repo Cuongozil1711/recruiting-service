@@ -134,7 +134,9 @@ public class InterviewInvolveService {
             if (dto.getInterviewerId() != null) {
                 List<EmployeeDTO> interviewerIds = new ArrayList<>();
                 dto.getInterviewerId().stream().forEach(i -> {
-                    interviewerIds.add(mapEmployee.get(i));
+                    if(!StringUtils.isEmpty(i)){
+                        interviewerIds.add(mapEmployee.get(Long.valueOf(i)));
+                    }
                 });
                 dto.setInterviewerObj(interviewerIds);
             }
