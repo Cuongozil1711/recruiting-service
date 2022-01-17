@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -15,7 +16,7 @@ public class CandidateDTO {
     private String fullName;
     private String avatar;
     private Date birthDate;
-    private String gender;
+    private Long gender;
     private String phone;
     private String email;
 
@@ -44,11 +45,13 @@ public class CandidateDTO {
     private Date applyDate;
     private Long cvSourceId;
 
-    private String tags;
+    private List<String> tags;
 
+    private Map<String, Object> genderObj;
     private Map<String, Object> wardCodeObj;
     private Map<String, Object> districtCodeObj;
     private Map<String, Object> provinceCodeObj;
     private Map<String, Object> countryCodeObj;
     private Map<String, Object> educateLevelObj;
+    private Map<String, Object> applyPositionIdObj;
 }
