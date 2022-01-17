@@ -24,6 +24,8 @@ public class InterviewInvolveDTO {
     private Long supporterId; //empId
     private String description;
     private Integer status;
+    private String phone; // for intervolve
+    private String email; // for intervolve
 
     private List<EmployeeDTO> interviewerObj;
     private EmployeeDTO supporterObj;

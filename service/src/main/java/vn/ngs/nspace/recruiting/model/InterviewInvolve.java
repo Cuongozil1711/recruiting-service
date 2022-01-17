@@ -34,7 +34,8 @@ public class InterviewInvolve extends PersistableEntity<Long> {
     private Long orgId;
     private Long positionId;
     private Long titleId;
-
+    private String phone; // for intervolve
+    private String email; // for intervolve
     @Type(type = "list-array")
     @Column(columnDefinition = "text[]", length = 4000)
     List<String> interviewerId; //empId
