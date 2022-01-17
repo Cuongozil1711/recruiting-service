@@ -172,8 +172,8 @@ public class InterviewInvolveApi {
 
     @PutMapping("/delete")
     @ActionMapping(action = Permission.UPDATE)
-    @Operation(summary = "update list interview involve",
-            description = "API for update list interview involve")
+    @Operation(summary = "Delete list interview involve by ids",
+            description = "API for Delete list interview involve by ids in payload [id,id,id]")
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity deteleList(
