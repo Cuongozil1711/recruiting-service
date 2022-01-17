@@ -9,10 +9,12 @@ import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.HttpUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.JobRequirement;
@@ -118,11 +120,10 @@ public class JobRequirementApi {
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key", schema = @Schema(implementation = String.class))
     protected ResponseEntity delete(@Parameter(description="ID of company") @RequestHeader Long cid
             ,@Parameter(description="ID of user") @RequestHeader String uid
-            , @RequestBody List<JobRequirementDTO> dtos){
+            , @RequestBody List<Long> ids){
         try {
-            service.delete(cid, uid, dtos);
-            return ResponseUtils.handlerSuccess();
-
+            service.delete(cid, uid, ids);
+            return ResponseUtils.handlerSuccess(HttpStatus.OK);
         }catch (Exception e){
             return ResponseUtils.handlerException(e);
         }

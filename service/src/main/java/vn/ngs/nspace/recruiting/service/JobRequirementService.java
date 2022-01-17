@@ -121,11 +121,17 @@ public class JobRequirementService {
         return toDTO(jobRequirement);
     }
 
-    public void delete(Long cid, String uid, List<JobRequirementDTO> dtos) {
-        for (JobRequirementDTO dto : dtos) {
-            dto.setStatus(Constants.ENTITY_INACTIVE);
-            update(cid, uid, dto.getId(), dto);
-        }
+    public void delete(Long cid, String uid, List<Long> ids) {
+        ids.stream().forEach(i -> {
+            JobRequirement jr = _repo.findByCompanyIdAndId(cid, i).orElse(new JobRequirement());
+            if(!jr.isNew()){
+                jr.setUpdateBy(uid)
+                jr.setModifiedDate(new Date());
+                jr.setStatus(Constants.ENTITY_INACTIVE);
+
+                _repo.save(jr);
+            }
+        });
     }
 
     public JobRequirementDTO update(Long cid, String uid, Long id, JobRequirementDTO dto) {
