@@ -125,7 +125,7 @@ public class JobRequirementService {
         ids.stream().forEach(i -> {
             JobRequirement jr = _repo.findByCompanyIdAndId(cid, i).orElse(new JobRequirement());
             if(!jr.isNew()){
-                jr.setUpdateBy(uid)
+                jr.setUpdateBy(uid);
                 jr.setModifiedDate(new Date());
                 jr.setStatus(Constants.ENTITY_INACTIVE);
 
