@@ -7,6 +7,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
+import vn.ngs.nspace.recruiting.model.InterviewInvolve;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
@@ -32,6 +33,28 @@ public class CandidateService {
 
     /* logic validate data before insert model */
     public void valid(CandidateDTO dto) throws BusinessException {
+        if(StringUtils.isEmpty(dto.getFullName())){
+            throw new BusinessException("Name-not-valid");
+        }
+        if (dto.getBirthDate() == null) {
+            throw new BusinessException("invalid-birthDate");
+        }
+        if (dto.getGender() == null) {
+            throw new BusinessException("invalid-gender");
+        }
+        if (StringUtils.isEmpty(dto.getPhone())) {
+            throw new BusinessException("invalid-phone");
+        }
+        if (StringUtils.isEmpty(dto.getEmail())) {
+            throw new BusinessException("invalid-email");
+        }
+        if (dto.getApplyPositionId() == null) {
+            throw new BusinessException("invalid-position");
+        }
+//        if(dto.getCvSourceId() == null){
+//            throw new BusinessException("Cv-cannot-be-empty");
+//        }
+
 
     }
 
@@ -54,7 +77,7 @@ public class CandidateService {
         candidate.setCompanyId(cid);
         candidate = repo.save(candidate);
 
-        return toDTOWithObj(cid, uid, candidate);
+        return toDTO(candidate);
     }
 
     /* update by id object */
@@ -103,6 +126,12 @@ public class CandidateService {
             if(obj.getEducationLevel() != null){
                 categoryIds.add(obj.getEducationLevel());
             }
+            if(obj.getGender() != null){
+                categoryIds.add(obj.getGender());
+            }
+            if(obj.getApplyPositionId() != null){
+                categoryIds.add(obj.getApplyPositionId());
+            }
 
             dtos.add(toDTO(obj));
         });
@@ -126,6 +155,12 @@ public class CandidateService {
             if(dto.getEducationLevel() != null){
                 dto.setEducateLevelObj(mapCategory.get(dto.getEducationLevel()));
             }
+            if(dto.getGender() != null){
+                dto.setGenderObj(mapCategory.get(dto.getGender()));
+            }
+            if (dto.getApplyPositionId() != null){
+                dto.setApplyPositionIdObj(mapCategory.get(dto.getApplyPositionId()));
+            }
         }
 
         return dtos;
@@ -141,4 +176,18 @@ public class CandidateService {
         CandidateDTO dto = MapperUtils.map(candidate, CandidateDTO.class);
         return dto;
     }
+
+    public void delete(Long cid, String uid, List<Long> ids) {
+        ids.stream().forEach(i -> {
+            Candidate candidate = repo.findByCompanyIdAndId(cid, i).orElse(new Candidate());
+            if(!candidate.isNew()){
+                candidate.setStatus(Constants.ENTITY_INACTIVE);
+                candidate.setUpdateBy(uid);
+                candidate.setModifiedDate(new Date());
+
+                repo.save(candidate);
+            }
+        });
+    }
+
 }
