@@ -17,19 +17,17 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
     @Query(value = "select c " +
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
-            " and (c.fullName = :fullname or :fullname = 'all')" +
-            " and (c.gender = :gender or :gender = -1)" +
-            " and (c.wardCode = :wardCode or :wardCode = 'all')" +
-            " and (c.phone = :phone or :phone = 'all')" +
-            " and (c.email = :email or :email = 'all')" +
-            " and (c.status = 1)" )
+            " and (c.status = 1)" +
+            " and (concat(coalesce(c.fullName,''), coalesce(c.wardCode,''), coalesce(c.phone,'')" +
+            ", coalesce(c.email,'') ) like %:search%)" )
     Page<Candidate> search(
             @Param("companyId") Long cid
-            ,@Param("fullname") String fullname
-            ,@Param("gender") Long gender
-            ,@Param("wardCode") String wardCode
-            ,@Param("phone") String phone
-            ,@Param("email") String email
+            ,@Param("search") String search
+//            ,@Param("fullname") String fullname
+//            ,@Param("gender") Long gender
+//            ,@Param("wardCode") String wardCode
+//            ,@Param("phone") String phone
+//            ,@Param("email") String email
             , Pageable pageable);
 }
 
