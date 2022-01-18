@@ -21,5 +21,9 @@ public class JobApplication extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long candidateId;
+    private Long positionId;
+    private Long titleId;
+    private Long orgId;
+    private Long contractTypeId;
     private Long state; // interview, offer, requested, cancelled, done
 }
