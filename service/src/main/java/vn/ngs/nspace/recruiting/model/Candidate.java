@@ -94,6 +94,7 @@ public class Candidate extends PersistableEntity<Long> {
                 .applyPositionId(dto.getApplyPositionId())
                 .applyDate(dto.getApplyDate())
                 .cvSourceId(dto.getCvSourceId())
+                .tags(dto.getTags())
                 .build();
 
         candidate.setCompanyId(cid);
