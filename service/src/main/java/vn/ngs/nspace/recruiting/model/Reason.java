@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.ReasonDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,4 +21,20 @@ public class Reason extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
+    private Long parentId;
+    private String code;
+    private String type;
+    private String title;
+
+
+    public static Reason of(Long cid, String uid, ReasonDTO dto){
+        Reason reason = Reason.builder()
+                .id(dto.getId())
+                .parentId(dto.getParentId())
+                .code(dto.getCode())
+                .type(dto.getType())
+                .title(dto.getTitle())
+                .build();
+        return reason;
+    }
 }

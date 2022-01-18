@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface EmailSettingRepo extends BaseRepo<EmailSetting,Long> {
     Optional<EmailSetting> findByCompanyIdAndId(long cid, Long id);
-    Optional<EmailSetting> findByCompanyIdAndCode(long cid, Long id);
+    Optional<EmailSetting> findByCompanyIdAndCode(long cid, String code);
     List<EmailSetting> findByCompanyId(long cid);
 }
 
