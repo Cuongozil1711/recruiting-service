@@ -53,9 +53,9 @@ public class JobApplicationApi {
         String phone = MapUtils.getString(condition, "phone", "all");
         String email = MapUtils.getString(condition, "email", "all");
 
-        Page<Candidate> page = _repo.search(cid, fullname, gender , wardCode, phone, email, pageable);
-        List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
-        return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+//        Page<Candidate> page = _repo.search(cid, fullname, gender , wardCode, phone, email, pageable);
+//        List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
+        return ResponseUtils.handlerSuccess("");
 
 
         }catch (Exception e){
