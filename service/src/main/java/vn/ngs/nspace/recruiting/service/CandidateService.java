@@ -51,9 +51,9 @@ public class CandidateService {
         if (dto.getApplyPositionId() == null) {
             throw new BusinessException("invalid-position");
         }
-//        if(dto.getCvSourceId() == null){
-//            throw new BusinessException("Cv-cannot-be-empty");
-//        }
+        if(dto.getCvSourceId() == null){
+            throw new BusinessException("Cv-cannot-be-empty");
+        }
 
 
     }

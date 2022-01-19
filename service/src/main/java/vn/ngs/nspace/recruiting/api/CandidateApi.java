@@ -47,19 +47,19 @@ public class CandidateApi {
     protected ResponseEntity search(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @Parameter(description = "Payload filter") @RequestBody Map<String, Object> condition
+            , @Parameter(description = "Payload filter") @RequestParam(name = "search") String search
             , Pageable pageable) {
         try{
-        String fullname = MapUtils.getString(condition, "fullname", "all");
-        Long gender = MapUtils.getLong(condition, "gender", -1l);
-        String wardCode = MapUtils.getString(condition, "wardCode", "all");
-        String phone = MapUtils.getString(condition, "phone", "all");
-        String email = MapUtils.getString(condition, "email", "all");
 
-        Page<Candidate> page = _repo.search(cid, fullname, gender , wardCode, phone, email, pageable);
+//        String fullname = MapUtils.getString(condition, "fullname", "all");
+//        Long gender = MapUtils.getLong(condition, "gender", -1l);
+//        String wardCode = MapUtils.getString(condition, "wardCode", "all");
+//        String phone = MapUtils.getString(condition, "phone", "all");
+//        String email = MapUtils.getString(condition, "email", "all");
+
+        Page<Candidate> page = _repo.search(cid, search, pageable);
         List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
         return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
-
 
         }catch (Exception e){
             return ResponseUtils.handlerException(e);
@@ -183,4 +183,7 @@ public class CandidateApi {
             return ResponseUtils.handlerException(e);
         }
     }
+
+
+
 }
