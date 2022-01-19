@@ -20,7 +20,7 @@ public class ProfileCheckListTemplateDTO {
     private String name;
     private Long positionId;
     private Long titleId;
-    private Long contractTypeId;
+    private String contractType;
     private Date startDate;
     private Date endDate;
     private Integer status;

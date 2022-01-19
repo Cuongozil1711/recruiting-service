@@ -26,19 +26,18 @@ public class ProfileCheckListTemplate extends PersistableEntity<Long> {
     private String name;
     private Long positionId; // vi tri
     private Long titleId; // chuc danh
-    private Long contractTypeId; // danh muc dung chung
     private Date startDate;
     private Date endDate;
-
+    private String contractType;
     public static ProfileCheckListTemplate of(Long cid, String uid, ProfileCheckListTemplateDTO dto){
         ProfileCheckListTemplate obj = ProfileCheckListTemplate.builder()
                 .id(dto.getId())
                 .name(dto.getName())
                 .positionId(dto.getPositionId())
                 .titleId(dto.getTitleId())
-                .contractTypeId(dto.getContractTypeId())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
+                .contractType(dto.getContractType())
                 .build();
         return obj;
     }
