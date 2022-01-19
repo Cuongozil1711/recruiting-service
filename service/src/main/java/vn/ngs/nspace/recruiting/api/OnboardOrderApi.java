@@ -120,6 +120,25 @@ public class OnboardOrderApi {
         }
     }
 
+    @GetMapping("/check-list/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get check list by onboard Id"
+            , description = "Get check list by onboard Id"
+            , tags = { "OnboardOrder", "OnboardCheckList" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getCheckListByOnboardId(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id){
+        try {
+            return ResponseUtils.handlerSuccess(_service.getOnboardOrderCheckList(cid, uid, id));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
 
 
 
