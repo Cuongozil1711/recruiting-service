@@ -1,18 +1,18 @@
 package vn.ngs.nspace.recruiting.service;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.Candidate;
-import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
+import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
+import vn.ngs.nspace.recruiting.repo.OnboardOrderCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
-import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
-import vn.ngs.nspace.recruiting.utils.Constants;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -21,11 +21,13 @@ import java.util.*;
 @Transactional
 public class OnboardOrderService {
     private final OnboardOrderRepo repo;
+    private final OnboardOrderCheckListRepo checkListRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
 
-    public OnboardOrderService(OnboardOrderRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public OnboardOrderService(OnboardOrderRepo repo, OnboardOrderCheckListRepo checkListRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         this.repo = repo;
+        this.checkListRepo = checkListRepo;
         _hcmService = hcmService;
         _configService = configService;
     }
@@ -84,6 +86,61 @@ public class OnboardOrderService {
             if(dto.getEmployeeId() != null){
                 dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
             }
+        }
+
+        return dtos;
+    }
+
+    public List<OnboardOrderCheckListDTO> getOnboardOrderCheckList(Long cid, String uid, Long onboardOrderId){
+        OnboardOrder onboard = repo.findByCompanyIdAndId(cid, onboardOrderId).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, onboardOrderId));
+        List<OnboardOrderCheckList> checkList =  checkListRepo.findByCompanyIdAndOnboardOrderIdAndCodeIn(cid, onboardOrderId, Constants.onboardCheckList);
+        List<OnboardOrderCheckList> finalCheckList = new ArrayList<>();
+        for(String checkCode : Constants.onboardCheckList){
+            OnboardOrderCheckList exists =
+                    checkList.stream().filter(c -> {return CompareUtil.compare(checkCode, c.getCode());})
+                            .findAny().orElse(new OnboardOrderCheckList());
+            if(exists.isNew()){
+                exists.setCompanyId(cid);
+                exists.setCreateBy(uid);
+                exists.setUpdateBy(uid);
+                exists.setCode(checkCode);
+                exists.setStatus(Constants.ENTITY_ACTIVE);
+                exists.setEmployeeId(onboard.getEmployeeId());
+
+                exists.setState(Constants.CMD_PENDING);
+                exists = checkListRepo.save(exists);
+            }
+            finalCheckList.add(exists);
+        }
+        return checkListToDTOs(cid, uid, finalCheckList);
+    }
+
+    public List<OnboardOrderCheckListDTO> checkListToDTOs(Long cid, String uid, List<OnboardOrderCheckList> objs){
+        List<OnboardOrderCheckListDTO> dtos = new ArrayList<>();
+        Set<Long> employeeIds = new HashSet<>();
+        Map<Long, EmployeeDTO> mapEmp = new HashMap<>();
+        objs.stream().forEach(o -> {
+            dtos.add(MapperUtils.map(o, OnboardOrderCheckListDTO.class));
+
+            if(o.getEmployeeId() != null && o.getEmployeeId() != 0){
+                employeeIds.add(o.getEmployeeId());
+            }
+
+            if(o.getResponsibleId() != null && o.getResponsibleId() != 0){
+                employeeIds.add(o.getResponsibleId());
+            }
+
+            if(o.getParticipantId() != null && o.getParticipantId() != 0){
+                employeeIds.add(o.getParticipantId());
+            }
+        });
+        if(!employeeIds.isEmpty()){
+            mapEmp = _hcmService.getMapEmployees(uid, cid, employeeIds);
+        }
+        for(OnboardOrderCheckListDTO dto : dtos){
+            dto.setEmployeeObj((dto.getEmployeeId() != null && dto.getEmployeeId() != 0) ? mapEmp.get(dto.getEmployeeId()) : null);
+            dto.setResponsibleObj((dto.getResponsibleId() != null && dto.getResponsibleId() != 0) ? mapEmp.get(dto.getResponsibleId()) : null);
+            dto.setParticipantObj((dto.getParticipantId() != null && dto.getParticipantId() != 0) ? mapEmp.get(dto.getParticipantId()) : null);
         }
 
         return dtos;

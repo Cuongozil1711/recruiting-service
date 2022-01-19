@@ -9,7 +9,7 @@ import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.AssetCheckList;
 import vn.ngs.nspace.recruiting.repo.AssetCheckListRepo;
 import vn.ngs.nspace.recruiting.share.dto.AssetCheckListDTO;
-import vn.ngs.nspace.recruiting.utils.Constants;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.*;

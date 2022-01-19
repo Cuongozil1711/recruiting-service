@@ -5,14 +5,9 @@ import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.EmailSetting;
-import vn.ngs.nspace.recruiting.model.OnboardOrder;
-import vn.ngs.nspace.recruiting.model.RecruitmentChannel;
 import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
-import vn.ngs.nspace.recruiting.repo.RecruitmentChannelRepo;
 import vn.ngs.nspace.recruiting.share.dto.EmailSettingDTO;
-import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
-import vn.ngs.nspace.recruiting.share.dto.RecruitmentChannelDTO;
-import vn.ngs.nspace.recruiting.utils.Constants;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 

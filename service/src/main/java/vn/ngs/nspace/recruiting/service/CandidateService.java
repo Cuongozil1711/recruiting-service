@@ -7,11 +7,10 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
-import vn.ngs.nspace.recruiting.model.InterviewInvolve;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
-import vn.ngs.nspace.recruiting.utils.Constants;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -51,9 +50,9 @@ public class CandidateService {
         if (dto.getApplyPositionId() == null) {
             throw new BusinessException("invalid-position");
         }
-//        if(dto.getCvSourceId() == null){
-//            throw new BusinessException("Cv-cannot-be-empty");
-//        }
+        if(dto.getCvSourceId() == null){
+            throw new BusinessException("Cv-cannot-be-empty");
+        }
 
 
     }
