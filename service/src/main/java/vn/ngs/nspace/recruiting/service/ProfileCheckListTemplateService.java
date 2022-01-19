@@ -1,14 +1,17 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.springframework.stereotype.Service;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.AssetCheckList;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplateItem;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
+import vn.ngs.nspace.recruiting.share.dto.AssetCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateItemDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
