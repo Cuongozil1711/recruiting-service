@@ -18,8 +18,8 @@ public class JobApplicationDTO {
     private Long positionId;
     private Long titleId;
     private Long orgId;
-    private Long contractTypeId;
-    private Long state; // interview, offer, requested, cancelled, done
+    private String contractType;
+    private String state; // interview, offer, requested, cancelled, done
 
     private CandidateDTO candidateObj;
     private Map<String, Object> positionObj;

@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,6 +25,19 @@ public class JobApplication extends PersistableEntity<Long> {
     private Long positionId;
     private Long titleId;
     private Long orgId;
-    private Long contractTypeId;
-    private Long state; // interview, offer, requested, cancelled, done
+    private String contractType;
+    private String state; // interview, offer, requested, cancelled, done
+
+    public static JobApplication of(Long cid, String uid, JobApplicationDTO dto){
+        JobApplication builder = JobApplication.builder()
+                .id(dto.getId())
+                .candidateId(dto.getCandidateId())
+                .positionId(dto.getPositionId())
+                .titleId(dto.getTitleId())
+                .orgId(dto.getOrgId())
+                .contractType(dto.getContractType())
+                .state(dto.getState()).build();
+
+        return builder;
+    }
 }

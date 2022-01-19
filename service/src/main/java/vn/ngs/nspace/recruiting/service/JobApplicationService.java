@@ -1,0 +1,147 @@
+package vn.ngs.nspace.recruiting.service;
+
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
+import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.CompareUtil;
+import vn.ngs.nspace.lib.utils.Constants;
+import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.lib.utils.StaticContextAccessor;
+import vn.ngs.nspace.recruiting.model.Candidate;
+import vn.ngs.nspace.recruiting.model.JobApplication;
+import vn.ngs.nspace.recruiting.model.JobRequirement;
+import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
+import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
+import vn.ngs.nspace.recruiting.share.dto.JobRequirementDTO;
+import vn.ngs.nspace.task.core.data.UserData;
+
+import java.util.*;
+
+@Service
+@Transactional
+@Log4j2
+
+public class JobApplicationService {
+    private final JobApplicationRepo _repo;
+    private final ExecuteHcmService _hcmService;
+    private final ExecuteConfigService _configService;
+
+    public JobApplicationService(JobApplicationRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+        _repo = repo;
+        _hcmService = hcmService;
+        _configService = configService;
+    }
+
+    public void valid(JobApplicationDTO dto){
+    }
+
+    public JobApplicationDTO create(Long cid, String uid, JobApplicationDTO request) {
+        valid(request);
+        JobApplication obj = JobApplication.of(cid, uid, request);
+        obj.setCompanyId(cid);
+        obj.setCreateBy(uid);
+        obj = _repo.save(obj);
+        return toDTO(obj);
+    }
+
+    public void delete(Long cid, String uid, List<Long> ids) {
+        ids.stream().forEach(i -> {
+            JobApplication jr = _repo.findByCompanyIdAndId(cid, i).orElse(new JobApplication());
+            if(!jr.isNew()){
+                jr.setUpdateBy(uid);
+                jr.setModifiedDate(new Date());
+                jr.setStatus(Constants.ENTITY_INACTIVE);
+
+                _repo.save(jr);
+            }
+        });
+    }
+
+    public JobApplicationDTO update(Long cid, String uid, Long id, JobApplicationDTO request) {
+        valid(request);
+        JobApplication curr = _repo.findByCompanyIdAndId(cid,id).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, id));
+        MapperUtils.copyWithoutAudit(request, curr);
+        curr.setUpdateBy(uid);
+        curr = _repo.save(curr);
+
+        return toDTO(curr);
+
+    }
+
+    public List<JobApplicationDTO> toDTOs(Long cid, String uid, List<JobApplication> objs) {
+        List<JobApplicationDTO> dtos = new ArrayList<>();
+
+        Set<Long> categoryIds = new HashSet<>();
+        Set<Long> empIds = new HashSet<>();
+        Set<String> userIds = new HashSet<>();
+
+        objs.forEach(obj -> {
+            if(!StringUtils.isEmpty(obj.getCreateBy())){
+                userIds.add(obj.getCreateBy());
+            }
+            if (obj.getPositionId() != null) {
+                categoryIds.add(obj.getPositionId());
+            }
+            if (obj.getTitleId() != null) {
+                categoryIds.add(obj.getTitleId());
+            }
+//            if (obj.getLevelId() != null) {
+//                categoryIds.add(obj.getLevelId());
+//            }
+//            if(obj.getCurrencyId() != null){
+//                categoryIds.add(obj.getCurrencyId());
+//            }
+//            if (obj.getIndustryId() != null){
+//                categoryIds.add(obj.getIndustryId());
+//            }
+//            if(obj.getReceiptName() != null){
+//                empIds.add(obj.getReceiptName());
+//            }
+//
+//
+//            dtos.add(toDTO(obj));
+        });
+
+        List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
+        Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
+        Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
+
+        for (JobApplicationDTO dto : dtos) {
+            if (dto.getPositionId() != null) {
+                dto.setPositionObj(mapCategory.get(dto.getPositionId()));
+            }
+            if (dto.getTitleId() != null) {
+                dto.setTitleObj(mapCategory.get(dto.getTitleId()));
+            }
+//            if (dto.getLevelId() != null) {
+//                dto.setLevelObj(mapCategory.get(dto.getLevelId()));
+//            }
+//            if (dto.getCurrencyId() != null){
+//                dto.setCurrencyObj(mapCategory.get(dto.getCurrencyId()));
+//            }
+//            if (dto.getIndustryId() != null){
+//                dto.setIndustryObj(mapCategory.get(dto.getIndustryId()));
+//            }
+//            if (dto.getReceiptName() != null){
+//                EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getReceiptName())).findAny().orElse(new EmployeeDTO());
+//                dto.setReceiptNameObj(emp);
+//            }
+//            if(!StringUtils.isEmpty(dto.getCreateBy())){
+//                dto.setCreateByObj((Map<String, Object>) mapperUser.get(dto.getCreateBy()));
+//            }
+        }
+        return dtos;
+
+    }
+
+
+
+    public JobApplicationDTO toDTO(JobApplication obj){
+        JobApplicationDTO dto = MapperUtils.map(obj, JobApplicationDTO.class);
+        return dto;
+    }
+}
