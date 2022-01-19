@@ -3,13 +3,14 @@ package vn.ngs.nspace.recruiting.service;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
-import vn.ngs.nspace.lib.utils.Constants;
+
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.CandidateFilterDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
@@ -67,7 +68,7 @@ public class CandidateFilterService {
         ids.stream().forEach(i -> {
             CandidateFilter filter = repo.findByCompanyIdAndId(cid, i).orElse(new CandidateFilter());
             if(!filter.isNew()){
-                filter.setStatus(vn.ngs.nspace.recruiting.utils.Constants.ENTITY_INACTIVE);
+                filter.setStatus(Constants.ENTITY_INACTIVE);
                 filter.setUpdateBy(uid);
                 filter.setModifiedDate(new Date());
 
