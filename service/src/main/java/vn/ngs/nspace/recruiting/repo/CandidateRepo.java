@@ -29,5 +29,23 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
 //            ,@Param("phone") String phone
 //            ,@Param("email") String email
             , Pageable pageable);
+
+    @Query(value = "select c" +
+            " from Candidate c" +
+            " where (c.companyId = :companyId)" +
+            " and (c.status = 1)" +
+            " and (c.applyPositionId in :applyPosition or :applyPosition = -1 )" +
+            " and (c.gender in :gender or :gender = -1)" +
+            " and (c.language in :language or :language = 'all')" +
+            " and (c.educationLevel in :educationLevel or :educationLevel = -1)" +
+            " and (c.educateLocation in :educateLocation or :educateLocation = 'all')")
+    Page<Candidate> filter(
+            @Param("companyId") Long cid
+            ,@Param("applyPosition") Long applyPosition
+            ,@Param("gender") Long gender
+            ,@Param("language") String language
+            ,@Param("educationLevel") Long educationLevel
+            ,@Param("educateLocation") String educateLocation
+            , Pageable pageable);
 }
 
