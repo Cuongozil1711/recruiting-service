@@ -184,6 +184,35 @@ public class CandidateApi {
         }
     }
 
+    @PostMapping("filter")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "candidate-filter list Candidate",
+            description = "API for candidate-filter list Candidate")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity filter(
+            @Parameter(description = "ID of company") @RequestHeader Long cid
+            ,@Parameter(description = "ID of userID") @RequestHeader String uid
+            , @RequestBody Map<String, Object> condition
+            , Pageable pageable){
+        try{
+            Long applyPosition = MapUtils.getLong(condition, "applyPosition", -1l);
+            Long gender = MapUtils.getLong(condition, "gender", -1l);
+            String language = MapUtils.getString(condition, "language", "all");
+            Long educationLevel = MapUtils.getLong(condition, "educationLevel", -1l);
+            String educateLocation = MapUtils.getString(condition, "educateLocation", "all");
+
+
+            Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation, pageable);
+            List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
+            return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+
+        }catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+
+    }
+
 
 
 }
