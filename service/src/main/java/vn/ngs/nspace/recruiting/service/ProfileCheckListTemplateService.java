@@ -1,5 +1,7 @@
 package vn.ngs.nspace.recruiting.service;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
@@ -33,9 +35,42 @@ public class ProfileCheckListTemplateService {
     }
 
     public void valid(ProfileCheckListTemplateDTO dto){
+        if (StringUtils.isEmpty(dto.getName())){
+            throw new BusinessException("invalid-name");
+        }
+        if (dto.getPositionId() == null){
+            throw new BusinessException("invalid-position");
+        }
+        if (dto.getTitleId() == null){
+            throw new BusinessException("invalid-title");
+        }
+        if (StringUtils.isEmpty(dto.getContractType())){
+            throw new BusinessException("invalid-contractType");
+        }
+        if (dto.getStartDate() == null){
+            throw new BusinessException("invalid-startDate");
+        }
+        if (dto.getEndDate() == null){
+            throw new BusinessException("invalid-endDate");
+        }
     }
 
     public void validItem(ProfileCheckListTemplateItemDTO dto){
+        if (dto.getChecklistId() == null){
+            throw new BusinessException("invalid-checkList");
+        }
+        if (dto.getTemplateId() == null){
+            throw new BusinessException("invalid-template");
+        }
+        if (StringUtils.isEmpty(dto.getDescription())){
+            throw new BusinessException("invalid-description");
+        }
+        if (dto.getRequired() == null){
+            throw new BusinessException("invalid-required");
+        }
+        if (dto.getStatus() == null){
+            throw new BusinessException("invalid-status");
+        }
     }
 
     public ProfileCheckListTemplateDTO create(Long cid, String uid, ProfileCheckListTemplateDTO request) throws BusinessException {
@@ -49,6 +84,7 @@ public class ProfileCheckListTemplateService {
 
         template = repo.save(template);
         //create template item
+
         for(ProfileCheckListTemplateItemDTO itemDTO : request.getItems()){
             itemDTO.setTemplateId(template.getId());
             createItem(cid, uid, itemDTO);
@@ -110,9 +146,7 @@ public class ProfileCheckListTemplateService {
             if(o.getTitleId() != null){
                 categoryIds.add(o.getTitleId());
             }
-            if(o.getContractTypeId() != null){
-                categoryIds.add(o.getContractTypeId());
-            }
+
             templateIds.add(o.getId());
         });
 
@@ -134,9 +168,7 @@ public class ProfileCheckListTemplateService {
             if(o.getTitleId() != null){
                 o.setTitleObj(mapCategory.get(o.getTitleId()));
             }
-            if(o.getContractTypeId() != null){
-                o.setContractTypeObj(mapCategory.get(o.getContractTypeId()));
-            }
+
 
             List<ProfileCheckListTemplateItemDTO> itemDTOs = new ArrayList<>();
             items.stream().filter(i -> CompareUtil.compare(i.getTemplateId(), obj.getId()))

@@ -64,7 +64,7 @@ public class ProfileCheckListTemplateApi {
             Long positionId = MapUtils.getLong(condition, "positionId", -1l);
             Long titleId = MapUtils.getLong(condition, "titleId", -1l);
             Long contractTypeId = MapUtils.getLong(condition, "contractTypeId", -1l);
-            Page<ProfileCheckListTemplate> page = _repo.search(cid, positionId, titleId, contractTypeId, pageable);
+            Page<ProfileCheckListTemplate> page = _repo.search(cid, positionId, titleId, pageable);
             List<ProfileCheckListTemplateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {
