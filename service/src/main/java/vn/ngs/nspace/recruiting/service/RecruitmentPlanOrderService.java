@@ -68,7 +68,7 @@ public class RecruitmentPlanOrderService {
         return list;
     }
 
-    public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
+        public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
         valid(dto);
         RecruitmentPlanOrder recruitmentPlanOrder = RecruitmentPlanOrder.of(cid, uid, dto);
         recruitmentPlanOrder.setCreateBy(uid);

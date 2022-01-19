@@ -10,6 +10,7 @@ import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 public interface ProfileCheckListTemplateRepo extends BaseRepo<ProfileCheckListTemplate,Long> {
@@ -19,12 +20,24 @@ public interface ProfileCheckListTemplateRepo extends BaseRepo<ProfileCheckListT
             " from ProfileCheckListTemplate p " +
             " where (p.companyId = :companyId)" +
             " and (p.positionId = :positionId or :positionId = -1) " +
-            " and (p.titleId = :titleId or :titleId = -1) " +
-            " and (p.contractTypeId = :contractTypeId or :contractTypeId = -1) ")
+            " and (p.titleId = :titleId or :titleId = -1) ")
     Page<ProfileCheckListTemplate> search(@Param("companyId") Long cid
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId
-            , @Param("contractTypeId") Long contractTypeId
             , Pageable pageable);
+
+    @Query(value = " select p " +
+            " from ProfileCheckListTemplate p " +
+            " where (p.companyId = :companyId)" +
+            " and (p.positionId = :positionId or coalesce(p.positionId, 0)  = 0) " +
+            " and (p.titleId = :titleId or coalesce(p.titleId, 0)  = 0) " +
+            " and (p.contractType = :contractType or coalesce(p.contractType, '#')  = '#')" +
+            " order by  coalesce(p.titleId, 0) desc " +
+            "           , coalesce(p.positionId, 0) desc " +
+            "           , case when coalesce(p.contractType, '#') = '#' then 0 else 1 end desc ")
+    List<ProfileCheckListTemplate> searchConfigTemplate(@Param("companyId") Long cid
+            ,@Param("positionId") Long positionId
+            ,@Param("titleId") Long titleId
+            ,@Param("contractType") String contractType);
 }
 
