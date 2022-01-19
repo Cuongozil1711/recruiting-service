@@ -1,5 +1,6 @@
 package vn.ngs.nspace.recruiting.repo;
 
+import org.camunda.feel.syntaxtree.In;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +9,7 @@ import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.Candidate;
 
 
+import java.util.Date;
 import java.util.Optional;
 
 public interface CandidateRepo extends BaseRepo<Candidate,Long> {
@@ -38,14 +40,20 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.gender in :gender or :gender = -1)" +
             " and (c.language in :language or :language = 'all')" +
             " and (c.educationLevel in :educationLevel or :educationLevel = -1)" +
-            " and (c.educateLocation in :educateLocation or :educateLocation = 'all')")
+            " and (concat(coalesce(c.educateLocation,'')" +
+            ", coalesce(c.industry,'')" +
+            ", coalesce(c.lastPosition,'') ) like %:condition%)" +
+            " and (c.birthDate > :ageLess)")
     Page<Candidate> filter(
             @Param("companyId") Long cid
             ,@Param("applyPosition") Long applyPosition
             ,@Param("gender") Long gender
             ,@Param("language") String language
             ,@Param("educationLevel") Long educationLevel
-            ,@Param("educateLocation") String educateLocation
+            ,@Param("condition") String educateLocation
+            ,@Param("condition") String industry
+            ,@Param("ageLess") Date yearLess
+            ,@Param("condition") String lastPosition
             , Pageable pageable);
 }
 

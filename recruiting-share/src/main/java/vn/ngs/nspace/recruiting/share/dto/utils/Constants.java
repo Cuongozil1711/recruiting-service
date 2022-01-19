@@ -18,4 +18,10 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
             "training",
             "coaching");
 
+    public enum Experience{
+        UNDER_30,
+        UNDER_40,
+        UNDER_55,
+        UNDER_65
+    }
 }
