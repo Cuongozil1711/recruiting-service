@@ -15,7 +15,8 @@ import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateItemDTO;
-import vn.ngs.nspace.recruiting.utils.Constants;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
+
 
 import javax.transaction.Transactional;
 import java.util.*;
