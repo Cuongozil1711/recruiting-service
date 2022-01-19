@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
@@ -29,26 +31,25 @@ public class CandidateFilterApi {
     private final CandidateFilterRepo repo;
     private final CandidateFilterService service;
 
-//    @PostMapping("/search")
-//    @ActionMapping(action = Permission.VIEW)
-//    @Operation(summary = "List all Candidate Filter"
-//            , description = "List all Candidate-Filter"
-//            , tags = { "Candidate-Filter" }
-//    )
-//    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-//            , schema = @Schema(implementation = String.class))
-//    protected ResponseEntity ListAll(
-//        @Parameter(description = "Id of Company") @RequestHeader Long cid
-//            , @Parameter(description = "Id of User") @RequestHeader String uid
-//            , @Parameter(description = "payload DTO respone") @RequestBody List<CandidateFilterDTO> dtos) {
-//
-//        try {
-//            List<CandidateFilterDTO> list = repo.listAll(cid,dtos);
-//            return ResponseUtils.handlerSuccess(list);
-//        }catch (Exception e){
-//            return ResponseUtils.handlerException(e);
-//        }
-//    }
+    @PostMapping("/search")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "List all Candidate Filter"
+            , description = "List all Candidate-Filter"
+            , tags = { "Candidate-Filter" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity ListAll(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            ) {
+
+        try {
+            return ResponseUtils.handlerSuccess(repo.findByCompanyId(cid));
+        }catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
 
     @PostMapping("")
     @ActionMapping(action = Permission.CREATE)
