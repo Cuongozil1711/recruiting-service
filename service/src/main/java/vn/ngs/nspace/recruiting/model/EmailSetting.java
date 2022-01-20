@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.model;
 
 import lombok.*;
+import org.checkerframework.checker.signature.qual.Identifier;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.converter.HashMapConverter;
 import vn.ngs.nspace.lib.models.PersistableEntity;

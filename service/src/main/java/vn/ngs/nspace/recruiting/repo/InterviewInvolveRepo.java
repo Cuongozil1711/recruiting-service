@@ -15,6 +15,7 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
 
     Optional<InterviewInvolve> findByCompanyIdAndId(long cid, Long id);
     List<InterviewInvolve> findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(Long cid, Long positionId, Long titleId, Long orgId, Integer status);
+
     @Query(value = " select p.* " +
             " from recruiting_service.Interview_Involve p " +
             " where (p.company_Id = :companyId)" +
