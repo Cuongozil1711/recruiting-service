@@ -23,10 +23,7 @@ import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -207,9 +204,9 @@ public class CandidateApi {
             String industry = MapUtils.getString(condition,"condition", "all").toLowerCase(Locale.ROOT);
             String ageLess = MapUtils.getString(condition,"ageLess", "all");
             String lastPosition = MapUtils.getString(condition,"condition","all").toLowerCase(Locale.ROOT);
-//            String fromExp = MapUtils.getString(condition,"fromExp","all");
-//            String toExp = MapUtils.getString(condition,"toExp","all");
-//            Double Exp = MapUtils.getDouble(condition,"Exp", -1.0d);
+            Double fromExp = MapUtils.getDouble(condition,"fromExp",0.0d);
+            Double toExp = MapUtils.getDouble(condition,"toExp",0.0d);
+            String expUnit = MapUtils.getString(condition,"expUnit","month");
 
             Date yearLess = null;
             if(!ageLess.equals("all")){
@@ -217,7 +214,14 @@ public class CandidateApi {
                 yearLess = DateUtil.addDate(new Date(), "year",-year);
             }
 
-            Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition, pageable);
+
+            if (expUnit.equals("year")){
+               fromExp = fromExp * 12;
+               toExp = toExp * 12;
+            }
+
+
+            Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition,fromExp, toExp, pageable);
             List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
 
