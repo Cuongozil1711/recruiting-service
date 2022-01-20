@@ -26,6 +26,7 @@ public class JobApplication extends PersistableEntity<Long> {
     private Long titleId;
     private Long orgId;
     private String contractType;
+    private Long employeeId;
     private String state; // interview, offer, requested, cancelled, done
 
     public static JobApplication of(Long cid, String uid, JobApplicationDTO dto){

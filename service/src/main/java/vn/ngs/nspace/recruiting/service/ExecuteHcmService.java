@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
+import vn.ngs.nspace.hcm.share.dto.request.EmployeeReq;
+import vn.ngs.nspace.hcm.share.dto.response.EmployeeResp;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.utils.HttpUtils;
@@ -124,6 +126,24 @@ public class ExecuteHcmService {
             ParameterizedTypeReference<BaseResponse<Map<Long, OrgResp>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<Long, OrgResp>>>() {};
             ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
             BaseResponse<Map<Long, OrgResp>> resp = (BaseResponse<Map<Long, OrgResp>>) response.getBody();
+            return resp.getData();
+
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public EmployeeResp createEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile");
+            HttpMethod method = HttpMethod.POST;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            HttpEntity request = new HttpEntity<>(employeeReq, headers);
+
+            ParameterizedTypeReference<BaseResponse<EmployeeResp>> responeType = new ParameterizedTypeReference<BaseResponse<EmployeeResp>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<EmployeeResp> resp = (BaseResponse<EmployeeResp>) response.getBody();
             return resp.getData();
 
         } catch (Exception e){
