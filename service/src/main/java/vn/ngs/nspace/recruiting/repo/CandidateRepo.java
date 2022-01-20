@@ -36,13 +36,13 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
-            " and (c.applyPositionId in :applyPosition or :applyPosition = -1 )" +
-            " and (c.gender in :gender or :gender = -1)" +
-            " and (c.language in :language or :language = 'all')" +
-            " and (c.educationLevel in :educationLevel or :educationLevel = -1)" +
-            " and (concat(coalesce(c.educateLocation,'')" +
-            "       , coalesce(c.industry,'')" +
-            "       , coalesce(c.lastPosition,'') ) like %:condition% ) " +
+            " and (c.applyPositionId = :applyPosition or :applyPosition = -1 )" +
+            " and (c.gender = :gender or :gender = -1)" +
+            " and (c.language = :language or :language = 'all')" +
+            " and (c.educationLevel = :educationLevel or :educationLevel = -1)" +
+            " and (:educateLocation = 'all' or educateLocation = :educateLocation) " +
+            " and (:industry = 'all' or industry = :industry) " +
+            " and (:lastPosition = 'all' or educateLocation = :lastPosition) " +
             " and (cast(:ageLess AS java.time.LocalDateTime) is null  or :ageLess > c.birthDate) ")
     Page<Candidate> filter(
             @Param("companyId") Long cid
@@ -50,10 +50,10 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             ,@Param("gender") Long gender
             ,@Param("language") String language
             ,@Param("educationLevel") Long educationLevel
-            ,@Param("condition") String educateLocation
-            ,@Param("condition") String industry
+            ,@Param("educateLocation") String educateLocation
+            ,@Param("industry") String industry
             ,@Param("ageLess") Date ageLess
-            ,@Param("condition") String lastPosition
+            ,@Param("lastPosition") String lastPosition
             , Pageable pageable);
 }
 
