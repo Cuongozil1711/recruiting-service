@@ -43,7 +43,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (concat(coalesce(c.educateLocation,'')" +
             "       , coalesce(c.industry,'')" +
             "       , coalesce(c.lastPosition,'') ) like %:condition% ) " +
-            " and ( c.birthDate > coalesce(:ageLess, current_date ))")
+            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or :ageLess > c.birthDate) ")
     Page<Candidate> filter(
             @Param("companyId") Long cid
             ,@Param("applyPosition") Long applyPosition
@@ -52,7 +52,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             ,@Param("educationLevel") Long educationLevel
             ,@Param("condition") String educateLocation
             ,@Param("condition") String industry
-            ,@Param("ageLess") Date yearLess
+            ,@Param("ageLess") Date ageLess
             ,@Param("condition") String lastPosition
             , Pageable pageable);
 }

@@ -187,7 +187,9 @@ public class CandidateApi {
     @PostMapping("filter")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "candidate-filter list Candidate",
-            description = "API for candidate-filter list Candidate")
+            description = "API for candidate-filter list Candidate"
+            , tags = { "Candidate", "Search" })
+
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity filter(
