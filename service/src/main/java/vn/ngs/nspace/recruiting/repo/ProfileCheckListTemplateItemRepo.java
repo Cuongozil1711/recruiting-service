@@ -11,5 +11,7 @@ import java.util.Set;
 public interface ProfileCheckListTemplateItemRepo extends BaseRepo<ProfileCheckListTemplateItem,Long> {
     Optional<ProfileCheckListTemplateItem> findByCompanyIdAndId(long cid, Long id);
     List<ProfileCheckListTemplateItem> findByCompanyIdAndTemplateIdInAndStatus(long cid, Set<Long> templateIds, Integer status);
+    Optional<ProfileCheckListTemplateItem> findByCompanyIdAndAndChecklistIdAndTemplateIdAndStatus(long cid, long checkListId, long templateId, Integer status);
+    List<ProfileCheckListTemplateItem> findByCompanyIdAndTemplateId(long cid, long templateId);
 }
 
