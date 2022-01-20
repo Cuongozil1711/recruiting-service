@@ -41,9 +41,9 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.language in :language or :language = 'all')" +
             " and (c.educationLevel in :educationLevel or :educationLevel = -1)" +
             " and (concat(coalesce(c.educateLocation,'')" +
-            ", coalesce(c.industry,'')" +
-            ", coalesce(c.lastPosition,'') ) like %:condition%)" +
-            " and (c.birthDate > :ageLess)")
+            "       , coalesce(c.industry,'')" +
+            "       , coalesce(c.lastPosition,'') ) like %:condition% ) " +
+            " and ( c.birthDate > coalesce(:ageLess, current_date ))")
     Page<Candidate> filter(
             @Param("companyId") Long cid
             ,@Param("applyPosition") Long applyPosition

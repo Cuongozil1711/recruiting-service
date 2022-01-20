@@ -208,12 +208,13 @@ public class CandidateApi {
 //            String toExp = MapUtils.getString(condition,"toExp","all");
 //            Double Exp = MapUtils.getDouble(condition,"Exp", -1.0d);
 
-            String toSpilit = ageLess.substring (5);
-
-            Integer year = Integer.parseInt(toSpilit);
-            Date curDate = new Date();
-            Date yearLess = DateUtil.addDate(curDate, "year",-year);
-
+            Date yearLess = null;
+            if(!ageLess.equals("all")){
+                String toSpilit = ageLess.substring(5);
+                Integer year = Integer.parseInt(toSpilit);
+                Date curDate = new Date();
+                yearLess = DateUtil.addDate(curDate, "year",-year);
+            }
 
             Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition, pageable);
             List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
