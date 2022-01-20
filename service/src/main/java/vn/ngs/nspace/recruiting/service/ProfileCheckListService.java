@@ -15,7 +15,8 @@ import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateItemDTO;
-import vn.ngs.nspace.recruiting.utils.Constants;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
+
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -25,15 +26,15 @@ import java.util.stream.Collectors;
 @Transactional
 public class ProfileCheckListService {
     private final ProfileCheckListRepo repo;
-    private final ProfileCheckListTemplateRepo repoTemplate;
+    private final ProfileCheckListTemplateRepo templateRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
-    private final ProfileCheckListTemplateRepo templateRepo;
+    private final ProfileCheckListTemplateItemRepo itemRepo;
 
-    public ProfileCheckListService(ProfileCheckListRepo repo, ProfileCheckListTemplateRepo templateRepo, ProfileCheckListTemplateRepo repoTemplate, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public ProfileCheckListService(ProfileCheckListRepo repo,  ProfileCheckListTemplateRepo templateRepo, ProfileCheckListTemplateItemRepo itemRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         this.repo = repo;
         this.templateRepo = templateRepo;
-        this.repoTemplate = repoTemplate;
+        this.itemRepo = itemRepo;
         _hcmService = hcmService;
         _configService = configService;
     }
@@ -61,9 +62,13 @@ public class ProfileCheckListService {
             , Long employeeId, Date receiptDate, String description, Long senderId ){
         List<ProfileCheckListDTO> profiles = new ArrayList<>();
         List<ProfileCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId, contractType);
-        for (ProfileCheckListTemplate template: templates ) {
+
+        ProfileCheckListTemplate template = templates.get(0);
+        List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
+        for (ProfileCheckListTemplateItem item: items ) {
+
             ProfileCheckListDTO checkListDTO = new ProfileCheckListDTO();
-            checkListDTO = MapperUtils.map(template, checkListDTO);
+            checkListDTO = MapperUtils.map(item, checkListDTO);
             checkListDTO.setEmployeeId(employeeId);
             checkListDTO.setReceiptDate(receiptDate);
             checkListDTO.setDescription(description);
