@@ -33,6 +33,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             , Pageable pageable);
 
     @Query(value = "select c" +
+            ""+
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
@@ -43,7 +44,12 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (:educateLocation = 'all' or lower(educateLocation) like '%:educateLocation%') " +
             " and (:industry = 'all' or lower(industry) like '%:industry%') " +
             " and (:lastPosition = 'all' or lower(educateLocation) = '%:lastPosition%') " +
-            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or :ageLess < c.birthDate) ")
+            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or :ageLess < c.birthDate)" +
+            " group by c.id having " +
+            " ((case when (experience_unit = 'year') then (experience * 12) else experience" +
+            "      end ) >= :fromExp" +
+            " and (case when (experience_unit = 'year') then (experience * 12)  else experience " +
+            "      end ) <= :toExp)" )
     Page<Candidate> filter(
             @Param("companyId") Long cid
             ,@Param("applyPosition") Long applyPosition
@@ -54,6 +60,8 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             ,@Param("industry") String industry
             ,@Param("ageLess") Date ageLess
             ,@Param("lastPosition") String lastPosition
+            ,@Param("fromExp") Double fromExp
+            ,@Param("toExp") Double toExp
             , Pageable pageable);
 }
 
