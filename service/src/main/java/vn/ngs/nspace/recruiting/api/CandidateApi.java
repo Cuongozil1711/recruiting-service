@@ -25,6 +25,7 @@ import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -202,10 +203,10 @@ public class CandidateApi {
             Long gender = MapUtils.getLong(condition, "gender", -1l);
             String language = MapUtils.getString(condition, "language", "all");
             Long educationLevel = MapUtils.getLong(condition, "educationLevel", -1l);
-            String educateLocation = MapUtils.getString(condition, "condition", "all");
-            String industry = MapUtils.getString(condition,"condition", "all");
+            String educateLocation = MapUtils.getString(condition, "condition", "all").toLowerCase(Locale.ROOT);
+            String industry = MapUtils.getString(condition,"condition", "all").toLowerCase(Locale.ROOT);
             String ageLess = MapUtils.getString(condition,"ageLess", "all");
-            String lastPosition = MapUtils.getString(condition,"condition","all");
+            String lastPosition = MapUtils.getString(condition,"condition","all").toLowerCase(Locale.ROOT);
 //            String fromExp = MapUtils.getString(condition,"fromExp","all");
 //            String toExp = MapUtils.getString(condition,"toExp","all");
 //            Double Exp = MapUtils.getDouble(condition,"Exp", -1.0d);

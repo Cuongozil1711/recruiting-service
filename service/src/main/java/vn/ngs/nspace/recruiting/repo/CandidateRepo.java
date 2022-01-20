@@ -40,10 +40,10 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.gender = :gender or :gender = -1)" +
             " and (c.language = :language or :language = 'all')" +
             " and (c.educationLevel = :educationLevel or :educationLevel = -1)" +
-            " and (:educateLocation = 'all' or educateLocation = :educateLocation) " +
-            " and (:industry = 'all' or industry = :industry) " +
-            " and (:lastPosition = 'all' or educateLocation = :lastPosition) " +
-            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or :ageLess > c.birthDate) ")
+            " and (:educateLocation = 'all' or lower(educateLocation) like '%:educateLocation%') " +
+            " and (:industry = 'all' or lower(industry) like '%:industry%') " +
+            " and (:lastPosition = 'all' or lower(educateLocation) = '%:lastPosition%') " +
+            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or :ageLess < c.birthDate) ")
     Page<Candidate> filter(
             @Param("companyId") Long cid
             ,@Param("applyPosition") Long applyPosition
