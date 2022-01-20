@@ -5,18 +5,20 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
+import vn.ngs.nspace.hcm.share.dto.request.EmployeeReq;
+import vn.ngs.nspace.hcm.share.dto.response.EmployeeResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
-import vn.ngs.nspace.lib.utils.CompareUtil;
-import vn.ngs.nspace.lib.utils.Constants;
+
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;
-import vn.ngs.nspace.recruiting.model.JobRequirement;
+import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
+import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
-import vn.ngs.nspace.recruiting.share.dto.JobRequirementDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.task.core.data.UserData;
 
 import java.util.*;
@@ -27,11 +29,13 @@ import java.util.*;
 
 public class JobApplicationService {
     private final JobApplicationRepo _repo;
+    private final CandidateRepo _candidateRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
 
-    public JobApplicationService(JobApplicationRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public JobApplicationService(JobApplicationRepo repo, CandidateRepo candidateRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         _repo = repo;
+        _candidateRepo = candidateRepo;
         _hcmService = hcmService;
         _configService = configService;
     }
@@ -69,7 +73,28 @@ public class JobApplicationService {
         curr = _repo.save(curr);
 
         return toDTO(curr);
+    }
 
+    public EmployeeDTO createEmployee(Long cid, String uid, Long jobAppId, EmployeeRecruitingReq createEmp){
+        JobApplication jobApplication = _repo.findByCompanyIdAndId(cid, jobAppId).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, jobAppId));
+        if(!Constants.JOB_APPLICATION_STATE_DONE.equals(jobApplication.getState())){
+            throw new BusinessException("job-application-is-in-process");
+        }
+        Candidate candidate = _candidateRepo.findByCompanyIdAndId(cid, jobApplication.getCandidateId()).orElseThrow(() -> new EntityNotFoundException(Candidate.class, jobApplication.getCandidateId()));
+        EmployeeResp empResp = _hcmService.createEmployee(uid, cid, createEmp);
+
+        candidate.setState(Constants.CANDIDATE_STATE.HIRED.toString());
+        candidate.setUpdateBy(uid);
+        candidate.setEmployeeId(empResp.getEmployee().getId());
+        candidate.setApplyDate(createEmp.getCandicate().getApplyDate());
+
+        jobApplication.setEmployeeId(empResp.getEmployee().getId());
+        jobApplication.setUpdateBy(uid);
+
+        _candidateRepo.save(candidate);
+        _repo.save(jobApplication);
+
+        return empResp.getEmployee();
     }
 
     public List<JobApplicationDTO> toDTOs(Long cid, String uid, List<JobApplication> objs) {
@@ -106,7 +131,7 @@ public class JobApplicationService {
 //            dtos.add(toDTO(obj));
         });
 
-        List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
+//        List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
 

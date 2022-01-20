@@ -24,6 +24,7 @@ import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.service.JobApplicationService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 
 import java.util.List;
@@ -144,6 +145,24 @@ public class JobApplicationApi {
         try {
             _service.delete(cid, uid , ids);
             return ResponseUtils.handlerSuccess();
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PostMapping("/create-employee/{id}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "delete list JobApplication",
+            description = "API for delete list JobApplication")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity createEmployee(
+            @Parameter(description = "ID of company") @RequestHeader Long cid
+            , @Parameter(description = "ID of userID") @RequestHeader String uid
+            , @Parameter(description = "Id of job-application")  @PathVariable(value = "id") Long id
+            , @RequestBody EmployeeRecruitingReq request){
+        try {
+            return ResponseUtils.handlerSuccess(_service.createEmployee(cid, uid , id, request));
         } catch (Exception e){
             return ResponseUtils.handlerException(e);
         }

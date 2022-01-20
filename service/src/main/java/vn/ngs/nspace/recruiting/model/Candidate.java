@@ -66,6 +66,9 @@ public class Candidate extends PersistableEntity<Long> {
     @Column(columnDefinition = "text[]", length = 4000)
     List<String> tags;
 
+    private Long employeeId;
+    private String state;
+
     public static Candidate of(long cid, String uid, CandidateDTO dto){
         Candidate candidate = Candidate.builder()
                 .id(dto.getId())

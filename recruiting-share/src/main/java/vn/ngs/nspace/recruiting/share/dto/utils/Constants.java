@@ -24,4 +24,16 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
         UNDER_55,
         UNDER_65
     }
+
+    public enum JOB_APP_STATE {
+        DONE
+    }
+
+    public enum CANDIDATE_STATE {
+        INTERVIEWING
+        , OFFERING
+        , FAILED
+        , HIRED
+    }
+    public static final String JOB_APPLICATION_STATE_DONE = "DONE";
 }
