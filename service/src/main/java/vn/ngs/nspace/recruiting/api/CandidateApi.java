@@ -12,21 +12,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
-import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
-import vn.ngs.nspace.recruiting.model.InterviewInvolve;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
-import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("candidate")
@@ -200,10 +200,22 @@ public class CandidateApi {
             Long gender = MapUtils.getLong(condition, "gender", -1l);
             String language = MapUtils.getString(condition, "language", "all");
             Long educationLevel = MapUtils.getLong(condition, "educationLevel", -1l);
-            String educateLocation = MapUtils.getString(condition, "educateLocation", "all");
+            String educateLocation = MapUtils.getString(condition, "condition", "all");
+            String industry = MapUtils.getString(condition,"condition", "all");
+            String ageLess = MapUtils.getString(condition,"ageLess", "all");
+            String lastPosition = MapUtils.getString(condition,"condition","all");
+//            String fromExp = MapUtils.getString(condition,"fromExp","all");
+//            String toExp = MapUtils.getString(condition,"toExp","all");
+//            Double Exp = MapUtils.getDouble(condition,"Exp", -1.0d);
+
+            String toSpilit = ageLess.substring (5);
+
+            Integer year = Integer.parseInt(toSpilit);
+            Date curDate = new Date();
+            Date yearLess = DateUtil.addDate(curDate, "year",-year);
 
 
-            Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation, pageable);
+            Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition, pageable);
             List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
 
