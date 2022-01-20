@@ -212,10 +212,8 @@ public class CandidateApi {
 
             Date yearLess = null;
             if(!ageLess.equals("all")){
-                String toSpilit = ageLess.substring(5);
-                Integer year = Integer.parseInt(toSpilit);
-                Date curDate = new Date();
-                yearLess = DateUtil.addDate(curDate, "year",-year);
+                Integer year = Integer.parseInt(ageLess.split("_")[1]);
+                yearLess = DateUtil.addDate(new Date(), "year",-year);
             }
 
             Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition, pageable);
