@@ -85,7 +85,7 @@ public class OnboardOrderService {
             if(dto.getBuddy() != null){
                 dto.setBuddyObj(mapEmployee.get(dto.getBuddy()));
             }if(dto.getMentorId() != null){
-                dto.setBuddyObj(mapEmployee.get(dto.getMentorId()));
+                dto.setMentorObj(mapEmployee.get(dto.getMentorId()));
             }
             if(dto.getEmployeeId() != null){
                 dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
@@ -154,6 +154,15 @@ public class OnboardOrderService {
         OnboardOrder order = OnboardOrder.of(cid, uid, request);
         order = repo.save(order);
         return toDTOs(cid, uid, Arrays.asList(order)).get(0);
+    }
+
+    public OnboardOrderDTO updateBuddyByOnbodrdId(Long cid,  String uid, Long id, OnboardOrderDTO request){
+        OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, id));
+        MapperUtils.copyWithoutAudit(request, curr);
+        curr.setUpdateBy(uid);
+        curr = repo.save(curr);
+
+        return toDTOWithObj(cid, uid, curr);
     }
 
     /* convert model object to DTO with data before response */

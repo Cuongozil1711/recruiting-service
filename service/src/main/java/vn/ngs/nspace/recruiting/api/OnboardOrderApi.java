@@ -140,10 +140,10 @@ public class OnboardOrderApi {
     }
 
 
-    @PostMapping("/create-budy-mentor")
+    @PostMapping("/create-buddy-mentor")
     @ActionMapping(action = Permission.CREATE)
-    @Operation(summary = "Create single Onboard Order"
-            , description = "Create single Onboard Order"
+    @Operation(summary = "Create Buddy and Mentor by OnboardId"
+            , description = "Create Buddy and Mentor by OnboardId"
             , tags = { "OnboardOrder" }
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
@@ -159,6 +159,25 @@ public class OnboardOrderApi {
         }
     }
 
+    @PutMapping("/update-buddy-mentor/{id}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Update Buddy and Mentor by OnboardId "
+            , description = "Update single Buddy and Mentor, path param is OnboardOrderId"
+            , tags = { "OnboardOrder" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity updateBuddyAndMentor(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
+            , @RequestBody OnboardOrderDTO dto) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.updateBuddyByOnbodrdId(cid, uid, id, dto));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
 //    @PostMapping("/by-cycle")
 //    @ActionMapping(action = Permission.VIEW)
