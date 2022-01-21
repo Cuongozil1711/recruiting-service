@@ -77,4 +77,18 @@ public class AssetCheckListApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+
+    @PostMapping("/hand-over-asset-by-emid")
+    @ActionMapping(action = Permission.CREATE)
+    protected ResponseEntity handOverAsset(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody AssetCheckListDTO _dto) {
+        try {
+            AssetCheckListDTO dto = _service.handOverAsset(cid, uid, _dto);
+            return ResponseUtils.handlerSuccess(dto);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
 }

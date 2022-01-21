@@ -34,12 +34,20 @@ public class OnboardOrderService {
 
     /* logic validate data before insert model */
     public void valid(OnboardOrderDTO dto) throws BusinessException {
-
+        if(dto.getId() == null){
+            throw new BusinessException("Invalid-Id");
+        }
+        if(dto.getBuddy() == null){
+            throw new BusinessException("Invalid-buddy");
+        }
+        if(dto.getMentorId() == null){
+            throw new BusinessException("Invalid-mentor");
+        }
     }
 
     /* create object */
     public OnboardOrderDTO create(Long cid, String uid, OnboardOrderDTO request) throws BusinessException {
-        valid(request);
+//        valid(request);
         OnboardOrder order = OnboardOrder.of(cid, uid, request);
         order.setStatus(Constants.ENTITY_ACTIVE);
         order.setCreateBy(uid);
@@ -52,7 +60,7 @@ public class OnboardOrderService {
 
     /* update by id object */
     public OnboardOrderDTO update(Long cid, String uid, Long id, OnboardOrderDTO request) throws BusinessException {
-        valid(request);
+//        valid(request);
         OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
@@ -85,7 +93,7 @@ public class OnboardOrderService {
             if(dto.getBuddy() != null){
                 dto.setBuddyObj(mapEmployee.get(dto.getBuddy()));
             }if(dto.getMentorId() != null){
-                dto.setBuddyObj(mapEmployee.get(dto.getMentorId()));
+                dto.setMentorObj(mapEmployee.get(dto.getMentorId()));
             }
             if(dto.getEmployeeId() != null){
                 dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
@@ -150,10 +158,23 @@ public class OnboardOrderService {
         return dtos;
     }
 
+    /* create Buddy and Mentor by Onboard ID */
     public OnboardOrderDTO createBuddyByOnbodrdId(Long cid, String uid, OnboardOrderDTO request){
+        valid(request);
         OnboardOrder order = OnboardOrder.of(cid, uid, request);
         order = repo.save(order);
         return toDTOs(cid, uid, Arrays.asList(order)).get(0);
+    }
+
+    /* update Buddy and Mentor by Onboard ID */
+    public OnboardOrderDTO updateBuddyByOnbodrdId(Long cid,  String uid, Long id, OnboardOrderDTO request){
+        valid(request);
+        OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, id));
+        MapperUtils.copyWithoutAudit(request, curr);
+        curr.setUpdateBy(uid);
+        curr = repo.save(curr);
+
+        return toDTOWithObj(cid, uid, curr);
     }
 
     /* convert model object to DTO with data before response */

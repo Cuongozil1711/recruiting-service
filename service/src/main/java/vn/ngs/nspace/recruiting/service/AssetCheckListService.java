@@ -22,16 +22,22 @@ public class AssetCheckListService {
     private final ExecuteConfigService _configService;
 
     public AssetCheckListService(AssetCheckListRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
-        this.repo = (AssetCheckListRepo) repo;
+        this.repo = repo;
         _hcmService = hcmService;
         _configService = configService;
     }
 
     public void valid(AssetCheckListDTO dto){
+//        if(dto.getAssetId() == null){
+//            throw new BusinessException("invalid-asset");
+//        }
+        if (dto.getEmployeeId() == null){
+            throw new BusinessException("invalid-employee");
+        }
     }
 
     public AssetCheckListDTO create(Long cid, String uid, AssetCheckListDTO request) throws BusinessException {
-        valid(request);
+//        valid(request);
         AssetCheckList assetCheckList = AssetCheckList.of(cid, uid, request);
         assetCheckList.setCompanyId(cid);
         assetCheckList.setCreateBy(uid);
@@ -91,6 +97,23 @@ public class AssetCheckListService {
         return dtos;
     }
 
+    public AssetCheckListDTO handOverAsset (Long cid, String uid, AssetCheckListDTO request) {
+        valid(request);
+        AssetCheckList curr = AssetCheckList.of(cid, uid, request);
+        MapperUtils.copy(request, curr);
+        if(request.getReceiptDate() == null){
+            curr.setReceiptDate(null);
+        }
+        else {
+            curr.setReceiptDate(request.getReceiptDate());
+        }
+        curr = repo.save(curr);
+        return toDTOs(cid, uid, Arrays.asList(curr)).get(0);
+    }
+
+    public AssetCheckListDTO toDTOWithObj (Long cid, String uid,  AssetCheckList obj){
+        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
+    }
     public AssetCheckListDTO toDTO(AssetCheckList obj){
         return MapperUtils.map(obj, AssetCheckListDTO.class);
     }
