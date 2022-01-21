@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.request.EmployeeReq;
 import vn.ngs.nspace.hcm.share.dto.response.EmployeeResp;
+import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 
@@ -102,6 +103,7 @@ public class JobApplicationService {
 
         Set<Long> categoryIds = new HashSet<>();
         Set<Long> empIds = new HashSet<>();
+        Set<Long> orgIds = new HashSet<>();
         Set<String> userIds = new HashSet<>();
 
         objs.forEach(obj -> {
@@ -114,27 +116,18 @@ public class JobApplicationService {
             if (obj.getTitleId() != null) {
                 categoryIds.add(obj.getTitleId());
             }
-//            if (obj.getLevelId() != null) {
-//                categoryIds.add(obj.getLevelId());
-//            }
-//            if(obj.getCurrencyId() != null){
-//                categoryIds.add(obj.getCurrencyId());
-//            }
-//            if (obj.getIndustryId() != null){
-//                categoryIds.add(obj.getIndustryId());
-//            }
-//            if(obj.getReceiptName() != null){
-//                empIds.add(obj.getReceiptName());
-//            }
-//
-//
-//            dtos.add(toDTO(obj));
+            if (obj.getEmployeeId() != null && obj.getEmployeeId() != 0) {
+                empIds.add(obj.getEmployeeId());
+            }
+            if(obj.getOrgId() != null && obj.getOrgId() != 0){
+                orgIds.add(obj.getOrgId());
+            }
         });
 
-//        List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
+        Map<Long, EmployeeDTO> mapEmp = _hcmService.getMapEmployees(uid,cid,empIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
-
+        Map<Long, OrgResp> mapOrg = _hcmService.getMapOrgs(uid, cid, orgIds);
         for (JobApplicationDTO dto : dtos) {
             if (dto.getPositionId() != null) {
                 dto.setPositionObj(mapCategory.get(dto.getPositionId()));
@@ -142,22 +135,15 @@ public class JobApplicationService {
             if (dto.getTitleId() != null) {
                 dto.setTitleObj(mapCategory.get(dto.getTitleId()));
             }
-//            if (dto.getLevelId() != null) {
-//                dto.setLevelObj(mapCategory.get(dto.getLevelId()));
-//            }
-//            if (dto.getCurrencyId() != null){
-//                dto.setCurrencyObj(mapCategory.get(dto.getCurrencyId()));
-//            }
-//            if (dto.getIndustryId() != null){
-//                dto.setIndustryObj(mapCategory.get(dto.getIndustryId()));
-//            }
-//            if (dto.getReceiptName() != null){
-//                EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getReceiptName())).findAny().orElse(new EmployeeDTO());
-//                dto.setReceiptNameObj(emp);
-//            }
-//            if(!StringUtils.isEmpty(dto.getCreateBy())){
-//                dto.setCreateByObj((Map<String, Object>) mapperUser.get(dto.getCreateBy()));
-//            }
+            if(dto.getOrgId() != null){
+                dto.setOrg(mapOrg.get(orgIds));
+            }
+            if (dto.getEmployeeId() != null && dto.getEmployeeId() != 0){
+                dto.setEmployeeObj(mapEmp.get(dto.getEmployeeId()));
+            }
+            if(!StringUtils.isEmpty(dto.getCreateBy())){
+                dto.setCreateByObj((Map<String, Object>) mapperUser.get(dto.getCreateBy()));
+            }
         }
         return dtos;
 
