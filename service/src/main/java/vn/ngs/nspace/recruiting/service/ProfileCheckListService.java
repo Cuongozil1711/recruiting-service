@@ -1,26 +1,19 @@
 package vn.ngs.nspace.recruiting.service;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
-import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.ProfileCheckList;
-import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
-import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplateItem;
+import vn.ngs.nspace.recruiting.model.*;
+import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
-import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
-import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateItemDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,11 +23,13 @@ public class ProfileCheckListService {
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
     private final ProfileCheckListTemplateItemRepo itemRepo;
+    private final OnboardOrderRepo onboardOrderRepo;
 
-    public ProfileCheckListService(ProfileCheckListRepo repo,  ProfileCheckListTemplateRepo templateRepo, ProfileCheckListTemplateItemRepo itemRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public ProfileCheckListService(ProfileCheckListRepo repo, ProfileCheckListTemplateRepo templateRepo, ProfileCheckListTemplateItemRepo itemRepo, OnboardOrderRepo onboardOrderRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         this.repo = repo;
         this.templateRepo = templateRepo;
         this.itemRepo = itemRepo;
+        this.onboardOrderRepo = onboardOrderRepo;
         _hcmService = hcmService;
         _configService = configService;
     }
@@ -49,12 +44,20 @@ public class ProfileCheckListService {
         if (dto.getReceiptDate() == null){
             throw new BusinessException("invalid-receiptDate");
         }
-        if (dto.getSenderId() == null){
+       if (dto.getSenderId() == null){
             throw new BusinessException("invalid-sender");
-        }
+       }
         if (dto.getDescription() == null){
             throw new BusinessException("invalid-description");
         }
+    }
+
+    public List<ProfileCheckListDTO> createByOnboardOrder(Long cid, String uid, OnboardOrder onboard){
+        Date receiptDate = new Date();
+        Long id = onboard.getId();
+        JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, id).orElseThrow(()-> new BusinessException("not found OnboardOder"));
+
+        return createByPositionTitleContract(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getContractType(), ja.getEmployeeId(), receiptDate, "", 0l);
     }
 
     public List<ProfileCheckListDTO> createByPositionTitleContract(Long cid, String uid

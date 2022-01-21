@@ -4,11 +4,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.Mapping;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
+import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
@@ -26,5 +30,14 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
             , @Param("employeeId") Long titleId
             , @Param("jobApplicationId") Long contractTypeId
             , Pageable pageable);
+
+    @Query(value = " select ja " +
+            " from OnboardOrder p " +
+            " inner join JobApplication ja on p.jobApplicationId = ja.id" +
+            " where (p.companyId = :companyId)" +
+            " and (p.id = :id)" )
+
+    Optional<JobApplication> getInfoOnboard(@Param("companyId") Long cid
+            , @Param("id") Long id);
 }
 
