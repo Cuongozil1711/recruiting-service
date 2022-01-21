@@ -150,4 +150,22 @@ public class ExecuteHcmService {
             throw new RuntimeException(e);
         }
     }
+
+    public  Map<String, List<Map<String, Object>>> getMapByTypeCodes(String requestUserId, Long companyId, EmployeeReq employeeReq){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/map-by-type-codes");
+            HttpMethod method = HttpMethod.POST;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            HttpEntity request = new HttpEntity<>(employeeReq, headers);
+
+            ParameterizedTypeReference<BaseResponse<Map<String, List<Map<String, Object>>>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<String, List<Map<String, Object>>>>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<Map<String, List<Map<String, Object>>>> resp = (BaseResponse<Map<String, List<Map<String, Object>>>>) response.getBody();
+            return resp.getData();
+
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 }

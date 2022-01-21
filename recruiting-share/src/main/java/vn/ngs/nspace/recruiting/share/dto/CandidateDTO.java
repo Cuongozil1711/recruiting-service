@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.share.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
 import java.util.List;
@@ -46,7 +47,9 @@ public class CandidateDTO {
     private Long cvSourceId;
 
     private List<String> tags;
+    private Long employeeId;
 
+    private EmployeeDTO employeeObj;
     private Map<String, Object> genderObj;
     private Map<String, Object> wardCodeObj;
     private Map<String, Object> districtCodeObj;
