@@ -19,7 +19,9 @@ public class OnboardOrderDTO {
     private Long buddy; // nguoi tiep nhan ho tro chuyen mon
     private Long jobApplicationId; // id cua ho so xin viec
     private Integer status;
+    private Long mentorId;
 
     private EmployeeDTO employeeObj;
     private EmployeeDTO buddyObj;
+    private EmployeeDTO mentorObj;
 }
