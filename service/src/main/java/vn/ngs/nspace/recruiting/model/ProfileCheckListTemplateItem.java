@@ -24,7 +24,7 @@ public class ProfileCheckListTemplateItem extends PersistableEntity<Long> {
     private Long id;
     private Long checklistId; //dm dung chung
     private Long templateId; // ngay nhan
-    private String copyType; // ngay nhan
+    private String copyType; // hinh thuc : goc, copy, cong chung
     private String description; // ngay nhan
     private Boolean required = true;
 
