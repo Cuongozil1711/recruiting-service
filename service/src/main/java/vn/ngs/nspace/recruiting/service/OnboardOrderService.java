@@ -74,7 +74,9 @@ public class OnboardOrderService {
             if(obj.getEmployeeId() != null){
                 employeeIds.add(obj.getEmployeeId());
             }
-
+            if(obj.getMentorId() != null){
+                employeeIds.add(obj.getMentorId());
+            }
             dtos.add(toDTO(obj));
         });
 
@@ -82,6 +84,8 @@ public class OnboardOrderService {
         for(OnboardOrderDTO dto : dtos){
             if(dto.getBuddy() != null){
                 dto.setBuddyObj(mapEmployee.get(dto.getBuddy()));
+            }if(dto.getMentorId() != null){
+                dto.setBuddyObj(mapEmployee.get(dto.getMentorId()));
             }
             if(dto.getEmployeeId() != null){
                 dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
@@ -144,6 +148,12 @@ public class OnboardOrderService {
         }
 
         return dtos;
+    }
+
+    public OnboardOrderDTO createBuddyByOnbodrdId(Long cid, String uid, OnboardOrderDTO request){
+        OnboardOrder order = OnboardOrder.of(cid, uid, request);
+        order = repo.save(order);
+        return toDTOs(cid, uid, Arrays.asList(order)).get(0);
     }
 
     /* convert model object to DTO with data before response */

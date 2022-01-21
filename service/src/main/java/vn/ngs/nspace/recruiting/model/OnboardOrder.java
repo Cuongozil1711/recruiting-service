@@ -24,7 +24,7 @@ public class OnboardOrder extends PersistableEntity<Long> {
     private Long employeeId; // nhan vien he thong
     private Long buddy; // nguoi tiep nhan ho tro chuyen mon
     private Long jobApplicationId; // id cua ho so xin viec
-
+    private Long mentorId;
 
     public static OnboardOrder of (Long cid, String uid, OnboardOrderDTO dto){
         OnboardOrder order = OnboardOrder.builder()
@@ -32,6 +32,7 @@ public class OnboardOrder extends PersistableEntity<Long> {
                 .employeeId(dto.getEmployeeId())
                 .buddy(dto.getBuddy())
                 .jobApplicationId(dto.getJobApplicationId())
+                .mentorId(dto.getMentorId())
                 .build();
         return order;
     }

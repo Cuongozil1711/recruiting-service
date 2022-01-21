@@ -140,7 +140,24 @@ public class OnboardOrderApi {
     }
 
 
-
+    @PostMapping("/create-budy-mentor")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "Create single Onboard Order"
+            , description = "Create single Onboard Order"
+            , tags = { "OnboardOrder" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity createBuddyAndMentor(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestBody OnboardOrderDTO dto) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.createBuddyByOnbodrdId(cid, uid, dto));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
 
 //    @PostMapping("/by-cycle")
