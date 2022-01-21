@@ -18,6 +18,7 @@ public class ProfileCheckListTemplateItemDTO {
     private Long templateId; // ngay nhan
     private String description; // ngay nhan
     private Boolean required = false;
+    private String copyType;
     private Integer status;
 
     private Map<String, Object> checkListObj;
