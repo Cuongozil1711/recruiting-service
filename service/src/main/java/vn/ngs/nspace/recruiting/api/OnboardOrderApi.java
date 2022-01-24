@@ -140,24 +140,24 @@ public class OnboardOrderApi {
     }
 
 
-    @PostMapping("/create-buddy-mentor")
-    @ActionMapping(action = Permission.CREATE)
-    @Operation(summary = "Create Buddy and Mentor by OnboardId"
-            , description = "Create Buddy and Mentor by OnboardId"
-            , tags = { "OnboardOrder" }
-    )
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-            , schema = @Schema(implementation = String.class))
-    protected ResponseEntity createBuddyAndMentor(
-            @Parameter(description = "Id of Company") @RequestHeader Long cid
-            , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @RequestBody OnboardOrderDTO dto) {
-        try {
-            return ResponseUtils.handlerSuccess(_service.createBuddyByOnbodrdId(cid, uid, dto.getId(), dto.getBuddy(), dto.getMentorId()));
-        } catch (Exception ex) {
-            return ResponseUtils.handlerException(ex);
-        }
-    }
+//    @PostMapping("/create-buddy-mentor")
+//    @ActionMapping(action = Permission.CREATE)
+//    @Operation(summary = "Create Buddy and Mentor by OnboardId"
+//            , description = "Create Buddy and Mentor by OnboardId"
+//            , tags = { "OnboardOrder" }
+//    )
+//    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+//            , schema = @Schema(implementation = String.class))
+//    protected ResponseEntity createBuddyAndMentor(
+//            @Parameter(description = "Id of Company") @RequestHeader Long cid
+//            , @Parameter(description = "Id of User") @RequestHeader String uid
+//            , @RequestBody OnboardOrderDTO dto) {
+//        try {
+//            return ResponseUtils.handlerSuccess(_service.createBuddyByOnbodrdId(cid, uid, dto.getEmployeeId(), dto.getBuddy(), dto.getMentorId()));
+//        } catch (Exception ex) {
+//            return ResponseUtils.handlerException(ex);
+//        }
+//    }
 
     @PutMapping("/update-buddy-mentor/{id}")
     @ActionMapping(action = Permission.UPDATE)
@@ -170,10 +170,10 @@ public class OnboardOrderApi {
     protected ResponseEntity updateBuddyAndMentor(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
+            , @Parameter(description = "Path Variable") @PathVariable(value = "employeeId") Long employeeId
             , @RequestBody OnboardOrderDTO dto) {
         try {
-            return ResponseUtils.handlerSuccess(_service.updateBuddyByOnbodrdId(cid, uid, id, dto.getBuddy(), dto.getMentorId()));
+            return ResponseUtils.handlerSuccess(_service.updateBuddyByOnboardId(cid, uid, employeeId, dto.getBuddy(), dto.getMentorId()));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

@@ -37,7 +37,7 @@ public class AssetCheckListService {
     }
 
     public AssetCheckListDTO create(Long cid, String uid, AssetCheckListDTO request) throws BusinessException {
-//        valid(request);
+        valid(request);
         AssetCheckList assetCheckList = AssetCheckList.of(cid, uid, request);
         assetCheckList.setCompanyId(cid);
         assetCheckList.setCreateBy(uid);
@@ -97,11 +97,23 @@ public class AssetCheckListService {
         return dtos;
     }
 
-    public AssetCheckListDTO handOverAsset (Long cid, String uid, Long assetId, Long employeeId, Date reciptDate) {
-        AssetCheckList curr = repo.search(cid, assetId, employeeId);
-        curr.setReceiptDate(reciptDate);
-        curr = repo.save(curr);
-        return toDTO(curr);
+    public AssetCheckListDTO handOverAsset (Long cid, String uid, AssetCheckListDTO dto) {
+        valid(dto);
+        AssetCheckList curr = repo.findByCompanyIdAndAssetIdAndEmployeeId(cid, dto.getAssetId(), dto.getEmployeeId());
+        if (curr == null){
+            curr = AssetCheckList.of(cid, uid, dto);
+            curr.setCompanyId(cid);
+            curr.setCreateBy(uid);
+            curr.setUpdateBy(uid);
+            curr.setStatus(Constants.ENTITY_ACTIVE);
+            curr = repo.save(curr);
+
+        }
+        else{
+            curr.setReceiptDate(dto.getReceiptDate());
+            curr = repo.save(curr);
+        }
+        return toDTOWithObj(cid, uid, curr);
     }
 
     public AssetCheckListDTO toDTOWithObj (Long cid, String uid,  AssetCheckList obj){

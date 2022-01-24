@@ -84,7 +84,7 @@ public class AssetCheckListApi {
             , @RequestHeader String uid
             , @RequestBody AssetCheckListDTO _dto) {
         try {
-            AssetCheckListDTO dto = _service.handOverAsset(cid, uid, _dto.getAssetId(), _dto.getEmployeeId(), _dto.getReceiptDate());
+            AssetCheckListDTO dto = _service.handOverAsset(cid, uid, _dto);
             return ResponseUtils.handlerSuccess(dto);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
