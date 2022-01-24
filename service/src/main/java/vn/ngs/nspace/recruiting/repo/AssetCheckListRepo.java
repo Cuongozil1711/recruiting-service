@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.AssetCheckList;
+import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 
 import java.util.Date;
@@ -20,5 +21,13 @@ public interface AssetCheckListRepo extends BaseRepo<AssetCheckList,Long> {
     List<AssetCheckList> findByCompanyIdAndOnboardOrderId(long cid, long onboardOrderId);
     List<AssetCheckList> findByCompanyIdAndEmployeeId(long cid, long employeeId);
 
+    @Query(value = " select a " +
+            " from AssetCheckList a " +
+            " where (a.companyId = :companyId)" +
+            " and (a.assetId = :assetId) " +
+            " and (a.employeeId = :employeeId)" )
+    AssetCheckList search(@Param("companyId") Long cid
+            , @Param("assetId") Long assetId
+            , @Param("employeeId") Long employeeId );
 }
 

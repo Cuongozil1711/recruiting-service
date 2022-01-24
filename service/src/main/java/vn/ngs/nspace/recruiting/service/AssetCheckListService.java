@@ -28,9 +28,9 @@ public class AssetCheckListService {
     }
 
     public void valid(AssetCheckListDTO dto){
-//        if(dto.getAssetId() == null){
-//            throw new BusinessException("invalid-asset");
-//        }
+        if(dto.getAssetId() == null){
+            throw new BusinessException("invalid-asset");
+        }
         if (dto.getEmployeeId() == null){
             throw new BusinessException("invalid-employee");
         }
@@ -97,13 +97,11 @@ public class AssetCheckListService {
         return dtos;
     }
 
-    public AssetCheckListDTO handOverAsset (Long cid, String uid, AssetCheckListDTO request) {
-        valid(request);
-        AssetCheckList curr = AssetCheckList.of(cid, uid, request);
-        MapperUtils.copy(request, curr);
-
+    public AssetCheckListDTO handOverAsset (Long cid, String uid, Long assetId, Long employeeId, Date reciptDate) {
+        AssetCheckList curr = repo.search(cid, assetId, employeeId);
+        curr.setReceiptDate(reciptDate);
         curr = repo.save(curr);
-        return (AssetCheckListDTO) toDTOs(cid, uid, Arrays.asList(curr));
+        return toDTO(curr);
     }
 
     public AssetCheckListDTO toDTOWithObj (Long cid, String uid,  AssetCheckList obj){
