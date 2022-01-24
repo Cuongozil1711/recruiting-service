@@ -12,14 +12,6 @@ import java.util.Optional;
 
 public interface ProfileCheckListRepo extends BaseRepo<ProfileCheckList, Long> {
     Optional<ProfileCheckList> findByCompanyIdAndChecklistIdAndEmployeeIdAndStatus(Long cid, Long checkListId, Long employeeId, Integer status);
+    Optional<ProfileCheckList> findByCompanyIdAndChecklistIdAndEmployeeId(Long cid, Long checkListId, Long employeeId);
 
-    @Query(value = " select p " +
-            " from ProfileCheckList p " +
-            " where (p.companyId = :companyId)" +
-            " and (p.checklistId = :checklistId) " +
-            " and (p.employeeId = :employeeId)" )
-
-    ProfileCheckList getProfile(@Param("companyId") Long cid
-            , @Param("checklistId") Long checklistId
-            , @Param("employeeId") Long employeeId );
 }

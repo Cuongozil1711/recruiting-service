@@ -20,14 +20,6 @@ public interface AssetCheckListRepo extends BaseRepo<AssetCheckList,Long> {
     Optional<AssetCheckList> findByCompanyIdAndId(long cid, Long id);
     List<AssetCheckList> findByCompanyIdAndOnboardOrderId(long cid, long onboardOrderId);
     List<AssetCheckList> findByCompanyIdAndEmployeeId(long cid, long employeeId);
-
-    @Query(value = " select a " +
-            " from AssetCheckList a " +
-            " where (a.companyId = :companyId)" +
-            " and (a.assetId = :assetId) " +
-            " and (a.employeeId = :employeeId)" )
-    AssetCheckList search(@Param("companyId") Long cid
-            , @Param("assetId") Long assetId
-            , @Param("employeeId") Long employeeId );
+    AssetCheckList findByCompanyIdAndAssetIdAndEmployeeId(long cid, long assetId, long employeeId);
 }
 

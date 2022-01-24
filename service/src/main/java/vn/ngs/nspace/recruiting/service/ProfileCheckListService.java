@@ -2,6 +2,7 @@ package vn.ngs.nspace.recruiting.service;
 
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
+import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
@@ -105,7 +106,7 @@ public class ProfileCheckListService {
         if(employeeId == null){
             throw new BusinessException("invalid-employeeId");
         }
-        ProfileCheckList curr = repo.getProfile(cid, checklistId, employeeId);
+        ProfileCheckList curr = repo.findByCompanyIdAndChecklistIdAndEmployeeId(cid, checklistId, employeeId).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, employeeId));;
         curr.setReceiptDate(reciptDate);
         curr = repo.save(curr);
         return  toDTO(curr);
