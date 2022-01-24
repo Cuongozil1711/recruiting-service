@@ -1,29 +1,27 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.springframework.stereotype.Service;
-import vn.ngs.nspace.lib.exceptions.BusinessException;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateTodo;
-import vn.ngs.nspace.recruiting.model.Reason;
 import vn.ngs.nspace.recruiting.repo.CandidateToDoRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateToDoDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
 public class CandidateToDoService {
     private final CandidateToDoRepo repo;
+    private final ExecuteHcmService _hcmService;
 
-    public CandidateToDoService(CandidateToDoRepo repo) {
+    public CandidateToDoService(CandidateToDoRepo repo, ExecuteHcmService hcmService) {
         this.repo = repo;
+        _hcmService = hcmService;
     }
 
     public void valid(CandidateToDoDTO dto){
@@ -79,9 +77,20 @@ public class CandidateToDoService {
 
     public List<CandidateToDoDTO> toDTOs(Long cid, String uid, List<CandidateTodo> objs) {
         List<CandidateToDoDTO> dtos = new ArrayList<>();
+        Set<Long> empIds = new HashSet<>();
         objs.forEach(obj -> {
+            if(obj.getResponsibleId() != null){
+                empIds.add(obj.getResponsibleId());
+            }
             dtos.add(toDTO(obj));
         });
+        List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
+        for (CandidateToDoDTO dto : dtos){
+            if (dto.getResponsibleId() != null){
+                EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getResponsibleId())).findAny().orElse(new EmployeeDTO());
+                dto.setResponsibleIdObj(emp);
+            }
+        }
         return dtos;
     }
 }

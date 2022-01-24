@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,33 +36,33 @@ public class CandidateToDoApi {
 
 
 
-//    @PostMapping("/search")
-//    @ActionMapping(action = Permission.VIEW)
-//    @Operation(summary = "Search all CandidateToDo"
-//            , description = "Search by condition : name, gender, wardCode, phone, email,..."
-//            , tags = { "Candidate-To-Do" }
-//    )
-//    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-//            , schema = @Schema(implementation = String.class))
-//    protected ResponseEntity search(
-//            @Parameter(description = "Id of Company") @RequestHeader Long cid
-//            , @Parameter(description = "Id of User") @RequestHeader String uid
-//            , @Parameter(description = "Condition: title, responsibleId,....")
-//            @RequestBody Map<String,Object> search
-//            , Pageable pageable) {
-//        try {
-//            String title = MapUtils.getString(search,"title","all");
-//            Long candidateId = MapUtils.getLong(search,"candidateId", -1l);
-//            Long responsibleId = MapUtils.getLong(search, "responsibleId", -1l);
-//
-//
-//            Page<CandidateTodo> page = repo.search(cid, title,candidateId,responsibleId, pageable);
-//            List<CandidateToDoDTO> dtos = service.toDTOs(cid, uid, page.getContent());
-//            return null;
-//        }catch (Exception e){
-//            return ResponseUtils.handlerException(e);
-//        }
-//    }
+    @PostMapping("/search")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Search all CandidateToDo"
+            , description = "Search by condition : name, gender, wardCode, phone, email,..."
+            , tags = { "Candidate-To-Do" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity search(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Condition: title, responsibleId,....")
+            @RequestBody Map<String,Object> search
+            , Pageable pageable) {
+        try {
+            String title = MapUtils.getString(search,"title","all");
+            Long candidateId = MapUtils.getLong(search,"candidateId", -1l);
+            Long responsibleId = MapUtils.getLong(search, "responsibleId", -1l);
+
+
+            Page<CandidateTodo> page = repo.search(cid, title,candidateId,responsibleId, pageable);
+            List<CandidateToDoDTO> dtos = service.toDTOs(cid, uid, page.getContent());
+            return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+        }catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
     @PostMapping("")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "create CandidateToDo "
