@@ -8,6 +8,7 @@ import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
+import vn.ngs.nspace.recruiting.share.dto.AssetCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
@@ -95,6 +96,17 @@ public class ProfileCheckListService {
         obj.setCreateBy(uid);
 
         return toDTO(repo.save(obj));
+    }
+
+    public ProfileCheckListDTO handOverProfile (Long cid, String uid, ProfileCheckListDTO request) {
+        if(request.getChecklistId() == null){
+            throw new BusinessException("invalid-checklist");
+        }
+        ProfileCheckList curr = ProfileCheckList.of(cid, uid, request);
+        MapperUtils.copy(request, curr);
+
+        curr = repo.save(curr);
+        return  toDTO(curr);
     }
 
     public ProfileCheckListDTO toDTO(ProfileCheckList obj){

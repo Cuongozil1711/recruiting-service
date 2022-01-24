@@ -29,6 +29,7 @@ public class AssetCheckList extends PersistableEntity<Long> {
     private Long senderId; // nguoi giao
     private Long employeeId; // nguoi nhan
     private String description;
+    
 
     public static AssetCheckList of(Long cid, String uid, AssetCheckListDTO dto) {
         AssetCheckList assetCheckList = AssetCheckList.builder()

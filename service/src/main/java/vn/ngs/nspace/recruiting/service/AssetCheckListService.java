@@ -101,14 +101,9 @@ public class AssetCheckListService {
         valid(request);
         AssetCheckList curr = AssetCheckList.of(cid, uid, request);
         MapperUtils.copy(request, curr);
-        if(request.getReceiptDate() == null){
-            curr.setReceiptDate(null);
-        }
-        else {
-            curr.setReceiptDate(request.getReceiptDate());
-        }
+
         curr = repo.save(curr);
-        return toDTOs(cid, uid, Arrays.asList(curr)).get(0);
+        return (AssetCheckListDTO) toDTOs(cid, uid, Arrays.asList(curr));
     }
 
     public AssetCheckListDTO toDTOWithObj (Long cid, String uid,  AssetCheckList obj){
