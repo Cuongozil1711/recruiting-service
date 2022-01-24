@@ -36,8 +36,14 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
             " inner join JobApplication ja on p.jobApplicationId = ja.id" +
             " where (p.companyId = :companyId)" +
             " and (p.id = :id)" )
-
     Optional<JobApplication> getInfoOnboard(@Param("companyId") Long cid
             , @Param("id") Long id);
+
+    @Query(value = " select p " +
+            " from OnboardOrder p " +
+            " where (p.companyId = :companyId)" +
+            " and (p.id = :id ) ")
+    OnboardOrder getOnboardById(@Param("companyId") Long cid
+            , @Param("id") Long id );
 }
 

@@ -98,13 +98,15 @@ public class ProfileCheckListService {
         return toDTO(repo.save(obj));
     }
 
-    public ProfileCheckListDTO handOverProfile (Long cid, String uid, ProfileCheckListDTO request) {
-        if(request.getChecklistId() == null){
+    public ProfileCheckListDTO handOverProfile (Long cid, String uid, Long checklistId, Long employeeId, Date reciptDate) {
+        if(checklistId == null){
             throw new BusinessException("invalid-checklist");
         }
-        ProfileCheckList curr = ProfileCheckList.of(cid, uid, request);
-        MapperUtils.copy(request, curr);
-
+        if(employeeId == null){
+            throw new BusinessException("invalid-employeeId");
+        }
+        ProfileCheckList curr = repo.getProfile(cid, checklistId, employeeId);
+        curr.setReceiptDate(reciptDate);
         curr = repo.save(curr);
         return  toDTO(curr);
     }

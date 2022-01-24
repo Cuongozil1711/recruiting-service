@@ -94,7 +94,7 @@ public class ProfileCheckListApi {
             @RequestHeader("uid") String uid
             , @RequestBody ProfileCheckListDTO dto){
         try {
-            return ResponseUtils.handlerSuccess(_service.handOverProfile(cid, uid, dto));
+            return ResponseUtils.handlerSuccess(_service.handOverProfile(cid, uid, dto.getChecklistId(), dto.getEmployeeId(), dto.getReceiptDate()));
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }

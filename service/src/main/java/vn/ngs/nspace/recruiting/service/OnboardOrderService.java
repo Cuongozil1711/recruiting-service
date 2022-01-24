@@ -159,19 +159,43 @@ public class OnboardOrderService {
     }
 
     /* create Buddy and Mentor by Onboard ID */
-    public OnboardOrderDTO createBuddyByOnbodrdId(Long cid, String uid, OnboardOrderDTO request){
-        valid(request);
-        OnboardOrder order = OnboardOrder.of(cid, uid, request);
+    public OnboardOrderDTO createBuddyByOnbodrdId(Long cid, String uid, Long id, Long buddy, Long mentorId){
+        if(cid == null){
+            throw new BusinessException("invalid-cid");
+        }
+        if (id == null){
+            throw new BusinessException("invalid-id");
+        }
+        if (buddy == null){
+            throw new BusinessException("invalid-buddy");
+        }
+        if (mentorId == null){
+            throw new BusinessException("invalid-mentorId");
+        }
+        OnboardOrder order = repo.getOnboardById(cid, id);
+        order.setBuddy(buddy);
+        order.setMentorId(mentorId);
         order = repo.save(order);
         return toDTOs(cid, uid, Arrays.asList(order)).get(0);
     }
 
     /* update Buddy and Mentor by Onboard ID */
-    public OnboardOrderDTO updateBuddyByOnbodrdId(Long cid,  String uid, Long id, OnboardOrderDTO request){
-        valid(request);
+    public OnboardOrderDTO updateBuddyByOnbodrdId(Long cid,  String uid, Long id, Long buddy, Long mentorId){
+        if(cid == null){
+            throw new BusinessException("invalid-cid");
+        }
+        if (id == null){
+            throw new BusinessException("invalid-id");
+        }
+        if (buddy == null){
+            throw new BusinessException("invalid-buddy");
+        }
+        if (mentorId == null){
+            throw new BusinessException("invalid-mentorId");
+        }
         OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, id));
-        MapperUtils.copyWithoutAudit(request, curr);
-        curr.setUpdateBy(uid);
+        curr.setBuddy(buddy);
+        curr.setMentorId(mentorId);
         curr = repo.save(curr);
 
         return toDTOWithObj(cid, uid, curr);

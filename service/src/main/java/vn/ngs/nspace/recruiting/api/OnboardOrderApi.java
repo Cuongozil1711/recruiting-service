@@ -153,7 +153,7 @@ public class OnboardOrderApi {
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @RequestBody OnboardOrderDTO dto) {
         try {
-            return ResponseUtils.handlerSuccess(_service.createBuddyByOnbodrdId(cid, uid, dto));
+            return ResponseUtils.handlerSuccess(_service.createBuddyByOnbodrdId(cid, uid, dto.getId(), dto.getBuddy(), dto.getMentorId()));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
@@ -173,7 +173,7 @@ public class OnboardOrderApi {
             , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
             , @RequestBody OnboardOrderDTO dto) {
         try {
-            return ResponseUtils.handlerSuccess(_service.updateBuddyByOnbodrdId(cid, uid, id, dto));
+            return ResponseUtils.handlerSuccess(_service.updateBuddyByOnbodrdId(cid, uid, id, dto.getBuddy(), dto.getMentorId()));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
