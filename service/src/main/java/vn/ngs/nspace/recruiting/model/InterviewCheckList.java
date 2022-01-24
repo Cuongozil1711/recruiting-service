@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,5 +28,17 @@ public class InterviewCheckList extends PersistableEntity<Long> {
     private Double rating;
     private String result;
     private Date interviewDate;
+
+    public static InterviewCheckList of(Long cid, String uid, InterviewCheckListDTO dto){
+        InterviewCheckList obj = InterviewCheckList.builder()
+                .id(dto.getId())
+                .interviewResultId(dto.getInterviewResultId())
+                .checkListId(dto.getCheckListId())
+                .rating(dto.getRating())
+                .result(dto.getResult())
+                .interviewDate(dto.getInterviewDate())
+                .build();
+        return obj;
+    }
 
 }

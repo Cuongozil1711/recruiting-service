@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListTemplateItemDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,4 +27,17 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
     private Double minRating; //enable when optionType = number
     private Double maxRating; //enable when optionType = number
     private String optionValues; //enable when optionType = select
+
+    public static InterviewCheckListTemplateItem of(Long cid, String uid, InterviewCheckListTemplateItemDTO dto){
+        InterviewCheckListTemplateItem obj = InterviewCheckListTemplateItem.builder()
+                .id(dto.getId())
+                .templateId(dto.getTemplateId())
+                .checkListId(dto.getCheckListId())
+                .optionType(dto.getOptionType())
+                .minRating(dto.getMinRating())
+                .maxRating(dto.getMaxRating())
+                .optionValues(dto.getOptionValues())
+                .build();
+        return obj;
+    }
 }
