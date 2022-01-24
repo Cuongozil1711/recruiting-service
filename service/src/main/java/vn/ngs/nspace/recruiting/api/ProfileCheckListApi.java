@@ -79,4 +79,24 @@ public class ProfileCheckListApi {
         }
     }
 
+    @PostMapping("/hang-over-profile-by-emid")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "handOver profile"
+            , description = "API for handOver profile"
+            , tags = { "ProfileCheckList" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity handOverProfile(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @RequestBody ProfileCheckListDTO dto){
+        try {
+            return ResponseUtils.handlerSuccess(_service.handOverProfile(cid, uid, dto));
+        }catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 }
