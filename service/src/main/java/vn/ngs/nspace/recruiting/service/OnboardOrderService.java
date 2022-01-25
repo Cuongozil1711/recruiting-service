@@ -194,7 +194,7 @@ public class OnboardOrderService {
         if (mentorId == null){
             throw new BusinessException("invalid-mentorId");
         }
-        OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElse(new OnboardOrder());
+        OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, id));
         curr.setUpdateBy(uid);
         curr.setBuddy(buddy);
         curr.setMentorId(mentorId);

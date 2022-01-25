@@ -119,8 +119,8 @@ nspace:
       #URL: https://api.ngdox.vn/nspace/event
     config:
       headers: '{"key":"test","cid":0,"uid":"0"}'
-#      url: http://api.ngs.vn/nspace/config
-      url: http://api.gateway.svc.cluster.local:8082/nspace/config
+      url: http://api.ngs.vn/nspace/config
+#      url: http://api.gateway.svc.cluster.local:8082/nspace/config
       key: test
       cache:
         expires: 5
@@ -156,7 +156,7 @@ nspace:
         expiresAfter: write
 
     hcm:
-#      URL: http://api.ngs.vn/nspace/hcm
-      URL: http://api.gateway.svc.cluster.local:8082/nspace/hcm
+      URL: http://api.ngs.vn/nspace/hcm
+#      URL: http://api.gateway.svc.cluster.local:8082/nspace/hcm
 #      URL: http://localhost:8087/
       key: test

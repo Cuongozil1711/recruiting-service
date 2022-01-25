@@ -13,6 +13,7 @@ import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -97,23 +98,16 @@ public class AssetCheckListService {
         return dtos;
     }
 
-    public AssetCheckListDTO handOverAsset (Long cid, String uid, AssetCheckListDTO dto) {
-        valid(dto);
-        AssetCheckList curr = repo.findByCompanyIdAndAssetIdAndEmployeeId(cid, dto.getAssetId(), dto.getEmployeeId());
-        if (curr == null){
-            curr = AssetCheckList.of(cid, uid, dto);
-            curr.setCompanyId(cid);
-            curr.setCreateBy(uid);
-            curr.setUpdateBy(uid);
-            curr.setStatus(Constants.ENTITY_ACTIVE);
-            curr = repo.save(curr);
+    public List<AssetCheckListDTO> handOverAsset(Long cid, String uid, Long onboardId, List<AssetCheckListDTO> listDTOS) {
+        List<AssetCheckList> assetCheckLists = repo.findByCompanyIdAndOnboardOrderId(cid, onboardId);
+        List<Long> assetIdUpdates = listDTOS.stream().map(dto -> dto.getAssetId()).collect(Collectors.toList());
+        List<Long> assetIdExists = assetCheckLists.stream().map(dto -> dto.getAssetId()).collect(Collectors.toList());
 
-        }
-        else{
-            curr.setReceiptDate(dto.getReceiptDate());
-            curr = repo.save(curr);
-        }
-        return toDTOWithObj(cid, uid, curr);
+        assetIdUpdates.removeAll(assetIdExists);
+        AssetCheckList curr = new AssetCheckList();
+
+
+        return toDTOs(cid, uid, assetCheckLists);
     }
 
     public AssetCheckListDTO toDTOWithObj (Long cid, String uid,  AssetCheckList obj){

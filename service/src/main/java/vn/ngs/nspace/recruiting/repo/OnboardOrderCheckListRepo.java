@@ -16,5 +16,6 @@ public interface OnboardOrderCheckListRepo extends BaseRepo<OnboardOrderCheckLis
 
     List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdAndCodeIn(Long cid, Long orderId, List<String> codes);
     Optional<OnboardOrderCheckList> findByCompanyIdAndIdAndEmployeeId(Long cid, Long id, Long employeeId);
+    List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderId (Long cid, Long onboardOrderId);
 }
 
