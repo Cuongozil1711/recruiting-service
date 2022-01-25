@@ -205,7 +205,7 @@ public class CandidateApi {
             String ageLess = MapUtils.getString(condition,"ageLess", "all");
             String lastPosition = MapUtils.getString(condition,"condition","all").toLowerCase(Locale.ROOT);
             Double fromExp = MapUtils.getDouble(condition,"fromExp",0.0d);
-            Double toExp = MapUtils.getDouble(condition,"toExp",0.0d);
+            Double toExp = MapUtils.getDouble(condition,"toExp",1000.0d);
             String expUnit = MapUtils.getString(condition,"expUnit","month");
 
             Date yearLess = null;
@@ -221,7 +221,7 @@ public class CandidateApi {
             }
 
 
-            Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition,fromExp, toExp, pageable);
+            Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition,fromExp,toExp, pageable);
             List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
 
