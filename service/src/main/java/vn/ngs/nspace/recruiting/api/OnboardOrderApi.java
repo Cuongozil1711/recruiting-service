@@ -170,10 +170,10 @@ public class OnboardOrderApi {
     protected ResponseEntity updateBuddyAndMentor(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @Parameter(description = "Path Variable") @PathVariable(value = "employeeId") Long employeeId
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
             , @RequestBody OnboardOrderDTO dto) {
         try {
-            return ResponseUtils.handlerSuccess(_service.updateBuddyByOnboardId(cid, uid, employeeId, dto.getBuddy(), dto.getMentorId()));
+            return ResponseUtils.handlerSuccess(_service.updateBuddyByOnboardId(cid, uid, id, dto.getBuddy(), dto.getMentorId()));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

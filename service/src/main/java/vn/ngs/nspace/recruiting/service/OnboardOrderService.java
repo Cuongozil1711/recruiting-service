@@ -62,7 +62,7 @@ public class OnboardOrderService {
     /* update by id object */
     public OnboardOrderDTO update(Long cid, String uid, Long id, OnboardOrderDTO request) throws BusinessException {
         valid(request);
-        OnboardOrder curr = repo.findByCompanyIdAndEmployeeId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, id));
+        OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
         curr = repo.save(curr);
@@ -181,11 +181,11 @@ public class OnboardOrderService {
 //    }
 
     /* update Buddy and Mentor by Onboard ID */
-    public OnboardOrderDTO updateBuddyByOnboardId(Long cid,  String uid, Long employeeId, Long buddy, Long mentorId){
+    public OnboardOrderDTO updateBuddyByOnboardId(Long cid,  String uid, Long id, Long buddy, Long mentorId){
         if(cid == null){
             throw new BusinessException("invalid-cid");
         }
-        if (employeeId == null){
+        if (id == null){
             throw new BusinessException("invalid-id");
         }
         if (buddy == null){
@@ -194,7 +194,7 @@ public class OnboardOrderService {
         if (mentorId == null){
             throw new BusinessException("invalid-mentorId");
         }
-        OnboardOrder curr = repo.findByCompanyIdAndEmployeeId(cid, employeeId).orElse(new OnboardOrder());
+        OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElse(new OnboardOrder());
         curr.setUpdateBy(uid);
         curr.setBuddy(buddy);
         curr.setMentorId(mentorId);

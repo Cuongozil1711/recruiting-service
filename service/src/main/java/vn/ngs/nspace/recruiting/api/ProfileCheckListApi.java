@@ -41,7 +41,7 @@ public class ProfileCheckListApi {
     @PostMapping("/create")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "create profile"
-            , description = "API for search profile"
+            , description = "API for create profile"
             , tags = { "ProfileCheckList" }
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"

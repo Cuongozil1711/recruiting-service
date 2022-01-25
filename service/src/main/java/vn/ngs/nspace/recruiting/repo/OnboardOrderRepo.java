@@ -18,7 +18,7 @@ import java.util.Optional;
 public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
 
     Optional<OnboardOrder> findByCompanyIdAndId(long cid, Long Id);
-    Optional<OnboardOrder> findByCompanyIdAndEmployeeId(long cid, Long eId);
+
 
     @Query(value = " select p " +
             " from OnboardOrder p " +
