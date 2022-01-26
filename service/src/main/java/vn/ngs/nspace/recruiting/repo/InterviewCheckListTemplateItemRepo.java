@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.repo;
 
 import vn.ngs.nspace.lib.repo.BaseRepo;
+import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplate;
 import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplateItem;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplateItem;
 
@@ -12,4 +13,6 @@ public interface InterviewCheckListTemplateItemRepo extends BaseRepo<InterviewCh
 
     Optional<InterviewCheckListTemplateItem> findByCompanyIdAndId(long cid, Long id);
     List<InterviewCheckListTemplateItem> findByCompanyIdAndTemplateIdInAndStatus(long cid, Set<Long> templateIds, Integer status);
+
+    List<InterviewCheckListTemplateItem> findByCompanyIdAndTemplateId(long cid, Long templateId);
 }
