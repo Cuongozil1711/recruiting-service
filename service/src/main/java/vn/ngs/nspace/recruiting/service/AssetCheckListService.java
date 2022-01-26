@@ -13,6 +13,7 @@ import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -97,23 +98,57 @@ public class AssetCheckListService {
         return dtos;
     }
 
-    public AssetCheckListDTO handOverAsset (Long cid, String uid, AssetCheckListDTO dto) {
-        valid(dto);
-        AssetCheckList curr = repo.findByCompanyIdAndAssetIdAndEmployeeId(cid, dto.getAssetId(), dto.getEmployeeId());
-        if (curr == null){
-            curr = AssetCheckList.of(cid, uid, dto);
-            curr.setCompanyId(cid);
-            curr.setCreateBy(uid);
-            curr.setUpdateBy(uid);
-            curr.setStatus(Constants.ENTITY_ACTIVE);
-            curr = repo.save(curr);
+    public List<AssetCheckListDTO> handOverAsset(Long cid, String uid, Long onboardId, List<AssetCheckListDTO> listDTOS) {
+        List<AssetCheckList> assetCheckLists = repo.findByCompanyIdAndOnboardOrderId(cid, onboardId);
 
+        List<Long> listAssetIdOfDto = listDTOS.stream().map(dto -> dto.getAssetId()).collect(Collectors.toList());
+        List<Long> assetIdExists = assetCheckLists.stream().map(dto -> dto.getAssetId()).collect(Collectors.toList());
+
+        List<Long> listAssetIdForCreate = new ArrayList<>(listAssetIdOfDto);
+
+        listAssetIdForCreate.removeAll(assetIdExists); // loai bo danh sach asset da ton tai
+
+        List<AssetCheckList> listOfAssetCheckList = new ArrayList<>(); // Tao 1 array de luu tru ban ghi can luu vao Database
+
+        // Tao moi danh sach AssetCheckList
+        for (Long assetId : listAssetIdForCreate) {
+            AssetCheckList assetCheckList = new AssetCheckList();
+
+            AssetCheckListDTO dto = listDTOS.stream().filter(el -> el.getAssetId() == assetId).collect(Collectors.toList()).get(0);
+
+            if (dto != null) {
+                assetCheckList.setCompanyId(cid);
+                assetCheckList.setAssetId(assetId);
+                assetCheckList.setEmployeeId(dto.getEmployeeId());
+                assetCheckList.setReceiptDate(dto.getReceiptDate());
+
+                listOfAssetCheckList.add(assetCheckList);
+            }
         }
-        else{
-            curr.setReceiptDate(dto.getReceiptDate());
-            curr = repo.save(curr);
+        // Ket thuc tao moi
+
+        // Update danh sach AssetCheckList
+        List<Long> listAssetIdForUpdate = new ArrayList<>(listAssetIdOfDto);
+
+        listAssetIdForUpdate.retainAll(assetIdExists); // lay danh sach asset da ton tai
+
+        for (Long assetId : listAssetIdForUpdate) {
+            AssetCheckList assetCheckList = assetCheckLists.stream().filter(el -> el.getAssetId() == assetId).collect(Collectors.toList()).get(0);
+
+            if (assetCheckList != null) {
+                assetCheckList.setReceiptDate(new Date());
+
+                listOfAssetCheckList.add(assetCheckList);
+            }
         }
-        return toDTOWithObj(cid, uid, curr);
+        // Ket thuc update
+
+        // Luu vao Database
+        if (listOfAssetCheckList != null && !listOfAssetCheckList.isEmpty()) {
+            listOfAssetCheckList = repo.saveAll(listOfAssetCheckList);
+        }
+
+        return toDTOs(cid, uid, listOfAssetCheckList);
     }
 
     public AssetCheckListDTO toDTOWithObj (Long cid, String uid,  AssetCheckList obj){

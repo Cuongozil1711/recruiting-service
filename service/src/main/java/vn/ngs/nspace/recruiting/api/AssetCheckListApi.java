@@ -1,5 +1,6 @@
 package vn.ngs.nspace.recruiting.api;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -78,14 +79,15 @@ public class AssetCheckListApi {
         }
     }
 
-    @PostMapping("/hand-over-asset-by-emid")
+    @PutMapping ("/hand-over-asset-by-emid/{id}")
     @ActionMapping(action = Permission.CREATE)
     protected ResponseEntity handOverAsset(@RequestHeader Long cid
             , @RequestHeader String uid
-            , @RequestBody AssetCheckListDTO _dto) {
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
+            , @RequestBody List<AssetCheckListDTO> listDTOS) {
         try {
-            AssetCheckListDTO dto = _service.handOverAsset(cid, uid, _dto);
-            return ResponseUtils.handlerSuccess(dto);
+
+            return ResponseUtils.handlerSuccess(_service.handOverAsset(cid, uid, id, listDTOS));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
