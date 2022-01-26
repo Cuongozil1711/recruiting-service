@@ -8,10 +8,11 @@ import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.AssetCheckList;
 import vn.ngs.nspace.recruiting.model.ProfileCheckList;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ProfileCheckListRepo extends BaseRepo<ProfileCheckList, Long> {
     Optional<ProfileCheckList> findByCompanyIdAndChecklistIdAndEmployeeIdAndStatus(Long cid, Long checkListId, Long employeeId, Integer status);
-    Optional<ProfileCheckList> findByCompanyIdAndChecklistIdAndEmployeeId(Long cid, Long checkListId, Long employeeId);
+    List<ProfileCheckList> findByCompanyIdAndOnboardOrderId(Long cid, Long onboarOrderId);
 
 }

@@ -1,21 +1,24 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.springframework.stereotype.Service;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
-import vn.ngs.nspace.recruiting.share.dto.AssetCheckListDTO;
+
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -99,17 +102,96 @@ public class ProfileCheckListService {
         return toDTO(repo.save(obj));
     }
 
-    public ProfileCheckListDTO handOverProfile (Long cid, String uid, Long checklistId, Long employeeId, Date reciptDate) {
-        if(checklistId == null){
-            throw new BusinessException("invalid-checklist");
+    public List<ProfileCheckListDTO> handOverProfile (Long cid, String uid, Long onboarOrderId, List<ProfileCheckListDTO> listDTOS) {
+        List<ProfileCheckList> profileCheckLists = repo.findByCompanyIdAndOnboardOrderId(cid, onboarOrderId);
+        List<Long> checkListIdOfDto = listDTOS.stream().map(dto -> dto.getChecklistId()).collect(Collectors.toList());
+        List<Long> checkListIdExists = profileCheckLists.stream().map(dto -> dto.getChecklistId()).collect(Collectors.toList());
+
+        List<Long> listCheckListIdForCreate = new ArrayList<>(checkListIdOfDto);
+
+        listCheckListIdForCreate.removeAll(checkListIdExists); // loai bo danh sach profile da ton tai
+
+        List<ProfileCheckList> listOfProfileCheckList = new ArrayList<>(); // Tao 1 array de luu tru ban ghi can luu vao Database
+
+        // Tao moi danh sach ProfileCheckList
+        for (Long checkListId : listCheckListIdForCreate) {
+            ProfileCheckList profileCheckList = new ProfileCheckList();
+
+            ProfileCheckListDTO dto = listDTOS.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
+
+            if (dto != null) {
+                profileCheckList.setCompanyId(cid);
+                profileCheckList.setChecklistId(checkListId);
+                profileCheckList.setEmployeeId(dto.getEmployeeId());
+                profileCheckList.setReceiptDate(dto.getReceiptDate());
+
+                listOfProfileCheckList.add(profileCheckList);
+            }
         }
-        if(employeeId == null){
-            throw new BusinessException("invalid-employeeId");
+        // Ket thuc tao moi
+
+        // Update danh sach ProfileCheckList
+        List<Long> listCheckListForUpdate = new ArrayList<>(checkListIdOfDto);
+
+        listCheckListForUpdate.retainAll(checkListIdExists); // lay danh sach checkListId da ton tai
+
+        for (Long checkListId : listCheckListForUpdate) {
+            ProfileCheckList profileCheckList = profileCheckLists.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
+
+            if (profileCheckList != null) {
+                profileCheckList.setReceiptDate(new Date());
+
+                listOfProfileCheckList.add(profileCheckList);
+            }
         }
-        ProfileCheckList curr = repo.findByCompanyIdAndChecklistIdAndEmployeeId(cid, checklistId, employeeId).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, employeeId));;
-        curr.setReceiptDate(reciptDate);
-        curr = repo.save(curr);
-        return  toDTO(curr);
+        // Ket thuc update
+
+        // Luu vao Database
+        if (listOfProfileCheckList != null && !listOfProfileCheckList.isEmpty()) {
+            listOfProfileCheckList = repo.saveAll(listOfProfileCheckList);
+        }
+
+        return toDTOs(cid, uid, listOfProfileCheckList);
+
+    }
+
+    public List<ProfileCheckListDTO> toDTOs(Long cid, String uid, List<ProfileCheckList> objs){
+        List<ProfileCheckListDTO> dtos = new ArrayList<>();
+        Set<Long> categoryIds = new HashSet<>();
+        Set<Long> employeeIds = new HashSet<>();
+        objs.forEach(o -> {
+            if(o.getChecklistId() != null){
+                categoryIds.add(o.getChecklistId());
+            }
+            if(o.getEmployeeId() != null){
+                employeeIds.add(o.getEmployeeId());
+            }
+            if(o.getSenderId() != null){
+                employeeIds.add(o.getSenderId());
+            }
+
+            dtos.add(toDTO(o));
+        });
+        List<EmployeeDTO> employeeDTOS = _hcmService.getEmployees(uid, cid, employeeIds);
+        Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
+
+        for(ProfileCheckListDTO dto: dtos){
+            if(dto.getChecklistId() != null){
+                dto.setCheckListObj(mapCategory.get(dto.getChecklistId()));
+            }
+            if(dto.getEmployeeId() != null){
+                dto.setEmployeeObj(employeeDTOS.stream().filter(e -> {
+                    return CompareUtil.compare(e.getId(), dto.getEmployeeId());
+                }).findAny().orElse(null) );
+            }
+            if(dto.getSenderId() != null){
+                dto.setSenderObj(employeeDTOS.stream().filter(e -> {
+                    return CompareUtil.compare(e.getId(), dto.getSenderId());
+                }).findAny().orElse(null) );
+            }
+        }
+
+        return dtos;
     }
 
     public ProfileCheckListDTO toDTO(ProfileCheckList obj){
