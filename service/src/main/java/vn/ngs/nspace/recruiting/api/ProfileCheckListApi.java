@@ -79,7 +79,7 @@ public class ProfileCheckListApi {
         }
     }
 
-    @PostMapping("/hang-over-profile-by-emid")
+    @PutMapping("/hang-over-profile-by-onboardId/{id}")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "handOver profile"
             , description = "API for handOver profile"
@@ -92,9 +92,11 @@ public class ProfileCheckListApi {
             @RequestHeader("cid") long cid
             , @Parameter(description="ID of company")
             @RequestHeader("uid") String uid
-            , @RequestBody ProfileCheckListDTO dto){
+            , @Parameter(description = "Path Variable")
+            @PathVariable(value = "id") Long id
+            , @RequestBody List<ProfileCheckListDTO> listDTOS){
         try {
-            return ResponseUtils.handlerSuccess(_service.handOverProfile(cid, uid, dto.getChecklistId(), dto.getEmployeeId(), dto.getReceiptDate()));
+            return ResponseUtils.handlerSuccess(_service.handOverProfile(cid, uid, id, listDTOS));
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }
