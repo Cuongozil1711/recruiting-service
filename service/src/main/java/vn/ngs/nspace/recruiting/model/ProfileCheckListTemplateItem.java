@@ -35,7 +35,7 @@ public class ProfileCheckListTemplateItem extends PersistableEntity<Long> {
                 .templateId(dto.getTemplateId())
                 .description(dto.getDescription())
                 .copyType(dto.getCopyType())
-                .required(dto.getRequired())
+                .required(dto.getRequired() == null ? false : dto.getRequired())
                 .build();
         return obj;
     }
