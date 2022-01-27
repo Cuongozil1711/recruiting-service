@@ -36,7 +36,7 @@ public class ProfileCheckListTemplate extends PersistableEntity<Long> {
                 .name(dto.getName())
                 .positionId(dto.getPositionId())
                 .titleId(dto.getTitleId())
-                .startDate(dto.getStartDate())
+                .startDate(dto.getStartDate() == null ? new Date() : dto.getStartDate())
                 .endDate(dto.getEndDate())
                 .contractType(dto.getContractType())
                 .build();

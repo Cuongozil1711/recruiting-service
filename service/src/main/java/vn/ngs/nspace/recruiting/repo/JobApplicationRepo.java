@@ -12,5 +12,7 @@ import java.util.Optional;
 
 public interface JobApplicationRepo extends BaseRepo<JobApplication, Long> {
     Optional<JobApplication> findByCompanyIdAndId(Long cid, Long id);
+
+    Optional<JobApplication> findByCompanyIdAndCandidateIdAndStatus(long cid, long candidateId, int status);
 }
 

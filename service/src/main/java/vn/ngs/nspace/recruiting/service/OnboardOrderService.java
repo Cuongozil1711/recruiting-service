@@ -34,12 +34,12 @@ public class OnboardOrderService {
 
     /* logic validate data before insert model */
     public void valid(OnboardOrderDTO dto) throws BusinessException {
-        if(dto.getBuddy() == null){
-            throw new BusinessException("Invalid-buddy");
-        }
-        if(dto.getMentorId() == null){
-            throw new BusinessException("Invalid-mentor");
-        }
+//        if(dto.getBuddy() == null){
+//            throw new BusinessException("invalid-buddy");
+//        }
+//        if(dto.getMentorId() == null){
+//            throw new BusinessException("invalid-mentor");
+//        }
         if (dto.getEmployeeId() == null){
             throw new BusinessException("invalid-employee");
         }

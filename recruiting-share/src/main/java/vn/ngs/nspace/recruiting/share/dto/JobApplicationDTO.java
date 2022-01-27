@@ -22,6 +22,7 @@ public class JobApplicationDTO {
     private Long employeeId;
     private Long orgId;
     private String contractType;
+    private Date onboardDate;
     private String state; // interview, offer, requested, cancelled, done
 
     private EmployeeDTO employeeObj;

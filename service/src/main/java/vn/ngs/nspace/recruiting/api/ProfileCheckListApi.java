@@ -46,7 +46,7 @@ public class ProfileCheckListApi {
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity createRecruitingPlanOrders(
+    protected ResponseEntity createByPositionTitleContract(
             @Parameter(description="ID of company")
             @RequestHeader("cid") long cid
             , @Parameter(description="ID of company")
