@@ -30,4 +30,19 @@ public class EmailSent extends PersistableEntity<Long> {
     private String content;
     private String fromEmail;
     private String toEmail;
+
+    public static EmailSent of(Long cid, String uid, EmailSent sent){
+        EmailSent obj = EmailSent.builder()
+                .id(sent.getId())
+                .refType(sent.getRefType())
+                .refId(sent.getRefId())
+                .subject(sent.getSubject())
+                .date(sent.getDate())
+                .content(sent.getContent())
+                .fromEmail(sent.getFromEmail())
+                .toEmail(sent.getToEmail())
+                .build();
+
+        return obj;
+    }
 }
