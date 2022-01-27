@@ -8,6 +8,7 @@ import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 @Data
@@ -26,6 +27,7 @@ public class JobApplication extends PersistableEntity<Long> {
     private Long titleId;
     private Long orgId;
     private String contractType;
+    private Date onboardDate;
     private Long employeeId;
     private String state; // interview, offer, requested, cancelled, done
 

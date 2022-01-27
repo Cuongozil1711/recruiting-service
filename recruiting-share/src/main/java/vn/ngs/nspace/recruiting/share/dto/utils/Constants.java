@@ -35,5 +35,13 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
         , FAILED
         , HIRED
     }
+
+    public enum JOB_APPLICATION_STATE {
+        INIT
+        , OFFERING
+        , FAILED
+        , HIRED
+    }
+
     public static final String JOB_APPLICATION_STATE_DONE = "DONE";
 }

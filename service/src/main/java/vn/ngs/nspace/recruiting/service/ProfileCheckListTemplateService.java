@@ -50,12 +50,18 @@ public class ProfileCheckListTemplateService {
         if (StringUtils.isEmpty(dto.getContractType())){
             throw new BusinessException("invalid-contractType");
         }
-        if (dto.getStartDate() == null){
-            throw new BusinessException("invalid-startDate");
+        if(dto.getStartDate() != null && dto.getEndDate() != null){
+            if(dto.getStartDate().after(dto.getEndDate())){
+                throw new BusinessException("start-date-must-be-less-than-end-date");
+            }
         }
-        if (dto.getEndDate() == null){
-            throw new BusinessException("invalid-endDate");
-        }
+
+//        if (dto.getStartDate() == null){
+//            throw new BusinessException("invalid-startDate");
+//        }
+//        if (dto.getEndDate() == null){
+//            throw new BusinessException("invalid-endDate");
+//        }
     }
 
     public void validItem(ProfileCheckListTemplateItemDTO dto){
@@ -68,12 +74,12 @@ public class ProfileCheckListTemplateService {
         if (StringUtils.isEmpty(dto.getDescription())){
             throw new BusinessException("invalid-description");
         }
-        if (dto.getRequired() == null){
-            throw new BusinessException("invalid-required");
-        }
-        if (dto.getStatus() == null){
-            throw new BusinessException("invalid-status");
-        }
+//        if (dto.getRequired() == null){
+//            throw new BusinessException("invalid-required");
+//        }
+//        if (dto.getStatus() == null){
+//            throw new BusinessException("invalid-status");
+//        }
     }
 
     public ProfileCheckListTemplateDTO create(Long cid, String uid, ProfileCheckListTemplateDTO request) throws BusinessException {

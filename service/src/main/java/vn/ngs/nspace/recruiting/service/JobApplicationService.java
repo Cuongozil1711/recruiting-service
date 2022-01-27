@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
-import vn.ngs.nspace.hcm.share.dto.request.EmployeeReq;
 import vn.ngs.nspace.hcm.share.dto.response.EmployeeResp;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
@@ -19,6 +18,7 @@ import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.task.core.data.UserData;
 
@@ -30,12 +30,14 @@ import java.util.*;
 
 public class JobApplicationService {
     private final JobApplicationRepo _repo;
+    private final OnboardOrderService _onboardService;
     private final CandidateRepo _candidateRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
 
-    public JobApplicationService(JobApplicationRepo repo, CandidateRepo candidateRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public JobApplicationService(JobApplicationRepo repo, OnboardOrderService onboardService, CandidateRepo candidateRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         _repo = repo;
+        _onboardService = onboardService;
         _candidateRepo = candidateRepo;
         _hcmService = hcmService;
         _configService = configService;
@@ -87,7 +89,7 @@ public class JobApplicationService {
         candidate.setState(Constants.CANDIDATE_STATE.HIRED.toString());
         candidate.setUpdateBy(uid);
         candidate.setEmployeeId(empResp.getEmployee().getId());
-        candidate.setApplyDate(createEmp.getCandicate().getApplyDate());
+//        candidate.setApplyDate(createEmp.getCandicate().getApplyDate());
 
         jobApplication.setEmployeeId(empResp.getEmployee().getId());
         jobApplication.setUpdateBy(uid);
@@ -95,7 +97,26 @@ public class JobApplicationService {
         _candidateRepo.save(candidate);
         _repo.save(jobApplication);
 
+        OnboardOrderDTO onboardOrder = new OnboardOrderDTO();
+        onboardOrder.setEmployeeId(empResp.getEmployee().getId());
+        onboardOrder.setJobApplicationId(jobAppId);
+        _onboardService.create(cid, uid, onboardOrder);
+
         return empResp.getEmployee();
+    }
+
+    public JobApplicationDTO initByCandidate(Long cid, String uid, Long candidateId) {
+        JobApplication currentJr = _repo.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId, Constants.ENTITY_ACTIVE).orElse(new JobApplication());
+        if(currentJr.isNew()){
+            currentJr.setCandidateId(candidateId);
+            currentJr.setCompanyId(cid);
+            currentJr.setCreateBy(uid);
+            currentJr.setUpdateBy(uid);
+            currentJr.setState(Constants.JOB_APPLICATION_STATE.INIT.name());
+            currentJr.setStatus(Constants.ENTITY_ACTIVE);
+            _repo.save(currentJr);
+        }
+        return toDTO(currentJr);
     }
 
     public List<JobApplicationDTO> toDTOs(Long cid, String uid, List<JobApplication> objs) {
@@ -155,4 +176,6 @@ public class JobApplicationService {
         JobApplicationDTO dto = MapperUtils.map(obj, JobApplicationDTO.class);
         return dto;
     }
+
+
 }

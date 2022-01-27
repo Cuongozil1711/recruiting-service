@@ -26,6 +26,7 @@ import vn.ngs.nspace.recruiting.service.JobApplicationService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import java.util.List;
 import java.util.Map;
@@ -163,6 +164,40 @@ public class JobApplicationApi {
             , @RequestBody EmployeeRecruitingReq request){
         try {
             return ResponseUtils.handlerSuccess(_service.createEmployee(cid, uid , id, request));
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @GetMapping("/current-by-candidate/{candidateId}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "get current active JobApplication by Candidate",
+            description = "API get current active JobApplication by Candidate")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getCurrentJobByCandidate(
+            @Parameter(description = "ID of company") @RequestHeader Long cid
+            , @Parameter(description = "ID of userID") @RequestHeader String uid
+            , @Parameter(description = "Id of candidate")  @PathVariable(value = "candidateId") Long id){
+        try {
+            return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndCandidateIdAndStatus(cid, id, Constants.ENTITY_ACTIVE).orElse(new JobApplication()));
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PostMapping("/init-by-candidate/{candidateId}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "get current active JobApplication by Candidate",
+            description = "API get current active JobApplication by Candidate")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity initJobApplication(
+            @Parameter(description = "ID of company") @RequestHeader Long cid
+            , @Parameter(description = "ID of userID") @RequestHeader String uid
+            , @Parameter(description = "Id of candidate")  @PathVariable(value = "candidateId") Long id){
+        try {
+            return ResponseUtils.handlerSuccess(_service.initByCandidate(cid, uid, id));
         } catch (Exception e){
             return ResponseUtils.handlerException(e);
         }

@@ -230,7 +230,4 @@ public class CandidateApi {
         }
 
     }
-
-
-
 }
