@@ -19,7 +19,6 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
 
     Optional<OnboardOrder> findByCompanyIdAndId(long cid, Long Id);
 
-
     @Query(value = " select p " +
             " from OnboardOrder p " +
             " where (p.companyId = :companyId)" +

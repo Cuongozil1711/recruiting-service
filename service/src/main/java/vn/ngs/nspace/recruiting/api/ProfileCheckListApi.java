@@ -59,7 +59,7 @@ public class ProfileCheckListApi {
         }
     }
 
-    @PostMapping("/create-profile-by-onboard-id")
+        @PostMapping("/create-profile-by-onboard-id")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Create Profile by OnboardID"
             , description = "API for create profile by onboadrId")
