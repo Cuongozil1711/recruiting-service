@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
@@ -17,11 +16,15 @@ import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingTemplateDTO;
 
 @RestController
 @RequestMapping("onboard-tranning-template")
-@RequiredArgsConstructor
 @Tag(name = "TemplateConfig", description = "Define template to get onboardTranning from Employee")
 public class OnboardTrainingTemplateApi {
     private final OnboardTrainingTemplateService _service;
     private final OnboardTrainingTemplateRepo _reppo;
+
+    public OnboardTrainingTemplateApi(OnboardTrainingTemplateService service, OnboardTrainingTemplateRepo reppo) {
+        _service = service;
+        _reppo = reppo;
+    }
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)

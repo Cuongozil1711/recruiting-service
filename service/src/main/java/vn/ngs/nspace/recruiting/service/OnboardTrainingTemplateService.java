@@ -88,7 +88,7 @@ public class OnboardTrainingTemplateService {
             templateIds.add(o.getId());
         });
 
-        List<OnboardTrainingTemplateItem> items = itemRepo.findByTemplateIdAndStatus(cid, templateIds, Constants.ENTITY_ACTIVE);
+        List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdInAndStatus(cid, templateIds, Constants.ENTITY_ACTIVE);
         items.forEach(i -> {
             if(i.getEemployeeId() != null){
                 employeeIds.add(i.getEemployeeId());
