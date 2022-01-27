@@ -16,4 +16,6 @@ public class InterviewCheckListDTO {
     private Double rating;
     private String result;
     private Date interviewDate;
+    private Long positionId;
+    private Long orgId;
 }

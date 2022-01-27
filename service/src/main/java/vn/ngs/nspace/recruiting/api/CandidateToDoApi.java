@@ -39,7 +39,7 @@ public class CandidateToDoApi {
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Search all CandidateToDo"
-            , description = "Search by condition : name, gender, wardCode, phone, email,..."
+            , description = "Search by condition : "
             , tags = { "Candidate-To-Do" }
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"

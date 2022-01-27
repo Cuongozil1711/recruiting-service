@@ -25,15 +25,18 @@ public class ProfileCheckList extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
+    private Long onboardOrderId;
     private Long checklistId; //dm dung chung
     private Date receiptDate; // ngay nhan
     private Long senderId; // nguoi giao
     private Long employeeId; // nguoi nhan
     private String description;
 
+
     public static ProfileCheckList of(Long cid, String uid, ProfileCheckListDTO dto){
         ProfileCheckList obj = ProfileCheckList.builder()
                 .id(dto.getId())
+                .onboardOrderId(dto.getOnboardOrderId())
                 .checklistId(dto.getChecklistId())
                 .receiptDate(dto.getReceiptDate())
                 .senderId(dto.getSenderId())

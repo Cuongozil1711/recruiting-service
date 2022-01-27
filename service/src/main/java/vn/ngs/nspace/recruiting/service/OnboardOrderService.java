@@ -34,25 +34,26 @@ public class OnboardOrderService {
 
     /* logic validate data before insert model */
     public void valid(OnboardOrderDTO dto) throws BusinessException {
-        if(dto.getId() == null){
-            throw new BusinessException("Invalid-Id");
-        }
         if(dto.getBuddy() == null){
             throw new BusinessException("Invalid-buddy");
         }
         if(dto.getMentorId() == null){
             throw new BusinessException("Invalid-mentor");
         }
+        if (dto.getEmployeeId() == null){
+            throw new BusinessException("invalid-employee");
+        }
     }
 
     /* create object */
     public OnboardOrderDTO create(Long cid, String uid, OnboardOrderDTO request) throws BusinessException {
-//        valid(request);
+        valid(request);
         OnboardOrder order = OnboardOrder.of(cid, uid, request);
         order.setStatus(Constants.ENTITY_ACTIVE);
         order.setCreateBy(uid);
         order.setUpdateBy(uid);
         order.setCompanyId(cid);
+        order.setCreateDate(new Date());
         order = repo.save(order);
 
         return toDTOWithObj(cid, uid, order);
@@ -60,7 +61,7 @@ public class OnboardOrderService {
 
     /* update by id object */
     public OnboardOrderDTO update(Long cid, String uid, Long id, OnboardOrderDTO request) throws BusinessException {
-//        valid(request);
+        valid(request);
         OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
@@ -159,28 +160,28 @@ public class OnboardOrderService {
     }
 
     /* create Buddy and Mentor by Onboard ID */
-    public OnboardOrderDTO createBuddyByOnbodrdId(Long cid, String uid, Long id, Long buddy, Long mentorId){
-        if(cid == null){
-            throw new BusinessException("invalid-cid");
-        }
-        if (id == null){
-            throw new BusinessException("invalid-id");
-        }
-        if (buddy == null){
-            throw new BusinessException("invalid-buddy");
-        }
-        if (mentorId == null){
-            throw new BusinessException("invalid-mentorId");
-        }
-        OnboardOrder order = repo.getOnboardById(cid, id);
-        order.setBuddy(buddy);
-        order.setMentorId(mentorId);
-        order = repo.save(order);
-        return toDTOs(cid, uid, Arrays.asList(order)).get(0);
-    }
+//    public OnboardOrderDTO createBuddyByOnbodrdId(Long cid, String uid, Long eid, Long buddy, Long mentorId){
+//        if(cid == null){
+//            throw new BusinessException("invalid-cid");
+//        }
+//        if (eid == null){
+//            throw new BusinessException("invalid-id");
+//        }
+//        if (buddy == null){
+//            throw new BusinessException("invalid-buddy");
+//        }
+//        if (mentorId == null){
+//            throw new BusinessException("invalid-mentorId");
+//        }
+//        OnboardOrder curr = repo.findByCompanyIdAndEmployeeId(cid, eid).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, eid));
+//        curr.setBuddy(buddy);
+//        curr.setMentorId(mentorId);
+//        curr = repo.save(curr);
+//        return toDTOs(cid, uid, Arrays.asList(curr)).get(0);
+//    }
 
     /* update Buddy and Mentor by Onboard ID */
-    public OnboardOrderDTO updateBuddyByOnbodrdId(Long cid,  String uid, Long id, Long buddy, Long mentorId){
+    public OnboardOrderDTO updateBuddyByOnboardId(Long cid,  String uid, Long id, Long buddy, Long mentorId){
         if(cid == null){
             throw new BusinessException("invalid-cid");
         }
@@ -194,6 +195,7 @@ public class OnboardOrderService {
             throw new BusinessException("invalid-mentorId");
         }
         OnboardOrder curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, id));
+        curr.setUpdateBy(uid);
         curr.setBuddy(buddy);
         curr.setMentorId(mentorId);
         curr = repo.save(curr);
