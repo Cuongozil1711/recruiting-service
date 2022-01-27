@@ -40,21 +40,21 @@ public class ProfileCheckListService {
     }
 
     public void valid(ProfileCheckListDTO dto){
-        if (dto.getChecklistId() == null){
-            throw new BusinessException("invalid-checkList");
-        }
-        if (dto.getEmployeeId() == null){
-            throw new BusinessException("invalid-employee");
-        }
-        if (dto.getReceiptDate() == null){
-            throw new BusinessException("invalid-receiptDate");
-        }
-       if (dto.getSenderId() == null){
-            throw new BusinessException("invalid-sender");
-       }
-        if (dto.getDescription() == null){
-            throw new BusinessException("invalid-description");
-        }
+//        if (dto.getChecklistId() == null){
+//            throw new BusinessException("invalid-checkList");
+//        }
+//        if (dto.getEmployeeId() == null){
+//            throw new BusinessException("invalid-employee");
+//        }
+//        if (dto.getReceiptDate() == null){
+//            throw new BusinessException("invalid-receiptDate");
+//        }
+//       if (dto.getSenderId() == null){
+//            throw new BusinessException("invalid-sender");
+//       }
+//        if (dto.getDescription() == null){
+//            throw new BusinessException("invalid-description");
+//        }
     }
 
     public List<ProfileCheckListDTO> createByOnboardOrder(Long cid, String uid, OnboardOrder onboard){
@@ -138,8 +138,9 @@ public class ProfileCheckListService {
         for (Long checkListId : listCheckListForUpdate) {
             ProfileCheckList profileCheckList = profileCheckLists.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
 
+            ProfileCheckListDTO dto = listDTOS.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
             if (profileCheckList != null) {
-                profileCheckList.setReceiptDate(new Date());
+                profileCheckList.setReceiptDate(dto.getReceiptDate());
 
                 listOfProfileCheckList.add(profileCheckList);
             }
