@@ -31,7 +31,7 @@ public class OnboardTrainingTemplateItem extends PersistableEntity<Long> {
     private Date deadline;
     private float completion;
     private String description;
-    private Long eemployeeId;
+    private Long employeeId;
 
     public static OnboardTrainingTemplateItem of(Long cid, String uid, OnboardTrainingTemplateItemDTO dto){
         OnboardTrainingTemplateItem obj = OnboardTrainingTemplateItem.builder()
@@ -43,7 +43,7 @@ public class OnboardTrainingTemplateItem extends PersistableEntity<Long> {
                 .deadline(dto.getDeadline())
                 .completion(dto.getCompletion())
                 .description(dto.getDescription())
-                .eemployeeId(dto.getEmployeeId())
+                .employeeId(dto.getEmployeeId())
                 .build();
         return obj;
     }
