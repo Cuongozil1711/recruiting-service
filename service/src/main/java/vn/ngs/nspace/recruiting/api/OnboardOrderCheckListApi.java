@@ -30,7 +30,7 @@ public class OnboardOrderCheckListApi {
     private final OnboardOrderCheckListService _service;
     private final OnboardOrderCheckListRepo _repo;
 
-    @PutMapping("/change-state")
+    @PutMapping("/change-state/{id}")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "Change State Onboard Order Check List by Id and by employId "
             , description = "Create single Onboard Order Check List, path param is OnboardOrderCheckListId"
@@ -41,9 +41,11 @@ public class OnboardOrderCheckListApi {
     protected ResponseEntity changeState(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @RequestBody OnboardOrderCheckListDTO dto) {
+            , @Parameter(description = "Path Variable")
+            @PathVariable(value = "id") Long id
+            , @RequestBody List<OnboardOrderCheckListDTO> listDTOS) {
         try {
-            return ResponseUtils.handlerSuccess(_service.changeState(cid, uid, dto));
+            return ResponseUtils.handlerSuccess(_service.changeState(cid, uid, id, listDTOS));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

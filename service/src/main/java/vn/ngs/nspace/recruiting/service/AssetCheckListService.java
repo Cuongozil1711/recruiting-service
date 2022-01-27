@@ -29,12 +29,12 @@ public class AssetCheckListService {
     }
 
     public void valid(AssetCheckListDTO dto){
-        if(dto.getAssetId() == null){
-            throw new BusinessException("invalid-asset");
-        }
-        if (dto.getEmployeeId() == null){
-            throw new BusinessException("invalid-employee");
-        }
+//        if(dto.getAssetId() == null){
+//            throw new BusinessException("invalid-asset");
+//        }
+//        if (dto.getEmployeeId() == null){
+//            throw new BusinessException("invalid-employee");
+//        }
     }
 
     public AssetCheckListDTO create(Long cid, String uid, AssetCheckListDTO request) throws BusinessException {
@@ -135,8 +135,10 @@ public class AssetCheckListService {
         for (Long assetId : listAssetIdForUpdate) {
             AssetCheckList assetCheckList = assetCheckLists.stream().filter(el -> el.getAssetId() == assetId).collect(Collectors.toList()).get(0);
 
+            AssetCheckListDTO dto = listDTOS.stream().filter(el -> el.getAssetId() == assetId).collect(Collectors.toList()).get(0);
+
             if (assetCheckList != null) {
-                assetCheckList.setReceiptDate(new Date());
+                assetCheckList.setReceiptDate(dto.getReceiptDate());
 
                 listOfAssetCheckList.add(assetCheckList);
             }

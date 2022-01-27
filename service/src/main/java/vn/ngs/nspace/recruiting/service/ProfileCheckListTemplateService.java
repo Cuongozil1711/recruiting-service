@@ -38,48 +38,32 @@ public class ProfileCheckListTemplateService {
     }
 
     public void valid(ProfileCheckListTemplateDTO dto){
-        if (StringUtils.isEmpty(dto.getName())){
-            throw new BusinessException("invalid-name");
-        }
-        if (dto.getPositionId() == null){
-            throw new BusinessException("invalid-position");
-        }
-        if (dto.getTitleId() == null){
-            throw new BusinessException("invalid-title");
-        }
-        if (StringUtils.isEmpty(dto.getContractType())){
-            throw new BusinessException("invalid-contractType");
-        }
-        if(dto.getStartDate() != null && dto.getEndDate() != null){
-            if(dto.getStartDate().after(dto.getEndDate())){
-                throw new BusinessException("start-date-must-be-less-than-end-date");
-            }
-        }
+//        if (StringUtils.isEmpty(dto.getName())){
+//            throw new BusinessException("invalid-name");
+//        }
+//        if (dto.getPositionId() == null){
+//            throw new BusinessException("invalid-position");
+//        }
+//        if (dto.getTitleId() == null){
+//            throw new BusinessException("invalid-title");
+//        }
+//        if (StringUtils.isEmpty(dto.getContractType())){
+//            throw new BusinessException("invalid-contractType");
+//        }
 
-//        if (dto.getStartDate() == null){
-//            throw new BusinessException("invalid-startDate");
-//        }
-//        if (dto.getEndDate() == null){
-//            throw new BusinessException("invalid-endDate");
-//        }
     }
 
     public void validItem(ProfileCheckListTemplateItemDTO dto){
-        if (dto.getChecklistId() == null){
-            throw new BusinessException("invalid-checkList");
-        }
-        if (dto.getTemplateId() == null){
-            throw new BusinessException("invalid-template");
-        }
-        if (StringUtils.isEmpty(dto.getDescription())){
-            throw new BusinessException("invalid-description");
-        }
-//        if (dto.getRequired() == null){
-//            throw new BusinessException("invalid-required");
+//        if (dto.getChecklistId() == null){
+//            throw new BusinessException("invalid-checkList");
 //        }
-//        if (dto.getStatus() == null){
-//            throw new BusinessException("invalid-status");
+//        if (dto.getTemplateId() == null){
+//            throw new BusinessException("invalid-template");
 //        }
+//        if (StringUtils.isEmpty(dto.getDescription())){
+//            throw new BusinessException("invalid-description");
+//        }
+
     }
 
     public ProfileCheckListTemplateDTO create(Long cid, String uid, ProfileCheckListTemplateDTO request) throws BusinessException {
