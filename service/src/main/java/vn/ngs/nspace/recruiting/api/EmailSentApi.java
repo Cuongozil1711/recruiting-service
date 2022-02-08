@@ -127,7 +127,7 @@ public class EmailSentApi {
             es.setContent(content);
             es.setDate(MapUtils.getDate(payload, "date"));
             es.setToEmail(candidate.getEmail());
-            es.setSubject(MapUtils.getString(noticeConfig, "title", ""));
+            es.setSubject(title);
             es.setStatus(Constants.ENTITY_ACTIVE);
             es.setCreateBy(uid);
             es.setUpdateBy(uid);
