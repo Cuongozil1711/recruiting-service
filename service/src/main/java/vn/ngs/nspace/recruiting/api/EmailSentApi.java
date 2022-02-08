@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,16 +109,18 @@ public class EmailSentApi {
             Long templateId = MapUtils.getLong(payload, "templateId", 0l);
             Long emailSettingId = MapUtils.getLong(payload, "emailSettingId", 0l);
             Long candidateId = MapUtils.getLong(payload, "candidateId", 0l);
+
             String content = MapUtils.getString(payload, "content");
             String sign = MapUtils.getString(payload, "sign", "");
             content = content + "</br>" + sign;
             Map<String, Object> noticeConfig = _configService.getEmailConfigById(uid, cid, templateId);
             EmailSetting setting = _emailSettingRepo.findByCompanyIdAndId(cid, emailSettingId).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, emailSettingId));
             Candidate candidate = _candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
-
+            String title = MapUtils.getString(payload, "title", MapUtils.getString(noticeConfig, "title", ""));
             _noticeService.publishEmail(uid, cid, MapUtils.getString(setting.getConfigs(), "email", "")
                                 , MapUtils.getString(setting.getConfigs(), "password", "")
-                                , MapUtils.getString(noticeConfig, "title", ""), content, Collections.singleton(uid), Collections.singleton(candidate.getEmail()));
+                                , title
+                                , content, Collections.singleton(uid), Collections.singleton(candidate.getEmail()));
 
             EmailSent es = new EmailSent();
             es.setFromEmail(MapUtils.getString(setting.getConfigs(), "email", ""));
