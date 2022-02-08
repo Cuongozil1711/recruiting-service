@@ -52,7 +52,7 @@ public class EmailSentApi {
         _noticeService = noticeService;
     }
 
-    @PostMapping("/list/{refType}/{refId}")
+    @GetMapping("/list/{refType}/{refId}")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "List all Email Setting"
             , description = "Have no condition, find all !"
