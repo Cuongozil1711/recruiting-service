@@ -71,9 +71,9 @@ nspace:
       url: http://api.ngs.vn/nspace/config
     storage:
       key: test
-      URL: http://api.ngs.vn/nspace/storage
+#      URL: http://api.ngs.vn/nspace/storage
       #URL: http://localhost:8080
-      #URL: http://api.gateway.svc.cluster.local:8082/nspace/storage
+#      URL: http://api.gateway.svc.cluster.local:8082/nspace/storage
     signature:
       key: test
       URL: http://api.ngs.vn/nspace/signature
@@ -82,15 +82,14 @@ nspace:
     user:
       headers: '{"key":"test","cid":0,"uid":"system"}'
       key: test
-      URL: http://api.ngs.vn/nspace/account
+#      URL: http://api.ngs.vn/nspace/account
       #URL: http://localhost:8082/
-      #URL: http://api.gateway.svc.cluster.local:8082/nspace/account
+      URL: http://api.gateway.svc.cluster.local:8082/nspace/account
     event:
       key: test
       URL: http://api.ngs.vn/nspace/event
       #URL: http://localhost:8082/
-      #URL: http://api.gateway.svc.cluster.local:8082/nspace/event
-
+#      URL: http://api.gateway.svc.cluster.local:8082/nspace/event
     hcm:
       key: test
       URL: http://api.gateway.svc.cluster.local:8082/nspace/hcm
