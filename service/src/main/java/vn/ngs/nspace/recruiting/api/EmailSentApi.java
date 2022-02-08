@@ -52,7 +52,7 @@ public class EmailSentApi {
         _noticeService = noticeService;
     }
 
-    @PostMapping("/list")
+    @PostMapping("/list/{refType}/{refId}")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "List all Email Setting"
             , description = "Have no condition, find all !"
@@ -63,12 +63,10 @@ public class EmailSentApi {
     protected ResponseEntity search(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @RequestBody Map<String, Object> content) {
+            , @Parameter(description = "Path RefType")  @PathVariable(value = "refType") String refType
+            , @Parameter(description = "Path RefId")  @PathVariable(value = "refId") String refId) {
         try{
-            EmailSent es = new EmailSent();
-            MapperUtils.map(content, es);
-//            _service.create(cid, uid, es);
-            return ResponseUtils.handlerSuccess(content);
+            return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndRefTypeAndRefId(cid, refType, refId));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
@@ -132,6 +130,8 @@ public class EmailSentApi {
             es.setCreateBy(uid);
             es.setUpdateBy(uid);
             es.setCompanyId(cid);
+            es.setRefType(Constants.EMAIL_SENT_REF.CANDIDATE.name());
+            es.setRefId(candidateId.toString());
             es = _repo.save(es);
 
             return ResponseUtils.handlerSuccess(es);

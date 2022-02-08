@@ -44,4 +44,9 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     }
 
     public static final String JOB_APPLICATION_STATE_DONE = "DONE";
+
+    public enum EMAIL_SENT_REF {
+        CANDIDATE
+        , EMPLOYEE
+    }
 }
