@@ -71,7 +71,7 @@ public class InterviewCheckListTemplateService {
             throw new BusinessException("invalid-OptionValues");
         }
     }
-    public Object create(long cid, String uid, InterviewCheckListTemplateDTO dto) {
+    public InterviewCheckListTemplateDTO create(long cid, String uid, InterviewCheckListTemplateDTO dto) {
         valid(dto);
         // create template
         InterviewCheckListTemplate template = InterviewCheckListTemplate.of(cid, uid, dto);
