@@ -14,6 +14,7 @@ public class ReasonDTO {
     private String code;
     private String type;
     private String title;
+    private String description;
     private Long parentId;
     private Integer status;
 }
