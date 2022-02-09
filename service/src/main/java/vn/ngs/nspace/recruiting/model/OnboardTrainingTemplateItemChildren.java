@@ -25,7 +25,7 @@ public class OnboardTrainingTemplateItemChildren extends PersistableEntity<Long>
     private Long id;
     private Long templateId;
     private Long itemId;
-    private String smallGoal;
+    private String name;
     private float completion;
     private String description;
 
@@ -34,7 +34,7 @@ public class OnboardTrainingTemplateItemChildren extends PersistableEntity<Long>
                 .id(dto.getId())
                 .templateId(dto.getTemplateId())
                 .itemId(dto.getItemId())
-                .smallGoal(dto.getSmallGoal())
+                .name(dto.getName())
                 .completion(dto.getCompletion())
                 .description(dto.getDescription())
                 .build();

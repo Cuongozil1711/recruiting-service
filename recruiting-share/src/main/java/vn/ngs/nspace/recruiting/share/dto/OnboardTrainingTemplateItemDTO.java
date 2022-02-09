@@ -16,11 +16,11 @@ import java.util.List;
 public class OnboardTrainingTemplateItemDTO {
     private Long id;
     private Long templateId;
-    private String bigGoal;
+    private String name;
     private float completion;
     private String description;
     private Integer status;
 
-    private List<OnboardTrainingTemplateItemChildrenDTO> childrenItems;
+    private List<OnboardTrainingTemplateItemChildrenDTO> children;
 
 }

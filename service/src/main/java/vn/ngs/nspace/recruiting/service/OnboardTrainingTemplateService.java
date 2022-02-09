@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.service;
 import org.camunda.bpm.engine.BadUserRequestException;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
+import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
@@ -76,7 +77,7 @@ public class OnboardTrainingTemplateService {
 
         item = itemRepo.save(item);
 
-        for (OnboardTrainingTemplateItemChildrenDTO childrenDTO: request.getChildrenItems()){
+        for (OnboardTrainingTemplateItemChildrenDTO childrenDTO: request.getChildren()){
             childrenDTO.setTemplateId(item.getTemplateId());
             childrenDTO.setItemId(item.getId());
             createItemChildren(cid, uid, childrenDTO);
@@ -92,7 +93,7 @@ public class OnboardTrainingTemplateService {
 
         children = childrenRepo.save(children);
 
-        for (OnboardTrainingTemplateItemGrandChildDTO grandChildDTO: request.getGrandChildItems()){
+        for (OnboardTrainingTemplateItemGrandChildDTO grandChildDTO: request.getChildren()){
             grandChildDTO.setTemplateId(children.getTemplateId());
             grandChildDTO.setItemId(children.getItemId());
             grandChildDTO.setItemChildrenId(children.getId());
@@ -133,7 +134,7 @@ public class OnboardTrainingTemplateService {
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
 
-            for(OnboardTrainingTemplateItemChildrenDTO childrenDTO : request.getChildrenItems()){
+            for(OnboardTrainingTemplateItemChildrenDTO childrenDTO : request.getChildren()){
                 if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
                     childrenDTO.setStatus(Constants.ENTITY_INACTIVE);
                 }
@@ -153,7 +154,7 @@ public class OnboardTrainingTemplateService {
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
 
-            for(OnboardTrainingTemplateItemGrandChildDTO grandChildDTO : request.getGrandChildItems()){
+            for(OnboardTrainingTemplateItemGrandChildDTO grandChildDTO : request.getChildren()){
                 if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
                     grandChildDTO.setStatus(Constants.ENTITY_INACTIVE);
                 }
@@ -182,6 +183,7 @@ public class OnboardTrainingTemplateService {
     public List<OnboardTrainingTemplateDTO> toDTOs(Long cid, String uid, List<OnboardTrainingTemplate> objs){
         List<OnboardTrainingTemplateDTO> dtos = new ArrayList<>();
         Set<Long> templateIds = new HashSet<>();
+        Set<Long> orgIds = new HashSet<>();
         Set<Long> categoryIds = new HashSet<>();
         Set<Long> employeeIds = new HashSet<>();
         Set<Long> itemIds = new HashSet<>();
@@ -192,6 +194,9 @@ public class OnboardTrainingTemplateService {
             }
             if(o.getTitleId() != null){
                 categoryIds.add(o.getTitleId());
+            }
+            if(o.getOrgId() != null){
+                orgIds.add(o.getOrgId());
             }
 
             templateIds.add(o.getId());
@@ -213,7 +218,7 @@ public class OnboardTrainingTemplateService {
 
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         List<EmployeeDTO> employeeDTOS = _hcmService.getEmployees(uid, cid, employeeIds);
-
+        List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
         for (OnboardTrainingTemplate obj: objs){
             OnboardTrainingTemplateDTO o = toDTO(obj);
             if(o.getPositionId() != null){
@@ -222,6 +227,7 @@ public class OnboardTrainingTemplateService {
             if(o.getTitleId() != null){
                 o.setTitleObj(mapCategory.get(o.getTitleId()));
             }
+
 
             if (mapItems.get(o.getId()) != null){
                 List<OnboardTrainingTemplateItemDTO> lstItem = new ArrayList<>();
@@ -241,7 +247,7 @@ public class OnboardTrainingTemplateService {
                                 lstChild.add(MapperUtils.copy(lst, item));
                             }
                             if(lstChild != null){
-                                it.setChildrenItems(lstChild);
+                                it.setChildren(lstChild);
                             }
                         }
                         if(lstChild != null){
@@ -253,7 +259,7 @@ public class OnboardTrainingTemplateService {
                                         lstGrandChild.add(MapperUtils.copy(lst, item));
                                     }
                                     if(lstGrandChild != null){
-                                        child.setGrandChildItems(lstGrandChild);
+                                        child.setChildren(lstGrandChild);
                                     }
                                 }
 
