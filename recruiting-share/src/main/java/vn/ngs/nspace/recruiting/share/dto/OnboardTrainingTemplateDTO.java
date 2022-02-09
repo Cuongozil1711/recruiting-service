@@ -20,15 +20,16 @@ public class OnboardTrainingTemplateDTO {
     private String name;
     private Long positionId;
     private Long titleId;
-    private String contractType;
-    private Date startDate;
-    private Date endDate;
+    private Long orgId;
+    private Long levelId;
+    private float completion;
     private Integer status;
 
     private Map<String, Object> contractTypeObj;
     private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;
+    private Map<String, Object> orgObj;
+    private Map<String, Object> levelObj;
+
     private List<OnboardTrainingTemplateItemDTO> items;
-    private List<OnboardTrainingTemplateItemChildrenDTO> childrenItems;
-    private List<OnboardTrainingTemplateItemGrandChildDTO> grandChildItems;
 }

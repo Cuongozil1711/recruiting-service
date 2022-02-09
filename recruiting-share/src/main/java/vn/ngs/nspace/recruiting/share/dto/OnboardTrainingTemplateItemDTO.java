@@ -22,5 +22,5 @@ public class OnboardTrainingTemplateItemDTO {
     private Integer status;
 
     private List<OnboardTrainingTemplateItemChildrenDTO> childrenItems;
-    private List<OnboardTrainingTemplateItemGrandChildDTO> grandChildItems;
+
 }
