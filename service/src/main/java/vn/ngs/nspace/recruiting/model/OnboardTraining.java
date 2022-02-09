@@ -21,8 +21,8 @@ public class OnboardTraining extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long onboardOrderId;
+    private Long employeeId;
     private Long instructorId;
-    private Long evaluatorId;
     private String result;
     private float evaluate;
     private String finalResult;
