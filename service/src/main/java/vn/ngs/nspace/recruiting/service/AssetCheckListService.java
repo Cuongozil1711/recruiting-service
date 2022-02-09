@@ -37,16 +37,32 @@ public class AssetCheckListService {
 //        }
     }
 
-    public AssetCheckListDTO create(Long cid, String uid, AssetCheckListDTO request) throws BusinessException {
-        valid(request);
-        AssetCheckList assetCheckList = AssetCheckList.of(cid, uid, request);
-        assetCheckList.setCompanyId(cid);
-        assetCheckList.setCreateBy(uid);
-        assetCheckList.setUpdateBy(uid);
-        assetCheckList.setStatus(Constants.ENTITY_ACTIVE);
+//    public AssetCheckListDTO create(Long cid, String uid, AssetCheckListDTO request) throws BusinessException {
+//        valid(request);
+//        AssetCheckList assetCheckList = AssetCheckList.of(cid, uid, request);
+//        assetCheckList.setCompanyId(cid);
+//        assetCheckList.setCreateBy(uid);
+//        assetCheckList.setUpdateBy(uid);
+//        assetCheckList.setStatus(Constants.ENTITY_ACTIVE);
+//
+//        assetCheckList = repo.save(assetCheckList);
+//        return toDTO(assetCheckList);
+//    }
 
-        assetCheckList = repo.save(assetCheckList);
-        return toDTO(assetCheckList);
+    public List<AssetCheckListDTO> create(Long cid, String uid, List<AssetCheckListDTO> listDTOS) throws BusinessException{
+        List<AssetCheckList> list = new ArrayList<>();
+        for (AssetCheckListDTO dto: listDTOS) {
+            AssetCheckList curr = AssetCheckList.of(cid, uid, dto);
+            curr.setCompanyId(cid);
+            curr.setCreateBy(uid);
+            curr.setUpdateBy(uid);
+            curr.setStatus(Constants.ENTITY_ACTIVE);
+
+            curr = repo.save(curr);
+
+            list.add(curr);
+        }
+        return toDTOs(cid, uid, list);
     }
 
     public AssetCheckListDTO update(Long cid, String uid, Long id, AssetCheckListDTO request) throws BusinessException{

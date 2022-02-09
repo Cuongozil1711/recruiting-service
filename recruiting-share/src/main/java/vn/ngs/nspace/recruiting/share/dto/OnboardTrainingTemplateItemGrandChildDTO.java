@@ -7,20 +7,21 @@ import lombok.NoArgsConstructor;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class OnboardTrainingTemplateItemDTO {
+public class OnboardTrainingTemplateItemGrandChildDTO {
     private Long id;
     private Long templateId;
-    private String bigGoal;
-    private float completion;
+    private Long itemId;
+    private Long itemChildrenId;
+    private String conditions;
+    private Date deadline;
     private String description;
+    private Long employeeId;
     private Integer status;
 
-    private List<OnboardTrainingTemplateItemChildrenDTO> childrenItems;
-    private List<OnboardTrainingTemplateItemGrandChildDTO> grandChildItems;
+    private EmployeeDTO employeeObj;
 }

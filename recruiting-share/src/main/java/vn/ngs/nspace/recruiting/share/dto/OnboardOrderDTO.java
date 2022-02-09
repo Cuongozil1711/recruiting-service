@@ -21,7 +21,10 @@ public class OnboardOrderDTO {
     private Integer status;
     private Long mentorId;
 
+
     private EmployeeDTO employeeObj;
     private EmployeeDTO buddyObj;
     private EmployeeDTO mentorObj;
+    private Map<String, Object> positionObj;
+    private Map<String, Object> titleObj;
 }

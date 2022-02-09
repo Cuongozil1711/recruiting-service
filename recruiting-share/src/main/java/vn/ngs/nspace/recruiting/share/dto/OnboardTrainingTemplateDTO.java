@@ -29,4 +29,6 @@ public class OnboardTrainingTemplateDTO {
     private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;
     private List<OnboardTrainingTemplateItemDTO> items;
+    private List<OnboardTrainingTemplateItemChildrenDTO> childrenItems;
+    private List<OnboardTrainingTemplateItemGrandChildDTO> grandChildItems;
 }

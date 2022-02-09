@@ -21,6 +21,7 @@ import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.service.OnboardOrderService;
 import vn.ngs.nspace.recruiting.service.ProfileCheckListTemplateService;
+import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 
@@ -138,7 +139,6 @@ public class OnboardOrderApi {
             return ResponseUtils.handlerException(ex);
         }
     }
-
 
 //    @PostMapping("/create-buddy-mentor")
 //    @ActionMapping(action = Permission.CREATE)

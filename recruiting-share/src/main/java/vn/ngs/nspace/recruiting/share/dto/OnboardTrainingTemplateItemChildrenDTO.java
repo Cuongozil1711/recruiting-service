@@ -4,23 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class OnboardTrainingTemplateItemDTO {
+public class OnboardTrainingTemplateItemChildrenDTO {
     private Long id;
     private Long templateId;
-    private String bigGoal;
+    private Long itemId;
+    private String smallGoal;
     private float completion;
     private String description;
     private Integer status;
 
-    private List<OnboardTrainingTemplateItemChildrenDTO> childrenItems;
     private List<OnboardTrainingTemplateItemGrandChildDTO> grandChildItems;
 }

@@ -6,10 +6,12 @@ import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
+import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
@@ -77,19 +79,30 @@ public class OnboardOrderService {
         Set<Long> employeeIds = new HashSet<>();
 
         objs.forEach(obj -> {
-            if(obj.getBuddy() != null){
-                employeeIds.add(obj.getBuddy());
-            }
             if(obj.getEmployeeId() != null){
                 employeeIds.add(obj.getEmployeeId());
+            }
+            if(obj.getBuddy() != null){
+                employeeIds.add(obj.getBuddy());
             }
             if(obj.getMentorId() != null){
                 employeeIds.add(obj.getMentorId());
             }
+            if(obj.getJobApplicationId() != null){
+                JobApplication ja = repo.getInfoOnboard(cid, obj.getId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
+                if(ja.getPositionId() != null){
+                    categoryIds.add(ja.getPositionId());
+                }
+                if(ja.getTitleId() != null){
+                    categoryIds.add(ja.getTitleId());
+                }
+            }
+
             dtos.add(toDTO(obj));
         });
 
         Map<Long, EmployeeDTO> mapEmployee = _hcmService.getMapEmployees(uid, cid, employeeIds);
+        Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         for(OnboardOrderDTO dto : dtos){
             if(dto.getBuddy() != null){
                 dto.setBuddyObj(mapEmployee.get(dto.getBuddy()));
@@ -98,6 +111,11 @@ public class OnboardOrderService {
             }
             if(dto.getEmployeeId() != null){
                 dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
+            }
+            if(dto.getJobApplicationId() != null){
+                JobApplication ja = repo.getInfoOnboard(cid, dto.getId()).orElseThrow(()-> new BusinessException("not found JopAplication"));
+                dto.setPositionObj(mapCategory.get(ja.getPositionId()));
+                dto.setTitleObj(mapCategory.get(ja.getTitleId()));
             }
         }
 
@@ -119,6 +137,7 @@ public class OnboardOrderService {
                 exists.setCode(checkCode);
                 exists.setStatus(Constants.ENTITY_ACTIVE);
                 exists.setEmployeeId(onboard.getEmployeeId());
+
 
                 exists.setState(Constants.CMD_PENDING);
                 exists = checkListRepo.save(exists);
@@ -159,29 +178,9 @@ public class OnboardOrderService {
         return dtos;
     }
 
-    /* create Buddy and Mentor by Onboard ID */
-//    public OnboardOrderDTO createBuddyByOnbodrdId(Long cid, String uid, Long eid, Long buddy, Long mentorId){
-//        if(cid == null){
-//            throw new BusinessException("invalid-cid");
-//        }
-//        if (eid == null){
-//            throw new BusinessException("invalid-id");
-//        }
-//        if (buddy == null){
-//            throw new BusinessException("invalid-buddy");
-//        }
-//        if (mentorId == null){
-//            throw new BusinessException("invalid-mentorId");
-//        }
-//        OnboardOrder curr = repo.findByCompanyIdAndEmployeeId(cid, eid).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, eid));
-//        curr.setBuddy(buddy);
-//        curr.setMentorId(mentorId);
-//        curr = repo.save(curr);
-//        return toDTOs(cid, uid, Arrays.asList(curr)).get(0);
-//    }
 
     /* update Buddy and Mentor by Onboard ID */
-    public OnboardOrderDTO updateBuddyByOnboardId(Long cid,  String uid, Long id, Long buddy, Long mentorId){
+    public OnboardOrderDTO updateBuddyByOnboardId(Long cid, String uid, Long id, Long buddy, Long mentorId){
         if(cid == null){
             throw new BusinessException("invalid-cid");
         }
