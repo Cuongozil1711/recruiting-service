@@ -26,9 +26,9 @@ public class OnboardTrainingTemplate extends PersistableEntity<Long> {
     private String name;
     private Long positionId; // vi tri
     private Long titleId; // chuc danh
-    private Date startDate;
-    private Date endDate;
-    private String contractType;
+    private Long orgId;
+    private Long levelId;
+    private float completion;
 
     public static OnboardTrainingTemplate of(Long cid, String uid, OnboardTrainingTemplateDTO dto){
         OnboardTrainingTemplate obj = OnboardTrainingTemplate.builder()
@@ -36,9 +36,9 @@ public class OnboardTrainingTemplate extends PersistableEntity<Long> {
                 .name(dto.getName())
                 .positionId(dto.getPositionId())
                 .titleId(dto.getTitleId())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
-                .contractType(dto.getContractType())
+                .orgId(dto.getOrgId())
+                .levelId(dto.getLevelId())
+                .completion(dto.getCompletion())
                 .build();
         return obj;
     }
