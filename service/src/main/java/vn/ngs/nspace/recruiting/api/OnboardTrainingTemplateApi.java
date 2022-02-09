@@ -3,7 +3,9 @@ package vn.ngs.nspace.recruiting.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
@@ -12,13 +14,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
+import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.OnboardTrainingTemplate;
+import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
 import vn.ngs.nspace.recruiting.repo.OnboardTrainingTemplateRepo;
 import vn.ngs.nspace.recruiting.service.OnboardTrainingTemplateService;
 import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingTemplateDTO;
+import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -99,6 +105,35 @@ public class OnboardTrainingTemplateApi {
             Page<OnboardTrainingTemplate> page = _reppo.search(cid, positionId, titleId, pageable);
             List<OnboardTrainingTemplateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @GetMapping("{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get onboardTranning by Id"
+            , description = "API for get onboardTranning template by Id"
+            , tags = { "TemplateConfig" }
+            , responses = {
+            @ApiResponse(description = "onboardTranning with id is response OK Wrap in BaseResponse"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = BaseResponse.class ))),
+            @ApiResponse(content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ProfileCheckListTemplateDTO.class))
+                    , responseCode = "200"
+                    , description = "success" )})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getById(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description="param in path") @PathVariable(value = "id") Long id) {
+        try {
+            OnboardTrainingTemplate template = _reppo.findByCompanyIdAndId(cid, id).orElse(new OnboardTrainingTemplate());
+            return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, Collections.singletonList(template)));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
