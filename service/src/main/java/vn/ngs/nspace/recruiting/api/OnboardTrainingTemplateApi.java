@@ -53,9 +53,9 @@ public class OnboardTrainingTemplateApi {
             @RequestHeader("cid") long cid
             , @Parameter(description="ID of company")
             @RequestHeader("uid") String uid
-            , @Parameter(description="Payload DTO to create")  @RequestBody OnboardTrainingTemplateDTO dto) {
+            , @Parameter(description="Payload DTO to create")  @RequestBody List<OnboardTrainingTemplateDTO> dtos) {
         try {
-            return ResponseUtils.handlerSuccess(_service.create(cid, uid, dto));
+            return ResponseUtils.handlerSuccess(_service.create(cid, uid, dtos));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

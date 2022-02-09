@@ -47,23 +47,25 @@ public class OnboardTrainingTemplateService {
 
     }
 
-    public OnboardTrainingTemplateDTO create(Long cid, String uid, OnboardTrainingTemplateDTO request) throws BusinessException {
-        valid(request);
-
+    public List<OnboardTrainingTemplateDTO> create(Long cid, String uid, List<OnboardTrainingTemplateDTO> lst) throws BusinessException {
+        List<OnboardTrainingTemplate> lstTemplate = new ArrayList<>();
         // create template
-        OnboardTrainingTemplate template = OnboardTrainingTemplate.of(cid, uid, request);
-        template.setCompanyId(cid);
-        template.setCreateBy(uid);
-        template.setUpdateBy(uid);
-        template.setStatus(Constants.ENTITY_ACTIVE);
+        for (OnboardTrainingTemplateDTO request: lst) {
+            OnboardTrainingTemplate template = OnboardTrainingTemplate.of(cid, uid, request);
+            template.setCompanyId(cid);
+            template.setCreateBy(uid);
+            template.setUpdateBy(uid);
+            template.setStatus(Constants.ENTITY_ACTIVE);
 
-        template = repo.save(template);
+            template = repo.save(template);
 
-        for (OnboardTrainingTemplateItemDTO itemDTO: request.getChildren()){
-            itemDTO.setTemplateId(template.getId());
-            createItem(cid, uid, itemDTO);
+            for (OnboardTrainingTemplateItemDTO itemDTO: request.getChildren()){
+                itemDTO.setTemplateId(template.getId());
+                createItem(cid, uid, itemDTO);
+            }
+            lstTemplate.add(template);
         }
-        return toDTOs(cid, uid, Collections.singletonList(template)).get(0);
+        return toDTOs(cid, uid, lstTemplate);
     }
 
     public void createItem(Long cid, String uid, OnboardTrainingTemplateItemDTO request) throws BusinessException {
