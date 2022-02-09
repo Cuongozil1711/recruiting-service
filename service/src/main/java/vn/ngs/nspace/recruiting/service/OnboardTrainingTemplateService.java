@@ -59,7 +59,7 @@ public class OnboardTrainingTemplateService {
 
         template = repo.save(template);
 
-        for (OnboardTrainingTemplateItemDTO itemDTO: request.getItems()){
+        for (OnboardTrainingTemplateItemDTO itemDTO: request.getChildren()){
             itemDTO.setTemplateId(template.getId());
             createItem(cid, uid, itemDTO);
         }
@@ -116,7 +116,7 @@ public class OnboardTrainingTemplateService {
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
 
-        for(OnboardTrainingTemplateItemDTO itemDTO : request.getItems()){
+        for(OnboardTrainingTemplateItemDTO itemDTO : request.getChildren()){
             if(CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
                 itemDTO.setStatus(Constants.ENTITY_INACTIVE);
             }
@@ -266,7 +266,7 @@ public class OnboardTrainingTemplateService {
                             }
                         }
                     }
-                    o.setItems(lstItem);
+                    o.setChildren(lstItem);
                 }
             }
 
