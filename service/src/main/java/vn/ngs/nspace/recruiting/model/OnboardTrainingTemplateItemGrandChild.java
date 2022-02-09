@@ -6,7 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
-import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingTemplateItemDTO;
+
+import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingTemplateItemGrandChildDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,27 +19,30 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-//Danh sách các hạng mục đánh giá training
-public class OnboardTrainingTemplateItem extends PersistableEntity<Long> {
+public class OnboardTrainingTemplateItemGrandChild extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
     private Long templateId;
-    private String bigGoal;
-    private float completion;
+    private Long itemId;
+    private Long itemChildrenId;
+    private String conditions;
+    private Date deadline;
     private String description;
-    private Boolean required = true;
+    private Long employeeId;
 
-    public static OnboardTrainingTemplateItem of(Long cid, String uid, OnboardTrainingTemplateItemDTO dto){
-        OnboardTrainingTemplateItem obj = OnboardTrainingTemplateItem.builder()
+    public static OnboardTrainingTemplateItemGrandChild of(Long cid, String uid, OnboardTrainingTemplateItemGrandChildDTO dto) {
+        OnboardTrainingTemplateItemGrandChild obj = OnboardTrainingTemplateItemGrandChild.builder()
                 .id(dto.getId())
                 .templateId(dto.getTemplateId())
-                .bigGoal(dto.getBigGoal())
-                .completion(dto.getCompletion())
+                .itemId(dto.getItemId())
+                .itemChildrenId(dto.getItemChildrenId())
+                .conditions(dto.getConditions())
+                .deadline(dto.getDeadline())
                 .description(dto.getDescription())
+                .employeeId(dto.getEmployeeId())
                 .build();
         return obj;
     }
-
 }

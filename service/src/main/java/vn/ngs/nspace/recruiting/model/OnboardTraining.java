@@ -20,4 +20,13 @@ public class OnboardTraining extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
+    private Long onboardOrderId;
+    private Long instructorId;
+    private Long evaluatorId;
+    private String result;
+    private float evaluate;
+    private String finalResult;
+    private String selfAssessment;
+    private String comment;
+    private String commentHr;
 }

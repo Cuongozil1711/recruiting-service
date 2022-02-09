@@ -30,16 +30,18 @@ public class OnboardOrderCheckListService {
         _configService = configService;
     }
 
-    public List<OnboardOrderCheckListDTO> changeState(Long cid, String uid, Long onboardOrderID, List<OnboardOrderCheckListDTO> listDTOS){
+    public List<OnboardOrderCheckListDTO> updateList(Long cid, String uid, Long onboardOrderID, List<OnboardOrderCheckListDTO> listDTOS){
         List<OnboardOrderCheckList> lst = repo.findByCompanyIdAndOnboardOrderId(cid, onboardOrderID);
         List<String> lstCodeUpdate = lst.stream().map(dto -> dto.getCode()).collect(Collectors.toList());
         List<OnboardOrderCheckList> onboardOrderCheckLists = new ArrayList<>();
         for (String code: lstCodeUpdate){
-            OnboardOrderCheckList onboardOrderCheckList = lst.stream().filter(el -> el.getCode() == code).collect(Collectors.toList()).get(0);
+            OnboardOrderCheckList onboardOrderCheckList = lst.stream().filter(el -> el.getCode().equals(code)).findAny().get();
 
-            OnboardOrderCheckListDTO dto = listDTOS.stream().filter(el -> el.getCode() == code).collect(Collectors.toList()).get(0);
+            OnboardOrderCheckListDTO dto = listDTOS.stream().filter(el -> el.getCode().equals(code)).findAny().get();
             if (onboardOrderCheckList != null){
                 onboardOrderCheckList.setState(dto.getState());
+                onboardOrderCheckList.setParticipantId(dto.getParticipantId());
+                onboardOrderCheckList.setResponsibleId(dto.getResponsibleId());
 
                 onboardOrderCheckLists.add(onboardOrderCheckList);
             }

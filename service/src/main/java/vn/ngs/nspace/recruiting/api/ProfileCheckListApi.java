@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("profile")
+    @RequestMapping("profile")
 @RequiredArgsConstructor
 @Tag(name = "ProfileCheckList", description = "API for CRUD Profile CheckList")
 public class ProfileCheckListApi {

@@ -19,7 +19,7 @@ import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
 import java.util.*;
 @RestController
-@RequestMapping("asset-check-list")
+    @RequestMapping("asset-check-list")
 @RequiredArgsConstructor
 public class AssetCheckListApi {
     private final AssetCheckListService _service;
@@ -29,10 +29,9 @@ public class AssetCheckListApi {
     @ActionMapping(action = Permission.CREATE)
     protected ResponseEntity create(@RequestHeader Long cid
             , @RequestHeader String uid
-            , @RequestBody AssetCheckListDTO _dto) {
+            , @RequestBody List<AssetCheckListDTO> listDTOS) {
         try {
-            AssetCheckListDTO dto = _service.create(cid, uid, _dto);
-            return ResponseUtils.handlerSuccess(dto);
+            return ResponseUtils.handlerSuccess(_service.create(cid, uid, listDTOS));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

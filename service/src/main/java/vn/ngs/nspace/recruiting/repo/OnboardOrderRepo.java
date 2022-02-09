@@ -39,5 +39,7 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
     Optional<JobApplication> getInfoOnboard(@Param("companyId") Long cid
             , @Param("id") Long id);
 
+
+
 }
 
