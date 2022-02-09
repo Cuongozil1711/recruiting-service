@@ -9,9 +9,12 @@ import vn.ngs.nspace.recruiting.model.OnboardTrainingTemplate;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
 
 import java.util.Optional;
+import java.util.Set;
 
 public interface OnboardTrainingTemplateRepo  extends BaseRepo<OnboardTrainingTemplate, Long> {
     Optional<OnboardTrainingTemplate> findByCompanyIdAndId (Long cid, Long id);
+
+    void deleteAllByIdIn(Set<Long> id);
 
     @Query(value = " select p " +
             " from OnboardTrainingTemplate p " +
