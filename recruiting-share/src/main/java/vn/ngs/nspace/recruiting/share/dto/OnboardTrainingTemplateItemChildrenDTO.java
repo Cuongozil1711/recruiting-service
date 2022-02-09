@@ -15,10 +15,10 @@ public class OnboardTrainingTemplateItemChildrenDTO {
     private Long id;
     private Long templateId;
     private Long itemId;
-    private String smallGoal;
+    private String name;
     private float completion;
     private String description;
     private Integer status;
 
-    private List<OnboardTrainingTemplateItemGrandChildDTO> grandChildItems;
+    private List<OnboardTrainingTemplateItemGrandChildDTO> children;
 }

@@ -25,7 +25,7 @@ public class OnboardTrainingTemplateItem extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long templateId;
-    private String bigGoal;
+    private String name;
     private float completion;
     private String description;
     private Boolean required = true;
@@ -34,7 +34,7 @@ public class OnboardTrainingTemplateItem extends PersistableEntity<Long> {
         OnboardTrainingTemplateItem obj = OnboardTrainingTemplateItem.builder()
                 .id(dto.getId())
                 .templateId(dto.getTemplateId())
-                .bigGoal(dto.getBigGoal())
+                .name(dto.getName())
                 .completion(dto.getCompletion())
                 .description(dto.getDescription())
                 .build();

@@ -31,5 +31,5 @@ public class OnboardTrainingTemplateDTO {
     private Map<String, Object> orgObj;
     private Map<String, Object> levelObj;
 
-    private List<OnboardTrainingTemplateItemDTO> items;
+    private List<OnboardTrainingTemplateItemDTO> children;
 }
