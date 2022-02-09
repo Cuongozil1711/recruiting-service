@@ -18,7 +18,7 @@ public class OnboardTrainingTemplateItemGrandChildDTO {
     private Long itemId;
     private Long itemChildrenId;
     private String name;
-    private Date deadline;
+    private Integer deadline;
     private String description;
     private Long employeeId;
     private Integer status;
