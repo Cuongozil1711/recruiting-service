@@ -173,7 +173,6 @@ public class RecruitmentPlanOrderApi {
         } catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }
-
     }
 
 }
