@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -35,28 +34,6 @@ import java.util.Map;
 public class ReasonApi {
     private final ReasonService _service;
     private final ReasonRepo _repo;
-
-    @GetMapping("/search")
-    @ActionMapping(action = Permission.VIEW)
-    @Operation(summary = "Search all Reason with type"
-            , description = "Search all Reason "
-            , tags = { "Reason" }
-    )
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-            , schema = @Schema(implementation = String.class))
-    protected ResponseEntity search(
-            @Parameter(description = "Id of Company") @RequestHeader Long cid
-            , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @RequestParam(value = "type", defaultValue = "") String type
-            , @RequestParam(value = "search", defaultValue = "#") String search
-            , Pageable pageable) {
-        try{
-            Page<Map<String, Object>> results = _repo.search(cid, type, StringUtils.lowerCase(search), pageable);
-            return ResponseUtils.handlerSuccess(results);
-        } catch (Exception ex) {
-            return ResponseUtils.handlerException(ex);
-        }
-    }
 
     @PostMapping("/list/{type}")
     @ActionMapping(action = Permission.VIEW)

@@ -15,6 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 public class OnboardTrainingTemplateItemDTO {
     private Long id;
+    private String key;
     private Long templateId;
     private String name;
     private float completion;
