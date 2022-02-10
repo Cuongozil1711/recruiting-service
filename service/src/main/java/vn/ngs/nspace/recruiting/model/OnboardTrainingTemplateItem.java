@@ -24,6 +24,7 @@ public class OnboardTrainingTemplateItem extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
+    private String key;
     private Long templateId;
     private String name;
     private float completion;
@@ -33,6 +34,7 @@ public class OnboardTrainingTemplateItem extends PersistableEntity<Long> {
     public static OnboardTrainingTemplateItem of(Long cid, String uid, OnboardTrainingTemplateItemDTO dto){
         OnboardTrainingTemplateItem obj = OnboardTrainingTemplateItem.builder()
                 .id(dto.getId())
+                .key(dto.getKey())
                 .templateId(dto.getTemplateId())
                 .name(dto.getName())
                 .completion(dto.getCompletion())

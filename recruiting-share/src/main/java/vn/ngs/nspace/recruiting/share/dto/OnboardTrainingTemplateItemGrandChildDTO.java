@@ -14,6 +14,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 public class OnboardTrainingTemplateItemGrandChildDTO {
     private Long id;
+    private String key;
     private Long templateId;
     private Long itemId;
     private Long itemChildrenId;

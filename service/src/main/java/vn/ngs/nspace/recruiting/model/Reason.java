@@ -25,7 +25,6 @@ public class Reason extends PersistableEntity<Long> {
     private String code;
     private String type;
     private String title;
-    private String description;
 
 
     public static Reason of(Long cid, String uid, ReasonDTO dto){
@@ -35,7 +34,6 @@ public class Reason extends PersistableEntity<Long> {
                 .code(dto.getCode())
                 .type(dto.getType())
                 .title(dto.getTitle())
-                .description(dto.getDescription())
                 .build();
         return reason;
     }
