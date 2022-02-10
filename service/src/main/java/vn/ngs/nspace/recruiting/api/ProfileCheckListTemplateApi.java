@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
 import org.apache.kafka.common.protocol.types.Field;
@@ -145,6 +147,27 @@ public class ProfileCheckListTemplateApi {
     }
 
 
+    @PostMapping("/profile-check-list-template")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "get profile check list template for Candidate",
+            description = "API get profile check list template for Candidate")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getProfileCheckListTemplate(
+            @Parameter(description = "ID of company") @RequestHeader Long cid
+            , @Parameter(description = "condition of param body")  @RequestBody Map<String, Object>condition
+    ){
+        try {
+            Long positionId = MapUtils.getLong(condition, "positionId", null);
+            Long titleId = MapUtils.getLong(condition, "titleId", null);
+            String contractType = MapUtils.getString(condition, "contractType",null );
+            List<ProfileCheckListTemplate> results = _repo.findProfileCheckListTemplate(cid, positionId,titleId,contractType);//.orElse(new ProfileCheckListTemplate());
+            return ResponseUtils.handlerSuccess(results);
+            //return ResponseUtils.handlerSuccess();
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
 
 
 
