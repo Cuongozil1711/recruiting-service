@@ -16,5 +16,5 @@ public class InterviewResultDTO {
     private Date interviewDate;
     private String name;
     private String state;
-    private Double offerSalary;
+
 }

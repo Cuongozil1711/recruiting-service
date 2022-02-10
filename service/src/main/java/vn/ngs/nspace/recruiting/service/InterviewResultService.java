@@ -52,9 +52,6 @@ public class InterviewResultService {
         if (StringUtils.isEmpty(dto.getState())){
             throw new BusinessException("invalid-state");
         }
-        if (dto.getOfferSalary() == null){
-            throw new BusinessException("invalid-offer");
-        }
 
     }
 

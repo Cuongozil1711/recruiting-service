@@ -26,7 +26,7 @@ public class InterviewResult extends PersistableEntity<Long> {
     private Date interviewDate;
     private String name;
     private String state;
-    private Double offerSalary;
+
 
     public static InterviewResult of(Long cid, String uid, InterviewResultDTO dto){
         InterviewResult builder = InterviewResult.builder()
@@ -35,7 +35,6 @@ public class InterviewResult extends PersistableEntity<Long> {
                 .interviewDate(dto.getInterviewDate())
                 .name(dto.getName())
                 .state(dto.getState())
-                .offerSalary(dto.getOfferSalary())
                 .build();
         return builder;
     }
