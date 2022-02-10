@@ -2,6 +2,7 @@ package vn.ngs.nspace.recruiting.service;
 
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
+import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
@@ -77,7 +78,7 @@ public class OnboardOrderService {
         List<OnboardOrderDTO> dtos = new ArrayList<>();
         Set<Long> categoryIds = new HashSet<>();
         Set<Long> employeeIds = new HashSet<>();
-
+        Set<Long> orgIds = new HashSet<>();
         objs.forEach(obj -> {
             if(obj.getEmployeeId() != null){
                 employeeIds.add(obj.getEmployeeId());
@@ -88,19 +89,23 @@ public class OnboardOrderService {
             if(obj.getMentorId() != null){
                 employeeIds.add(obj.getMentorId());
             }
-//            if(obj.getJobApplicationId() != null){
-//                JobApplication ja = repo.getInfoOnboard(cid, obj.getId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
-//                if(ja.getPositionId() != null){
-//                    categoryIds.add(ja.getPositionId());
-//                }
-//                if(ja.getTitleId() != null){
-//                    categoryIds.add(ja.getTitleId());
-//                }
-//            }
+            if(obj.getJobApplicationId() != null){
+                JobApplication ja = repo.getInfoOnboard(cid, obj.getId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
+                if(ja.getPositionId() != null){
+                    categoryIds.add(ja.getPositionId());
+                }
+                if(ja.getTitleId() != null){
+                    categoryIds.add(ja.getTitleId());
+                }
+                if(ja.getOrgId() != null){
+                    orgIds.add(ja.getOrgId());
+                }
+            }
 
             dtos.add(toDTO(obj));
         });
 
+        List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
         Map<Long, EmployeeDTO> mapEmployee = _hcmService.getMapEmployees(uid, cid, employeeIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         for(OnboardOrderDTO dto : dtos){
@@ -112,11 +117,16 @@ public class OnboardOrderService {
             if(dto.getEmployeeId() != null){
                 dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
             }
-//            if(dto.getJobApplicationId() != null){
-//                JobApplication ja = repo.getInfoOnboard(cid, dto.getId()).orElseThrow(()-> new BusinessException("not found JopAplication"));
-//                dto.setPositionObj(mapCategory.get(ja.getPositionId()));
-//                dto.setTitleObj(mapCategory.get(ja.getTitleId()));
-//            }
+            if(dto.getJobApplicationId() != null){
+                JobApplication ja = repo.getInfoOnboard(cid, dto.getId()).orElseThrow(()-> new BusinessException("not found JopAplication"));
+                dto.setPositionObj(mapCategory.get(ja.getPositionId()));
+                dto.setTitleObj(mapCategory.get(ja.getTitleId()));
+                if(ja.getOrgId() != null){
+                    OrgResp org = orgs.stream().filter(o -> CompareUtil.compare(o.getId(), ja.getOrgId())).findAny().orElse(new OrgResp());
+                    dto.setOrgResp(org);
+                }
+                dto.setContractType(ja.getContractType());
+            }
         }
 
         return dtos;
