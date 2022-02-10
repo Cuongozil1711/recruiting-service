@@ -3,11 +3,8 @@ package vn.ngs.nspace.recruiting.share.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
-import java.util.Map;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +18,4 @@ public class InterviewCheckListDTO {
     private Date interviewDate;
     private Long positionId;
     private Long orgId;
-
-    private EmployeeDTO interviewerObj;
-    private Map<String, Object> checkListObj;
 }

@@ -17,11 +17,7 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
             "welcome",
             "training",
             "coaching");
-    public enum INTERVIEW_RESULT_STATE{
-        OK
-        , NOT_OK
 
-    }
     public enum Experience{
         UNDER_30,
         UNDER_40,
@@ -48,9 +44,4 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     }
 
     public static final String JOB_APPLICATION_STATE_DONE = "DONE";
-
-    public enum EMAIL_SENT_REF {
-        CANDIDATE
-        , EMPLOYEE
-    }
 }

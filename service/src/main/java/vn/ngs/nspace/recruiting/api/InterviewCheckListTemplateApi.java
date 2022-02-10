@@ -34,7 +34,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("interview-template")
 @RequiredArgsConstructor
-@Tag(name = "InterviewCheckListTemplate", description = "API for InterviewCheckListTemplate")
+@Tag(name = "InterviewTemplate", description = "API for ")
 public class InterviewCheckListTemplateApi {
     private final InterviewCheckListTemplateService _service;
     private final InterviewCheckListTemplateRepo _repo;
