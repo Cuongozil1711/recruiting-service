@@ -169,7 +169,27 @@ public class ProfileCheckListTemplateApi {
         }
     }
 
-
+    @PutMapping("/profile-check-list-update-status/{id}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Update profile template"
+            , description = "API for update profile template"
+            , tags = { "TemplateConfig" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity profileCheckListUpdateStatus(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description="param in path")  @PathVariable(value = "id") Long id
+            , @RequestBody ProfileCheckListTemplateDTO dto) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.update(cid, uid, id, dto));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
 //    @PostMapping("/by-cycle")
 //    @ActionMapping(action = Permission.VIEW)
