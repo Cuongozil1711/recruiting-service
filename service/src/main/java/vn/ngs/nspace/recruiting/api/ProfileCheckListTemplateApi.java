@@ -45,6 +45,7 @@ import java.util.Map;
 public class ProfileCheckListTemplateApi {
     private final ProfileCheckListTemplateService _service;
     private final ProfileCheckListTemplateRepo _repo;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileCheckListTemplateService.class);
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
@@ -169,7 +170,7 @@ public class ProfileCheckListTemplateApi {
         }
     }
 
-    @PutMapping("/profile-check-list-update-status/{id}")
+    @PostMapping("/profile-check-list-update-status/{id}")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "Update profile template"
             , description = "API for update profile template"
@@ -185,7 +186,8 @@ public class ProfileCheckListTemplateApi {
             , @Parameter(description="param in path")  @PathVariable(value = "id") Long id
             , @RequestBody ProfileCheckListTemplateDTO dto) {
         try {
-            return ResponseUtils.handlerSuccess(_service.update(cid, uid, id, dto));
+            LOGGER.info("dto is "+dto);
+            return ResponseUtils.handlerSuccess(_service.updateStatus(cid, uid, id, dto));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
