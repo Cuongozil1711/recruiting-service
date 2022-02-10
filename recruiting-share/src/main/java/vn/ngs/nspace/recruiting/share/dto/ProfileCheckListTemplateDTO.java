@@ -24,6 +24,9 @@ public class ProfileCheckListTemplateDTO {
     private Date startDate;
     private Date endDate;
     private Integer status;
+    private Integer numbers;
+    private Long recieverId;
+    private String note;
 
     private Map<String, Object> contractTypeObj;
     private Map<String, Object> positionObj;
