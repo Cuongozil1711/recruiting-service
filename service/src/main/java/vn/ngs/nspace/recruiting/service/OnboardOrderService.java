@@ -88,15 +88,15 @@ public class OnboardOrderService {
             if(obj.getMentorId() != null){
                 employeeIds.add(obj.getMentorId());
             }
-            if(obj.getJobApplicationId() != null){
-                JobApplication ja = repo.getInfoOnboard(cid, obj.getId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
-                if(ja.getPositionId() != null){
-                    categoryIds.add(ja.getPositionId());
-                }
-                if(ja.getTitleId() != null){
-                    categoryIds.add(ja.getTitleId());
-                }
-            }
+//            if(obj.getJobApplicationId() != null){
+//                JobApplication ja = repo.getInfoOnboard(cid, obj.getId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
+//                if(ja.getPositionId() != null){
+//                    categoryIds.add(ja.getPositionId());
+//                }
+//                if(ja.getTitleId() != null){
+//                    categoryIds.add(ja.getTitleId());
+//                }
+//            }
 
             dtos.add(toDTO(obj));
         });
@@ -112,11 +112,11 @@ public class OnboardOrderService {
             if(dto.getEmployeeId() != null){
                 dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
             }
-            if(dto.getJobApplicationId() != null){
-                JobApplication ja = repo.getInfoOnboard(cid, dto.getId()).orElseThrow(()-> new BusinessException("not found JopAplication"));
-                dto.setPositionObj(mapCategory.get(ja.getPositionId()));
-                dto.setTitleObj(mapCategory.get(ja.getTitleId()));
-            }
+//            if(dto.getJobApplicationId() != null){
+//                JobApplication ja = repo.getInfoOnboard(cid, dto.getId()).orElseThrow(()-> new BusinessException("not found JopAplication"));
+//                dto.setPositionObj(mapCategory.get(ja.getPositionId()));
+//                dto.setTitleObj(mapCategory.get(ja.getTitleId()));
+//            }
         }
 
         return dtos;
