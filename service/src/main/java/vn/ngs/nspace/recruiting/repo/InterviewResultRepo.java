@@ -27,10 +27,11 @@ public interface InterviewResultRepo extends BaseRepo<InterviewResult, Long> {
             " from InterviewResult i " +
             " where (i.companyId = :companyId)" +
             " and (i.candidateId = :candidateId or :candidateId = -1)" +
-            " and (i.name = :name or :name = 'all')" +
-            " and (i.state = :state or :state = 'all')")
+            " and (i.content = :content or :content = 'all')"
+    )
     Page<InterviewResult> search(@Param("companyId") Long cid
             ,@Param("candidateId") Long candidateId
-            ,@Param("name") String name
-            ,@Param("state") String state, Pageable pageable);
+            ,@Param("content") String content
+            , Pageable pageable);
+
 }

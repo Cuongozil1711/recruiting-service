@@ -17,6 +17,7 @@ public class AssetCheckListDTO {
     private Long id;
     private Long onboardOrderId;
     private Long assetId; //dm dung chung
+    private String assetType; //enum
     private Date receiptDate; // ngay nhan
     private Long senderId; // id nguoi giao
     private Long employeeId; // id  nguoi nhan

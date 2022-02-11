@@ -200,10 +200,10 @@ public class CandidateApi {
             Long gender = MapUtils.getLong(condition, "gender", -1l);
             String language = MapUtils.getString(condition, "language", "all");
             Long educationLevel = MapUtils.getLong(condition, "educationLevel", -1l);
-            String educateLocation = MapUtils.getString(condition, "condition", "all").toLowerCase(Locale.ROOT);
-            String industry = MapUtils.getString(condition,"condition", "all").toLowerCase(Locale.ROOT);
+            String educateLocation = MapUtils.getString(condition, "educateLocation", "all").toLowerCase(Locale.ROOT);
+            String industry = MapUtils.getString(condition,"industry", "all").toLowerCase(Locale.ROOT);
             String ageLess = MapUtils.getString(condition,"ageLess", "all");
-            String lastPosition = MapUtils.getString(condition,"condition","all").toLowerCase(Locale.ROOT);
+            String lastPosition = MapUtils.getString(condition,"lastPosition","all").toLowerCase(Locale.ROOT);
             Double fromExp = MapUtils.getDouble(condition,"fromExp",0.0d);
             Double toExp = MapUtils.getDouble(condition,"toExp",1000.0d);
             String expUnit = MapUtils.getString(condition,"expUnit","month");
@@ -219,7 +219,6 @@ public class CandidateApi {
                fromExp = fromExp * 12;
                toExp = toExp * 12;
             }
-
 
             Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition,fromExp,toExp, pageable);
             List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());

@@ -202,4 +202,5 @@ public class JobApplicationApi {
             return ResponseUtils.handlerException(e);
         }
     }
+
 }

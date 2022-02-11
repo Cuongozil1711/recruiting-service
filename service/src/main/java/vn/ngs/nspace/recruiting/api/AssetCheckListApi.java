@@ -65,6 +65,20 @@ public class AssetCheckListApi {
         }
     }
 
+    @GetMapping("/get-by-onboarding-and-type/{id}/{type}")
+    @ActionMapping(action = Permission.VIEW)
+    protected ResponseEntity getByOnboardOrder(@RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable(value = "id") Long id
+            , @PathVariable(value = "type") String type){
+        try {
+            List<AssetCheckList> datas = repo.findByCompanyIdAndOnboardOrderIdAndAssetType(cid, id, type);
+            return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, datas));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
     @GetMapping("/get-by-employee/{id}")
     @ActionMapping(action = Permission.VIEW)
     protected ResponseEntity getByEmployee(@RequestHeader("cid") long cid
