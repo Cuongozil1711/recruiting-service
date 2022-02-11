@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
 import org.apache.kafka.common.protocol.types.Field;
@@ -43,6 +45,7 @@ import java.util.Map;
 public class ProfileCheckListTemplateApi {
     private final ProfileCheckListTemplateService _service;
     private final ProfileCheckListTemplateRepo _repo;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileCheckListTemplateService.class);
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
@@ -144,9 +147,50 @@ public class ProfileCheckListTemplateApi {
         }
     }
 
+    @PostMapping("/profile-check-list-template")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "get profile check list template for Candidate",
+            description = "API get profile check list template for Candidate")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getProfileCheckListTemplate(
+            @Parameter(description = "ID of company") @RequestHeader Long cid
+            , @Parameter(description = "condition of param body")  @RequestBody Map<String, Object>condition
+    ){
+        try {
+            Long positionId = MapUtils.getLong(condition, "positionId", null);
+            Long titleId = MapUtils.getLong(condition, "titleId", null);
+            String contractType = MapUtils.getString(condition, "contractType",null );
+            List<ProfileCheckListTemplate> results = _repo.findProfileCheckListTemplate(cid, positionId,titleId,contractType);//.orElse(new ProfileCheckListTemplate());
+            return ResponseUtils.handlerSuccess(results);
+            //return ResponseUtils.handlerSuccess();
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
 
-
-
+    @PutMapping("/profile-check-list-update-status/{id}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Update profile template"
+            , description = "API for update profile template"
+            , tags = { "TemplateConfig" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity profileCheckListUpdateStatus(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description="param in path")  @PathVariable(value = "id") Long id
+            , @RequestBody ProfileCheckListTemplateDTO dto) {
+        try {
+            LOGGER.info("dto is "+dto);
+            return ResponseUtils.handlerSuccess(_service.updateStatus(cid, uid, id, dto));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
 //    @PostMapping("/by-cycle")
 //    @ActionMapping(action = Permission.VIEW)

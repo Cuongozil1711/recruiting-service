@@ -24,18 +24,19 @@ public class InterviewResult extends PersistableEntity<Long> {
     private Long id;
     private Long candidateId;
     private Date interviewDate;
-    private String name;
-    private String state;
-    private Double offerSalary;
+    private String content;
+    private Long interviewerId;
+    private Integer state ;
+
 
     public static InterviewResult of(Long cid, String uid, InterviewResultDTO dto){
         InterviewResult builder = InterviewResult.builder()
                 .id(dto.getId())
+                .interviewerId(dto.getInterviewerId())
                 .candidateId(dto.getCandidateId())
                 .interviewDate(dto.getInterviewDate())
-                .name(dto.getName())
+                .content(dto.getContent())
                 .state(dto.getState())
-                .offerSalary(dto.getOfferSalary())
                 .build();
         return builder;
     }

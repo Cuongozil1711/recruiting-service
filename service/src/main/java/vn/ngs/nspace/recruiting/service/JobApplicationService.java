@@ -2,6 +2,7 @@ package vn.ngs.nspace.recruiting.service;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
@@ -11,6 +12,7 @@ import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;

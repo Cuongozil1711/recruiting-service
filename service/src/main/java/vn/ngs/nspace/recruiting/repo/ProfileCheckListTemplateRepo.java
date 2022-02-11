@@ -11,6 +11,7 @@ import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ProfileCheckListTemplateRepo extends BaseRepo<ProfileCheckListTemplate,Long> {
@@ -39,5 +40,18 @@ public interface ProfileCheckListTemplateRepo extends BaseRepo<ProfileCheckListT
             ,@Param("positionId") Long positionId
             ,@Param("titleId") Long titleId
             ,@Param("contractType") String contractType);
+
+    @Query(value = "select c" +
+            " from ProfileCheckListTemplate c" +
+            " where (c.companyId = :companyId)" +
+            " and (c.positionId = :positionId)"+
+            " and (c.titleId = :titleId)"+
+            " and (c.contractType = :contractType)")
+    List<ProfileCheckListTemplate> findProfileCheckListTemplate(
+            @Param("companyId") Long companyId
+            , @Param("positionId") Long positionId
+            , @Param("titleId") Long titleId
+            , @Param("contractType") String contractType
+    );
 }
 

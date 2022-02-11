@@ -120,7 +120,7 @@ nspace:
     config:
       headers: '{"key":"test","cid":0,"uid":"0"}'
       url: http://api.ngs.vn/nspace/config
-#      url: http://api.gateway.svc.cluster.local:8082/nspace/config
+      #url: http://api.gateway.svc.cluster.local:8082/nspace/config
       key: test
       cache:
         expires: 5
@@ -140,13 +140,13 @@ nspace:
     project:
       key: test
       #      URL: http://localhost:8092
-      #      URL: http://api.ngs.vn/nspace/project
-      URL: http://api.gateway.svc.cluster.local:8082/nspace/project
+      URL: http://api.ngs.vn/nspace/project
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/project
     ticket:
       key: test
       #      URL: http://localhost:8092
-      #      URL: http://api.ngs.vn/nspace/ticket
-      URL: http://api.gateway.svc.cluster.local:8082/nspace/ticket
+      URL: http://api.ngs.vn/nspace/ticket
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/ticket
     person:
       headers: '{"key":"test","cid":0,"uid":"system"}'
       url: http://api.ngs.vn/nspace/person
@@ -157,11 +157,6 @@ nspace:
 
     hcm:
       URL: http://api.ngs.vn/nspace/hcm
-#      URL: http://api.gateway.svc.cluster.local:8082/nspace/hcm
-      #      URL: http://localhost:8087/
-      key: test
-    notice:
-      URL: http://api.ngs.vn/nspace/notice
-      #      URL: http://api.gateway.svc.cluster.local:8082/nspace/notice
+      #URL: http://api.gateway.svc.cluster.local:8082/nspace/hcm
       #      URL: http://localhost:8087/
       key: test
