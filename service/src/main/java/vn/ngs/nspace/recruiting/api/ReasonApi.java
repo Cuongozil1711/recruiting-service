@@ -39,7 +39,7 @@ public class ReasonApi {
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Search all Reason with type"
             , description = "List all Reason with type in pathParam"
-            , tags = { "Reason" }
+            , tags = { "Reason"  }
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))

@@ -137,4 +137,28 @@ public class InterviewResultApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+
+    @PutMapping("/delete")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "delete list InterviewResult",
+            description = "API for delete list InterviewResult"
+            ,tags = "InterviewResult")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity deteleList(
+            @Parameter(description = "ID of company")
+            @RequestHeader Long cid
+            ,@Parameter(description = "ID of userID")
+            @RequestHeader String uid
+            ,@Parameter(description = "List id of record")
+            @RequestBody List<Long> ids){
+        try {
+            service.delete(cid, uid , ids);
+            return ResponseUtils.handlerSuccess();
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+
 }

@@ -24,7 +24,7 @@ public class EmailSetting extends PersistableEntity<Long> {
     private Long id;
     private String code;
     @Convert(converter = HashMapConverter.class)
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition =  "text")
     private Map<String, Object> configs;
 
     public static EmailSetting of(Long cid, String uid, EmailSettingDTO dto){

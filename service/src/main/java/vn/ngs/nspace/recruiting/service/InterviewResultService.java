@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
@@ -17,10 +18,7 @@ import vn.ngs.nspace.recruiting.repo.InterviewResultRepo;
 import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -46,18 +44,15 @@ public class InterviewResultService {
         if (dto.getInterviewDate() == null){
             throw new BusinessException("invalid-date");
         }
-        if (StringUtils.isEmpty(dto.getName())){
+        if (StringUtils.isEmpty(dto.getContent())){
             throw new BusinessException("invalid-name");
-        }
-        if (StringUtils.isEmpty(dto.getState())){
-            throw new BusinessException("invalid-state");
         }
 
     }
 
 
     public InterviewResultDTO create(Long cid, String uid, InterviewResultDTO dto) {
-            valid(dto);
+        valid(dto);
         InterviewResult interviewResult = InterviewResult.of(cid,uid,dto);
         interviewResult.setCompanyId(cid);
         interviewResult.setCreateBy(uid);
@@ -96,7 +91,7 @@ public class InterviewResultService {
             exist.setCreateBy(uid);
             exist.setStatus(Constants.ENTITY_ACTIVE);
             exist.setInterviewDate(dto.getInterviewDate());
-            exist.setResult(dto.getState());
+            exist.setInterviewerId(dto.getInterviewerId());
             exist.setInterviewResultId(dto.getId());
             exist = checkListRepo.save(exist);
 
@@ -106,9 +101,20 @@ public class InterviewResultService {
     }
     public List<InterviewResultDTO> toDTOs(Long cid, String uid, List<InterviewResult> objs) {
         List<InterviewResultDTO> dtos = new ArrayList<>();
+        Set<Long> empIds = new HashSet<>();
+
         objs.forEach(obj -> {
-            dtos.add(toDTO(obj));
+            if (obj.getInterviewerId() != null && obj.getInterviewerId() != 0) {
+                empIds.add(obj.getInterviewerId());
+            }
+
         });
+        Map<Long, EmployeeDTO> mapEmp = _hcmService.getMapEmployees(uid,cid,empIds);
+        for (InterviewResultDTO dto : dtos){
+            if (dto.getInterviewerId() != null && dto.getInterviewerId() != 0){
+                dto.setInterviewerIdObj(mapEmp.get(dto.getInterviewerId()));
+            }
+        }
         return dtos;
 
     }
@@ -126,4 +132,19 @@ public class InterviewResultService {
     }
 
 
+    public void delete(Long cid, String uid, List<Long> ids) {
+        ids.stream().forEach(i -> {
+            InterviewResult interviewResult = _repo.findByCompanyIdAndId(cid, i).orElse(new InterviewResult());
+            if(!interviewResult.isNew()){
+                interviewResult.setStatus(vn.ngs.nspace.recruiting.share.dto.utils.Constants.ENTITY_INACTIVE);
+                interviewResult.setUpdateBy(uid);
+                interviewResult.setModifiedDate(new Date());
+
+                _repo.save(interviewResult);
+            }
+        });
+    }
 }
+
+
+

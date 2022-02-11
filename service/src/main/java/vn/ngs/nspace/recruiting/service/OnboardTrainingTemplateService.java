@@ -216,6 +216,7 @@ public class OnboardTrainingTemplateService {
         List<OnboardTrainingTemplateItemGrandChild> itemGrandChildrens = grandChildRepo.findByCompanyIdAndTemplateIdInAndItemIdInAndItemChildrenIdInAndStatus(cid, templateIds, itemIds, itemChildIds, Constants.ENTITY_ACTIVE);
         Map<Long, List<OnboardTrainingTemplateItemGrandChild>> mapItemGrandChildrens = itemGrandChildrens.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItemGrandChild::getItemChildrenId));
 
+        employeeIds = itemGrandChildrens.stream().map(el -> el.getEmployeeId()).collect(Collectors.toSet());
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         List<EmployeeDTO> employeeDTOS = _hcmService.getEmployees(uid, cid, employeeIds);
         List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
@@ -257,6 +258,11 @@ public class OnboardTrainingTemplateService {
                                     for (OnboardTrainingTemplateItemGrandChild lst: mapItemGrandChildrens.get(child.getId())) {
                                         OnboardTrainingTemplateItemGrandChildDTO item = new OnboardTrainingTemplateItemGrandChildDTO();
                                         lstGrandChild.add(MapperUtils.copy(lst, item));
+                                        if(item.getEmployeeId() != null){
+                                            item.setEmployeeObj(employeeDTOS.stream().filter(e -> {
+                                                return CompareUtil.compare(e.getId(), item.getEmployeeId());
+                                            }).findAny().orElse(null) );
+                                        }
                                     }
                                     if(lstGrandChild != null){
                                         child.setChildren(lstGrandChild);
