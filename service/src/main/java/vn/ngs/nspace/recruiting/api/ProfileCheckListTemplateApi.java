@@ -147,7 +147,6 @@ public class ProfileCheckListTemplateApi {
         }
     }
 
-
     @PostMapping("/profile-check-list-template")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "get profile check list template for Candidate",
