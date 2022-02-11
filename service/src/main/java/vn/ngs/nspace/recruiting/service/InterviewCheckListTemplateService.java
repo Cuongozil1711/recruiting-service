@@ -37,12 +37,12 @@ public class InterviewCheckListTemplateService {
 
     public void valid(InterviewCheckListTemplateDTO dto){
 
-        if (dto.getPositionId() == null){
-            throw new BusinessException("invalid-position");
-        }
-        if (dto.getOrgId() == null){
-            throw new BusinessException("invalid-org");
-        }
+//        if (dto.getPositionId() == null){
+//            throw new BusinessException("invalid-position");
+//        }
+//        if (dto.getOrgId() == null){
+//            throw new BusinessException("invalid-org");
+//        }
         if (dto.getStartDate() == null){
             throw new BusinessException("invalid-startDate");
         }

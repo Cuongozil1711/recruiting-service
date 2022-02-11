@@ -18,6 +18,8 @@ public class InterviewCheckListTemplateItemDTO {
     private Double maxRating; //enable when optionType = number
     private String optionValues; //enable when optionType = select
     private Integer status;
+    private String description;
+    private String priority;
 
     private Map<String, Object> checkListObj;
 }

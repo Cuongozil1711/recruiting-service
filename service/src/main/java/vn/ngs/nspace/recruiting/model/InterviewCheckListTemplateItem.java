@@ -27,6 +27,8 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
     private Double minRating; //enable when optionType = number
     private Double maxRating; //enable when optionType = number
     private String optionValues; //enable when optionType = select
+    private String description;
+    private String priority;
 
     public static InterviewCheckListTemplateItem of(Long cid, String uid, InterviewCheckListTemplateItemDTO dto){
         InterviewCheckListTemplateItem obj = InterviewCheckListTemplateItem.builder()
