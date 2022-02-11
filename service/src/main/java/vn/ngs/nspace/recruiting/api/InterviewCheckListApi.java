@@ -32,26 +32,26 @@ public class InterviewCheckListApi {
 
 
 
-//    @PostMapping("/create")
-//    @ActionMapping(action = Permission.CREATE)
-//    @Operation(summary = "create InterviewCheckList"
-//            , description = "API for create InterviewCheckList"
-//            , tags = { "InterviewCheckList" }
-//    )
-//    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-//            , schema = @Schema(implementation = String.class))
-//    protected ResponseEntity create(
-//            @Parameter(description="ID of company")
-//            @RequestHeader("cid") long cid
-//            , @Parameter(description="ID of company")
-//            @RequestHeader("uid") String uid
-//            , @RequestBody InterviewCheckListDTO dto){
-//        try {
-//            return ResponseUtils.handlerSuccess(service.createByPositionOrg(cid, uid,dto.getPositionId(), dto.getOrgId(), dto.getInterviewerId(), dto.getRating(), dto.getInterviewDate(), dto.getResult()));
-//        }catch (Exception ex){
-//            return ResponseUtils.handlerException(ex);
-//        }
-//    }
+    @PostMapping("/createbyposition")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "create InterviewCheckList"
+            , description = "API for create InterviewCheckList"
+            , tags = { "InterviewCheckList" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity create(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @RequestBody InterviewCheckListDTO dto){
+        try {
+            return ResponseUtils.handlerSuccess(service.createByPositionOrg(cid, uid,dto.getPositionId(), dto.getOrgId(), dto.getInterviewerId(), dto.getRating(), dto.getInterviewDate(), dto.getResult()));
+        }catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
 
     @PostMapping("/create")
@@ -83,7 +83,7 @@ public class InterviewCheckListApi {
             , description = "API for Interview Check List  by InterviewResultId")
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity getOnboardOrderCheckList(
+    protected ResponseEntity getInterviewResultCheckList(
             @Parameter(description="id of company") @RequestHeader Long cid
             ,@Parameter(description="id of user") @RequestHeader String uid
             ,@Parameter(description="param in path") @PathVariable(value = "id") Long id){
@@ -97,3 +97,6 @@ public class InterviewCheckListApi {
 
 
 }
+
+
+

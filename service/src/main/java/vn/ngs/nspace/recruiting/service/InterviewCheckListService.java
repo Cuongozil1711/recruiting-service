@@ -61,20 +61,20 @@ public class InterviewCheckListService {
 
     }
 
-//    public InterviewCheckListDTO create(Long cid, String uid, InterviewCheckListDTO request) throws BusinessException {
-//        valid(request);
-//        InterviewCheckList exists = repo.findByCompanyIdAndCheckListId(cid, request.getCheckListId(), request.getInterviewerId(), Constants.ENTITY_ACTIVE).orElse(new InterviewCheckList());
-//        if(!exists.isNew()){
-//            return toDTO(exists);
-//        }
-//        InterviewCheckList obj = InterviewCheckList.of(cid, uid, request);
-//        obj.setStatus(Constants.ENTITY_ACTIVE);
-//        obj.setCompanyId(cid);
-//        obj.setUpdateBy(uid);
-//        obj.setCreateBy(uid);
-//
-//        return toDTO(repo.save(obj));
-//    }
+    public InterviewCheckListDTO create(Long cid, String uid, InterviewCheckListDTO request) throws BusinessException {
+        valid(request);
+        InterviewCheckList exists = repo.findByCompanyIdAndCheckListId(cid, request.getCheckListId()).orElse(new InterviewCheckList());
+        if(!exists.isNew()){
+            return toDTO(exists);
+        }
+        InterviewCheckList obj = InterviewCheckList.of(cid, uid, request);
+        obj.setStatus(Constants.ENTITY_ACTIVE);
+        obj.setCompanyId(cid);
+        obj.setUpdateBy(uid);
+        obj.setCreateBy(uid);
+
+        return toDTO(repo.save(obj));
+    }
 
 
     public List<InterviewCheckListDTO> createOrUpdate(long cid, String uid, Long interviewResultId, List<InterviewCheckListDTO> dtos) {
@@ -163,4 +163,27 @@ public class InterviewCheckListService {
         return MapperUtils.map(obj, InterviewCheckListDTO.class);
     }
 
+    public List<InterviewCheckListDTO> createByPositionOrg(long cid, String uid, Long positionId, Long orgId, Long interviewerId, Double rating, Date interviewDate, String result) {
+        List<InterviewCheckListDTO> profiles = new ArrayList<>();
+        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, orgId);
+
+        InterviewCheckListTemplate template = templates.get(0);
+        List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
+        for (InterviewCheckListTemplateItem item: items ) {
+
+            InterviewCheckListDTO checkListDTO = new InterviewCheckListDTO();
+            checkListDTO = MapperUtils.map(item, checkListDTO);
+            checkListDTO.setInterviewerId(interviewerId);
+            checkListDTO.setInterviewDate(interviewDate);
+            checkListDTO.setRating(rating);
+            checkListDTO.setPositionId(positionId);
+            checkListDTO.setOrgId(orgId);
+            checkListDTO.setResult(result);
+
+            profiles.add(create(cid, uid, checkListDTO));
+        }
+        return profiles;
+
+    }
 }
+

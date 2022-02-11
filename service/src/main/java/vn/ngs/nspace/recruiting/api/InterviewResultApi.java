@@ -51,9 +51,8 @@ public class InterviewResultApi {
             , Pageable pageable) {
         try{
             Long candidateId = MapUtils.getLong(condition, "candidateId", -1l);
-            String name = MapUtils.getString(condition, "name", "all");
-            String state = MapUtils.getString(condition, "state", "all");
-            Page<InterviewResult> page = repo.search(cid,candidateId, name, state , pageable);
+            String content = MapUtils.getString(condition, "content", "all");
+            Page<InterviewResult> page = repo.search(cid,candidateId, content, pageable);
             List<InterviewResultDTO> dtos = service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {
@@ -137,4 +136,27 @@ public class InterviewResultApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+
+    @PutMapping("/delete")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "delete list InterviewResult",
+            description = "API for delete list InterviewResult"
+            ,tags = "InterviewResult")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity deteleList(
+            @Parameter(description = "ID of company")
+            @RequestHeader Long cid
+            ,@Parameter(description = "ID of userID")
+            @RequestHeader String uid
+            ,@Parameter(description = "List id of record")
+            @RequestBody List<Long> ids){
+        try {
+            service.delete(cid, uid , ids);
+            return ResponseUtils.handlerSuccess();
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
 }
