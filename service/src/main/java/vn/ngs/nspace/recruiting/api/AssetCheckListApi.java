@@ -1,6 +1,8 @@
 package vn.ngs.nspace.recruiting.api;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,8 @@ public class AssetCheckListApi {
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity create(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody List<AssetCheckListDTO> listDTOS) {
@@ -39,6 +43,8 @@ public class AssetCheckListApi {
 
     @PutMapping("{id}")
     @ActionMapping(action = Permission.UPDATE)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity update(@RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
             , @PathVariable(value = "id") Long id
@@ -54,6 +60,8 @@ public class AssetCheckListApi {
 
     @GetMapping("/get-by-onboarding/{id}")
     @ActionMapping(action = Permission.VIEW)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity getByOnboardOrder(@RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
             , @PathVariable(value = "id") Long id){
@@ -67,6 +75,8 @@ public class AssetCheckListApi {
 
     @GetMapping("/get-by-onboarding-and-type/{id}/{type}")
     @ActionMapping(action = Permission.VIEW)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity getByOnboardOrder(@RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
             , @PathVariable(value = "id") Long id
@@ -81,6 +91,8 @@ public class AssetCheckListApi {
 
     @GetMapping("/get-by-employee/{id}")
     @ActionMapping(action = Permission.VIEW)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity getByEmployee(@RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
             , @PathVariable(value = "id") Long id){
@@ -94,6 +106,8 @@ public class AssetCheckListApi {
 
     @PutMapping ("/hand-over-asset-by-emid/{id}")
     @ActionMapping(action = Permission.CREATE)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
     protected ResponseEntity handOverAsset(@RequestHeader Long cid
             , @RequestHeader String uid
             , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id

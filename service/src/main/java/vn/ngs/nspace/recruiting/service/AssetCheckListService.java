@@ -8,51 +8,44 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.AssetCheckList;
+import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.repo.AssetCheckListRepo;
+import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.AssetCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class AssetCheckListService {
     private final AssetCheckListRepo repo;
+    private final OnboardOrderRepo orderRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
 
-    public AssetCheckListService(AssetCheckListRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public AssetCheckListService(AssetCheckListRepo repo, OnboardOrderRepo orderRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         this.repo = repo;
+        this.orderRepo = orderRepo;
         _hcmService = hcmService;
         _configService = configService;
     }
 
-    public void valid(AssetCheckListDTO dto){
-//        if(dto.getAssetId() == null){
-//            throw new BusinessException("invalid-asset");
-//        }
-//        if (dto.getEmployeeId() == null){
-//            throw new BusinessException("invalid-employee");
-//        }
+    public void valid(Long cid, AssetCheckListDTO dto){
+        orderRepo.findByCompanyIdAndId(cid, dto.getOnboardOrderId()).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, dto.getOnboardOrderId()));
+        if(dto.getEmployeeId() == null || dto.getEmployeeId() == 0l){
+            throw new BusinessException("employee-not-found");
+        }
+        if(dto.getAssetId() == null || dto.getAssetId() == 0l){
+            throw new BusinessException("asset-not-found");
+        }
     }
-
-//    public AssetCheckListDTO create(Long cid, String uid, AssetCheckListDTO request) throws BusinessException {
-//        valid(request);
-//        AssetCheckList assetCheckList = AssetCheckList.of(cid, uid, request);
-//        assetCheckList.setCompanyId(cid);
-//        assetCheckList.setCreateBy(uid);
-//        assetCheckList.setUpdateBy(uid);
-//        assetCheckList.setStatus(Constants.ENTITY_ACTIVE);
-//
-//        assetCheckList = repo.save(assetCheckList);
-//        return toDTO(assetCheckList);
-//    }
 
     public List<AssetCheckListDTO> create(Long cid, String uid, List<AssetCheckListDTO> listDTOS) throws BusinessException{
         List<AssetCheckList> list = new ArrayList<>();
         for (AssetCheckListDTO dto: listDTOS) {
+            valid(cid, dto);
             AssetCheckList curr = AssetCheckList.of(cid, uid, dto);
             curr.setCompanyId(cid);
             curr.setCreateBy(uid);
@@ -67,7 +60,7 @@ public class AssetCheckListService {
     }
 
     public AssetCheckListDTO update(Long cid, String uid, Long id, AssetCheckListDTO request) throws BusinessException{
-        valid(request);
+        valid(cid, request);
         AssetCheckList curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(AssetCheckList.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
@@ -118,6 +111,7 @@ public class AssetCheckListService {
     public List<AssetCheckListDTO> handOverAsset(Long cid, String uid, Long onboardId, List<AssetCheckListDTO> listDTOS) {
         List<AssetCheckListDTO> returnData = new ArrayList<>();
         for(AssetCheckListDTO dto : listDTOS){
+            dto.setOnboardOrderId(onboardId);
             if(dto.getId() != null && dto.getId() != 0l){
                 repo.findByCompanyIdAndId(cid, dto.getId()).orElseThrow(() -> new EntityNotFoundException(AssetCheckList.class, dto.getId()));
                 if(!StringUtils.isEmpty(dto.getCmd()) && dto.getCmd().equals(Constants.CMD_TABLE_ACTION.DELETE.toString())){
@@ -125,6 +119,7 @@ public class AssetCheckListService {
                 }
                 update(cid, uid, dto.getId(), dto);
             }else{
+
                 create(cid, uid, Collections.singletonList(dto));
             }
             if(StringUtils.isEmpty(dto.getCmd()) || !dto.getCmd().equals(Constants.CMD_TABLE_ACTION.DELETE.toString())){
