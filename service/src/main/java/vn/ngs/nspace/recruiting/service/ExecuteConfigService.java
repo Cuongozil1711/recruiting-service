@@ -86,5 +86,21 @@ public class ExecuteConfigService {
         }
     }
 
+    public Map<String, Object> getEmailConfigById(String uid, Long cid, Long id){
+        try {
+            URI uri = new URI(ConfigServiceURL + "/notice-config/" + id);
+            HttpMethod method = HttpMethod.GET;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(uid,cid);
+            HttpEntity request = new HttpEntity<>(headers);
+
+            ParameterizedTypeReference<BaseResponse<Map<String, Object>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<Map<String, Object>> resp = (BaseResponse<Map<String, Object>>) response.getBody();
+            return resp.getData();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
