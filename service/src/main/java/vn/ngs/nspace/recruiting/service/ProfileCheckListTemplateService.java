@@ -125,18 +125,17 @@ public class ProfileCheckListTemplateService {
         valid(request);
         ProfileCheckListTemplate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
-        //
-        Integer status = request.getStatus();
-        Long recieverId = request.getRecieverId();
-        Integer numbers = request.getNumbers();
-        String note = request.getNote();
-        Date startDate = request.getStartDate();
-        //
-        curr.setUpdateBy(status.toString());
-        curr.setUpdateBy(recieverId.toString());
-        curr.setUpdateBy(numbers.toString());
-        curr.setUpdateBy(note);
-        curr.setUpdateBy(startDate.toString());
+        curr.setUpdateBy(uid);
+//        Integer status = request.getStatus();
+//        Long recieverId = request.getRecieverId();
+//        Integer numbers = request.getNumbers();
+       //   String note = request.getNote();
+//        Date startDate = request.getStartDate();
+//        curr.setUpdateBy(status.toString());
+//        curr.setUpdateBy(recieverId.toString());
+//        curr.setUpdateBy(numbers.toString());
+         // curr.setUpdateBy(note);
+//        curr.setUpdateBy(startDate.toString());
         //LOGGER.info("request.getItems() is "+request.getItems());
         curr = repo.save(curr);
         return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
