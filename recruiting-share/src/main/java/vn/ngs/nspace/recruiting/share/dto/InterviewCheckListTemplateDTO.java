@@ -19,7 +19,9 @@ public class InterviewCheckListTemplateDTO {
     private Date startDate;
     private Date endDate;
     private Integer status;
+    private String createBy;
 
+    private Map<String,Object> createByObj;
     private Map<String, Object> positionObj;
     private OrgResp org;
     private List<InterviewCheckListTemplateItemDTO> items;
