@@ -257,6 +257,11 @@ public class OnboardTrainingTemplateService {
                                     for (OnboardTrainingTemplateItemGrandChild lst: mapItemGrandChildrens.get(child.getId())) {
                                         OnboardTrainingTemplateItemGrandChildDTO item = new OnboardTrainingTemplateItemGrandChildDTO();
                                         lstGrandChild.add(MapperUtils.copy(lst, item));
+                                        if(item.getEmployeeId() != null){
+                                            item.setEmployeeObj(employeeDTOS.stream().filter(e -> {
+                                                return CompareUtil.compare(e.getId(), item.getEmployeeId());
+                                            }).findAny().orElse(null) );
+                                        }
                                     }
                                     if(lstGrandChild != null){
                                         child.setChildren(lstGrandChild);
