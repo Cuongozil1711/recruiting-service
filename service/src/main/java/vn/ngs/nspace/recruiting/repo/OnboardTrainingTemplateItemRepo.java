@@ -11,4 +11,5 @@ import java.util.Set;
 public interface OnboardTrainingTemplateItemRepo extends BaseRepo<OnboardTrainingTemplateItem, Long> {
     List<OnboardTrainingTemplateItem>  findByCompanyIdAndTemplateIdInAndStatus(Long cid, Set<Long> templateId, Integer status);
     Optional<OnboardTrainingTemplateItem> findByCompanyIdAndId(Long cid, Long id);
+    List<OnboardTrainingTemplateItem> findByCompanyIdAndTemplateId(Long cid, Long templateId);
 }

@@ -21,6 +21,7 @@ public class OnboardTrainingTemplateItemGrandChildDTO {
     private String name;
     private Integer deadline;
     private String description;
+    private float completion;
     private Long employeeId;
     private Integer status;
 

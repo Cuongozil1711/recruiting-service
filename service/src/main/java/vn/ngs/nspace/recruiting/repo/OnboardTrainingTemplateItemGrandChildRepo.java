@@ -10,4 +10,6 @@ import java.util.Set;
 public interface OnboardTrainingTemplateItemGrandChildRepo extends BaseRepo<OnboardTrainingTemplateItemGrandChild, Long> {
     List<OnboardTrainingTemplateItemGrandChild> findByCompanyIdAndTemplateIdInAndItemIdInAndItemChildrenIdInAndStatus(Long cid, Set<Long> templateId, Set<Long> itemId, Set<Long> itemChildren, Integer status);
     Optional<OnboardTrainingTemplateItemGrandChild> findByCompanyIdAndId(Long cid, Long id);
+    List<OnboardTrainingTemplateItemGrandChild> findByCompanyIdAndTemplateIdAndItemIdAndItemChildrenId(Long cid, Long templateId, Long itemId, Long itemChildId);
+    List<OnboardTrainingTemplateItemGrandChild> findByCompanyIdAndTemplateIdAndItemIdInAndItemChildrenIdIn(Long cid, Long templateId, Set<Long> itemId, Set<Long> itemChildren);
 }
