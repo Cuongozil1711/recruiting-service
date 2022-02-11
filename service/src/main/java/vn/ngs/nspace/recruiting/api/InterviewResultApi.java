@@ -51,8 +51,7 @@ public class InterviewResultApi {
             , Pageable pageable) {
         try{
             Long candidateId = MapUtils.getLong(condition, "candidateId", -1l);
-            String content = MapUtils.getString(condition, "content", "all");
-            Page<InterviewResult> page = repo.search(cid,candidateId, content, pageable);
+            Page<InterviewResult> page = repo.search(cid,candidateId, pageable);
             List<InterviewResultDTO> dtos = service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {
@@ -158,5 +157,7 @@ public class InterviewResultApi {
             return ResponseUtils.handlerException(e);
         }
     }
+
+
 
 }
