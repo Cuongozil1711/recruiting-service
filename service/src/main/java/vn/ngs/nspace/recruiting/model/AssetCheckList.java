@@ -25,6 +25,7 @@ public class AssetCheckList extends PersistableEntity<Long> {
     private Long id;
     private Long onboardOrderId; // yeu cau onboarding
     private Long assetId; //dm dung chung
+    private String assetType; // enum
     private Date receiptDate; // ngay nhan
     private Long senderId; // nguoi giao
     private Long employeeId; // nguoi nhan
@@ -36,6 +37,7 @@ public class AssetCheckList extends PersistableEntity<Long> {
                 .id(dto.getId())
                 .onboardOrderId(dto.getOnboardOrderId())
                 .assetId(dto.getAssetId())
+                .assetType(dto.getAssetType())
                 .receiptDate(dto.getReceiptDate())
                 .senderId(dto.getSenderId())
                 .employeeId(dto.getEmployeeId())
