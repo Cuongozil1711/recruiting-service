@@ -25,7 +25,7 @@ public class AssetCheckList extends PersistableEntity<Long> {
     private Long id;
     private Long onboardOrderId; // yeu cau onboarding
     private Long assetId; //dm dung chung
-    private String assetType; // enum
+    private String assetType; //dm dung chung
     private Date receiptDate; // ngay nhan
     private Long senderId; // nguoi giao
     private Long employeeId; // nguoi nhan
