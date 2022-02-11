@@ -53,4 +53,9 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
         CANDIDATE
         , EMPLOYEE
     }
+
+    public enum CMD_TABLE_ACTION {
+        DELETE
+        , UPDATE
+    }
 }

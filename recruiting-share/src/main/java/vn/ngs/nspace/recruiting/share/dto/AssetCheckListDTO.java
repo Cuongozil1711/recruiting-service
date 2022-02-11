@@ -26,4 +26,7 @@ public class AssetCheckListDTO {
     private EmployeeDTO senderObj; // doi tuong nguoi giao
     private EmployeeDTO employeeObj; // doi tuong nguoi nhan
     private Map<String, Object> assetObj; // doi tuong tai san
+    private Integer status;
+
+    private String cmd; // constants DELETE, UPDATE ...
 }
