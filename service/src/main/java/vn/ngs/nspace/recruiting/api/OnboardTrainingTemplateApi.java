@@ -15,9 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.dto.BaseResponse;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
+import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.model.OnboardTrainingTemplate;
+import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardTrainingTemplateRepo;
 import vn.ngs.nspace.recruiting.service.OnboardTrainingTemplateService;
 import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingTemplateDTO;
@@ -34,10 +37,13 @@ import java.util.Map;
 public class OnboardTrainingTemplateApi {
     private final OnboardTrainingTemplateService _service;
     private final OnboardTrainingTemplateRepo _reppo;
+    private final OnboardOrderRepo _onboardOrderRepo;
 
-    public OnboardTrainingTemplateApi(OnboardTrainingTemplateService service, OnboardTrainingTemplateRepo reppo) {
+
+    public OnboardTrainingTemplateApi(OnboardTrainingTemplateService service, OnboardTrainingTemplateRepo reppo, OnboardOrderRepo onboardOrderRepo) {
         _service = service;
         _reppo = reppo;
+        _onboardOrderRepo = onboardOrderRepo;
     }
 
     @PostMapping()
@@ -161,6 +167,37 @@ public class OnboardTrainingTemplateApi {
             }
             _reppo.deleteAllByIdIn(listId);
             return ResponseUtils.handlerSuccess();
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @GetMapping("get-template-by-onboardId/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get onboardTranning by onboardOrderId"
+            , description = "API for get onboardTranning template by Id"
+            , tags = {"TemplateConfig"}
+            , responses = {
+            @ApiResponse(description = "onboardTranning with id is response OK Wrap in BaseResponse"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = BaseResponse.class))),
+            @ApiResponse(content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ProfileCheckListTemplateDTO.class))
+                    , responseCode = "200"
+                    , description = "success")})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getByOnboardOderId(
+            @Parameter(description = "ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description = "ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description = "param in path") @PathVariable(value = "id") Long id) {
+        try {
+            JobApplication ja = _onboardOrderRepo.getInfoOnboard(cid, id).orElseThrow(()-> new BusinessException("not found OnboardOder"));;
+            List<OnboardTrainingTemplate> templates = _reppo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId());
+            OnboardTrainingTemplate template = templates.get(0);
+            return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, Collections.singletonList(template)));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

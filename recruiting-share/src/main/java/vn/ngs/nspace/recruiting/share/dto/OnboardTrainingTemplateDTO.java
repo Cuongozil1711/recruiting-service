@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,8 @@ public class OnboardTrainingTemplateDTO {
     private Long levelId;
     private float completion;
     private Integer status;
+
+    private OrgResp orgResp;
 
     private Map<String, Object> contractTypeObj;
     private Map<String, Object> positionObj;

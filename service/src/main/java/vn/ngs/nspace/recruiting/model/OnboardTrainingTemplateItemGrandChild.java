@@ -30,6 +30,7 @@ public class OnboardTrainingTemplateItemGrandChild extends PersistableEntity<Lon
     private Long itemChildrenId;
     private String name;
     private Integer deadline;
+    private float completion;
     private String description;
     private Long employeeId;
 
@@ -42,6 +43,7 @@ public class OnboardTrainingTemplateItemGrandChild extends PersistableEntity<Lon
                 .itemChildrenId(dto.getItemChildrenId())
                 .name(dto.getName())
                 .deadline(dto.getDeadline())
+                .completion(dto.getCompletion())
                 .description(dto.getDescription())
                 .employeeId(dto.getEmployeeId())
                 .build();
