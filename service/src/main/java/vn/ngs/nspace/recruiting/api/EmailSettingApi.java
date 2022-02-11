@@ -97,7 +97,7 @@ public class EmailSettingApi {
             , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id
             , @Parameter(description = "Payload") @RequestBody EmailSettingDTO request){
         try {
-           return ResponseUtils.handlerSuccess(_service.update(cid, uid, id,request));
+            return ResponseUtils.handlerSuccess(_service.update(cid, uid, id,request));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
