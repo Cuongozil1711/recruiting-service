@@ -46,6 +46,9 @@ public class OnboardContractService {
     /* create object */
     public OnboardContractDTO create(Long cid, String uid, OnboardContractDTO request) throws BusinessException {
         valid(request);
+        repo.findByCompanyIdAndOnboardOrderId(cid, request.getOnboardOrderId()).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, request.getOnboardOrderId()));
+        _hcmService.getContract(uid, cid, request.getContractId());
+
         OnboardContract order = OnboardContract.of(cid, uid, request);
         order.setStatus(Constants.ENTITY_ACTIVE);
         order.setCreateBy(uid);
@@ -58,6 +61,9 @@ public class OnboardContractService {
     /* update by id object */
     public OnboardContractDTO update(Long cid, String uid, Long id, OnboardContractDTO request) throws BusinessException {
         valid(request);
+        repo.findByCompanyIdAndOnboardOrderId(cid, request.getOnboardOrderId()).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, request.getOnboardOrderId()));
+        _hcmService.getContract(uid, cid, request.getContractId());
+
         OnboardContract curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardContract.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
