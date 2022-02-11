@@ -31,6 +31,9 @@ public class ProfileCheckListTemplate extends PersistableEntity<Long> {
     private Date startDate;
     private Date endDate;
     private String contractType;
+    private Integer numbers;
+    private Long recieverId;
+    private String note;
 
     public static ProfileCheckListTemplate of(Long cid, String uid, ProfileCheckListTemplateDTO dto){
         ProfileCheckListTemplate obj = ProfileCheckListTemplate.builder()
@@ -41,6 +44,9 @@ public class ProfileCheckListTemplate extends PersistableEntity<Long> {
                 .startDate(dto.getStartDate() == null ? new Date() : dto.getStartDate())
                 .endDate(dto.getEndDate())
                 .contractType(dto.getContractType())
+                .numbers(dto.getNumbers())
+                .recieverId(dto.getRecieverId())
+                .note(dto.getNote())
                 .build();
         return obj;
     }
