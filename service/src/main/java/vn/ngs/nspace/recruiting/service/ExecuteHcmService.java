@@ -168,4 +168,22 @@ public class ExecuteHcmService {
             throw new RuntimeException(e);
         }
     }
+
+    public Object getContract(String requestUserId, Long companyId, Long contractId){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/contract/" + contractId);
+            HttpMethod method = HttpMethod.GET;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            HttpEntity request = new HttpEntity<>(headers);
+
+            ParameterizedTypeReference<BaseResponse<Object>> responeType = new ParameterizedTypeReference<BaseResponse<Object>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<Object> resp = (BaseResponse<Object>) response.getBody();
+            return resp.getData();
+
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 }
