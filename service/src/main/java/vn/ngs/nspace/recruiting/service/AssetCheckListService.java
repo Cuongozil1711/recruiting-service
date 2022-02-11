@@ -1,5 +1,6 @@
 package vn.ngs.nspace.recruiting.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
@@ -115,58 +116,23 @@ public class AssetCheckListService {
     }
 
     public List<AssetCheckListDTO> handOverAsset(Long cid, String uid, Long onboardId, List<AssetCheckListDTO> listDTOS) {
-        List<AssetCheckList> assetCheckLists = repo.findByCompanyIdAndOnboardOrderId(cid, onboardId);
-
-        List<Long> listAssetIdOfDto = listDTOS.stream().map(dto -> dto.getAssetId()).collect(Collectors.toList());
-        List<Long> assetIdExists = assetCheckLists.stream().map(dto -> dto.getAssetId()).collect(Collectors.toList());
-
-        List<Long> listAssetIdForCreate = new ArrayList<>(listAssetIdOfDto);
-
-        listAssetIdForCreate.removeAll(assetIdExists); // loai bo danh sach asset da ton tai
-
-        List<AssetCheckList> listOfAssetCheckList = new ArrayList<>(); // Tao 1 array de luu tru ban ghi can luu vao Database
-
-        // Tao moi danh sach AssetCheckList
-        for (Long assetId : listAssetIdForCreate) {
-            AssetCheckList assetCheckList = new AssetCheckList();
-
-            AssetCheckListDTO dto = listDTOS.stream().filter(el -> el.getAssetId() == assetId).collect(Collectors.toList()).get(0);
-
-            if (dto != null) {
-                assetCheckList.setCompanyId(cid);
-                assetCheckList.setAssetId(assetId);
-                assetCheckList.setEmployeeId(dto.getEmployeeId());
-                assetCheckList.setReceiptDate(dto.getReceiptDate());
-
-                listOfAssetCheckList.add(assetCheckList);
+        List<AssetCheckListDTO> returnData = new ArrayList<>();
+        for(AssetCheckListDTO dto : listDTOS){
+            if(dto.getId() != null && dto.getId() != 0l){
+                repo.findByCompanyIdAndId(cid, dto.getId()).orElseThrow(() -> new EntityNotFoundException(AssetCheckList.class, dto.getId()));
+                if(!StringUtils.isEmpty(dto.getCmd()) && dto.getCmd().equals(Constants.CMD_TABLE_ACTION.DELETE.toString())){
+                    dto.setStatus(Constants.ENTITY_INACTIVE);
+                }
+                update(cid, uid, dto.getId(), dto);
+            }else{
+                create(cid, uid, Collections.singletonList(dto));
+            }
+            if(StringUtils.isEmpty(dto.getCmd()) || !dto.getCmd().equals(Constants.CMD_TABLE_ACTION.DELETE.toString())){
+                returnData.add(dto);
             }
         }
-        // Ket thuc tao moi
 
-        // Update danh sach AssetCheckList
-        List<Long> listAssetIdForUpdate = new ArrayList<>(listAssetIdOfDto);
-
-        listAssetIdForUpdate.retainAll(assetIdExists); // lay danh sach asset da ton tai
-
-        for (Long assetId : listAssetIdForUpdate) {
-            AssetCheckList assetCheckList = assetCheckLists.stream().filter(el -> el.getAssetId() == assetId).collect(Collectors.toList()).get(0);
-
-            AssetCheckListDTO dto = listDTOS.stream().filter(el -> el.getAssetId() == assetId).collect(Collectors.toList()).get(0);
-
-            if (assetCheckList != null) {
-                assetCheckList.setReceiptDate(dto.getReceiptDate());
-
-                listOfAssetCheckList.add(assetCheckList);
-            }
-        }
-        // Ket thuc update
-
-        // Luu vao Database
-        if (listOfAssetCheckList != null && !listOfAssetCheckList.isEmpty()) {
-            listOfAssetCheckList = repo.saveAll(listOfAssetCheckList);
-        }
-
-        return toDTOs(cid, uid, listOfAssetCheckList);
+        return returnData;
     }
 
     public AssetCheckListDTO toDTOWithObj (Long cid, String uid,  AssetCheckList obj){
