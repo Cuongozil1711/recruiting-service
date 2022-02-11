@@ -1,36 +1,30 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.springframework.stereotype.Service;
-import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
-import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
-import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.model.OnboardContract;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
-import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
 import vn.ngs.nspace.recruiting.repo.OnboardContractRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.OnboardContractDTO;
-import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
-import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
-import java.util.*;
 
 @Service
 @Transactional
 public class OnboardContractService {
     private final OnboardContractRepo repo;
+    private final OnboardOrderRepo orderRepo;
     private final ExecuteHcmService _hcmService;
 
-    public OnboardContractService(OnboardContractRepo repo, OnboardOrderCheckListRepo checkListRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public OnboardContractService(OnboardContractRepo repo, OnboardOrderCheckListRepo checkListRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, OnboardOrderRepo orderRepo) {
         this.repo = repo;
         _hcmService = hcmService;
+        this.orderRepo = orderRepo;
     }
 
     /* logic validate data before insert model */
@@ -46,7 +40,7 @@ public class OnboardContractService {
     /* create object */
     public OnboardContractDTO create(Long cid, String uid, OnboardContractDTO request) throws BusinessException {
         valid(request);
-        repo.findByCompanyIdAndOnboardOrderId(cid, request.getOnboardOrderId()).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, request.getOnboardOrderId()));
+        orderRepo.findByCompanyIdAndId(cid, request.getOnboardOrderId()).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, request.getOnboardOrderId()));
         _hcmService.getContract(uid, cid, request.getContractId());
 
         OnboardContract order = OnboardContract.of(cid, uid, request);
