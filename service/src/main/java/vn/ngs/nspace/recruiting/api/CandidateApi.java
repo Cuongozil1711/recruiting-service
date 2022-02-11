@@ -220,7 +220,6 @@ public class CandidateApi {
                toExp = toExp * 12;
             }
 
-
             Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition,fromExp,toExp, pageable);
             List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
