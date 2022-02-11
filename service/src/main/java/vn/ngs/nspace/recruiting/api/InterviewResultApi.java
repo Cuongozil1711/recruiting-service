@@ -53,7 +53,7 @@ public class InterviewResultApi {
             Long candidateId = MapUtils.getLong(condition, "candidateId", -1l);
             String name = MapUtils.getString(condition, "name", "all");
             String state = MapUtils.getString(condition, "state", "all");
-            Page<InterviewResult> page = repo.search(cid,candidateId, name, state , pageable);
+            Page<InterviewResult> page = repo.search(cid,candidateId, name,  pageable);
             List<InterviewResultDTO> dtos = service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {
