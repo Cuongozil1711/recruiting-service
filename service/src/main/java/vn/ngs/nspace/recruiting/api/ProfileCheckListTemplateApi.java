@@ -170,7 +170,7 @@ public class ProfileCheckListTemplateApi {
         }
     }
 
-    @PostMapping("/profile-check-list-update-status/{id}")
+    @PutMapping("/profile-check-list-update-status/{id}")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "Update profile template"
             , description = "API for update profile template"
