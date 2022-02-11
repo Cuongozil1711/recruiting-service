@@ -13,6 +13,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 public class OnboardTrainingTemplateItemChildrenDTO {
     private Long id;
+    private String key;
     private Long templateId;
     private Long itemId;
     private String name;

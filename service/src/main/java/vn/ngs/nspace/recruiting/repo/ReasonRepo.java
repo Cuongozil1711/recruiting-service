@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import vn.ngs.nspace.lib.repo.BaseRepo;
-import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.EmailSetting;
 import vn.ngs.nspace.recruiting.model.Reason;
 
@@ -18,7 +17,6 @@ public interface ReasonRepo extends BaseRepo<Reason,Long> {
     Optional<Reason> findByCompanyIdAndCode(long cid, String code);
     List<Reason> findByCompanyIdAndType(long cid, String type);
     Optional<Reason> findByCompanyIdAndTypeAndCodeAndStatus(long cid, String type, String code, Integer status);
-
     @Query(value = "select c.id as id, c.code as code, c.title as title, c.status as status, c.type as type" +
             " from Reason c" +
             " where (c.companyId = :companyId)" +

@@ -18,8 +18,8 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
             "training",
             "coaching");
     public enum INTERVIEW_RESULT_STATE{
-        OK
-        , NOT_OK
+        PENDING
+        , REVIEWED
 
     }
     public enum Experience{

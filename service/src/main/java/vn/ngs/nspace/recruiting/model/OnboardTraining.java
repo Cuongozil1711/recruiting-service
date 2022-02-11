@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,11 +23,25 @@ public class OnboardTraining extends PersistableEntity<Long> {
     private Long id;
     private Long onboardOrderId;
     private Long employeeId;
-    private Long instructorId;
     private String result;
     private float evaluate;
     private String finalResult;
     private String selfAssessment;
-    private String comment;
+    private String commentCBQL;
     private String commentHr;
+
+    public static OnboardTraining of(Long cid, String uid, OnboardTrainingDTO dto) {
+        OnboardTraining obj = OnboardTraining.builder()
+                .id(dto.getId())
+                .onboardOrderId(dto.getOnboardOrderId())
+                .employeeId(dto.getEmployeeId())
+                .result(dto.getResult())
+                .finalResult(dto.getFinalResult())
+                .selfAssessment(dto.getSelfAssessment())
+                .commentCBQL(dto.getCommentCBQL())
+                .commentHr(dto.getCommentHr())
+                .build();
+        return obj;
+    }
+
 }

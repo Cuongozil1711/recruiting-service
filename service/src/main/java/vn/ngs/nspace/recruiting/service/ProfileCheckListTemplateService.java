@@ -1,5 +1,8 @@
 package vn.ngs.nspace.recruiting.service;
 
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -9,6 +12,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.AssetCheckList;
+import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplateItem;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateItemRepo;
@@ -29,6 +33,7 @@ public class ProfileCheckListTemplateService {
     private final ProfileCheckListTemplateItemRepo itemRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileCheckListTemplateService.class);
 
     public ProfileCheckListTemplateService(ProfileCheckListTemplateRepo repo, ProfileCheckListTemplateItemRepo itemRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         this.repo = repo;
@@ -109,13 +114,21 @@ public class ProfileCheckListTemplateService {
                 itemDTO.setStatus(Constants.ENTITY_INACTIVE);
             }
             itemDTO.setTemplateId(request.getId());
+
             updateItem(cid, uid, itemDTO.getId(), itemDTO);
         }
 
         curr = repo.save(curr);
         return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
     }
-
+    public ProfileCheckListTemplateDTO updateStatus(Long cid, String uid, Long id, ProfileCheckListTemplateDTO request) throws BusinessException{
+        valid(request);
+        ProfileCheckListTemplate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));
+        MapperUtils.copyWithoutAudit(request, curr);
+        curr.setUpdateBy(uid);
+        curr = repo.save(curr);
+        return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
+    }
     public void updateItem(Long cid, String uid, Long id, ProfileCheckListTemplateItemDTO request) throws BusinessException{
         validItem(request);
         if(request.getId() != 0l && request.getId() != null){
