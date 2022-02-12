@@ -10,6 +10,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.model.InterviewCheckList;
 import vn.ngs.nspace.recruiting.model.InterviewResult;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
@@ -18,6 +19,7 @@ import vn.ngs.nspace.recruiting.repo.InterviewResultRepo;
 import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
 import vn.ngs.nspace.recruiting.share.dto.JobRequirementDTO;
+import vn.ngs.nspace.task.core.data.UserData;
 
 import java.util.*;
 
@@ -61,6 +63,7 @@ public class InterviewResultService {
         InterviewResult interviewResult = InterviewResult.of(cid, uid, dto);
         interviewResult.setCompanyId(cid);
         interviewResult.setCreateBy(uid);
+        interviewResult.setStatus(Constants.ENTITY_ACTIVE);
         interviewResult = _repo.save(interviewResult);
         return toDTO(interviewResult);
     }
@@ -108,16 +111,24 @@ public class InterviewResultService {
     public List<InterviewResultDTO> toDTOs(Long cid, String uid, List<InterviewResult> objs) {
         List<InterviewResultDTO> dtos = new ArrayList<>();
         Set<Long> empIds = new HashSet<>();
+        Set<String> userIds = new HashSet<>();
         objs.forEach(obj -> {
             if (obj.getInterviewerId() != null && obj.getInterviewerId() != 0) {
                 empIds.add(obj.getInterviewerId());
             }
+            if(!StringUtils.isEmpty(obj.getCreateBy())){
+                userIds.add(obj.getCreateBy());
+            }
             dtos.add(toDTO(obj));
         });
         Map<Long, EmployeeDTO> mapEmp = _hcmService.getMapEmployees(uid, cid, empIds);
+        Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
         for (InterviewResultDTO dto : dtos) {
             if (dto.getInterviewerId() != null && dto.getInterviewerId() != 0) {
                 dto.setInterviewerIdObj(mapEmp.get(dto.getInterviewerId()));
+            }
+            if(!StringUtils.isEmpty(dto.getCreateBy())){
+                dto.setCreateByObj((Map<String, Object>) mapperUser.get(dto.getCreateBy()));
             }
         }
         return dtos;
