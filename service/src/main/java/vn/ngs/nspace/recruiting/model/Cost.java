@@ -31,7 +31,7 @@ public class Cost extends PersistableEntity<Long> {
     private Double totalAmount;
     private Date startDate;
     private Date endDate;
-    private Integer year;
+    private Long year;
 
     public static Cost of(Long cid, String uid, CostDTO dto){
         Cost obj = Cost.builder()
@@ -41,6 +41,7 @@ public class Cost extends PersistableEntity<Long> {
                 .quantity(dto.getQuantity())
                 .unit(dto.getUnit())
                 .price(dto.getPrice())
+                .year(dto.getYear())
                 .totalAmount(dto.getTotalAmount())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
