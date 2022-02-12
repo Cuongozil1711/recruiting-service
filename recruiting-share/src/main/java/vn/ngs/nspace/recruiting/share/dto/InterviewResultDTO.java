@@ -21,7 +21,10 @@ public class InterviewResultDTO {
     private String content;
     private Long interviewerId;
     private String state ;
+    private String createBy;
+    private Integer status;
 
+    private Map<String, Object> createByObj;
     private EmployeeDTO interviewerIdObj;
 
 
