@@ -88,8 +88,12 @@ public class OnboardTrainingService {
             repo.save(obj);
             return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
         }
-        return null;
+        else {
+            return toDTOs(cid, uid, Collections.singletonList(exists)).get(0);
+        }
+
     }
+
 
 
     public List<OnboardTrainingDTO> toDTOs(Long cid, String uid, List<OnboardTraining> objs){
@@ -131,7 +135,7 @@ public class OnboardTrainingService {
                         for (OnboardTrainingTemplateItem lst: mapItems.get(template.getId())) {
                             OnboardTrainingTemplateItemDTO item = new OnboardTrainingTemplateItemDTO();
                             MapperUtils.copy(lst, item);
-                            if(item != null && item.getId() == dto.getItemId()){
+                            if(item != null && lst.getId().equals(dto.getItemId())){
                                 dto.setItem(item);
                             }
                         }
@@ -146,7 +150,7 @@ public class OnboardTrainingService {
                                 for (OnboardTrainingTemplateItemChildren lst: mapItemChildrens.get(idChild)) {
                                     OnboardTrainingTemplateItemChildrenDTO item = new OnboardTrainingTemplateItemChildrenDTO();
                                     MapperUtils.copy(lst, item);
-                                    if(item != null && item.getId() == dto.getItemChildId()){
+                                    if(item != null && lst.getId().equals(dto.getItemChildId())){
                                         dto.setItemChildren(item);
                                     }
                                 }
@@ -158,12 +162,12 @@ public class OnboardTrainingService {
 
                 if(dto.getItemId() != null && dto.getItemChildId() != null && dto.getItemGrandChildId() != null){
                     if(itemGrandChildrens != null){
-                        for (Long idGrandChild: itemIds) {
+                        for (Long idGrandChild: itemChildIds) {
                             if(mapItemGrandChildrens.get(idGrandChild) != null){
                                 for (OnboardTrainingTemplateItemGrandChild lst: mapItemGrandChildrens.get(idGrandChild)) {
                                     OnboardTrainingTemplateItemGrandChildDTO item = new OnboardTrainingTemplateItemGrandChildDTO();
                                     MapperUtils.copy(lst, item);
-                                    if(item != null && item.getId() == dto.getItemChildId()){
+                                    if(item != null && lst.getId().equals(dto.getItemGrandChildId())){
                                         dto.setItemGrandChild(item);
                                     }
                                 }
