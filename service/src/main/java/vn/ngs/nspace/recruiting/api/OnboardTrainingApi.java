@@ -12,8 +12,13 @@ import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
+import vn.ngs.nspace.recruiting.model.OnboardTraining;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.service.OnboardTrainingService;
+import vn.ngs.nspace.recruiting.share.dto.AssetCheckListDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingDTO;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("onboard-traning")
@@ -38,6 +43,22 @@ public class OnboardTrainingApi {
         try{
             return ResponseUtils.handlerSuccess(_service.createByOnboardOrder(cid, uid, id));
         } catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PutMapping ("/update-by-onboardId/{id}")
+    @ActionMapping(action = Permission.CREATE)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity update(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
+            , @RequestBody OnboardTrainingDTO dto) {
+        try {
+
+            return ResponseUtils.handlerSuccess(_service.update(cid, uid, id, dto));
+        } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
     }
