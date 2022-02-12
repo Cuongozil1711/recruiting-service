@@ -16,4 +16,6 @@ public class CostDetailDTO {
     private Long costId;
     private Double totalAmount;
     private Date paymentDate;
+    private String description;
+    private Integer status;
 }
