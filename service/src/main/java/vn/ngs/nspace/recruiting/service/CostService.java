@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,39 +47,28 @@ public class CostService {
 
     public void valid(CostDTO dto){
 
-//        if (dto.getPositionId() == null){
-//            throw new BusinessException("invalid-position");
-//        }
-//        if (dto.getOrgId() == null){
-//            throw new BusinessException("invalid-org");
-//        }
-//        if (dto.getStartDate() == null){
-//            throw new BusinessException("invalid-startDate");
-//        }
-//        if (dto.getEndDate() == null){
-//            throw new BusinessException("invalid-endDate");
-//        }
+        if (dto.getOrgId() == null || dto.getOrgId() == 0l){
+            throw new BusinessException("invalid-org");
+        }
+        if (dto.getStartDate() == null){
+            throw new BusinessException("invalid-start-date");
+        }
+        if (dto.getEndDate() == null){
+            throw new BusinessException("invalid-end-date");
+        }
+
+        if (dto.getTotalAmount() == null || dto.getTotalAmount() <= 0d){
+            throw new BusinessException("invalid-total-amount");
+        }
     }
 
     public void validDetail(CostDetailDTO dto){
-//        if (dto.getCheckListId() == null){
-//            throw new BusinessException("invalid-checkList");
-//        }
-//        if (dto.getTemplateId() == null){
-//            throw new BusinessException("invalid-template");
-//        }
-//        if (StringUtils.isEmpty(dto.getOptionType())){
-//            throw new BusinessException("invalid-optionType");
-//        }
-//        if (dto.getMinRating() == null){
-//            throw new BusinessException("invalid-minRating");
-//        }
-//        if (dto.getMaxRating() == null){
-//            throw new BusinessException("invalid-maxRating");
-//        }
-//        if (StringUtils.isEmpty(dto.getOptionValues())){
-//            throw new BusinessException("invalid-OptionValues");
-//        }
+        if (dto.getPaymentDate() == null){
+            throw new BusinessException("invalid-payment-date");
+        }
+        if (dto.getTotalAmount() == null || dto.getTotalAmount() <= 0d){
+            throw new BusinessException("invalid-payment-amount");
+        }
     }
     public CostDTO create(long cid, String uid, CostDTO dto) {
         valid(dto);
@@ -146,20 +136,21 @@ public class CostService {
     }
 
     public Map<String, Object> splitAmountTo12Months(Long cid, String uid, CostDTO cost) throws Exception {
-        Date currentYear = DateUtil.SHORT_DATE_FORMAT.parse( cost.getYear() + "01/01");
+        Date currentYear = DateUtil.SHORT_DATE_FORMAT.parse( cost.getYear() + "/01/01");
         Date startMonth = DateUtil.startOfCycle(cost.getStartDate());
         Date endMonth = DateUtil.startOfCycle(cost.getEndDate());
         long monthBetweens = ChronoUnit.MONTHS.between(
                 new Timestamp(startMonth.getTime()).toLocalDateTime().withDayOfMonth(1),
                 new Timestamp(endMonth.getTime()).toLocalDateTime().withDayOfMonth(1));
         Double amountBetween = cost.getTotalAmount() / monthBetweens;
-        Map<String, Object> returnData = new HashMap<>();
+        Map<String, Object> returnData = new ConcurrentHashMap<>();
         for(int i = 0; i <=11; i++){
             Map<String, Object> splitData = new HashMap<>();
+            Date checkDate = DateUtil.addDate(currentYear, "month", i);
+            splitData.put("month", checkDate);
             splitData.put("request_amount", 0d);
             splitData.put("usage_amount", 0d);
             splitData.put("remain_amount", 0d);
-            Date checkDate = DateUtil.addDate(currentYear, "month", i);
             if(checkDate.compareTo(startMonth) >= 0 && checkDate.compareTo(DateUtil.endOfCycle(cost.getEndDate())) <= 0){
                 splitData.put("request_amount", amountBetween);
                 Double usageAmount = 0d;
