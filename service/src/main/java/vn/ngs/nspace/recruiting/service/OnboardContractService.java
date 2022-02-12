@@ -42,7 +42,13 @@ public class OnboardContractService {
         valid(request);
         orderRepo.findByCompanyIdAndId(cid, request.getOnboardOrderId()).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, request.getOnboardOrderId()));
         _hcmService.getContract(uid, cid, request.getContractId());
-
+        OnboardContract exists = repo.findByCompanyIdAndOnboardOrderId(cid, request.getOnboardOrderId()).orElse(new OnboardContract());
+        if(exists.isNew()){
+            exists.setContractId(request.getContractId());
+            exists.setUpdateBy(uid);
+            exists = repo.save(exists);
+            return toDTO(exists);
+        }
         OnboardContract order = OnboardContract.of(cid, uid, request);
         order.setStatus(Constants.ENTITY_ACTIVE);
         order.setCreateBy(uid);
