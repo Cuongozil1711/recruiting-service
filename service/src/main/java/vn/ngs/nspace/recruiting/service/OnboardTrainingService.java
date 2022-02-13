@@ -23,17 +23,19 @@ public class OnboardTrainingService {
     private final ExecuteConfigService configService;
     private final OnboardOrderRepo onboardOrderRepo;
     private final OnboardTrainingItemRepo itemTranningRepo;
+    private final EvaluatorOnboardTranningRepo evaluatorOnboardTranningRepo;
     private final OnboardTrainingTemplateRepo templateRepo;
     private final OnboardTrainingTemplateItemRepo itemRepo;
     private final OnboardTrainingTemplateItemChildrenRepo childrenRepo;
     private final OnboardTrainingTemplateItemGrandChildRepo grandChildRepo;
 
-    public OnboardTrainingService (OnboardTrainingRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService, OnboardOrderRepo onboardOrderRepo, OnboardTrainingItemRepo itemTranningRepo, OnboardTrainingTemplateRepo templateRepo, OnboardTrainingTemplateItemRepo itemRepo, OnboardTrainingTemplateItemChildrenRepo childrenRepo, OnboardTrainingTemplateItemGrandChildRepo grandChildRepo){
+    public OnboardTrainingService (OnboardTrainingRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService, OnboardOrderRepo onboardOrderRepo, OnboardTrainingItemRepo itemTranningRepo, EvaluatorOnboardTranningRepo evaluatorOnboardTranningRepo, OnboardTrainingTemplateRepo templateRepo, OnboardTrainingTemplateItemRepo itemRepo, OnboardTrainingTemplateItemChildrenRepo childrenRepo, OnboardTrainingTemplateItemGrandChildRepo grandChildRepo){
         this.repo = repo;
         this.hcmService = hcmService;
         this.configService = configService;
         this.onboardOrderRepo = onboardOrderRepo;
         this.itemTranningRepo = itemTranningRepo;
+        this.evaluatorOnboardTranningRepo = evaluatorOnboardTranningRepo;
         this.templateRepo = templateRepo;
         this.itemRepo= itemRepo;
         this.childrenRepo = childrenRepo;
@@ -58,6 +60,12 @@ public class OnboardTrainingService {
         training.setOnboardOrderId(onboardOrderId);
 
         training = repo.save(training);
+
+        EvaluatorOnboardTranningDTO evaluatorOnboardTranningDTO = new EvaluatorOnboardTranningDTO();
+        evaluatorOnboardTranningDTO.setOnboardOrderId(onboardOrderId);
+        evaluatorOnboardTranningDTO.setOnboardTraningId(training.getId());
+        createEvaluator(cid, uid, evaluatorOnboardTranningDTO);
+
         List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId);
         OnboardTrainingTemplate template = templates.get(0);
 
@@ -97,7 +105,17 @@ public class OnboardTrainingService {
         }
     }
 
-
+   public void createEvaluator(Long cid, String uid, EvaluatorOnboardTranningDTO dto) throws BusinessException{
+        EvaluatorOnboardTranning exists = evaluatorOnboardTranningRepo.findByCompanyIdAndOnboardOrderIdAndOnboardTraningIdAndStatus(cid, dto.getOnboardOrderId(), dto.getOnboardTraningId(), Constants.ENTITY_ACTIVE).orElse(new EvaluatorOnboardTranning());
+        if(exists.isNew()){
+            EvaluatorOnboardTranning obj = EvaluatorOnboardTranning.of(cid, uid, dto);
+                obj.setStatus(Constants.ENTITY_ACTIVE);
+                obj.setCompanyId(cid);
+                obj.setUpdateBy(uid);
+                obj.setCreateBy(uid);
+                evaluatorOnboardTranningRepo.save(obj);
+        }
+   }
 
 
     public OnboardTrainingDTO update(Long cid, String uid, Long onboardId, OnboardTrainingDTO dto) throws BusinessException{
@@ -113,6 +131,13 @@ public class OnboardTrainingService {
             itemDTO.setOnboardTrainingId(training.getId());
             updateItem(cid, uid, itemDTO.getId(), itemDTO);
         }
+        EvaluatorOnboardTranningDTO evaluatorOnboardTranningDTO = dto.getEvaluators();
+        if(CompareUtil.compare(dto.getStatus(), Constants.ENTITY_INACTIVE)){
+            evaluatorOnboardTranningDTO.setStatus(Constants.ENTITY_INACTIVE);
+        }
+        evaluatorOnboardTranningDTO.setOnboardTraningId(training.getId());
+        evaluatorOnboardTranningDTO.setOnboardOrderId(onboardId);
+        updateEvaluator(cid, uid, evaluatorOnboardTranningDTO.getEvaluatorId(), evaluatorOnboardTranningDTO);
         training = repo.save(training);
 
         return toDTOs(cid, uid, Collections.singletonList(training)).get(0);
@@ -125,6 +150,17 @@ public class OnboardTrainingService {
             curr = itemTranningRepo.save(curr);
     }
 
+    public void updateEvaluator(Long cid, String uid, Long id, EvaluatorOnboardTranningDTO request) throws BusinessException{
+        if(id != null){
+            EvaluatorOnboardTranning curr = evaluatorOnboardTranningRepo.findByCompanyIdAndId(cid, request.getId()).orElseThrow(() -> new EntityNotFoundException(EvaluatorOnboardTranning.class, id));
+            MapperUtils.copyWithoutAudit(request, curr);
+            curr.setUpdateBy(uid);
+            curr = evaluatorOnboardTranningRepo.save(curr);
+        }
+            createEvaluator(cid, uid, request);
+
+    }
+
     public List<OnboardTrainingDTO> toDTOs(Long cid, String uid, List<OnboardTraining> objs){
         List<OnboardTrainingDTO> dtos = new ArrayList<>();
         Set<Long> orgIds = new HashSet<>();
@@ -134,6 +170,9 @@ public class OnboardTrainingService {
         Set<Long> itemIds = new HashSet<>();
         Set<Long> itemChildIds = new HashSet<>();
         Set<Long> onboardTraningIds = new HashSet<>();
+        Set<Long> evluatorIds = new HashSet<>();
+        Set<Long> hrIds = new HashSet<>();
+        Set<Long> leaderIds = new HashSet<>();
         OnboardTraining ot = objs.get(0);
         JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, ot.getOnboardOrderId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
         List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId());
@@ -163,12 +202,43 @@ public class OnboardTrainingService {
         Map<Long, List<OnboardTrainingTemplateItemGrandChild>> mapItemGrandChildrens = itemGrandChildrens.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItemGrandChild::getItemChildrenId));
         employeeIds = itemGrandChildrens.stream().map(el -> el.getEmployeeId()).collect(Collectors.toSet());
 
+        List<EvaluatorOnboardTranning> lstEvaluator = evaluatorOnboardTranningRepo.findByCompanyIdAndOnboardTraningIdIn(cid, onboardTraningIds);
+        Map<Long, List<EvaluatorOnboardTranning>> mapEvaluators = lstEvaluator.stream().collect(Collectors.groupingBy(EvaluatorOnboardTranning::getOnboardTraningId));
+        leaderIds = lstEvaluator.stream().map(el -> el.getLeaderId()).collect(Collectors.toSet());
+        evluatorIds = lstEvaluator.stream().map(el -> el.getEvaluatorId()).collect(Collectors.toSet());
+        hrIds = lstEvaluator.stream().map(el -> el.getHrId()).collect(Collectors.toSet());
+
         List<EmployeeDTO> employeeDTOS = hcmService.getEmployees(uid, cid, employeeIds);
         Map<Long, EmployeeDTO> mapEmployee = hcmService.getMapEmployees(uid, cid, employeeIdsForOnboard);
+        List<EmployeeDTO> evaluators = hcmService.getEmployees(uid, cid, evluatorIds);
+        List<EmployeeDTO> leaders = hcmService.getEmployees(uid, cid, leaderIds);
+        List<EmployeeDTO> HRs = hcmService.getEmployees(uid, cid, hrIds);
         if (template.getId() != null){
             for (OnboardTrainingDTO dto: dtos) {
                 if(dto.getEmployeeId() != null){
                     dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
+                }
+                if(mapEvaluators.get(dto.getId()) != null){
+                    for (EvaluatorOnboardTranning ev: mapEvaluators.get(dto.getId())) {
+                        EvaluatorOnboardTranningDTO evDto = new EvaluatorOnboardTranningDTO();
+                        MapperUtils.copy(ev, evDto);
+                        if (evDto != null){
+                            if(evDto.getEvaluatorId() != null){
+                                EmployeeDTO emp = evaluators.stream().filter(e -> CompareUtil.compare(e.getId(),evDto.getEvaluatorId())).findAny().orElse(new EmployeeDTO());
+                                evDto.setObjEvaluator(emp);
+                            }
+                            if(evDto.getLeaderId() != null){
+                                EmployeeDTO emp = leaders.stream().filter(e -> CompareUtil.compare(e.getId(),evDto.getLeaderId())).findAny().orElse(new EmployeeDTO());
+                                evDto.setObjLeader(emp);
+                            }
+                            if(evDto.getHrId() != null){
+                                EmployeeDTO emp = HRs.stream().filter(e -> CompareUtil.compare(e.getId(),evDto.getHrId())).findAny().orElse(new EmployeeDTO());
+                                evDto.setObjHR(emp);
+                            }
+                            dto.setEvaluators(evDto);
+                        }
+                    }
+
                 }
                 if(mapItemTranings.get(dto.getId()) != null){
                     List<OnboardTrainingItem> itemTranings = new ArrayList<>();
@@ -231,6 +301,7 @@ public class OnboardTrainingService {
                             }
                         }
                     }
+
                     dto.setItems(lstTraningDTO);
                 }
 
