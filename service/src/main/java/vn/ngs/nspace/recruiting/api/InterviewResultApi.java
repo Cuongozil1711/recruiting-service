@@ -26,6 +26,7 @@ import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("interview-result")
@@ -127,10 +128,10 @@ public class InterviewResultApi {
     protected ResponseEntity getCheckListByInterviewResultId(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long ids
             , @RequestBody InterviewResultDTO dto) {
         try {
-            return ResponseUtils.handlerSuccess(service.getInterviewCheckList(cid, uid, id, dto));
+            return ResponseUtils.handlerSuccess(service.getInterviewCheckList(cid, uid, ids, dto));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
