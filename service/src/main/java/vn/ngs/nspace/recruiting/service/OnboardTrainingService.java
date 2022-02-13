@@ -137,7 +137,8 @@ public class OnboardTrainingService {
         }
         evaluatorOnboardTranningDTO.setOnboardTraningId(training.getId());
         evaluatorOnboardTranningDTO.setOnboardOrderId(onboardId);
-        updateEvaluator(cid, uid, evaluatorOnboardTranningDTO.getEvaluatorId(), evaluatorOnboardTranningDTO);
+        updateEvaluator(cid, uid, evaluatorOnboardTranningDTO.getId(), evaluatorOnboardTranningDTO);
+
         training = repo.save(training);
 
         return toDTOs(cid, uid, Collections.singletonList(training)).get(0);
