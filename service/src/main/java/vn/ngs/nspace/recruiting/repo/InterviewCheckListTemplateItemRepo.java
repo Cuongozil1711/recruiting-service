@@ -13,6 +13,6 @@ public interface InterviewCheckListTemplateItemRepo extends BaseRepo<InterviewCh
 
     Optional<InterviewCheckListTemplateItem> findByCompanyIdAndId(long cid, Long id);
     List<InterviewCheckListTemplateItem> findByCompanyIdAndTemplateIdInAndStatus(long cid, Set<Long> templateIds, Integer status);
-
+    List<InterviewCheckListTemplateItem> findByCompanyIdAndId(Long cid, Long ids);
     List<InterviewCheckListTemplateItem> findByCompanyIdAndTemplateId(long cid, Long templateId);
 }

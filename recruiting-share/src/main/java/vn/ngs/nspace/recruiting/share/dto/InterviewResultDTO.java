@@ -20,6 +20,8 @@ public class InterviewResultDTO {
     private Date interviewDate;
     private String content;
     private Long interviewerId;
+    private Long templateId;
+    private Long templateItemId;
     private String state ;
     private String createBy;
     private Integer status;
