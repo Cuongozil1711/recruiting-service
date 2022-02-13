@@ -10,6 +10,7 @@ import java.util.Optional;
 
 
 public interface OnboardTrainingRepo extends BaseRepo<OnboardTraining, Long> {
-    List<ProfileCheckList> findByCompanyIdAndOnboardOrderId(Long cid, Long onboarOrderId);
-    Optional<OnboardTraining> findByCompanyIdAndEmployeeIdAndStatusAndItemIdAndItemChildIdAndItemGrandChildId (Long cid, Long employeeId, Integer status, Long itemId, Long childId, Long grandChildId);
+    Optional<OnboardTraining> findByCompanyIdAndOnboardOrderId(Long cid, Long onboarOrderId);
+    Optional<OnboardTraining> findByCompanyIdAndId (Long cid, Long id);
+    Optional<OnboardTraining> findById(Long aLong);
 }

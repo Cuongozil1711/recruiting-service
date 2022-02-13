@@ -129,6 +129,7 @@ public class ProfileCheckListTemplateService {
         curr = repo.save(curr);
         return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
     }
+
     public void updateItem(Long cid, String uid, Long id, ProfileCheckListTemplateItemDTO request) throws BusinessException{
         validItem(request);
         if(request.getId() != 0l && request.getId() != null){
