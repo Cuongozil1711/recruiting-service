@@ -39,12 +39,12 @@ public class InterviewCheckListTemplateService {
 
     public void valid(InterviewCheckListTemplateDTO dto){
 
-//        if (dto.getPositionId() == null){
-//            throw new BusinessException("invalid-position");
-//        }
-//        if (dto.getOrgId() == null){
-//            throw new BusinessException("invalid-org");
-//        }
+        if (dto.getPositionId() == null){
+            throw new BusinessException("invalid-position");
+        }
+        if (dto.getOrgId() == null){
+            throw new BusinessException("invalid-org");
+        }
 //        if (dto.getStartDate() == null){
 //            throw new BusinessException("invalid-startDate");
 //        }
@@ -60,9 +60,9 @@ public class InterviewCheckListTemplateService {
 //        if (dto.getTemplateId() == null){
 //            throw new BusinessException("invalid-template");
 //        }
-//        if (StringUtils.isEmpty(dto.getOptionType())){
-//            throw new BusinessException("invalid-optionType");
-//        }
+        if (StringUtils.isEmpty(dto.getOptionType())){
+            throw new BusinessException("invalid-optionType");
+        }
 //        if (dto.getMinRating() == null){
 //            throw new BusinessException("invalid-minRating");
 //        }
