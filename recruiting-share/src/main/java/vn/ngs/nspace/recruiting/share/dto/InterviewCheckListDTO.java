@@ -23,6 +23,7 @@ public class InterviewCheckListDTO {
     private Long positionId;
     private Long orgId;
     private Long itemId;
+    private Integer status;
 
     private EmployeeDTO interviewerObj;
     private Map<String, Object> checkListObj;
