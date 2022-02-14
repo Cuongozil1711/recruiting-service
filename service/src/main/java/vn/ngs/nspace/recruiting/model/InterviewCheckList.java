@@ -28,6 +28,7 @@ public class InterviewCheckList extends PersistableEntity<Long> {
     private Double rating;
     private String result;
     private Date interviewDate;
+    private Long itemId;
 
     public static InterviewCheckList of(Long cid, String uid, InterviewCheckListDTO dto){
         InterviewCheckList obj = InterviewCheckList.builder()
@@ -37,6 +38,7 @@ public class InterviewCheckList extends PersistableEntity<Long> {
                 .rating(dto.getRating())
                 .result(dto.getResult())
                 .interviewDate(dto.getInterviewDate())
+                .itemId(dto.getItemId())
                 .build();
         return obj;
     }

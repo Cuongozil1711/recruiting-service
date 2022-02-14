@@ -24,8 +24,6 @@ public class InterviewResult extends PersistableEntity<Long> {
     private Long id;
     private Long candidateId;
     private Date interviewDate;
-    private Long interviewTemplateId;
-    private Long interviewTemplateItemId;
     private String content;
     private Long interviewerId;
     private String state ;
