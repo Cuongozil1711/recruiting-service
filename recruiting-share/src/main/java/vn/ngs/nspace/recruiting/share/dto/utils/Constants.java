@@ -17,6 +17,13 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
             "welcome",
             "training",
             "coaching");
+
+    public enum ONBOARD_ORDER_CHECK_LIST_STATE{
+        PENDING
+        , DONE
+
+    }
+
     public enum INTERVIEW_RESULT_STATE{
         PENDING
         , REVIEWED
