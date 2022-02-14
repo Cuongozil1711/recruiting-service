@@ -56,6 +56,7 @@ public class InterviewCheckListTemplateApi {
             @RequestBody Map<String, Object> condition
             , Pageable pageable) {
         try{
+
             Long positionId = MapUtils.getLong(condition, "positionId", -1l);
             Long orgId = MapUtils.getLong(condition, "orgId", -1l);
 

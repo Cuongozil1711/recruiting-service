@@ -87,7 +87,7 @@ public class InterviewCheckListTemplateService {
         //create template item
 
         for(InterviewCheckListTemplateItemDTO itemDTO : dto.getItems()){
-            itemDTO.setTemplateId(template.getId());
+
             createItem(cid, uid, itemDTO);
         }
 
@@ -147,9 +147,7 @@ public class InterviewCheckListTemplateService {
             if(o.getPositionId() != null){
                 categoryIds.add(o.getPositionId());
             }
-            if(o.getOrgId() != null){
-                categoryIds.add(o.getOrgId());
-            }
+
             if(o.getOrgId() != null && o.getOrgId() != 0){
                 orgIds.add(o.getOrgId());
             }

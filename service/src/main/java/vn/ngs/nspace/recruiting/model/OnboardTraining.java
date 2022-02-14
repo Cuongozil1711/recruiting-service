@@ -23,29 +23,12 @@ public class OnboardTraining extends PersistableEntity<Long> {
     private Long id;
     private Long onboardOrderId;
     private Long employeeId;
-    private String result;
-    private float evaluate;
-    private String finalResult;
-    private String selfAssessment;
-    private String commentCBQL;
-    private String commentHr;
-    private Long itemId;
-    private Long itemChildId;
-    private Long itemGrandChildId;
 
     public static OnboardTraining of(Long cid, String uid, OnboardTrainingDTO dto) {
         OnboardTraining obj = OnboardTraining.builder()
                 .id(dto.getId())
                 .onboardOrderId(dto.getOnboardOrderId())
                 .employeeId(dto.getEmployeeId())
-                .result(dto.getResult())
-                .finalResult(dto.getFinalResult())
-                .selfAssessment(dto.getSelfAssessment())
-                .commentCBQL(dto.getCommentCBQL())
-                .commentHr(dto.getCommentHr())
-                .itemId(dto.getItemId())
-                .itemChildId(dto.getItemChildId())
-                .itemGrandChildId(dto.getItemGrandChildId())
                 .build();
         return obj;
     }
