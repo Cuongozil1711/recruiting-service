@@ -147,7 +147,7 @@ public class OnboardOrderService {
                 exists.setCode(checkCode);
                 exists.setStatus(Constants.ENTITY_ACTIVE);
                 exists.setEmployeeId(onboard.getEmployeeId());
-
+                exists.setOnboardOrderId(onboardOrderId);
 
                 exists.setState(Constants.CMD_PENDING);
                 exists = checkListRepo.save(exists);
