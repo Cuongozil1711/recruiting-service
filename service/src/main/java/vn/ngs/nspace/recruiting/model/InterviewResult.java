@@ -24,9 +24,11 @@ public class InterviewResult extends PersistableEntity<Long> {
     private Long id;
     private Long candidateId;
     private Date interviewDate;
+    private Long interviewTemplateId;
+    private Long interviewTemplateItemId;
     private String content;
     private Long interviewerId;
-    private Integer state ;
+    private String state ;
 
 
     public static InterviewResult of(Long cid, String uid, InterviewResultDTO dto){
@@ -38,6 +40,7 @@ public class InterviewResult extends PersistableEntity<Long> {
                 .content(dto.getContent())
                 .state(dto.getState())
                 .build();
+
         return builder;
     }
 }

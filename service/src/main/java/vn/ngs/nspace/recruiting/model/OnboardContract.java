@@ -3,11 +3,13 @@ package vn.ngs.nspace.recruiting.model;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
-import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingDTO;
+import vn.ngs.nspace.recruiting.share.dto.CandidateToDoDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardContractDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 @Data
@@ -15,21 +17,26 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-//Bảng danh sách các đầu mục thử việc bao gồm các thông tin thử việc, liên kết tới thông tin nhân viên
-public class OnboardTraining extends PersistableEntity<Long> {
+//Thông tin đánh giá ứng viên
+public class OnboardContract extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
     private Long onboardOrderId;
-    private Long employeeId;
+    private Long contractId;
 
-    public static OnboardTraining of(Long cid, String uid, OnboardTrainingDTO dto) {
-        OnboardTraining obj = OnboardTraining.builder()
+    public static OnboardContract of(Long cid, String uid, OnboardContractDTO dto) {
+        OnboardContract candidateTodo = OnboardContract.builder()
                 .id(dto.getId())
                 .onboardOrderId(dto.getOnboardOrderId())
-                .employeeId(dto.getEmployeeId())
+                .contractId(dto.getContractId())
                 .build();
-        return obj;
+        return candidateTodo;
     }
+
+
+
 }
+
+

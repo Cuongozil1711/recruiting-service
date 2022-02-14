@@ -26,6 +26,7 @@ import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("interview-result")
@@ -51,9 +52,7 @@ public class InterviewResultApi {
             , Pageable pageable) {
         try{
             Long candidateId = MapUtils.getLong(condition, "candidateId", -1l);
-            String name = MapUtils.getString(condition, "name", "all");
-            String state = MapUtils.getString(condition, "state", "all");
-            Page<InterviewResult> page = repo.search(cid,candidateId, name,  pageable);
+            Page<InterviewResult> page = repo.search(cid,candidateId, pageable);
             List<InterviewResultDTO> dtos = service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {
@@ -129,10 +128,10 @@ public class InterviewResultApi {
     protected ResponseEntity getCheckListByInterviewResultId(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long ids
             , @RequestBody InterviewResultDTO dto) {
         try {
-            return ResponseUtils.handlerSuccess(service.getInterviewCheckList(cid, uid, id, dto));
+            return ResponseUtils.handlerSuccess(service.getInterviewCheckList(cid, uid, ids, dto));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
@@ -159,6 +158,7 @@ public class InterviewResultApi {
             return ResponseUtils.handlerException(e);
         }
     }
+
 
 
 }

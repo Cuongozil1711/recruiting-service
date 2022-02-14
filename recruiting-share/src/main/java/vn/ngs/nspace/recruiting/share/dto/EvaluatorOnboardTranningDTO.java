@@ -12,13 +12,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class OnboardTrainingDTO {
+public class EvaluatorOnboardTranningDTO {
     private Long id;
     private Long onboardOrderId;
-    private Long employeeId;
+    private Long onboardTraningId;
+    private Long leaderId;
+    private Long evaluatorId;
+    private Long hrId;
+    private String leaderComment;
+    private String evaluatorCommnet;
+    private String hrComment;
     private Integer status;
 
-    private EmployeeDTO employeeObj;
-    private EvaluatorOnboardTranningDTO evaluators;
-    private List<OnboardTrainingItemDTO> items;
+    private EmployeeDTO objEvaluator;
+    private EmployeeDTO objLeader;
+    private EmployeeDTO objHR;
 }

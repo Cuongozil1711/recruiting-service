@@ -229,6 +229,10 @@ public class OnboardTrainingTemplateService {
                 o.setTitleObj(mapCategory.get(o.getTitleId()));
             }
 
+            if(o.getOrgId() != null){
+                OrgResp org = orgs.stream().filter(el -> CompareUtil.compare(o.getId(), o.getOrgId())).findAny().orElse(new OrgResp());
+                o.setOrgResp(org);
+            }
 
             if (mapItems.get(o.getId()) != null){
                 List<OnboardTrainingTemplateItemDTO> lstItem = new ArrayList<>();

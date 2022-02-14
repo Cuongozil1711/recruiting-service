@@ -2,12 +2,15 @@ package vn.ngs.nspace.recruiting.model;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListTemplateItemDTO;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.List;
 
 @Entity
 @Data
@@ -26,7 +29,11 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
     private String optionType; // number , select
     private Double minRating; //enable when optionType = number
     private Double maxRating; //enable when optionType = number
-    private String optionValues; //enable when optionType = select
+    @Type(type = "list-array")
+    @Column(columnDefinition = "text[]", length = 4000)
+    List<String> optionValues;
+    private String description;
+    private String priority;
 
     public static InterviewCheckListTemplateItem of(Long cid, String uid, InterviewCheckListTemplateItemDTO dto){
         InterviewCheckListTemplateItem obj = InterviewCheckListTemplateItem.builder()
@@ -37,6 +44,8 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
                 .minRating(dto.getMinRating())
                 .maxRating(dto.getMaxRating())
                 .optionValues(dto.getOptionValues())
+                .priority(dto.getPriority())
+                .description(dto.getDescription())
                 .build();
         return obj;
     }

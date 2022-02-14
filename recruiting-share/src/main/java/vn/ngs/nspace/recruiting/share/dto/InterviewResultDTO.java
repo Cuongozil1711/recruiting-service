@@ -7,20 +7,27 @@ import lombok.NoArgsConstructor;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class InterviewResultDTO {
     private Long id;
-    private Long interviewerId;
     private Long candidateId;
     private Date interviewDate;
     private String content;
-    private Integer state;
+    private Long interviewerId;
+    private Long templateId;
+    private Long templateItemId;
+    private String state ;
+    private String createBy;
+    private Integer status;
 
+    private Map<String, Object> createByObj;
     private EmployeeDTO interviewerIdObj;
-
 
 
 }
