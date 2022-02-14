@@ -59,6 +59,8 @@ public class InterviewResultService {
 
     }
 
+
+
     public InterviewResultDTO createByCandidateId(Long cid, String uid, Long candidateId, Set<Long> ListInterViewerId){
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId,Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, candidateId));
         return createByPositionAndOrg(cid, uid, candidateId, ja.getPositionId(), ja.getOrgId(), ListInterViewerId);
@@ -66,6 +68,9 @@ public class InterviewResultService {
 
     public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Set<Long> ListInterViewerId){
         List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId);
+        if (templates.size() == 0){
+            throw new BusinessException("invalid-template");
+        }
         InterviewCheckListTemplate template = templates.get(0);
         List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
 
@@ -111,6 +116,7 @@ public class InterviewResultService {
         interviewResult.setCompanyId(cid);
         interviewResult.setCreateBy(uid);
         interviewResult.setStatus(Constants.ENTITY_ACTIVE);
+
         interviewResult = _repo.save(interviewResult);
 
         return toDTO(interviewResult);
@@ -174,7 +180,12 @@ public class InterviewResultService {
     }
 
     public List<InterviewResultDTO> toDTOs(Long cid, String uid, List<InterviewResult> objs) {
+
         List<InterviewResultDTO> dtos = new ArrayList<>();
+        if(objs.size() == 0){
+            InterviewResultDTO dto = new InterviewResultDTO();
+            return dtos;
+        }
         Set<Long> empIds = new HashSet<>();
         Set<String> userIds = new HashSet<>();
         Set<Long> resultIds = new HashSet<>();
@@ -191,7 +202,9 @@ public class InterviewResultService {
             }
             dtos.add(toDTO(obj));
         });
+
         InterviewResult result = objs.get(0);
+
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, result.getCandidateId(),Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, result.getCandidateId()));
         List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getOrgId());
         InterviewCheckListTemplate template = templates.get(0);
