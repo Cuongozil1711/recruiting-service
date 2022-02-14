@@ -67,6 +67,9 @@ public class OnboardTrainingService {
         createEvaluator(cid, uid, evaluatorOnboardTranningDTO);
 
         List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId);
+        if(templates != null && !templates.isEmpty()){
+            return null;
+        }
         OnboardTrainingTemplate template = templates.get(0);
 
         List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
