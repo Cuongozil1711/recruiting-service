@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
@@ -30,28 +31,45 @@ public class OnboardOrderCheckListService {
         _configService = configService;
     }
 
+    public void validateChangeState(String code, String oldState, String newState){
+
+    }
+
     public List<OnboardOrderCheckListDTO> updateList(Long cid, String uid, Long onboardOrderID, List<OnboardOrderCheckListDTO> listDTOS){
-        List<OnboardOrderCheckList> lst = repo.findByCompanyIdAndOnboardOrderId(cid, onboardOrderID);
-        List<String> lstCodeUpdate = lst.stream().map(dto -> dto.getCode()).collect(Collectors.toList());
-        List<OnboardOrderCheckList> onboardOrderCheckLists = new ArrayList<>();
-        for (String code: lstCodeUpdate){
-            OnboardOrderCheckList onboardOrderCheckList = lst.stream().filter(el -> el.getCode().equals(code)).findAny().get();
-
-            OnboardOrderCheckListDTO dto = listDTOS.stream().filter(el -> el.getCode().equals(code)).findAny().get();
-            if (onboardOrderCheckList != null){
-                onboardOrderCheckList.setState(dto.getState());
-                onboardOrderCheckList.setParticipantId(dto.getParticipantId());
-                onboardOrderCheckList.setResponsibleId(dto.getResponsibleId());
-
-                onboardOrderCheckLists.add(onboardOrderCheckList);
+        List<OnboardOrderCheckList> checkLists = new ArrayList<>();
+        for(OnboardOrderCheckListDTO checkListDTO : listDTOS){
+            OnboardOrderCheckList checkList = repo.findByCompanyIdAndOnboardOrderIdAndId(cid, onboardOrderID, checkListDTO.getId()).orElseThrow(() -> new EntityNotFoundException(OnboardOrderCheckList.class, checkListDTO.getId()));
+            boolean haveUpdate = false;
+            if(!CompareUtil.compare(checkList.getState(), checkListDTO.getState())){
+                validateChangeState(checkListDTO.getCode(), checkList.getState(), checkListDTO.getState());
+                checkList.setState(checkListDTO.getState());
+                haveUpdate = true;
             }
+            if(!CompareUtil.compare(checkList.getParticipantId(), checkListDTO.getParticipantId())){
+                checkList.setParticipantId(checkListDTO.getParticipantId());
+                haveUpdate = true;
+            }
+            if(!CompareUtil.compare(checkList.getResponsibleId(), checkListDTO.getResponsibleId())){
+                checkList.setResponsibleId(checkListDTO.getResponsibleId());
+                haveUpdate = true;
+            }
+            if(!CompareUtil.compare(checkList.getStartDate(), checkListDTO.getStartDate())){
+                checkList.setStartDate(checkList.getStartDate());
+                haveUpdate = true;
+            }
+            if(!CompareUtil.compare(checkList.getDeadline(), checkListDTO.getDeadline())){
+                checkList.setDeadline(checkListDTO.getDeadline());
+                haveUpdate = true;
+            }
+
+            if(haveUpdate){
+                checkList.setUpdateBy(uid);
+                checkList = repo.save(checkList);
+            }
+            checkLists.add(checkList);
         }
 
-        if (onboardOrderCheckLists != null && !onboardOrderCheckLists.isEmpty()){
-            onboardOrderCheckLists = repo.saveAll(onboardOrderCheckLists);
-        }
-
-        return checkListToDTOs(cid, uid, onboardOrderCheckLists);
+        return checkListToDTOs(cid, uid, checkLists);
     }
 
     public List<OnboardOrderCheckListDTO> checkListToDTOs(Long cid, String uid, List<OnboardOrderCheckList> objs){

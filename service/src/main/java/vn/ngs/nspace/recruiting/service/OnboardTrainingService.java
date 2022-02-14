@@ -43,14 +43,14 @@ public class OnboardTrainingService {
     }
 
     public OnboardTrainingDTO createByOnboardOrder (Long cid, String uid, Long onboardOrderId){
-        JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, onboardOrderId).orElseThrow(()-> new BusinessException("not found OnboardOder"));
+        JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, onboardOrderId).orElseThrow(()-> new EntityNotFoundException(OnboardOrder.class, onboardOrderId));
         return createByPositionTitle(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getEmployeeId(), onboardOrderId);
     }
 
     public OnboardTrainingDTO createByPositionTitle(Long cid, String uid, Long positionId, Long titleId, Long employeeId, Long onboardOrderId){
         OnboardTraining training = repo.findByCompanyIdAndOnboardOrderId(cid, onboardOrderId).orElse(new OnboardTraining());
         if (!training.isNew()){
-            return toDTOs(cid, uid, Collections.singletonList(training)).get(0);
+            return toDTOWithObjectValue(cid, uid, training);
         }
         training.setCompanyId(cid);
         training.setCreateBy(uid);
@@ -69,10 +69,9 @@ public class OnboardTrainingService {
         List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId);
         OnboardTrainingTemplate template = templates.get(0);
 
-        List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
+        List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
 
         for (OnboardTrainingTemplateItem item: items) {
-
             OnboardTrainingItemDTO trainingDTO = new OnboardTrainingItemDTO();
             trainingDTO.setOnboardTrainingId(training.getId());
             trainingDTO.setItemId(item.getId());
@@ -90,7 +89,7 @@ public class OnboardTrainingService {
             }
 
         }
-        return toDTOs(cid, uid, Collections.singletonList(training)).get(0);
+        return toDTOWithObjectValue(cid, uid, training);
     }
 
     public void createItem(Long cid, String uid, OnboardTrainingItemDTO dto) throws BusinessException{
@@ -162,6 +161,9 @@ public class OnboardTrainingService {
 
     }
 
+    public OnboardTrainingDTO toDTOWithObjectValue(Long cid, String uid, OnboardTraining obj){
+        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
+    }
     public List<OnboardTrainingDTO> toDTOs(Long cid, String uid, List<OnboardTraining> objs){
         List<OnboardTrainingDTO> dtos = new ArrayList<>();
         Set<Long> orgIds = new HashSet<>();
@@ -191,7 +193,7 @@ public class OnboardTrainingService {
         List<OnboardTrainingItem> trainingItems = itemTranningRepo.findByCompanyIdAndOnboardTrainingIdIn(cid, onboardTraningIds);
         Map<Long, List<OnboardTrainingItem>> mapItemTranings = trainingItems.stream().collect(Collectors.groupingBy(OnboardTrainingItem::getOnboardTrainingId));
 
-        List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
+        List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
         Map<Long, List<OnboardTrainingTemplateItem>> mapItems = items.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItem::getTemplateId));
         itemIds = items.stream().map(el -> el.getId()).collect(Collectors.toSet());
 

@@ -180,6 +180,15 @@ public class OnboardTrainingTemplateService {
         }
     }
 
+    public void delete(Long cid, String uid, List<Long> ids){
+        for (Long id: ids){
+            OnboardTrainingTemplate temp = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplate.class, id));
+            temp.setUpdateBy(uid);
+            temp.setStatus(Constants.ENTITY_INACTIVE);
+            repo.save(temp);
+        }
+    }
+
     public List<OnboardTrainingTemplateDTO> toDTOs(Long cid, String uid, List<OnboardTrainingTemplate> objs){
         List<OnboardTrainingTemplateDTO> dtos = new ArrayList<>();
         Set<Long> templateIds = new HashSet<>();
