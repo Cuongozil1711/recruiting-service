@@ -117,7 +117,7 @@ public class InterviewResultApi {
         }
     }
 
-    @GetMapping("/check-list/{id}")
+    @PutMapping ("/check-list/{id}")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Get check list by interviewResult Id"
             , description = "Get check list by interviewResult Id"
@@ -128,10 +128,10 @@ public class InterviewResultApi {
     protected ResponseEntity getCheckListByInterviewResultId(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long ids
-            , @RequestBody InterviewResultDTO dto) {
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
+            , @RequestBody Set<Long> interViewerId) {
         try {
-            return ResponseUtils.handlerSuccess(service.getInterviewCheckList(cid, uid, ids, dto));
+            return ResponseUtils.handlerSuccess(service.createByCandidateId(cid, uid, id, interViewerId));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

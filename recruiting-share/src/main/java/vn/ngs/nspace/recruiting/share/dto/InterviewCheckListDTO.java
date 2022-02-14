@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -21,7 +22,9 @@ public class InterviewCheckListDTO {
     private Date interviewDate;
     private Long positionId;
     private Long orgId;
+    private Long itemId;
 
     private EmployeeDTO interviewerObj;
     private Map<String, Object> checkListObj;
+    private List<InterviewCheckListTemplateItemDTO> items;
 }

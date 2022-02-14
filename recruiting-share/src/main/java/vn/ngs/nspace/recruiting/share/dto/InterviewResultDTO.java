@@ -28,6 +28,6 @@ public class InterviewResultDTO {
 
     private Map<String, Object> createByObj;
     private EmployeeDTO interviewerIdObj;
-
+    private List<InterviewCheckListDTO> checkLists;
 
 }

@@ -4,14 +4,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
+import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.*;
-import vn.ngs.nspace.recruiting.repo.InterviewCheckListRepo;
-import vn.ngs.nspace.recruiting.repo.InterviewCheckListTemplateItemRepo;
-import vn.ngs.nspace.recruiting.repo.InterviewCheckListTemplateRepo;
-import vn.ngs.nspace.recruiting.repo.InterviewResultRepo;
+import vn.ngs.nspace.recruiting.repo.*;
 import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListDTO;
+import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
@@ -28,15 +28,17 @@ public class InterviewCheckListService {
     private final InterviewResultRepo resultRepo;
     private final ExecuteHcmService hcmService;
     private final ExecuteConfigService configService;
+    private final JobApplicationRepo _repoJob;
 
 
-    public InterviewCheckListService(InterviewCheckListRepo repo, InterviewCheckListTemplateItemRepo itemRepo, InterviewCheckListTemplateRepo templateRepo, InterviewResultRepo resultRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public InterviewCheckListService(InterviewCheckListRepo repo, InterviewCheckListTemplateItemRepo itemRepo, InterviewCheckListTemplateRepo templateRepo, InterviewResultRepo resultRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, JobApplicationRepo _repoJob) {
         this.repo = repo;
         this.itemRepo = itemRepo;
         this.templateRepo = templateRepo;
         this.resultRepo = resultRepo;
         this.hcmService = hcmService;
         this.configService = configService;
+        this._repoJob = _repoJob;
     }
 
     public void valid (InterviewCheckListDTO dto){
@@ -63,7 +65,7 @@ public class InterviewCheckListService {
 
     public InterviewCheckListDTO create(Long cid, String uid, InterviewCheckListDTO request) throws BusinessException {
         valid(request);
-        InterviewCheckList exists = repo.findByCompanyIdAndCheckListId(cid, request.getCheckListId()).orElse(new InterviewCheckList());
+        InterviewCheckList exists = repo.findByCompanyIdAndId(cid, request.getCheckListId()).orElse(new InterviewCheckList());
         if(!exists.isNew()){
             return toDTO(exists);
         }
@@ -73,9 +75,12 @@ public class InterviewCheckListService {
         obj.setUpdateBy(uid);
         obj.setCreateBy(uid);
 
-        return toDTO(repo.save(obj));
+        return toDTO(repo.save(null));
     }
 
+    public InterviewCheckListDTO toDTOWithObjectValue(Long cid, String uid, InterviewCheckList obj){
+        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
+    }
 
     public List<InterviewCheckListDTO> createOrUpdate(long cid, String uid, Long interviewResultId, List<InterviewCheckListDTO> dtos) {
 
@@ -127,6 +132,8 @@ public class InterviewCheckListService {
         return toDTOs(cid, uid, listOfProfileCheckList);
 
     }
+
+
     public List<InterviewCheckListDTO> toDTOs(Long cid, String uid, List<InterviewCheckList> objs){
         List<InterviewCheckListDTO> dtos = new ArrayList<>();
         Set<Long> categoryIds = new HashSet<>();
