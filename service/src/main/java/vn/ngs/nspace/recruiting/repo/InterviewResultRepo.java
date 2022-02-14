@@ -32,6 +32,4 @@ public interface InterviewResultRepo extends BaseRepo<InterviewResult, Long> {
             , Pageable pageable);
 
 
-
-
 }
