@@ -43,18 +43,18 @@ public class InterviewResultService {
 
 
     public void valid(InterviewResultDTO dto) {
-        if (dto.getCandidateId() == null) {
-            throw new BusinessException("invalid-candidateId");
-        }
-        if (dto.getInterviewDate() == null) {
-            throw new BusinessException("invalid-date");
-        }
-        if (StringUtils.isEmpty(dto.getContent())) {
-            throw new BusinessException("invalid-content");
-        }
-        if (StringUtils.isEmpty(dto.getState())) {
-            throw new BusinessException("invalid-state");
-        }
+//        if (dto.getCandidateId() == null) {
+//            throw new BusinessException("invalid-candidateId");
+//        }
+//        if (dto.getInterviewDate() == null) {
+//            throw new BusinessException("invalid-date");
+//        }
+//        if (StringUtils.isEmpty(dto.getContent())) {
+//            throw new BusinessException("invalid-content");
+//        }
+//        if (StringUtils.isEmpty(dto.getState())) {
+//            throw new BusinessException("invalid-state");
+//        }
 
 
     }
@@ -112,6 +112,7 @@ public class InterviewResultService {
         interviewResult.setCreateBy(uid);
         interviewResult.setStatus(Constants.ENTITY_ACTIVE);
         interviewResult = _repo.save(interviewResult);
+
         return toDTO(interviewResult);
     }
 
@@ -129,9 +130,29 @@ public class InterviewResultService {
         curr.setUpdateBy(uid);
         curr = _repo.save(curr);
 
-        return toDTO(curr);
+        if(dto.getCheckLists() != null){
+            for (InterviewCheckListDTO checkListDTO: dto.getCheckLists()) {
+                checkListDTO.setInterviewResultId(dto.getId());
+                updateCheckList(cid, uid, checkListDTO.getId(), checkListDTO);
+            }
+        }
+        return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
 
     }
+
+    public void updateCheckList(Long cid, String uid, Long id, InterviewCheckListDTO request) throws BusinessException{
+//        validItem(request);
+        if(request.getId() != 0l && request.getId() != null){
+            InterviewCheckList curr = checkListRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewCheckList.class, id));
+            MapperUtils.copyWithoutAudit(request, curr);
+            curr.setStatus(Constants.ENTITY_ACTIVE);
+            curr.setUpdateBy(uid);
+            curr = checkListRepo.save(curr);
+        }else{
+            createCheckList(cid, uid, request);
+        }
+    }
+
 
     public List<InterviewCheckListTemplateItemDTO> getInterviewCheckList(Long cid, String uid, Long ids, InterviewResultDTO dto) {
 //        InterviewResult interviewResult = _repo.findByCompanyIdAndId(cid, interviewResultId).orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, interviewResultId));
