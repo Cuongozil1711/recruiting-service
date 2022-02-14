@@ -87,7 +87,7 @@ public class InterviewCheckListTemplateService {
         //create template item
 
         for(InterviewCheckListTemplateItemDTO itemDTO : dto.getItems()){
-
+            itemDTO.setTemplateId(template.getId());
             createItem(cid, uid, itemDTO);
         }
 
@@ -164,9 +164,9 @@ public class InterviewCheckListTemplateService {
             if(i.getCheckListId() != null){
                 categoryIds.add(i.getCheckListId());
             }
-            if (i.getTemplateId() != null){
-                categoryIds.add(i.getTemplateId());
-            }
+//            if (i.getTemplateId() != null){
+//                categoryIds.add(i.getTemplateId());
+//            }
         });
         Map<Long, OrgResp> mapOrg = _hcmService.getMapOrgs(uid, cid, orgIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
@@ -191,9 +191,9 @@ public class InterviewCheckListTemplateService {
                         if(itemDTO.getCheckListId() != null){
                             itemDTO.setCheckListObj(mapCategory.get(itemDTO.getCheckListId()));
                         }
-                        if (itemDTO.getTemplateId() != null){
-                            itemDTO.setTemplateObj(mapCategory.get(itemDTO.getTemplateId()));
-                        }
+//                        if (itemDTO.getTemplateId() != null){
+//                            itemDTO.setTemplateObj(mapCategory.get(itemDTO.getTemplateId()));
+//                        }
                         itemDTOs.add(itemDTO);
                     });
 

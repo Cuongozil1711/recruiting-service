@@ -12,7 +12,6 @@ import java.util.Set;
 public interface InterviewCheckListTemplateItemRepo extends BaseRepo<InterviewCheckListTemplateItem,Long> {
 
     Optional<InterviewCheckListTemplateItem> findByCompanyIdAndId(long cid, Long id);
-    List<InterviewCheckListTemplateItem> findByCompanyIdAndTemplateIdInAndStatus(long cid, Set<Long> templateIds, Integer status);
-    List<InterviewCheckListTemplateItem> findByCompanyIdAndId(Long cid, Long ids);
+    List<InterviewCheckListTemplateItem> findByCompanyIdAndTemplateIdInAndStatus(long cid, Set<Long> tempIds, Integer status);
     List<InterviewCheckListTemplateItem> findByCompanyIdAndTemplateId(long cid, Long templateId);
 }
