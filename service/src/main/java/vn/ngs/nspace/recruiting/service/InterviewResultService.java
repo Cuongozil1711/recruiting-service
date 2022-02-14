@@ -13,9 +13,7 @@ import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.*;
-import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListDTO;
-import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListTemplateItemDTO;
-import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
+import vn.ngs.nspace.recruiting.share.dto.*;
 import vn.ngs.nspace.task.core.data.UserData;
 
 import java.util.*;
@@ -63,10 +61,10 @@ public class InterviewResultService {
 
     public InterviewResultDTO createByCandidateId(Long cid, String uid, Long candidateId, Set<Long> ListInterViewerId){
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId,Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, candidateId));
-        return createByPositionAndOrg(cid, uid, ja.getPositionId(), ja.getOrgId(), ListInterViewerId);
+        return createByPositionAndOrg(cid, uid, candidateId, ja.getPositionId(), ja.getOrgId(), ListInterViewerId);
     }
 
-    public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long position, Long orgId, Set<Long> ListInterViewerId){
+    public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Set<Long> ListInterViewerId){
         List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId);
         InterviewCheckListTemplate template = templates.get(0);
         List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
@@ -74,21 +72,20 @@ public class InterviewResultService {
         InterviewResult interviewResult = new InterviewResult();
         interviewResult.setCompanyId(cid);
         interviewResult.setCreateBy(uid);
+        interviewResult.setCandidateId(candidateId);
         interviewResult.setStatus(Constants.ENTITY_ACTIVE);
         interviewResult = _repo.save(interviewResult);
 
-        List<InterviewCheckList> checkLists = checkListRepo.findByCompanyIdAndInterviewResultId(cid, interviewResult.getId());
-        for (InterviewCheckList checkList: checkLists) {
-            InterviewCheckListDTO checkListDTO = new InterviewCheckListDTO();
             for (Long interViewerId: ListInterViewerId) {
-                checkListDTO.setInterviewResultId(interviewResult.getId());
-                checkListDTO.setInterviewerId(interViewerId);
+                InterviewCheckListDTO checkListDTO = new InterviewCheckListDTO();
+
                 for (InterviewCheckListTemplateItem item: items) {
-                    checkListDTO = MapperUtils.map(item, checkListDTO);
+                    checkListDTO.setInterviewResultId(interviewResult.getId());
+                    checkListDTO.setInterviewerId(interViewerId);
+                    checkListDTO.setItemId(item.getId());
                     createCheckList(cid, uid, checkListDTO);
                 }
             }
-        }
 
         return toDTOs(cid, uid, Collections.singletonList(interviewResult)).get(0);
 
@@ -160,6 +157,7 @@ public class InterviewResultService {
         Set<Long> empIds = new HashSet<>();
         Set<String> userIds = new HashSet<>();
         Set<Long> resultIds = new HashSet<>();
+
         objs.forEach(obj -> {
             if (obj.getInterviewerId() != null && obj.getInterviewerId() != 0) {
                 empIds.add(obj.getInterviewerId());
@@ -172,9 +170,16 @@ public class InterviewResultService {
             }
             dtos.add(toDTO(obj));
         });
+        InterviewResult result = objs.get(0);
+        JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, result.getCandidateId(),Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, result.getCandidateId()));
+        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getOrgId());
+        InterviewCheckListTemplate template = templates.get(0);
 
         List<InterviewCheckList> checkLists = checkListRepo.findByCompanyIdAndInterviewResultIdInAndStatus(cid, resultIds, Constants.ENTITY_ACTIVE);
         Map<Long, List<InterviewCheckList>> mapCheckLists = checkLists.stream().collect(Collectors.groupingBy(InterviewCheckList::getInterviewResultId));
+
+        List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
+        Map<Long, List<InterviewCheckListTemplateItem>> mapItems = items.stream().collect(Collectors.groupingBy(InterviewCheckListTemplateItem::getTemplateId));
 
         Map<Long, EmployeeDTO> mapEmp = _hcmService.getMapEmployees(uid, cid, empIds);
         Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
@@ -184,6 +189,35 @@ public class InterviewResultService {
             }
             if(!StringUtils.isEmpty(dto.getCreateBy())){
                 dto.setCreateByObj((Map<String, Object>) mapperUser.get(dto.getCreateBy()));
+            }
+
+            if(mapCheckLists.get(dto.getId()) != null){
+                List<InterviewCheckListDTO> checkListInterviewsDTO = new ArrayList<>();
+                for (InterviewCheckList checkList: mapCheckLists.get(dto.getId())) {
+                    InterviewCheckListDTO checkListDTO = new InterviewCheckListDTO();
+                    MapperUtils.copy(checkList, checkListDTO);
+                    if (checkListDTO != null){
+                        checkListInterviewsDTO.add(checkListDTO);
+                    }
+                    dto.setCheckLists(checkListInterviewsDTO);
+                }
+
+                for (InterviewCheckListDTO checkListDTODTO: checkListInterviewsDTO) {
+                    List<InterviewCheckListTemplateItemDTO> lstItems = new ArrayList<>();
+                    if (checkListDTODTO.getItemId() != null ) {
+                        if (mapItems.get(template.getId()) != null) {
+                            for (InterviewCheckListTemplateItem lst : mapItems.get(template.getId())) {
+                                InterviewCheckListTemplateItemDTO item = new InterviewCheckListTemplateItemDTO();
+                                MapperUtils.copy(lst, item);
+                                if (item != null && lst.getId().equals(checkListDTODTO.getItemId())) {
+                                    lstItems.add(item);
+
+                                }
+                            }
+                        }
+                        checkListDTODTO.setItems(lstItems);
+                    }
+                }
             }
         }
         return dtos;
