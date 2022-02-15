@@ -78,9 +78,9 @@ public class JobRequirementService {
         if(dto.getSalaryFrom() == null){
             throw new BusinessException("invalid-salaryFrom");
         }
-        if(dto.getSalaryTo() == null){
-            throw new BusinessException("invalid-salaryTo");
-        }
+//        if(dto.getSalaryTo() == null){
+//            throw new BusinessException("invalid-salaryTo");
+//        }
         if(dto.getCurrencyId() == null){
             throw new BusinessException("invalid-currency");
         }
