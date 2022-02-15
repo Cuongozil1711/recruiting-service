@@ -168,7 +168,7 @@ public class RecruitmentPlanOrderApi {
              @PathVariable Long id
             , @RequestBody RecruitmentPlanOrderDTO recruitmentPlanOrderDTO){
         try{
-            RecruitmentPlanOrderDTO dto = _service.update(cid,id,recruitmentPlanOrderDTO);
+            RecruitmentPlanOrderDTO dto = _service.update(cid,uid,id,recruitmentPlanOrderDTO);
              return ResponseUtils.handlerSuccess(dto);
         } catch (Exception ex){
             return ResponseUtils.handlerException(ex);

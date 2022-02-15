@@ -71,7 +71,7 @@ public class RecruitmentPlanOrderService {
         return list;
     }
 
-        public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
+    public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
         valid(dto);
         RecruitmentPlanOrder exists = repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
         if(!exists.isNew()){
@@ -79,16 +79,19 @@ public class RecruitmentPlanOrderService {
         }
 
         RecruitmentPlanOrder recruitmentPlanOrder = RecruitmentPlanOrder.of(cid, uid, dto);
+        recruitmentPlanOrder.setStatus(Constants.ENTITY_ACTIVE);
         recruitmentPlanOrder.setCreateBy(uid);
         recruitmentPlanOrder.setCompanyId(cid);
         repo.save(recruitmentPlanOrder);
         return toDTO(recruitmentPlanOrder);
     }
 
-    public RecruitmentPlanOrderDTO update(Long cid, Long id, RecruitmentPlanOrderDTO recruitmentPlanOrderDTO) {
+    public RecruitmentPlanOrderDTO update(Long cid, String uid, Long id, RecruitmentPlanOrderDTO recruitmentPlanOrderDTO) {
         valid(recruitmentPlanOrderDTO);
         RecruitmentPlanOrder curr = repo.findByCompanyIdAndId(cid, id).orElse(new RecruitmentPlanOrder());
         MapperUtils.copyWithoutAudit(recruitmentPlanOrderDTO,curr);
+        curr.setUpdateBy(uid);
+        curr.setStatus(recruitmentPlanOrderDTO.getStatus() == null ? Constants.ENTITY_INACTIVE : recruitmentPlanOrderDTO.getStatus());
         curr = repo.save(curr);
         try{
             repo.findByCompanyIdAndCodeAndStatus(cid, recruitmentPlanOrderDTO.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
