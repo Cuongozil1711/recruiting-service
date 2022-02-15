@@ -215,7 +215,6 @@ public class InterviewCheckListTemplateService {
             if (!temp.isNew()) {
                 temp.setStatus(vn.ngs.nspace.recruiting.share.dto.utils.Constants.ENTITY_INACTIVE);
                 temp.setUpdateBy(uid);
-                temp.setModifiedDate(new Date());
 
                 repo.save(temp);
             }

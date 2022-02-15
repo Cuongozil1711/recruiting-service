@@ -29,7 +29,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
    @Query(value = "select p " +
            " from RecruitmentPlanOrder p " +
            " where (p.companyId = :companyId)" +
-           " and (p.orgId = :orgId or :orgId = -1)" +
+           " and (p.orgId = :orgId)" +
            " and (concat(coalesce(p.code,'')" +
            ", coalesce(p.type,'')" +
            ", coalesce(p.solutionSuggestType,'')" +

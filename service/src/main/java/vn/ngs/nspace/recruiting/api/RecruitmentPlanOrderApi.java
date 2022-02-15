@@ -112,7 +112,7 @@ public class RecruitmentPlanOrderApi {
             @RequestHeader String uid
             , @Parameter(description="Payload to search with positionId, orgId, fromDate, deadline")
             @RequestParam(name = "filter") String filter
-            ,@RequestParam(name = "orgId",value = "-1") Long orgId
+            ,@RequestParam(name = "orgId") Long orgId
             , Pageable pageable){
         try{
             Page<RecruitmentPlanOrder> page = _repo.filter(cid,orgId, filter, pageable);
