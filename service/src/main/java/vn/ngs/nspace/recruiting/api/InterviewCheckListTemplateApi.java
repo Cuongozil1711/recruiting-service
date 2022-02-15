@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
@@ -34,7 +35,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("interview-template")
 @RequiredArgsConstructor
-@Tag(name = "InterviewTemplate", description = "API for ")
+@Tag(name = "InterviewTemplate", description = "API for InterviewTemplate ")
 public class InterviewCheckListTemplateApi {
     private final InterviewCheckListTemplateService _service;
     private final InterviewCheckListTemplateRepo _repo;
@@ -131,6 +132,28 @@ public class InterviewCheckListTemplateApi {
         try {
             InterviewCheckListTemplate template = _repo.findByCompanyIdAndId(cid, id).orElse(new InterviewCheckListTemplate());
             return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, Collections.singletonList(template)));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+    @PutMapping("/delete")
+    @ActionMapping(action = Permission.DELETE)
+    @Operation(summary = "delete InterviewCheckList Template"
+            , description = "interviewCheckListTemp delete by id"
+            , tags = {"InterviewTemplate"}
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity delete(
+            @Parameter(description = "ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description = "ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description = "List Id")
+            @RequestBody List<Long> ids) {
+        try {
+            _service.delete(cid, uid, ids);
+            return ResponseUtils.handlerSuccess(HttpStatus.OK);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

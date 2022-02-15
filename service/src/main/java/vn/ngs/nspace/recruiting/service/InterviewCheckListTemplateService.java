@@ -8,9 +8,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
-import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplate;
-import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplateItem;
-import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
+import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.InterviewCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.InterviewCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListTemplateDTO;
@@ -209,5 +207,19 @@ public class InterviewCheckListTemplateService {
     }
     public InterviewCheckListTemplateDTO toDTO (InterviewCheckListTemplate obj){
         return MapperUtils.map(obj, InterviewCheckListTemplateDTO.class);
+    }
+
+    public void delete(long cid, String uid, List<Long> ids) {
+        ids.stream().forEach(i -> {
+            InterviewCheckListTemplate temp = repo.findByCompanyIdAndId(cid, i).orElse(new InterviewCheckListTemplate());
+            if (!temp.isNew()) {
+                temp.setStatus(vn.ngs.nspace.recruiting.share.dto.utils.Constants.ENTITY_INACTIVE);
+                temp.setUpdateBy(uid);
+                temp.setModifiedDate(new Date());
+
+                repo.save(temp);
+            }
+        });
+
     }
 }
