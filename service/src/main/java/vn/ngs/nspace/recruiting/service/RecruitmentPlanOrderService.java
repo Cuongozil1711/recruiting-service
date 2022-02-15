@@ -2,6 +2,7 @@ package vn.ngs.nspace.recruiting.service;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
@@ -9,9 +10,11 @@ import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.Reason;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import java.util.*;
 
@@ -70,6 +73,11 @@ public class RecruitmentPlanOrderService {
 
         public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
         valid(dto);
+        RecruitmentPlanOrder exists = repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
+        if(!exists.isNew()){
+            throw new BusinessException("duplicate-data-with-code");
+        }
+
         RecruitmentPlanOrder recruitmentPlanOrder = RecruitmentPlanOrder.of(cid, uid, dto);
         recruitmentPlanOrder.setCreateBy(uid);
         recruitmentPlanOrder.setCompanyId(cid);
@@ -82,6 +90,11 @@ public class RecruitmentPlanOrderService {
         RecruitmentPlanOrder curr = repo.findByCompanyIdAndId(cid, id).orElse(new RecruitmentPlanOrder());
         MapperUtils.copyWithoutAudit(recruitmentPlanOrderDTO,curr);
         curr = repo.save(curr);
+        try{
+            repo.findByCompanyIdAndCodeAndStatus(cid, recruitmentPlanOrderDTO.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
+        }catch (IncorrectResultSizeDataAccessException ex){
+            throw new BusinessException("duplicate-data-with-and-code");
+        }
         return toDTO(curr);
     }
 

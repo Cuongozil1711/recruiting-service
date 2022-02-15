@@ -11,7 +11,7 @@ import java.util.*;
 
 public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,Long> {
    Optional<RecruitmentPlanOrder>  findByCompanyIdAndId(Long cid, Long id);
-
+   Optional<RecruitmentPlanOrder> findByCompanyIdAndCodeAndStatus(Long cid, String code, Integer status);
 
    @Query(value = " select p " +
            " from RecruitmentPlanOrder p " +
