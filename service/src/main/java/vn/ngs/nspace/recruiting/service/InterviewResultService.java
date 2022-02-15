@@ -133,6 +133,7 @@ public class InterviewResultService {
         InterviewResult curr = _repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, id));
         MapperUtils.copyWithoutAudit(dto, curr);
         curr.setUpdateBy(uid);
+        curr.setStatus(Constants.ENTITY_ACTIVE);
         curr = _repo.save(curr);
 
         if(dto.getCheckLists() != null){
