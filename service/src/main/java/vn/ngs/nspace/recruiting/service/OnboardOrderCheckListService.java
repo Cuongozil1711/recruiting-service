@@ -61,7 +61,10 @@ public class OnboardOrderCheckListService {
                 checkList.setDeadline(checkListDTO.getDeadline());
                 haveUpdate = true;
             }
-
+            if(!CompareUtil.compare(checkList.getDescription(), checkListDTO.getDescription())){
+                checkList.setDescription(checkListDTO.getDescription());
+                haveUpdate = true;
+            }
             if(haveUpdate){
                 checkList.setUpdateBy(uid);
                 checkList = repo.save(checkList);

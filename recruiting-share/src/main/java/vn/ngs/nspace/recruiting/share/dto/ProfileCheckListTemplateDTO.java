@@ -29,11 +29,10 @@ public class ProfileCheckListTemplateDTO {
     private Long recieverId;
     private String note;
 
-    private Set<Long> lstPositionId;
-    private Set<Long> lstTitleId;
 
     private Map<String, Object> contractTypeObj;
     private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;
     private List<ProfileCheckListTemplateItemDTO> items;
+
 }

@@ -23,7 +23,7 @@ public class OnboardOrderCheckListDTO {
     private Long participantId; // id nhan vien lien quan
     private Date startDate; // id nhan vien lien quan
     private String state;
-
+    private String description;
     private Integer status;
 
     private EmployeeDTO employeeObj;

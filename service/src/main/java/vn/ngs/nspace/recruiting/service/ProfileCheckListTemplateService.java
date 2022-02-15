@@ -1,5 +1,6 @@
 package vn.ngs.nspace.recruiting.service;
 
+import io.netty.util.Constant;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import org.apache.commons.collections.MapUtils;
@@ -11,13 +12,11 @@ import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.AssetCheckList;
-import vn.ngs.nspace.recruiting.model.OnboardOrder;
-import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
-import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplateItem;
+import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.share.dto.AssetCheckListDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateItemDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
@@ -71,9 +70,24 @@ public class ProfileCheckListTemplateService {
 
     }
 
-//    public ProfileCheckListTemplateDTO createByLSTPositionAndTitle(Long cid, String uid, ProfileCheckListTemplateDTO request) throws BusinessException{
-//
-//    }
+    public List<Map<String, Object>> grant(Long cid, String uid, Long templateId, List<Map<String, Object>> newDatas) throws BusinessException{
+        ProfileCheckListTemplate template = repo.findByCompanyIdAndId(cid, templateId).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, templateId));
+        for (Map<String, Object> data: newDatas) {
+            String positionToConvert = String.valueOf(data.get("positionId"));
+            String titileToConvert = String.valueOf(data.get("titileId"));
+            Long positionId = Long.parseLong(positionToConvert);
+            Long titileId = Long.parseLong(titileToConvert);
+            ProfileCheckListTemplate obj = repo.findByCompanyIdAndPositionIdAndTitleIdAndStatus(cid, positionId, titileId, Constants.ENTITY_ACTIVE).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, templateId));
+            if(obj != null){
+                obj.setStatus(Constants.ENTITY_INACTIVE);
+                obj = repo.save(obj);
+                ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
+                MapperUtils.copyWithoutAudit(obj, dto);
+                create(cid, uid, dto);
+            }
+        }
+        return newDatas;
+    }
 
     public ProfileCheckListTemplateDTO create(Long cid, String uid, ProfileCheckListTemplateDTO request) throws BusinessException {
         valid(request);
@@ -125,6 +139,7 @@ public class ProfileCheckListTemplateService {
         curr = repo.save(curr);
         return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
     }
+
     public ProfileCheckListTemplateDTO updateStatus(Long cid, String uid, Long id, ProfileCheckListTemplateDTO request) throws BusinessException{
         valid(request);
         ProfileCheckListTemplate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));
@@ -146,6 +161,15 @@ public class ProfileCheckListTemplateService {
         }
     }
 
+
+    public void delete(Long cid, String uid, List<Long> ids){
+        for (Long id: ids){
+            ProfileCheckListTemplate temp = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));
+            temp.setUpdateBy(uid);
+            temp.setStatus(Constants.ENTITY_INACTIVE);
+            repo.save(temp);
+        }
+    }
     public List<ProfileCheckListTemplateDTO> toDTOs(Long cid, String uid, List<ProfileCheckListTemplate> objs){
         List<ProfileCheckListTemplateDTO> dtos = new ArrayList<>();
         Set<Long> templateIds = new HashSet<>();
