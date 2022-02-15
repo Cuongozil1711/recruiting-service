@@ -113,11 +113,16 @@ public class InterviewCheckListTemplateService {
         curr.setUpdateBy(uid);
 
         for(InterviewCheckListTemplateItemDTO itemDTO : dto.getItems()){
-            if(CompareUtil.compare(dto.getStatus(), Constants.ENTITY_INACTIVE)){
-                itemDTO.setStatus(Constants.ENTITY_INACTIVE);
+            if(itemDTO.getId() == null || itemDTO.getId() == 0l){
+                createItem(cid, uid, itemDTO);
+            }else{
+                if(CompareUtil.compare(dto.getStatus(), Constants.ENTITY_INACTIVE)){
+                    itemDTO.setStatus(Constants.ENTITY_INACTIVE);
+                }
+                itemDTO.setTemplateId(dto.getId());
+                updateItem(cid, uid, itemDTO.getId(), itemDTO);
             }
-            itemDTO.setTemplateId(dto.getId());
-            updateItem(cid, uid, itemDTO.getId(), itemDTO);
+
         }
 
         curr = repo.save(curr);
