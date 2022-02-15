@@ -60,7 +60,6 @@ public class InterviewResultService {
     }
 
 
-
     public InterviewResultDTO createByCandidateId(Long cid, String uid, Long candidateId, Set<Long> ListInterViewerId){
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId,Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, candidateId));
         return createByPositionAndOrg(cid, uid, candidateId, ja.getPositionId(), ja.getOrgId(), ListInterViewerId);
@@ -69,7 +68,7 @@ public class InterviewResultService {
     public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Set<Long> ListInterViewerId){
         List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId);
         if (templates.size() == 0){
-            throw new BusinessException("invalid-template");
+            throw new BusinessException("Không có biểu mẫu tương ứng");
         }
         InterviewCheckListTemplate template = templates.get(0);
         List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
@@ -207,7 +206,11 @@ public class InterviewResultService {
 
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, result.getCandidateId(),Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, result.getCandidateId()));
         List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getOrgId());
-        InterviewCheckListTemplate template = templates.get(0);
+        InterviewCheckListTemplate template = new InterviewCheckListTemplate();
+        if (templates.size() > 0){
+            template  = templates.get(0);
+        }
+
 
         List<InterviewCheckList> checkLists = checkListRepo.findByCompanyIdAndInterviewResultIdInAndStatus(cid, resultIds, Constants.ENTITY_ACTIVE);
         Map<Long, List<InterviewCheckList>> mapCheckLists = checkLists.stream().collect(Collectors.groupingBy(InterviewCheckList::getInterviewResultId));

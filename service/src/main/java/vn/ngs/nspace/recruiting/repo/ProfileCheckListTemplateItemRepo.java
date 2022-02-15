@@ -13,5 +13,6 @@ public interface ProfileCheckListTemplateItemRepo extends BaseRepo<ProfileCheckL
     List<ProfileCheckListTemplateItem> findByCompanyIdAndTemplateIdInAndStatus(long cid, Set<Long> templateIds, Integer status);
     Optional<ProfileCheckListTemplateItem> findByCompanyIdAndAndChecklistIdAndTemplateIdAndStatus(long cid, long checkListId, long templateId, Integer status);
     List<ProfileCheckListTemplateItem> findByCompanyIdAndTemplateId(long cid, long templateId);
+    List<ProfileCheckListTemplateItem> findByCompanyIdAndTemplateIdAndStatus(long cid, Long templateId, Integer status);
 }
 

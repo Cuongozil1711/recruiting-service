@@ -49,9 +49,9 @@ public class OnboardTrainingService {
 
     public OnboardTrainingDTO createByPositionTitle(Long cid, String uid, Long positionId, Long titleId, Long employeeId, Long onboardOrderId){
         OnboardTraining training = repo.findByCompanyIdAndOnboardOrderId(cid, onboardOrderId).orElse(new OnboardTraining());
-//        if (!training.isNew()){
-//            return toDTOWithObjectValue(cid, uid, training);
-//        }
+        if (!training.isNew()){
+            return toDTOWithObjectValue(cid, uid, training);
+        }
         training.setCompanyId(cid);
         training.setCreateBy(uid);
         training.setUpdateBy(uid);
@@ -67,8 +67,8 @@ public class OnboardTrainingService {
         createEvaluator(cid, uid, evaluatorOnboardTranningDTO);
 
         List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId);
-        if(templates == null && templates.isEmpty()){
-            return null;
+        if(templates.size() == 0){
+            throw new BusinessException("invalid-template");
         }
         OnboardTrainingTemplate template = templates.get(0);
 
@@ -126,6 +126,7 @@ public class OnboardTrainingService {
         OnboardTraining training = repo.findByCompanyIdAndId(cid, dto.getId()).orElseThrow(() -> new EntityNotFoundException(OnboardTraining.class, dto.getId()));
         MapperUtils.copyWithoutAudit(dto, training);
         training.setUpdateBy(uid);
+
         for (OnboardTrainingItemDTO itemDTO: dto.getItems()) {
             if(CompareUtil.compare(dto.getStatus(), Constants.ENTITY_INACTIVE)){
                 itemDTO.setStatus(Constants.ENTITY_INACTIVE);
@@ -178,9 +179,12 @@ public class OnboardTrainingService {
         Set<Long> hrIds = new HashSet<>();
         Set<Long> leaderIds = new HashSet<>();
         OnboardTraining ot = objs.get(0);
+        OnboardTrainingTemplate template = new OnboardTrainingTemplate();
         JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, ot.getOnboardOrderId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
         List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId());
-        OnboardTrainingTemplate template = templates.get(0);
+        if(templates.size() != 0){
+            template = templates.get(0);
+        }
 
         objs.forEach(o -> {
             if(o.getEmployeeId() != null){
