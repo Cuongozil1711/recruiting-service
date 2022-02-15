@@ -115,15 +115,15 @@ public class OnboardTrainingTemplateService {
         OnboardTrainingTemplate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplate.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
-
-        for(OnboardTrainingTemplateItemDTO itemDTO : request.getChildren()){
-            if(CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
-                itemDTO.setStatus(Constants.ENTITY_INACTIVE);
+        if(request.getChildren() != null && !request.getChildren().isEmpty()) {
+            for (OnboardTrainingTemplateItemDTO itemDTO : request.getChildren()) {
+                if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)) {
+                    itemDTO.setStatus(Constants.ENTITY_INACTIVE);
+                }
+                itemDTO.setTemplateId(request.getId());
+                updateItem(cid, uid, itemDTO.getId(), itemDTO);
             }
-            itemDTO.setTemplateId(request.getId());
-            updateItem(cid, uid, itemDTO.getId(), itemDTO);
         }
-
         curr = repo.save(curr);
         return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
     }
@@ -133,14 +133,15 @@ public class OnboardTrainingTemplateService {
             OnboardTrainingTemplateItem curr = itemRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItem.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
-
-            for(OnboardTrainingTemplateItemChildrenDTO childrenDTO : request.getChildren()){
-                if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
-                    childrenDTO.setStatus(Constants.ENTITY_INACTIVE);
+            if(request.getChildren() != null && !request.getChildren().isEmpty()) {
+                for (OnboardTrainingTemplateItemChildrenDTO childrenDTO : request.getChildren()) {
+                    if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)) {
+                        childrenDTO.setStatus(Constants.ENTITY_INACTIVE);
+                    }
+                    childrenDTO.setTemplateId(request.getTemplateId());
+                    childrenDTO.setItemId(request.getId());
+                    updateItemChildren(cid, uid, childrenDTO.getId(), childrenDTO);
                 }
-                childrenDTO.setTemplateId(request.getTemplateId());
-                childrenDTO.setItemId(request.getId());
-                updateItemChildren(cid, uid, childrenDTO.getId(), childrenDTO);
             }
             curr = itemRepo.save(curr);
         }else {
@@ -153,15 +154,16 @@ public class OnboardTrainingTemplateService {
             OnboardTrainingTemplateItemChildren curr = childrenRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItemChildren.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
-
-            for(OnboardTrainingTemplateItemGrandChildDTO grandChildDTO : request.getChildren()){
-                if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
-                    grandChildDTO.setStatus(Constants.ENTITY_INACTIVE);
+            if(request.getChildren() != null && !request.getChildren().isEmpty()){
+                for(OnboardTrainingTemplateItemGrandChildDTO grandChildDTO : request.getChildren()){
+                    if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
+                        grandChildDTO.setStatus(Constants.ENTITY_INACTIVE);
+                    }
+                    grandChildDTO.setTemplateId(request.getTemplateId());
+                    grandChildDTO.setItemId(request.getItemId());
+                    grandChildDTO.setItemChildrenId(request.getItemId());
+                    updateItemGrandChild(cid, uid, grandChildDTO.getId(), grandChildDTO);
                 }
-                grandChildDTO.setTemplateId(request.getTemplateId());
-                grandChildDTO.setItemId(request.getItemId());
-                grandChildDTO.setItemChildrenId(request.getItemId());
-                updateItemGrandChild(cid, uid, grandChildDTO.getId(), grandChildDTO);
             }
             curr = childrenRepo.save(curr);
         }else {
