@@ -49,9 +49,9 @@ public class OnboardTrainingService {
 
     public OnboardTrainingDTO createByPositionTitle(Long cid, String uid, Long positionId, Long titleId, Long employeeId, Long onboardOrderId){
         OnboardTraining training = repo.findByCompanyIdAndOnboardOrderId(cid, onboardOrderId).orElse(new OnboardTraining());
-        if (!training.isNew()){
-            return toDTOWithObjectValue(cid, uid, training);
-        }
+//        if (!training.isNew()){
+//            return toDTOWithObjectValue(cid, uid, training);
+//        }
         training.setCompanyId(cid);
         training.setCreateBy(uid);
         training.setUpdateBy(uid);
@@ -67,7 +67,7 @@ public class OnboardTrainingService {
         createEvaluator(cid, uid, evaluatorOnboardTranningDTO);
 
         List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId);
-        if(templates != null && !templates.isEmpty()){
+        if(templates == null && templates.isEmpty()){
             return null;
         }
         OnboardTrainingTemplate template = templates.get(0);
@@ -169,8 +169,6 @@ public class OnboardTrainingService {
     }
     public List<OnboardTrainingDTO> toDTOs(Long cid, String uid, List<OnboardTraining> objs){
         List<OnboardTrainingDTO> dtos = new ArrayList<>();
-        Set<Long> orgIds = new HashSet<>();
-        Set<Long> categoryIds = new HashSet<>();
         Set<Long> employeeIds = new HashSet<>();
         Set<Long> employeeIdsForOnboard = new HashSet<>();
         Set<Long> itemIds = new HashSet<>();
@@ -190,6 +188,12 @@ public class OnboardTrainingService {
             }
             if(o.getId() != null){
                 onboardTraningIds.add(o.getId());
+            }
+            if(o.getCommenterId() != null){
+                employeeIdsForOnboard.add(o.getCommenterId());
+            }
+            if (o.getSuppoterId() != null){
+                employeeIdsForOnboard.add(o.getSuppoterId());
             }
             dtos.add(toDTO(o));
         });
@@ -224,6 +228,15 @@ public class OnboardTrainingService {
                 if(dto.getEmployeeId() != null){
                     dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
                 }
+
+                if(dto.getCommenterId() != null){
+                    dto.setCommenterObj(mapEmployee.get(dto.getCommenterId()));
+                }
+
+                if(dto.getEmployeeId() != null){
+                    dto.setSupporterObj(mapEmployee.get(dto.getSuppoterId()));
+                }
+
                 if(mapEvaluators.get(dto.getId()) != null){
                     for (EvaluatorOnboardTranning ev: mapEvaluators.get(dto.getId())) {
                         EvaluatorOnboardTranningDTO evDto = new EvaluatorOnboardTranningDTO();
