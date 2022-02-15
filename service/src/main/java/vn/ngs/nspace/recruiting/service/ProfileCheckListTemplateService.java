@@ -71,6 +71,10 @@ public class ProfileCheckListTemplateService {
 
     }
 
+//    public ProfileCheckListTemplateDTO createByLSTPositionAndTitle(Long cid, String uid, ProfileCheckListTemplateDTO request) throws BusinessException{
+//
+//    }
+
     public ProfileCheckListTemplateDTO create(Long cid, String uid, ProfileCheckListTemplateDTO request) throws BusinessException {
         valid(request);
         // create template

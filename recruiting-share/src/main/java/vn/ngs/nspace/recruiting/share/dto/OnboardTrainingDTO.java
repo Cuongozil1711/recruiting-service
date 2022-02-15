@@ -17,8 +17,12 @@ public class OnboardTrainingDTO {
     private Long onboardOrderId;
     private Long employeeId;
     private Integer status;
+    private Long commenterId;
+    private Long suppoterId;
 
     private EmployeeDTO employeeObj;
+    private EmployeeDTO commenterObj;
+    private EmployeeDTO supporterObj;
     private EvaluatorOnboardTranningDTO evaluators;
     private List<OnboardTrainingItemDTO> items;
 }
