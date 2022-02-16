@@ -209,6 +209,9 @@ public class OnboardTrainingTemplateService {
             if(o.getOrgId() != null){
                 orgIds.add(o.getOrgId());
             }
+            if(o.getLevelId() != null){
+                categoryIds.add(o.getLevelId());
+            }
 
             templateIds.add(o.getId());
         });
@@ -244,7 +247,9 @@ public class OnboardTrainingTemplateService {
                 OrgResp org = orgs.stream().filter(el -> CompareUtil.compare(o.getId(), o.getOrgId())).findAny().orElse(new OrgResp());
                 o.setOrgResp(org);
             }
-
+            if(o.getLevelId() != null){
+                o.setLevelObj(mapCategory.get(o.getLevelId()));
+            }
             if (mapItems.get(o.getId()) != null){
                 List<OnboardTrainingTemplateItemDTO> lstItem = new ArrayList<>();
                 if (mapItems.get(o.getId()) != null){
