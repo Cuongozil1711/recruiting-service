@@ -160,14 +160,12 @@ public class OnboardOrderService {
                             order.setUpdateBy(uid);
                             order.setState("complete");
                             order = repo.save(order);
-                            break;
                         }
                         if (CompareUtil.compare(checkList.getState(), "notcomplete")) {
                             MapperUtils.copyWithoutAudit(dto, order);
                             order.setUpdateBy(uid);
                             order.setState("notcomplete");
                             order = repo.save(order);
-                            break;
                         }
                 }
             }
