@@ -1,5 +1,6 @@
 package vn.ngs.nspace.recruiting.service;
 
+import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.ContractDTO;
@@ -153,20 +154,12 @@ public class OnboardOrderService {
             }
 
             if(mapCheckLists.get(dto.getId()) != null){
-                OnboardOrder order = new OnboardOrder();
                 for (OnboardOrderCheckList checkList: mapCheckLists.get(dto.getId()) ){
-                        if (CompareUtil.compare(checkList.getState(), "complete") ){
-                            MapperUtils.copyWithoutAudit(dto, order);
-                            order.setUpdateBy(uid);
-                            order.setState("complete");
-                            order = repo.save(order);
-                        }
-                        if (CompareUtil.compare(checkList.getState(), "notcomplete")) {
-                            MapperUtils.copyWithoutAudit(dto, order);
-                            order.setUpdateBy(uid);
-                            order.setState("notcomplete");
-                            order = repo.save(order);
-                        }
+                    if (CompareUtil.compare(checkList.getState(), "notcomplete") ){
+                        dto.setState("notcomplete");
+                    }
+                    dto.setState("complete");
+
                 }
             }
         }

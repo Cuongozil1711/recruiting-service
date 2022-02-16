@@ -200,4 +200,35 @@ public class OnboardTrainingTemplateApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+
+    @PostMapping("/grants")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "Grant template to mutil position"
+            , description = "API for create onboard traning template"
+            , tags = { "TemplateConfig" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity grants(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description="Payload DTO to grant mutil {newDatas[{}]; templateId: }")
+            @RequestBody Map<String, Object> request) {
+        try {
+            if(!request.containsKey("newDatas")){
+                throw new BusinessException("invalid-new-data");
+            }
+            List<Map<String, Object>> newDatas = (List<Map<String, Object>>) vn.ngs.nspace.lib.utils.MapUtils.getObject(request, "newDatas");
+            Long templateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(request, "templateId", 0l);
+            if(templateId == 0l){
+                throw new Exception("invalid-template-id");
+            }
+
+            return ResponseUtils.handlerSuccess( _service.grant(cid, uid, templateId, newDatas));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 }

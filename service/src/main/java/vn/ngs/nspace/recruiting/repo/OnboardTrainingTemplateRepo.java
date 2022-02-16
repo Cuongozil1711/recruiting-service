@@ -14,7 +14,7 @@ import java.util.Set;
 
 public interface OnboardTrainingTemplateRepo  extends BaseRepo<OnboardTrainingTemplate, Long> {
     Optional<OnboardTrainingTemplate> findByCompanyIdAndId (Long cid, Long id);
-
+    List<OnboardTrainingTemplate> findByCompanyIdAndPositionIdAndTitleIdAndStatus(Long cid, Long positionId, Long titleId, Integer status);
     void deleteAllByIdIn(Set<Long> id);
 
     @Query(value = " select p " +

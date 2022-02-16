@@ -12,4 +12,5 @@ public interface OnboardTrainingTemplateItemChildrenRepo extends BaseRepo<Onboar
    Optional<OnboardTrainingTemplateItemChildren> findByCompanyIdAndId(Long cid, Long id);
    List<OnboardTrainingTemplateItemChildren> findByCompanyIdAndTemplateIdAndItemId (Long cid, Long templateId, Long itemId);
    List<OnboardTrainingTemplateItemChildren> findByCompanyIdAndTemplateIdAndItemIdIn (Long cid, Long templateId, Set<Long> itemId);
+   List<OnboardTrainingTemplateItemChildren> findByCompanyIdAndTemplateIdAndItemIdAndStatus (Long cid, Long templateId, Long itemId, Integer status);
 }
