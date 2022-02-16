@@ -9,10 +9,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.*;
-import vn.ngs.nspace.recruiting.repo.OnboardTrainingTemplateItemChildrenRepo;
-import vn.ngs.nspace.recruiting.repo.OnboardTrainingTemplateItemGrandChildRepo;
-import vn.ngs.nspace.recruiting.repo.OnboardTrainingTemplateItemRepo;
-import vn.ngs.nspace.recruiting.repo.OnboardTrainingTemplateRepo;
+import vn.ngs.nspace.recruiting.repo.*;
 import vn.ngs.nspace.recruiting.share.dto.*;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
@@ -30,13 +27,15 @@ public class OnboardTrainingTemplateService {
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
 
-    public OnboardTrainingTemplateService(OnboardTrainingTemplateRepo repo, OnboardTrainingTemplateItemRepo itemRepo, OnboardTrainingTemplateItemChildrenRepo childrenRepo, OnboardTrainingTemplateItemGrandChildRepo grandChildRepo,  ExecuteHcmService _hcmService, ExecuteConfigService _configService){
+
+    public OnboardTrainingTemplateService(OnboardTrainingTemplateRepo repo, OnboardTrainingTemplateItemRepo itemRepo, OnboardTrainingTemplateItemChildrenRepo childrenRepo, OnboardTrainingTemplateItemGrandChildRepo grandChildRepo,  ExecuteHcmService _hcmService, ExecuteConfigService _configService, OnboardContractRepo _contactRepo){
         this.repo = repo;
         this.itemRepo = itemRepo;
         this.childrenRepo = childrenRepo;
         this.grandChildRepo = grandChildRepo;
         this._hcmService = _hcmService;
         this._configService = _configService;
+
     }
 
     public void valid(OnboardTrainingTemplateDTO request){
@@ -46,6 +45,8 @@ public class OnboardTrainingTemplateService {
     public void validItem(OnboardTrainingTemplateItemDTO request){
 
     }
+
+
 
     public OnboardTrainingTemplateDTO create(Long cid, String uid, OnboardTrainingTemplateDTO request) throws BusinessException {
         valid(request);
@@ -199,6 +200,7 @@ public class OnboardTrainingTemplateService {
         Set<Long> employeeIds = new HashSet<>();
         Set<Long> itemIds = new HashSet<>();
         Set<Long> itemChildIds = new HashSet<>();
+
         objs.forEach(o -> {
             if(o.getPositionId() != null){
                 categoryIds.add(o.getPositionId());
@@ -213,8 +215,11 @@ public class OnboardTrainingTemplateService {
                 categoryIds.add(o.getLevelId());
             }
 
+
             templateIds.add(o.getId());
         });
+
+
 
         List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdInAndStatus(cid, templateIds, Constants.ENTITY_ACTIVE);
         Map<Long, List<OnboardTrainingTemplateItem>> mapItems = items.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItem::getTemplateId));
@@ -231,6 +236,7 @@ public class OnboardTrainingTemplateService {
         Map<Long, List<OnboardTrainingTemplateItemGrandChild>> mapItemGrandChildrens = itemGrandChildrens.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItemGrandChild::getItemChildrenId));
 
         employeeIds = itemGrandChildrens.stream().map(el -> el.getEmployeeId()).collect(Collectors.toSet());
+
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         List<EmployeeDTO> employeeDTOS = _hcmService.getEmployees(uid, cid, employeeIds);
         List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
@@ -244,7 +250,7 @@ public class OnboardTrainingTemplateService {
             }
 
             if(o.getOrgId() != null){
-                OrgResp org = orgs.stream().filter(el -> CompareUtil.compare(o.getId(), o.getOrgId())).findAny().orElse(new OrgResp());
+                OrgResp org = orgs.stream().filter(el -> CompareUtil.compare(el.getId(), o.getOrgId())).findAny().orElse(new OrgResp());
                 o.setOrgResp(org);
             }
             if(o.getLevelId() != null){
