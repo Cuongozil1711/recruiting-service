@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import vn.ngs.nspace.lib.converter.HashMapConverter;
+import vn.ngs.nspace.lib.converter.ListHashMapConverter;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
 
@@ -37,9 +38,9 @@ public class InterviewInvolve extends PersistableEntity<Long> {
     @Column(columnDefinition = "text[]", length = 4000)
     List<String> interviewerId; //empId
     private Long supporterId; //empId
-    @Convert(converter = HashMapConverter.class)
+    @Convert(converter = ListHashMapConverter.class)
     @Column(columnDefinition = "text")
-    private Map<String, Object> interviewDescription;
+    private List<Map<String, Object>> interviewDescription;
 
     public static InterviewInvolve of(Long cid, String uid, InterviewInvolveDTO dto){
         InterviewInvolve involve = InterviewInvolve.builder()
