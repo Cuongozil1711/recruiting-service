@@ -68,7 +68,7 @@ public class InterviewResultService {
     public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Set<Long> ListInterViewerId){
         List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId);
         if (templates.size() == 0){
-            throw new BusinessException("Không có biểu mẫu tương ứng");
+            throw new BusinessException("invalid-template");
         }
         InterviewCheckListTemplate template = templates.get(0);
         List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
