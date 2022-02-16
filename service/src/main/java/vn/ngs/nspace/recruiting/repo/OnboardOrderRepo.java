@@ -26,8 +26,8 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
             " and (p.employeeId = :employeeId or :employeeId = -1) " +
             " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1) ")
     Page<OnboardOrder> search(@Param("companyId") Long cid
-            , @Param("buddy") Long positionId
-            , @Param("employeeId") Long titleId
+            , @Param("buddy") Long buddy
+            , @Param("employeeId") Long employeeId
             , @Param("jobApplicationId") Long contractTypeId
             , Pageable pageable);
 
