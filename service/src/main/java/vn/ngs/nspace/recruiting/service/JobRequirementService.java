@@ -166,6 +166,9 @@ public class JobRequirementService {
             if (obj.getLevelId() != null) {
                 categoryIds.add(obj.getLevelId());
             }
+            if (obj.getGender() != null){
+                categoryIds.add(obj.getGender());
+            }
             if(obj.getCurrencyId() != null){
                 categoryIds.add(obj.getCurrencyId());
             }
@@ -187,6 +190,10 @@ public class JobRequirementService {
         for (JobRequirementDTO dto : dtos) {
             if (dto.getPositionId() != null) {
                 dto.setPositionObj(mapCategory.get(dto.getPositionId()));
+            }
+
+            if (dto.getGender() != null){
+                dto.setGenderObj(mapCategory.get(dto.getGender()));
             }
             if (dto.getTitleId() != null) {
                 dto.setTitleObj(mapCategory.get(dto.getTitleId()));
