@@ -20,7 +20,10 @@ public class CandidateToDoDTO {
     private Long candidateId;
     private Long responsibleId;
     private String state;
+    private String createBy;
+    private Integer status;
 
+    private Map<String,Object> createByObj;
     private EmployeeDTO responsibleIdObj;
     private CandidateDTO fullname;
 }

@@ -1,14 +1,18 @@
 package vn.ngs.nspace.recruiting.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.model.CandidateTodo;
 import vn.ngs.nspace.recruiting.repo.CandidateToDoRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateToDoDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
+import vn.ngs.nspace.task.core.data.UserData;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -25,6 +29,12 @@ public class CandidateToDoService {
     }
 
     public void valid(CandidateToDoDTO dto){
+        if (StringUtils.isEmpty(dto.getTitle())){
+            throw new BusinessException("invalid-title");
+        }
+        if (dto.getDeadline() == null){
+            throw new BusinessException("invalid-deadline");
+        }
 
     }
     public CandidateToDoDTO create(Long cid, String uid, CandidateToDoDTO dto) {
@@ -78,17 +88,25 @@ public class CandidateToDoService {
     public List<CandidateToDoDTO> toDTOs(Long cid, String uid, List<CandidateTodo> objs) {
         List<CandidateToDoDTO> dtos = new ArrayList<>();
         Set<Long> empIds = new HashSet<>();
+        Set<String> userIds = new HashSet<>();
         objs.forEach(obj -> {
             if(obj.getResponsibleId() != null){
                 empIds.add(obj.getResponsibleId());
             }
+            if(!StringUtils.isEmpty(obj.getCreateBy())){
+                userIds.add(obj.getCreateBy());
+            }
             dtos.add(toDTO(obj));
         });
         List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
+        Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
         for (CandidateToDoDTO dto : dtos){
             if (dto.getResponsibleId() != null){
                 EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getResponsibleId())).findAny().orElse(new EmployeeDTO());
                 dto.setResponsibleIdObj(emp);
+            }
+            if(!StringUtils.isEmpty(dto.getCreateBy())){
+                dto.setCreateByObj((Map<String, Object>) mapperUser.get(dto.getCreateBy()));
             }
         }
         return dtos;
