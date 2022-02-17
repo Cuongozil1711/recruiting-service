@@ -23,13 +23,26 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
             " from OnboardOrder p " +
             " where (p.companyId = :companyId)" +
             " and (p.buddy = :buddy or :buddy = -1) " +
-            " and (p.employeeId = :employeeId or :employeeId = -1) " +
+            " and (p.employeeId in (:empIds))"+
             " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1) ")
     Page<OnboardOrder> search(@Param("companyId") Long cid
             , @Param("buddy") Long buddy
-            , @Param("employeeId") Long employeeId
-            , @Param("jobApplicationId") Long contractTypeId
+            , @Param("jobApplicationId") Long jobApplicationId
+            , @Param("empIds") List<Long> empIds
             , Pageable pageable);
+
+    @Query(value = " select p " +
+            " from OnboardOrder p " +
+            " where (p.companyId = :companyId)" +
+            " and (p.buddy = :buddy or :buddy = -1) " +
+            " and (p.employeeId = :employeeId or :employeeId = -1) " +
+            " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1) ")
+    Page<OnboardOrder> searchAll(@Param("companyId") Long cid
+            , @Param("buddy") Long buddy
+            , @Param("employeeId") Long employeeId
+            , @Param("jobApplicationId") Long jobApplicationId
+            , Pageable pageable);
+
 
     @Query(value = " select ja " +
             " from OnboardOrder p " +

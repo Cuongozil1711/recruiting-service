@@ -186,4 +186,29 @@ public class ExecuteHcmService {
             throw new RuntimeException(e);
         }
     }
+
+    public BaseResponse<Map<String, Object>> search(String requestUserId, Long companyId, String keyword){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/filter");
+            HttpMethod method = HttpMethod.POST;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            Map<String,Object> payload  = new HashMap<>();
+            Map<String, Object> orgFilter= new HashMap<>();
+//            orgFilter.put("allChildren", true);
+//           orgFilter.put("id", null);
+            payload.put("keyword", keyword);
+            payload.put("orgFilter", orgFilter);
+
+            HttpEntity request = new HttpEntity<>(payload,headers);
+
+            ParameterizedTypeReference<BaseResponse<Map<String, Object>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<Map<String, Object>> resp = (BaseResponse<Map<String, Object>>) response.getBody();
+            return resp;
+
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 }
