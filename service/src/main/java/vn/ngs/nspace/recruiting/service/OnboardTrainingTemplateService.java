@@ -61,6 +61,7 @@ public class OnboardTrainingTemplateService {
                     existed = repo.save(existed);
                     template.setPositionId(positionId);
                     template.setTitleId(titileId);
+                    template.setOrgId(orgId);
                     OnboardTrainingTemplateDTO dto = new OnboardTrainingTemplateDTO();
                     MapperUtils.copyWithoutAudit(template, dto);
 
@@ -153,11 +154,13 @@ public class OnboardTrainingTemplateService {
         template.setStatus(Constants.ENTITY_ACTIVE);
 
         template = repo.save(template);
-
-        for (OnboardTrainingTemplateItemDTO itemDTO: request.getChildren()){
-            itemDTO.setTemplateId(template.getId());
-            createItem(cid, uid, itemDTO);
+        if (request.getChildren() != null && !request.getChildren().isEmpty()){
+            for (OnboardTrainingTemplateItemDTO itemDTO: request.getChildren()){
+                itemDTO.setTemplateId(template.getId());
+                createItem(cid, uid, itemDTO);
+            }
         }
+
         return toDTOs(cid, uid, Collections.singletonList(template)).get(0);
     }
 
@@ -171,12 +174,14 @@ public class OnboardTrainingTemplateService {
         item.setStatus(Constants.ENTITY_ACTIVE);
 
         item = itemRepo.save(item);
-
-        for (OnboardTrainingTemplateItemChildrenDTO childrenDTO: request.getChildren()){
-            childrenDTO.setTemplateId(item.getTemplateId());
-            childrenDTO.setItemId(item.getId());
-            createItemChildren(cid, uid, childrenDTO);
+        if (request.getChildren() != null && !request.getChildren().isEmpty()){
+            for (OnboardTrainingTemplateItemChildrenDTO childrenDTO: request.getChildren()){
+                childrenDTO.setTemplateId(item.getTemplateId());
+                childrenDTO.setItemId(item.getId());
+                createItemChildren(cid, uid, childrenDTO);
+            }
         }
+
     }
 
     public void createItemChildren (Long cid, String uid, OnboardTrainingTemplateItemChildrenDTO request) throws BusinessException {
@@ -187,12 +192,13 @@ public class OnboardTrainingTemplateService {
         children.setStatus(Constants.ENTITY_ACTIVE);
 
         children = childrenRepo.save(children);
-
-        for (OnboardTrainingTemplateItemGrandChildDTO grandChildDTO: request.getChildren()){
-            grandChildDTO.setTemplateId(children.getTemplateId());
-            grandChildDTO.setItemId(children.getItemId());
-            grandChildDTO.setItemChildrenId(children.getId());
-            createItemCGrandChild(cid, uid, grandChildDTO);
+        if (request.getChildren() != null && !request.getChildren().isEmpty()){
+            for (OnboardTrainingTemplateItemGrandChildDTO grandChildDTO: request.getChildren()){
+                grandChildDTO.setTemplateId(children.getTemplateId());
+                grandChildDTO.setItemId(children.getItemId());
+                grandChildDTO.setItemChildrenId(children.getId());
+                createItemCGrandChild(cid, uid, grandChildDTO);
+            }
         }
     }
 

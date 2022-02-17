@@ -98,6 +98,9 @@ public class OnboardOrderService {
             if(obj.getId() != null){
                 orderIds.add(obj.getId());
             }
+            if(obj.getEmployeeId() != null){
+                employeeIds.add(obj.getEmployeeId());
+            }
             if(obj.getJobApplicationId() != null){
                 JobApplication ja = repo.getInfoOnboard(cid, obj.getId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
                 if(ja.getPositionId() != null){
@@ -109,9 +112,7 @@ public class OnboardOrderService {
                 if(ja.getOrgId() != null){
                     orgIds.add(ja.getOrgId());
                 }
-                if(ja.getEmployeeId() != null){
-                    employeeIds.add(obj.getEmployeeId());
-                }
+
             }
 
             dtos.add(toDTO(obj));
@@ -127,10 +128,13 @@ public class OnboardOrderService {
         for(OnboardOrderDTO dto : dtos){
             if(dto.getBuddy() != null){
                 dto.setBuddyObj(mapEmployee.get(dto.getBuddy()));
-            }if(dto.getMentorId() != null){
+            }
+            if(dto.getMentorId() != null){
                 dto.setMentorObj(mapEmployee.get(dto.getMentorId()));
             }
-
+            if(dto.getEmployeeId() != null){
+                dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
+            }
             if(dto.getJobApplicationId() != null){
                 JobApplication ja = repo.getInfoOnboard(cid, dto.getId()).orElseThrow(()-> new BusinessException("not found JopAplication"));
                 dto.setPositionObj(mapCategory.get(ja.getPositionId()));
@@ -139,9 +143,7 @@ public class OnboardOrderService {
                     OrgResp org = orgs.stream().filter(o -> CompareUtil.compare(o.getId(), ja.getOrgId())).findAny().orElse(new OrgResp());
                     dto.setOrgResp(org);
                 }
-                if(ja.getEmployeeId() != null){
-                    dto.setEmployeeObj(mapEmployee.get(ja.getEmployeeId()));
-                }
+
                 dto.setContractType(ja.getContractType());
                 dto.setStartDate(ja.getOnboardDate());
             }
