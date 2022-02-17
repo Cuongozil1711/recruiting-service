@@ -44,10 +44,10 @@ public class OnboardTrainingService {
 
     public OnboardTrainingDTO createByOnboardOrder (Long cid, String uid, Long onboardOrderId){
         JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, onboardOrderId).orElseThrow(()-> new EntityNotFoundException(OnboardOrder.class, onboardOrderId));
-        return createByPositionTitle(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getEmployeeId(), onboardOrderId);
+        return createByPositionTitle(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getOrgId(), ja.getEmployeeId(), onboardOrderId);
     }
 
-    public OnboardTrainingDTO createByPositionTitle(Long cid, String uid, Long positionId, Long titleId, Long employeeId, Long onboardOrderId){
+    public OnboardTrainingDTO createByPositionTitle(Long cid, String uid, Long positionId, Long titleId, Long orgId, Long employeeId, Long onboardOrderId){
         OnboardTraining training = repo.findByCompanyIdAndOnboardOrderId(cid, onboardOrderId).orElse(new OnboardTraining());
         if (!training.isNew()){
             return toDTOWithObjectValue(cid, uid, training);
@@ -66,7 +66,7 @@ public class OnboardTrainingService {
         evaluatorOnboardTranningDTO.setOnboardTraningId(training.getId());
         createEvaluator(cid, uid, evaluatorOnboardTranningDTO);
 
-        List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId);
+        List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId, orgId);
         if(templates.size() == 0){
             throw new BusinessException("invalid-template");
         }
@@ -181,7 +181,7 @@ public class OnboardTrainingService {
         OnboardTraining ot = objs.get(0);
         OnboardTrainingTemplate template = new OnboardTrainingTemplate();
         JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, ot.getOnboardOrderId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
-        List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId());
+        List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId(), ja.getOrgId());
         if(templates.size() != 0){
             template = templates.get(0);
         }

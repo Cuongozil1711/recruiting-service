@@ -88,9 +88,7 @@ public class OnboardOrderService {
         Set<Long> orderIds = new HashSet<>();
         Set<Long> contractIds = new HashSet<>();
         objs.forEach(obj -> {
-            if(obj.getEmployeeId() != null){
-                employeeIds.add(obj.getEmployeeId());
-            }
+
             if(obj.getBuddy() != null){
                 employeeIds.add(obj.getBuddy());
             }
@@ -111,14 +109,13 @@ public class OnboardOrderService {
                 if(ja.getOrgId() != null){
                     orgIds.add(ja.getOrgId());
                 }
+                if(ja.getEmployeeId() != null){
+                    employeeIds.add(obj.getEmployeeId());
+                }
             }
 
             dtos.add(toDTO(obj));
         });
-
-        List<OnboardContract> contacts = _contactRepo.findByCompanyIdAndOnboardOrderIdIn(cid, orderIds);
-        Map<Long, List<OnboardContract>> mapContacts = contacts.stream().collect(Collectors.groupingBy(OnboardContract::getOnboardOrderId));
-        contractIds = contacts.stream().map(el -> el.getContractId()).collect(Collectors.toSet());
 
         List<OnboardOrderCheckList> orderCheckLists = checkListRepo.findByCompanyIdAndOnboardOrderIdIn(cid, orderIds);
         Map<Long, List<OnboardOrderCheckList>> mapCheckLists = orderCheckLists.stream().collect(Collectors.groupingBy(OnboardOrderCheckList::getOnboardOrderId));
@@ -133,9 +130,7 @@ public class OnboardOrderService {
             }if(dto.getMentorId() != null){
                 dto.setMentorObj(mapEmployee.get(dto.getMentorId()));
             }
-            if(dto.getEmployeeId() != null){
-                dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
-            }
+
             if(dto.getJobApplicationId() != null){
                 JobApplication ja = repo.getInfoOnboard(cid, dto.getId()).orElseThrow(()-> new BusinessException("not found JopAplication"));
                 dto.setPositionObj(mapCategory.get(ja.getPositionId()));
@@ -144,22 +139,26 @@ public class OnboardOrderService {
                     OrgResp org = orgs.stream().filter(o -> CompareUtil.compare(o.getId(), ja.getOrgId())).findAny().orElse(new OrgResp());
                     dto.setOrgResp(org);
                 }
+                if(ja.getEmployeeId() != null){
+                    dto.setEmployeeObj(mapEmployee.get(ja.getEmployeeId()));
+                }
                 dto.setContractType(ja.getContractType());
+                dto.setStartDate(ja.getOnboardDate());
             }
 
-            if (mapContacts.get(dto.getId()) != null && contractIds != null){
-                for (Long contractId: contractIds){
-                    dto.setContract( _hcmService.getContract( uid, cid, contractId));
-                }
-            }
 
             if(mapCheckLists.get(dto.getId()) != null){
-                for (OnboardOrderCheckList checkList: mapCheckLists.get(dto.getId()) ){
-                    if (CompareUtil.compare(checkList.getState(), "notcomplete") ){
-                        dto.setState("notcomplete");
-                    }
-                    dto.setState("complete");
+                List<String> checkState = new ArrayList<>();
 
+                for (OnboardOrderCheckList checkList: mapCheckLists.get(dto.getId()) ){
+                    checkState.add(checkList.getState());
+                    checkState.stream().filter(el -> CompareUtil.compare(el, "notcomplete") );
+                }
+                if (checkState != null && !checkState.isEmpty()){
+                    dto.setState("notcomplete");
+                }
+                else {
+                    dto.setState("complete");
                 }
             }
         }
