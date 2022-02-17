@@ -22,7 +22,7 @@ public interface OnboardTrainingTemplateRepo  extends BaseRepo<OnboardTrainingTe
             " where (p.companyId = :companyId)" +
             " and (p.positionId = :positionId or :positionId = -1) " +
             "and (p.titleId = :titleId or :titleId = -1)"+
-            " and (p.orgId = :orgId or :orgIdorgId = -1) ")
+            " and (p.orgId = :orgId or :orgId = -1) ")
     Page<OnboardTrainingTemplate> search(@Param("companyId") Long cid
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId
