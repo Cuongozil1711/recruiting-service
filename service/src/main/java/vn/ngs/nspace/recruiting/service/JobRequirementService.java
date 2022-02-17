@@ -116,6 +116,11 @@ public class JobRequirementService {
     }
     public JobRequirementDTO create(Long cid, String uid, JobRequirementDTO jobRequirementDTO) {
         valid(jobRequirementDTO);
+        JobRequirement exist = _repo.findByCompanyIdAndCodeAndStatus(cid, jobRequirementDTO.getCode(),Constants.ENTITY_ACTIVE).orElse(new JobRequirement());
+        if (!exist.isNew()){
+            throw new BusinessException("duplicate-data-with-code");
+        }
+
         JobRequirement jobRequirement = JobRequirement.of(cid,uid,jobRequirementDTO);
         jobRequirement.setCompanyId(cid);
         jobRequirement.setCreateBy(uid);

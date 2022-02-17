@@ -27,5 +27,6 @@ public interface JobRequirementRepo extends BaseRepo<JobRequirement,Long> {
             , @Param("positionId") Long positionId
             , Pageable pageable);
 
+    Optional<JobRequirement> findByCompanyIdAndCodeAndStatus(Long cid, String code, Integer status);
 }
 
