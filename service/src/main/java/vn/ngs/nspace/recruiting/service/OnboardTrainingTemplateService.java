@@ -52,8 +52,9 @@ public class OnboardTrainingTemplateService {
         for (Map<String, Object> data: newDatas) {
             Long positionId = MapUtils.getLong(data, "positionId", 0l);
             Long titileId = MapUtils.getLong(data, "titleId", 0l);
+            Long orgId = MapUtils.getLong(data, "orgId", 0l);
 
-            List<OnboardTrainingTemplate> existeds = repo.findByCompanyIdAndPositionIdAndTitleIdAndStatus(cid, positionId, titileId, Constants.ENTITY_ACTIVE);
+            List<OnboardTrainingTemplate> existeds = repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, positionId, titileId, orgId, Constants.ENTITY_ACTIVE);
             if (existeds.size() >= 1){
                 for (OnboardTrainingTemplate existed: existeds) {
                     existed.setStatus(Constants.ENTITY_INACTIVE);
