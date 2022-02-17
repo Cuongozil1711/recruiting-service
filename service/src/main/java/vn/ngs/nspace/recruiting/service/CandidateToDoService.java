@@ -32,9 +32,9 @@ public class CandidateToDoService {
         if (StringUtils.isEmpty(dto.getTitle())){
             throw new BusinessException("invalid-title");
         }
-        if (dto.getDeadline() == null){
-            throw new BusinessException("invalid-deadline");
-        }
+//        if (dto.getDeadline() == null){
+//            throw new BusinessException("invalid-deadline");
+//        }
 
     }
     public CandidateToDoDTO create(Long cid, String uid, CandidateToDoDTO dto) {
