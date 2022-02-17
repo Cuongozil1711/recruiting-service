@@ -20,12 +20,13 @@ public interface JobRequirementRepo extends BaseRepo<JobRequirement,Long> {
             " and (j.title = :title or :title = 'all')" +
             " and (j.positionId = :positionId or :positionId = -1)" +
             " and (j.status = 1)" +
-            "order by j.code ")
+            "order by j.code")
     Page<JobRequirement> search(@Param("companyId") Long cid
             , @Param("title") String title
             , @Param("code") String code
             , @Param("positionId") Long positionId
             , Pageable pageable);
 
+    Optional<JobRequirement> findByCompanyIdAndCodeAndStatus(Long cid, String code, Integer status);
 }
 

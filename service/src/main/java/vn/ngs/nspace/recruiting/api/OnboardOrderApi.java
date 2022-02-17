@@ -55,6 +55,7 @@ public class OnboardOrderApi {
             Long buddy = MapUtils.getLong(condition, "buddy", -1l);
             Long jobApplicationId = MapUtils.getLong(condition, "jobApplicationId", -1l);
             Page<OnboardOrder> page = _repo.search(cid, buddy, employeeId, jobApplicationId, pageable);
+
             List<OnboardOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {

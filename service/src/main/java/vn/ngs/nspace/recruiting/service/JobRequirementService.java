@@ -78,9 +78,9 @@ public class JobRequirementService {
         if(dto.getSalaryFrom() == null){
             throw new BusinessException("invalid-salaryFrom");
         }
-        if(dto.getSalaryTo() == null){
-            throw new BusinessException("invalid-salaryTo");
-        }
+//        if(dto.getSalaryTo() == null){
+//            throw new BusinessException("invalid-salaryTo");
+//        }
         if(dto.getCurrencyId() == null){
             throw new BusinessException("invalid-currency");
         }
@@ -116,6 +116,11 @@ public class JobRequirementService {
     }
     public JobRequirementDTO create(Long cid, String uid, JobRequirementDTO jobRequirementDTO) {
         valid(jobRequirementDTO);
+        JobRequirement exist = _repo.findByCompanyIdAndCodeAndStatus(cid, jobRequirementDTO.getCode(),Constants.ENTITY_ACTIVE).orElse(new JobRequirement());
+        if (!exist.isNew()){
+            throw new BusinessException("duplicate-data-with-code");
+        }
+
         JobRequirement jobRequirement = JobRequirement.of(cid,uid,jobRequirementDTO);
         jobRequirement.setCompanyId(cid);
         jobRequirement.setCreateBy(uid);
@@ -166,6 +171,9 @@ public class JobRequirementService {
             if (obj.getLevelId() != null) {
                 categoryIds.add(obj.getLevelId());
             }
+            if (obj.getGender() != null){
+                categoryIds.add(obj.getGender());
+            }
             if(obj.getCurrencyId() != null){
                 categoryIds.add(obj.getCurrencyId());
             }
@@ -187,6 +195,10 @@ public class JobRequirementService {
         for (JobRequirementDTO dto : dtos) {
             if (dto.getPositionId() != null) {
                 dto.setPositionObj(mapCategory.get(dto.getPositionId()));
+            }
+
+            if (dto.getGender() != null){
+                dto.setGenderObj(mapCategory.get(dto.getGender()));
             }
             if (dto.getTitleId() != null) {
                 dto.setTitleObj(mapCategory.get(dto.getTitleId()));

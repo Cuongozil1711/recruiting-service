@@ -5,6 +5,7 @@ import vn.ngs.nspace.recruiting.model.InterviewCheckList;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface InterviewCheckListRepo extends BaseRepo<InterviewCheckList, Long> {
 
@@ -13,7 +14,7 @@ public interface InterviewCheckListRepo extends BaseRepo<InterviewCheckList, Lon
 
     Optional<InterviewCheckList> findByCompanyIdAndCheckListIdAndInterviewerId(long cid, Long checkListId, Long interviewerId);
 
-    List<InterviewCheckList> findByCompanyIdAndInterviewResultId(Long cid, Long id);
-
-    Optional<InterviewCheckList> findByCompanyIdAndCheckListId(Long cid, Long checkListId);
+    Optional<InterviewCheckList> findByCompanyIdAndId(Long cid, Long id);
+    List<InterviewCheckList> findByCompanyIdAndInterviewResultId(Long cid, Long resultId);
+    List<InterviewCheckList> findByCompanyIdAndInterviewResultIdInAndStatus(Long cid, Set<Long> resultId, Integer status);
 }

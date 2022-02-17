@@ -10,6 +10,7 @@ import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -28,8 +29,10 @@ public class ProfileCheckListTemplateDTO {
     private Long recieverId;
     private String note;
 
+
     private Map<String, Object> contractTypeObj;
     private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;
     private List<ProfileCheckListTemplateItemDTO> items;
+
 }

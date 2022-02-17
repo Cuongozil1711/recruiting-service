@@ -30,6 +30,8 @@ public class EvaluatorOnboardTranning extends PersistableEntity<Long> {
     private String leaderComment;
     private String evaluatorCommnet;
     private String hrComment;
+    private String ideaLeader;
+    private String idealHr;
 
     public static EvaluatorOnboardTranning of(Long cid, String uid, EvaluatorOnboardTranningDTO dto) {
         EvaluatorOnboardTranning obj = EvaluatorOnboardTranning.builder()
@@ -42,6 +44,8 @@ public class EvaluatorOnboardTranning extends PersistableEntity<Long> {
                 .leaderComment(dto.getLeaderComment())
                 .evaluatorCommnet(dto.getEvaluatorCommnet())
                 .hrComment(dto.getHrComment())
+                .ideaLeader(dto.getIdeaLeader())
+                .idealHr(dto.getIdealHr())
                 .build();
         return obj;
     }

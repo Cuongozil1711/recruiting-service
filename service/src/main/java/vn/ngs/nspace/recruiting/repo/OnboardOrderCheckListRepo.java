@@ -11,12 +11,15 @@ import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface OnboardOrderCheckListRepo extends BaseRepo<OnboardOrderCheckList,Long> {
 
+    Optional<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdAndId(Long cid, Long onboardOrderId, Long id);
     Optional<OnboardOrderCheckList> findByCompanyIdAndId(Long cid, Long id);
     List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdAndCodeIn(Long cid, Long orderId, List<String> codes);
     Optional<OnboardOrderCheckList> findByCompanyIdAndIdAndEmployeeId(Long cid, Long id, Long employeeId);
     List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderId (Long cid, Long onboardOrderId);
+    List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdIn (Long cid, Set<Long> orderIds);
 }
 

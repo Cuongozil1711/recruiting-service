@@ -7,10 +7,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.vertx.core.json.JsonObject;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
@@ -159,14 +161,10 @@ public class OnboardTrainingTemplateApi {
             , @Parameter(description = "ID of company")
             @RequestHeader("uid") String uid
             , @Parameter(description = "Payload to search with positionId, titleId, contractTypeId")
-            @RequestBody List<OnboardTrainingTemplateDTO> lstDTOs) {
+            @RequestBody List<Long> ids) {
         try {
-            HashSet<Long> listId = new HashSet<>();
-            for (OnboardTrainingTemplateDTO dto : lstDTOs) {
-                listId.add(dto.getId());
-            }
-            _reppo.deleteAllByIdIn(listId);
-            return ResponseUtils.handlerSuccess();
+            _service.delete(cid, uid, ids);
+            return ResponseUtils.handlerSuccess(HttpStatus.OK);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
@@ -195,9 +193,40 @@ public class OnboardTrainingTemplateApi {
             , @Parameter(description = "param in path") @PathVariable(value = "id") Long id) {
         try {
             JobApplication ja = _onboardOrderRepo.getInfoOnboard(cid, id).orElseThrow(()-> new BusinessException("not found OnboardOder"));;
-            List<OnboardTrainingTemplate> templates = _reppo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId());
+            List<OnboardTrainingTemplate> templates = _reppo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId(), ja.getOrgId());
             OnboardTrainingTemplate template = templates.get(0);
             return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, Collections.singletonList(template)));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PostMapping("/grants")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "Grant template to mutil position"
+            , description = "API for create onboard traning template"
+            , tags = { "TemplateConfig" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity grants(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description="Payload DTO to grant mutil {newDatas[{}]; templateId: }")
+            @RequestBody Map<String, Object> request) {
+        try {
+            if(!request.containsKey("newDatas")){
+                throw new BusinessException("invalid-new-data");
+            }
+            List<Map<String, Object>> newDatas = (List<Map<String, Object>>) vn.ngs.nspace.lib.utils.MapUtils.getObject(request, "newDatas");
+            Long templateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(request, "templateId", 0l);
+            if(templateId == 0l){
+                throw new Exception("invalid-template-id");
+            }
+
+            return ResponseUtils.handlerSuccess( _service.grant(cid, uid, templateId, newDatas));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

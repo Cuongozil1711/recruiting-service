@@ -22,6 +22,8 @@ public class EvaluatorOnboardTranningDTO {
     private String leaderComment;
     private String evaluatorCommnet;
     private String hrComment;
+    private String ideaLeader;
+    private String idealHr;
     private Integer status;
 
     private EmployeeDTO objEvaluator;

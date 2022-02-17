@@ -5,14 +5,14 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import vn.ngs.nspace.lib.converter.HashMapConverter;
+import vn.ngs.nspace.lib.converter.ListHashMapConverter;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Data
@@ -34,13 +34,13 @@ public class InterviewInvolve extends PersistableEntity<Long> {
     private Long orgId;
     private Long positionId;
     private Long titleId;
-    private String phone; // for intervolve
-    private String email; // for intervolve
     @Type(type = "list-array")
     @Column(columnDefinition = "text[]", length = 4000)
     List<String> interviewerId; //empId
     private Long supporterId; //empId
-    private String description;
+    @Convert(converter = ListHashMapConverter.class)
+    @Column(columnDefinition = "text")
+    private List<Map<String, Object>> interviewDescription;
 
     public static InterviewInvolve of(Long cid, String uid, InterviewInvolveDTO dto){
         InterviewInvolve involve = InterviewInvolve.builder()
@@ -51,7 +51,7 @@ public class InterviewInvolve extends PersistableEntity<Long> {
                 .titleId(dto.getTitleId())
                 .interviewerId(dto.getInterviewerId())
                 .supporterId(dto.getSupporterId())
-                .description(dto.getDescription())
+                .interviewDescription(dto.getInterviewDescription())
                 .build();
         return involve;
     }

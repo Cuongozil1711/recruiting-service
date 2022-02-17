@@ -43,14 +43,14 @@ public class OnboardTrainingService {
     }
 
     public OnboardTrainingDTO createByOnboardOrder (Long cid, String uid, Long onboardOrderId){
-        JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, onboardOrderId).orElseThrow(()-> new BusinessException("not found OnboardOder"));
-        return createByPositionTitle(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getEmployeeId(), onboardOrderId);
+        JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, onboardOrderId).orElseThrow(()-> new EntityNotFoundException(OnboardOrder.class, onboardOrderId));
+        return createByPositionTitle(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getOrgId(), ja.getEmployeeId(), onboardOrderId);
     }
 
-    public OnboardTrainingDTO createByPositionTitle(Long cid, String uid, Long positionId, Long titleId, Long employeeId, Long onboardOrderId){
+    public OnboardTrainingDTO createByPositionTitle(Long cid, String uid, Long positionId, Long titleId, Long orgId, Long employeeId, Long onboardOrderId){
         OnboardTraining training = repo.findByCompanyIdAndOnboardOrderId(cid, onboardOrderId).orElse(new OnboardTraining());
         if (!training.isNew()){
-            return toDTOs(cid, uid, Collections.singletonList(training)).get(0);
+            return toDTOWithObjectValue(cid, uid, training);
         }
         training.setCompanyId(cid);
         training.setCreateBy(uid);
@@ -66,13 +66,15 @@ public class OnboardTrainingService {
         evaluatorOnboardTranningDTO.setOnboardTraningId(training.getId());
         createEvaluator(cid, uid, evaluatorOnboardTranningDTO);
 
-        List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId);
+        List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId, orgId);
+        if(templates.size() == 0){
+            throw new BusinessException("invalid-template");
+        }
         OnboardTrainingTemplate template = templates.get(0);
 
-        List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
+        List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
 
         for (OnboardTrainingTemplateItem item: items) {
-
             OnboardTrainingItemDTO trainingDTO = new OnboardTrainingItemDTO();
             trainingDTO.setOnboardTrainingId(training.getId());
             trainingDTO.setItemId(item.getId());
@@ -90,7 +92,7 @@ public class OnboardTrainingService {
             }
 
         }
-        return toDTOs(cid, uid, Collections.singletonList(training)).get(0);
+        return toDTOWithObjectValue(cid, uid, training);
     }
 
     public void createItem(Long cid, String uid, OnboardTrainingItemDTO dto) throws BusinessException{
@@ -124,6 +126,7 @@ public class OnboardTrainingService {
         OnboardTraining training = repo.findByCompanyIdAndId(cid, dto.getId()).orElseThrow(() -> new EntityNotFoundException(OnboardTraining.class, dto.getId()));
         MapperUtils.copyWithoutAudit(dto, training);
         training.setUpdateBy(uid);
+
         for (OnboardTrainingItemDTO itemDTO: dto.getItems()) {
             if(CompareUtil.compare(dto.getStatus(), Constants.ENTITY_INACTIVE)){
                 itemDTO.setStatus(Constants.ENTITY_INACTIVE);
@@ -162,10 +165,11 @@ public class OnboardTrainingService {
 
     }
 
+    public OnboardTrainingDTO toDTOWithObjectValue(Long cid, String uid, OnboardTraining obj){
+        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
+    }
     public List<OnboardTrainingDTO> toDTOs(Long cid, String uid, List<OnboardTraining> objs){
         List<OnboardTrainingDTO> dtos = new ArrayList<>();
-        Set<Long> orgIds = new HashSet<>();
-        Set<Long> categoryIds = new HashSet<>();
         Set<Long> employeeIds = new HashSet<>();
         Set<Long> employeeIdsForOnboard = new HashSet<>();
         Set<Long> itemIds = new HashSet<>();
@@ -175,9 +179,12 @@ public class OnboardTrainingService {
         Set<Long> hrIds = new HashSet<>();
         Set<Long> leaderIds = new HashSet<>();
         OnboardTraining ot = objs.get(0);
+        OnboardTrainingTemplate template = new OnboardTrainingTemplate();
         JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, ot.getOnboardOrderId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
-        List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId());
-        OnboardTrainingTemplate template = templates.get(0);
+        List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId(), ja.getOrgId());
+        if(templates.size() != 0){
+            template = templates.get(0);
+        }
 
         objs.forEach(o -> {
             if(o.getEmployeeId() != null){
@@ -186,12 +193,18 @@ public class OnboardTrainingService {
             if(o.getId() != null){
                 onboardTraningIds.add(o.getId());
             }
+            if(o.getCommenterId() != null){
+                employeeIdsForOnboard.add(o.getCommenterId());
+            }
+            if (o.getSuppoterId() != null){
+                employeeIdsForOnboard.add(o.getSuppoterId());
+            }
             dtos.add(toDTO(o));
         });
         List<OnboardTrainingItem> trainingItems = itemTranningRepo.findByCompanyIdAndOnboardTrainingIdIn(cid, onboardTraningIds);
         Map<Long, List<OnboardTrainingItem>> mapItemTranings = trainingItems.stream().collect(Collectors.groupingBy(OnboardTrainingItem::getOnboardTrainingId));
 
-        List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
+        List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
         Map<Long, List<OnboardTrainingTemplateItem>> mapItems = items.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItem::getTemplateId));
         itemIds = items.stream().map(el -> el.getId()).collect(Collectors.toSet());
 
@@ -219,6 +232,15 @@ public class OnboardTrainingService {
                 if(dto.getEmployeeId() != null){
                     dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
                 }
+
+                if(dto.getCommenterId() != null){
+                    dto.setCommenterObj(mapEmployee.get(dto.getCommenterId()));
+                }
+
+                if(dto.getEmployeeId() != null){
+                    dto.setSupporterObj(mapEmployee.get(dto.getSuppoterId()));
+                }
+
                 if(mapEvaluators.get(dto.getId()) != null){
                     for (EvaluatorOnboardTranning ev: mapEvaluators.get(dto.getId())) {
                         EvaluatorOnboardTranningDTO evDto = new EvaluatorOnboardTranningDTO();

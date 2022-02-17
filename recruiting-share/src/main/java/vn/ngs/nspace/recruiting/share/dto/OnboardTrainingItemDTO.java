@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

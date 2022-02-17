@@ -14,7 +14,7 @@ import java.util.Set;
 
 public interface OnboardTrainingTemplateRepo  extends BaseRepo<OnboardTrainingTemplate, Long> {
     Optional<OnboardTrainingTemplate> findByCompanyIdAndId (Long cid, Long id);
-
+    List<OnboardTrainingTemplate> findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(Long cid, Long positionId, Long titleId, Long orgId, Integer status);
     void deleteAllByIdIn(Set<Long> id);
 
     @Query(value = " select p " +
@@ -32,9 +32,12 @@ public interface OnboardTrainingTemplateRepo  extends BaseRepo<OnboardTrainingTe
             " where (p.companyId = :companyId)" +
             " and (p.positionId = :positionId or coalesce(p.positionId, 0)  = 0) " +
             " and (p.titleId = :titleId or coalesce(p.titleId, 0)  = 0) " +
-            " order by  coalesce(p.titleId, 0) desc " +
-            "           , coalesce(p.positionId, 0) desc " )
+            " and (p.orgId = :orgId or coalesce(p.orgId, 0)  = 0) " +
+            " order by  coalesce(p.positionId, 0) desc " +
+            "           , coalesce(p.titleId, 0) desc "+
+            "           , coalesce(p.orgId, 0) desc " )
     List<OnboardTrainingTemplate> searchConfigTemplate(@Param("companyId") Long cid
             , @Param("positionId") Long positionId
-            , @Param("titleId") Long titleId );
+            , @Param("titleId") Long titleId
+            , @Param("orgId") Long orgId);
 }

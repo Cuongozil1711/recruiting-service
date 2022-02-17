@@ -25,6 +25,7 @@ public class OnboardOrder extends PersistableEntity<Long> {
     private Long buddy; // nguoi tiep nhan ho tro chuyen mon
     private Long jobApplicationId; // id cua ho so xin viec
     private Long mentorId;
+    private String state;
 
     public static OnboardOrder of (Long cid, String uid, OnboardOrderDTO dto){
         OnboardOrder order = OnboardOrder.builder()

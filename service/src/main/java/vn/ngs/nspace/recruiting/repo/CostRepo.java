@@ -29,8 +29,18 @@ public interface CostRepo extends BaseRepo<Cost,Long> {
                 " and (cost.year = :year or :year = -1)  ) as t " +
             " group by t.org_id, t.year " +
             " order by t.org_id, t.year desc "
+            , countQuery = "select count(*) " +
+                " from (select cost.org_id as org_id, cost.year as year, cost.total_amount as total_amount, coalesce(costDetail.total_amount, 0) as usage_amount " +
+                " from recruiting_service.cost cost " +
+                " left join recruiting_service.cost_detail costDetail on cost.id = costDetail.cost_id and costDetail.status = 1" +
+                " where (cost.company_id = :companyId) " +
+                " and (cost.status = 1) " +
+                " and (cost.org_id = :orgId or :orgId = -1) " +
+                " and (cost.year = :year or :year = -1)  ) as t " +
+                " group by t.org_id, t.year "
             , nativeQuery = true
     )
+
     Page<Map<String, Object>> getSummaryByOrgAndYear(@Param("companyId") long companyId,
                                                      @Param("orgId") Long orgId,
                                                      @Param("year") Long year

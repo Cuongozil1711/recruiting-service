@@ -71,6 +71,9 @@ public class InterviewInvolveService {
         }
         else{
             InterviewInvolve involve = exists.get(0);
+            List<Map<String,Object>> curDes = involve.getInterviewDescription();
+            curDes.addAll(new ArrayList<>(dto.getInterviewDescription()));
+            involve.setInterviewDescription(new ArrayList<>(new HashSet<>(curDes)));
             List<String> currInterviewIds = involve.getInterviewerId();
             currInterviewIds.addAll(new ArrayList<>(dto.getInterviewerId()));
             involve.setInterviewerId(new ArrayList<>(new HashSet<>(currInterviewIds)));

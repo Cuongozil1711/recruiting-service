@@ -1,24 +1,28 @@
 package vn.ngs.nspace.recruiting.service;
 
+import io.vertx.core.json.JsonObject;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import vn.ngs.nspace.hcm.share.dto.ContractDTO;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.JobApplication;
-import vn.ngs.nspace.recruiting.model.OnboardOrder;
-import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
+import vn.ngs.nspace.recruiting.model.*;
+import vn.ngs.nspace.recruiting.repo.OnboardContractRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardContractDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,12 +31,14 @@ public class OnboardOrderService {
     private final OnboardOrderCheckListRepo checkListRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
+    private final OnboardContractRepo _contactRepo;
 
-    public OnboardOrderService(OnboardOrderRepo repo, OnboardOrderCheckListRepo checkListRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public OnboardOrderService(OnboardOrderRepo repo, OnboardOrderCheckListRepo checkListRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, OnboardContractRepo _contactRepo) {
         this.repo = repo;
         this.checkListRepo = checkListRepo;
         _hcmService = hcmService;
         _configService = configService;
+        this._contactRepo= _contactRepo;
     }
 
     /* logic validate data before insert model */
@@ -79,15 +85,18 @@ public class OnboardOrderService {
         Set<Long> categoryIds = new HashSet<>();
         Set<Long> employeeIds = new HashSet<>();
         Set<Long> orgIds = new HashSet<>();
+        Set<Long> orderIds = new HashSet<>();
+        Set<Long> contractIds = new HashSet<>();
         objs.forEach(obj -> {
-            if(obj.getEmployeeId() != null){
-                employeeIds.add(obj.getEmployeeId());
-            }
+
             if(obj.getBuddy() != null){
                 employeeIds.add(obj.getBuddy());
             }
             if(obj.getMentorId() != null){
                 employeeIds.add(obj.getMentorId());
+            }
+            if(obj.getId() != null){
+                orderIds.add(obj.getId());
             }
             if(obj.getJobApplicationId() != null){
                 JobApplication ja = repo.getInfoOnboard(cid, obj.getId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
@@ -100,12 +109,19 @@ public class OnboardOrderService {
                 if(ja.getOrgId() != null){
                     orgIds.add(ja.getOrgId());
                 }
+                if(ja.getEmployeeId() != null){
+                    employeeIds.add(obj.getEmployeeId());
+                }
             }
 
             dtos.add(toDTO(obj));
         });
 
+        List<OnboardOrderCheckList> orderCheckLists = checkListRepo.findByCompanyIdAndOnboardOrderIdIn(cid, orderIds);
+        Map<Long, List<OnboardOrderCheckList>> mapCheckLists = orderCheckLists.stream().collect(Collectors.groupingBy(OnboardOrderCheckList::getOnboardOrderId));
+
         List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
+
         Map<Long, EmployeeDTO> mapEmployee = _hcmService.getMapEmployees(uid, cid, employeeIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         for(OnboardOrderDTO dto : dtos){
@@ -114,9 +130,7 @@ public class OnboardOrderService {
             }if(dto.getMentorId() != null){
                 dto.setMentorObj(mapEmployee.get(dto.getMentorId()));
             }
-            if(dto.getEmployeeId() != null){
-                dto.setEmployeeObj(mapEmployee.get(dto.getEmployeeId()));
-            }
+
             if(dto.getJobApplicationId() != null){
                 JobApplication ja = repo.getInfoOnboard(cid, dto.getId()).orElseThrow(()-> new BusinessException("not found JopAplication"));
                 dto.setPositionObj(mapCategory.get(ja.getPositionId()));
@@ -125,7 +139,27 @@ public class OnboardOrderService {
                     OrgResp org = orgs.stream().filter(o -> CompareUtil.compare(o.getId(), ja.getOrgId())).findAny().orElse(new OrgResp());
                     dto.setOrgResp(org);
                 }
+                if(ja.getEmployeeId() != null){
+                    dto.setEmployeeObj(mapEmployee.get(ja.getEmployeeId()));
+                }
                 dto.setContractType(ja.getContractType());
+                dto.setStartDate(ja.getOnboardDate());
+            }
+
+
+            if(mapCheckLists.get(dto.getId()) != null){
+                List<String> checkState = new ArrayList<>();
+
+                for (OnboardOrderCheckList checkList: mapCheckLists.get(dto.getId()) ){
+                    checkState.add(checkList.getState());
+                    checkState.stream().filter(el -> CompareUtil.compare(el, "notcomplete") );
+                }
+                if (checkState != null && !checkState.isEmpty()){
+                    dto.setState("notcomplete");
+                }
+                else {
+                    dto.setState("complete");
+                }
             }
         }
 
@@ -147,7 +181,8 @@ public class OnboardOrderService {
                 exists.setCode(checkCode);
                 exists.setStatus(Constants.ENTITY_ACTIVE);
                 exists.setEmployeeId(onboard.getEmployeeId());
-
+                exists.setOnboardOrderId(onboardOrderId);
+                exists.setState("notcomplete");
 
                 exists.setState(Constants.CMD_PENDING);
                 exists = checkListRepo.save(exists);

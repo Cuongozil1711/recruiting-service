@@ -8,9 +8,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
-import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplate;
-import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplateItem;
-import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
+import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.InterviewCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.InterviewCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.share.dto.InterviewCheckListTemplateDTO;
@@ -39,12 +37,12 @@ public class InterviewCheckListTemplateService {
 
     public void valid(InterviewCheckListTemplateDTO dto){
 
-//        if (dto.getPositionId() == null){
-//            throw new BusinessException("invalid-position");
-//        }
-//        if (dto.getOrgId() == null){
-//            throw new BusinessException("invalid-org");
-//        }
+        if (dto.getPositionId() == null){
+            throw new BusinessException("invalid-position");
+        }
+        if (dto.getOrgId() == null){
+            throw new BusinessException("invalid-org");
+        }
 //        if (dto.getStartDate() == null){
 //            throw new BusinessException("invalid-startDate");
 //        }
@@ -60,9 +58,9 @@ public class InterviewCheckListTemplateService {
 //        if (dto.getTemplateId() == null){
 //            throw new BusinessException("invalid-template");
 //        }
-//        if (StringUtils.isEmpty(dto.getOptionType())){
-//            throw new BusinessException("invalid-optionType");
-//        }
+        if (StringUtils.isEmpty(dto.getOptionType())){
+            throw new BusinessException("invalid-optionType");
+        }
 //        if (dto.getMinRating() == null){
 //            throw new BusinessException("invalid-minRating");
 //        }
@@ -87,7 +85,7 @@ public class InterviewCheckListTemplateService {
         //create template item
 
         for(InterviewCheckListTemplateItemDTO itemDTO : dto.getItems()){
-
+            itemDTO.setTemplateId(template.getId());
             createItem(cid, uid, itemDTO);
         }
 
@@ -113,11 +111,16 @@ public class InterviewCheckListTemplateService {
         curr.setUpdateBy(uid);
 
         for(InterviewCheckListTemplateItemDTO itemDTO : dto.getItems()){
-            if(CompareUtil.compare(dto.getStatus(), Constants.ENTITY_INACTIVE)){
-                itemDTO.setStatus(Constants.ENTITY_INACTIVE);
+            if(itemDTO.getId() == null || itemDTO.getId() == 0l){
+                createItem(cid, uid, itemDTO);
+            }else{
+                if(CompareUtil.compare(dto.getStatus(), Constants.ENTITY_INACTIVE)){
+                    itemDTO.setStatus(Constants.ENTITY_INACTIVE);
+                }
+                itemDTO.setTemplateId(dto.getId());
+                updateItem(cid, uid, itemDTO.getId(), itemDTO);
             }
-            itemDTO.setTemplateId(dto.getId());
-            updateItem(cid, uid, itemDTO.getId(), itemDTO);
+
         }
 
         curr = repo.save(curr);
@@ -164,9 +167,9 @@ public class InterviewCheckListTemplateService {
             if(i.getCheckListId() != null){
                 categoryIds.add(i.getCheckListId());
             }
-            if (i.getTemplateId() != null){
-                categoryIds.add(i.getTemplateId());
-            }
+//            if (i.getTemplateId() != null){
+//                categoryIds.add(i.getTemplateId());
+//            }
         });
         Map<Long, OrgResp> mapOrg = _hcmService.getMapOrgs(uid, cid, orgIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
@@ -191,9 +194,9 @@ public class InterviewCheckListTemplateService {
                         if(itemDTO.getCheckListId() != null){
                             itemDTO.setCheckListObj(mapCategory.get(itemDTO.getCheckListId()));
                         }
-                        if (itemDTO.getTemplateId() != null){
-                            itemDTO.setTemplateObj(mapCategory.get(itemDTO.getTemplateId()));
-                        }
+//                        if (itemDTO.getTemplateId() != null){
+//                            itemDTO.setTemplateObj(mapCategory.get(itemDTO.getTemplateId()));
+//                        }
                         itemDTOs.add(itemDTO);
                     });
 
@@ -204,5 +207,18 @@ public class InterviewCheckListTemplateService {
     }
     public InterviewCheckListTemplateDTO toDTO (InterviewCheckListTemplate obj){
         return MapperUtils.map(obj, InterviewCheckListTemplateDTO.class);
+    }
+
+    public void delete(long cid, String uid, List<Long> ids) {
+        ids.stream().forEach(i -> {
+            InterviewCheckListTemplate temp = repo.findByCompanyIdAndId(cid, i).orElse(new InterviewCheckListTemplate());
+            if (!temp.isNew()) {
+                temp.setStatus(vn.ngs.nspace.recruiting.share.dto.utils.Constants.ENTITY_INACTIVE);
+                temp.setUpdateBy(uid);
+
+                repo.save(temp);
+            }
+        });
+
     }
 }

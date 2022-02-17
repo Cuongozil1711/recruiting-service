@@ -19,14 +19,18 @@ import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.DateUtil;
+import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
+import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
 import vn.ngs.nspace.recruiting.service.RecruitmentPlanOrderService;
+import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.swing.*;
 import java.util.*;
@@ -95,6 +99,29 @@ public class RecruitmentPlanOrderApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+    @PostMapping("/filter")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Search all recruiting plan order By org"
+            , description = " search by code, position, ....")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity filter(
+            @Parameter(description="ID of company")
+            @RequestHeader Long cid
+            ,@Parameter(description="ID of user")
+            @RequestHeader String uid
+            , @Parameter(description="Payload to search with positionId, orgId, fromDate, deadline")
+            @RequestParam(name = "filter") String filter
+            ,@RequestParam(name = "orgId") Long orgId
+            , Pageable pageable){
+        try{
+            Page<RecruitmentPlanOrder> page = _repo.filter(cid,orgId, filter, pageable);
+            List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
+            return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+        }catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
@@ -109,43 +136,15 @@ public class RecruitmentPlanOrderApi {
              ,@Parameter(description="ID of user")
              @RequestHeader String uid
             , @Parameter(description="Payload to search with positionId, orgId, fromDate, deadline")
-             @RequestBody Map<String,Object> filter
+             @RequestBody Map<String,Object> search
             , Pageable pageable){
         try{
-            Long orgId = null;
-            Long positionId = null;
-            Date startDate = DateUtils.truncate(new Date(), Calendar.DATE);
-            Date deadline = DateUtils.truncate(new Date(), Calendar.DATE);
-            if(filter != null){
-                if(filter.get("orgId") != null){
-                    orgId = (Long) filter.get("orgId");
-                } else {
-                    orgId = -1l;
-                }
+          Long orgId = MapUtils.getLong(search,"orgId",-1l);
+          Long positionId = MapUtils.getLong(search,"positionId",-1l);
 
-                if (filter.get("positionId") != null) {
-                      positionId = Long.valueOf(String.valueOf(filter.get("positionId")));
-                } else {
-                    positionId = -1l;
-                }
-
-                if(filter.get("startDate") != null){
-                    startDate = DateUtil.toDate(String.valueOf(filter.get("startDate")), DateUtil.ISO_8601);
-                    startDate = DateUtils.truncate(startDate, Calendar.DATE);
-                }else {
-                    startDate = DateUtils.truncate(new Date(), Calendar.YEAR);
-                }
-                if(filter.get("deadline") != null){
-                    deadline = DateUtil.toDate(String.valueOf(filter.get("deadline")), DateUtil.ISO_8601);
-                    deadline = DateUtils.truncate(deadline, Calendar.DATE);
-                }else {
-                    deadline = DateUtils.truncate(new Date(), Calendar.DATE);
-                }
-            }
-
-            Page<RecruitmentPlanOrder> search = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,startDate,deadline,pageable);
-            List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, search.getContent());
-            Page<Map<String,Object>>resp = new PageImpl(dtos, pageable, dtos.size());
+          Page<RecruitmentPlanOrder> list = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,pageable);
+          List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, list.getContent());
+          Page<Map<String,Object>>resp = new PageImpl(dtos, pageable, dtos.size());
             return ResponseUtils.handlerSuccess(resp);
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
@@ -168,7 +167,7 @@ public class RecruitmentPlanOrderApi {
              @PathVariable Long id
             , @RequestBody RecruitmentPlanOrderDTO recruitmentPlanOrderDTO){
         try{
-            RecruitmentPlanOrderDTO dto = _service.update(cid,id,recruitmentPlanOrderDTO);
+            RecruitmentPlanOrderDTO dto = _service.update(cid,uid,id,recruitmentPlanOrderDTO);
              return ResponseUtils.handlerSuccess(dto);
         } catch (Exception ex){
             return ResponseUtils.handlerException(ex);

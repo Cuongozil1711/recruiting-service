@@ -22,10 +22,8 @@ public class InterviewInvolveDTO {
     private Long titleId;
     private List<String> interviewerId;
     private Long supporterId; //empId
-    private String description;
+    private List<Map<String, Object>> interviewDescription;
     private Integer status;
-    private String phone; // for intervolve
-    private String email; // for intervolve
 
     private List<EmployeeDTO> interviewerObj;
     private EmployeeDTO supporterObj;

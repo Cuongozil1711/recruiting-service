@@ -1,8 +1,8 @@
 package vn.ngs.nspace.recruiting.service;
 
+import io.netty.util.Constant;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -10,14 +10,13 @@ import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
+import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.AssetCheckList;
-import vn.ngs.nspace.recruiting.model.OnboardOrder;
-import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
-import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplateItem;
+import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.share.dto.AssetCheckListDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardTrainingTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateItemDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
@@ -71,6 +70,45 @@ public class ProfileCheckListTemplateService {
 
     }
 
+    public List<Map<String, Object>> grant(Long cid, String uid, Long templateId, List<Map<String, Object>> newDatas) throws BusinessException{
+        ProfileCheckListTemplate template = repo.findByCompanyIdAndId(cid, templateId).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, templateId));
+        for (Map<String, Object> data: newDatas) {
+            Long positionId = MapUtils.getLong(data, "positionId", 0l);
+            Long titileId = MapUtils.getLong(data, "titleId", 0l);
+            List<ProfileCheckListTemplate> existeds = repo.findByCompanyIdAndPositionIdAndTitleIdAndStatus(cid, positionId, titileId, Constants.ENTITY_ACTIVE);
+            if(existeds.size() >= 1){ // da ton tai voi vi tri vai tro nay
+                for (ProfileCheckListTemplate existed: existeds){
+                    existed.setStatus(Constants.ENTITY_INACTIVE);
+                    existed = repo.save(existed);
+                    template.setPositionId(positionId);
+                    template.setTitleId(titileId);
+                    ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
+                    MapperUtils.copyWithoutAudit(template, dto);
+                    List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, templateId, Constants.ENTITY_ACTIVE);
+                    List<ProfileCheckListTemplateItemDTO> itemDTOS = new ArrayList<>();
+                    for (ProfileCheckListTemplateItem item: items) {
+                        ProfileCheckListTemplateItemDTO itemDTO = new ProfileCheckListTemplateItemDTO();
+                        MapperUtils.copyWithoutAudit(item, itemDTO);
+                        itemDTOS.add(itemDTO);
+                    }
+                    dto.setItems(itemDTOS);
+                    create(cid, uid, dto);
+
+                }
+            }
+            else{ // neu chua co
+                ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
+                MapperUtils.copyWithoutAudit(template, dto);
+                List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
+                List<ProfileCheckListTemplateItemDTO> itemDTOS = new ArrayList<>();
+                MapperUtils.copyWithoutAudit(items, itemDTOS);
+                dto.setItems(itemDTOS);
+                create(cid, uid, dto);
+            }
+        }
+        return newDatas;
+    }
+
     public ProfileCheckListTemplateDTO create(Long cid, String uid, ProfileCheckListTemplateDTO request) throws BusinessException {
         valid(request);
         // create template
@@ -121,6 +159,7 @@ public class ProfileCheckListTemplateService {
         curr = repo.save(curr);
         return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
     }
+
     public ProfileCheckListTemplateDTO updateStatus(Long cid, String uid, Long id, ProfileCheckListTemplateDTO request) throws BusinessException{
         valid(request);
         ProfileCheckListTemplate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));
@@ -142,6 +181,15 @@ public class ProfileCheckListTemplateService {
         }
     }
 
+
+    public void delete(Long cid, String uid, List<Long> ids){
+        for (Long id: ids){
+            ProfileCheckListTemplate temp = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));
+            temp.setUpdateBy(uid);
+            temp.setStatus(Constants.ENTITY_INACTIVE);
+            repo.save(temp);
+        }
+    }
     public List<ProfileCheckListTemplateDTO> toDTOs(Long cid, String uid, List<ProfileCheckListTemplate> objs){
         List<ProfileCheckListTemplateDTO> dtos = new ArrayList<>();
         Set<Long> templateIds = new HashSet<>();

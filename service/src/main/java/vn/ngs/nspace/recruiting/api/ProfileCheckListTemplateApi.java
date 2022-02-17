@@ -11,17 +11,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections.MapUtils;
 import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.Candidate;
@@ -91,6 +92,37 @@ public class ProfileCheckListTemplateApi {
             , @Parameter(description="Payload DTO to create")  @RequestBody ProfileCheckListTemplateDTO dto) {
         try {
             return ResponseUtils.handlerSuccess(_service.create(cid, uid, dto));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PostMapping("/grants")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "Grant template to mutil position"
+            , description = "API for create profile template"
+            , tags = { "TemplateConfig" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity grants(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description="Payload DTO to grant mutil {newDatas[{}]; templateId: }")
+            @RequestBody Map<String, Object> request) {
+        try {
+            if(!request.containsKey("newDatas")){
+                throw new BusinessException("invalid-new-data");
+            }
+            List<Map<String, Object>> newDatas = (List<Map<String, Object>>)MapUtils.getObject(request, "newDatas");
+            Long templateId = MapUtils.getLong(request, "templateId", 0l);
+            if(templateId == 0l){
+                throw new Exception("invalid-template-id");
+            }
+
+            return ResponseUtils.handlerSuccess( _service.grant(cid, uid, templateId, newDatas));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
@@ -191,6 +223,30 @@ public class ProfileCheckListTemplateApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+
+    @DeleteMapping("/delete")
+    @ActionMapping(action = Permission.DELETE)
+    @Operation(summary = "delete all profile template"
+            , description = "profile template delete by id"
+            , tags = {"TemplateConfig"}
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity delete(
+            @Parameter(description = "ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description = "ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description = "Payload to search with positionId, titleId")
+            @RequestBody List<Long> ids) {
+        try {
+            _service.delete(cid, uid, ids);
+            return ResponseUtils.handlerSuccess(HttpStatus.OK);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
 
 //    @PostMapping("/by-cycle")
 //    @ActionMapping(action = Permission.VIEW)

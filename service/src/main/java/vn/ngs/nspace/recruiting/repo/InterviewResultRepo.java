@@ -13,8 +13,6 @@ import java.util.Optional;
 public interface InterviewResultRepo extends BaseRepo<InterviewResult, Long> {
     Optional<InterviewResult> findByCompanyIdAndId(Long cid, Long id);
 
-
-
     @Query(value = "select cl " +
             " from InterviewResult i" +
             " left join InterviewCheckList cl on cl.interviewResultId = i.id" +
@@ -32,5 +30,6 @@ public interface InterviewResultRepo extends BaseRepo<InterviewResult, Long> {
     Page<InterviewResult> search(@Param("companyId") Long cid
             ,@Param("candidateId") Long candidateId
             , Pageable pageable);
+
 
 }

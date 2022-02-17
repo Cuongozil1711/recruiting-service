@@ -41,6 +41,7 @@ public class JobRequirementDTO {
     private Long receiptName;
     private String receiptPhone;
     private String receiptEmail;
+    private Map<String,Object> genderObj;
     private Map<String,Object> positionObj;
     private Map<String,Object> titleObj;
     private Map<String,Object> levelObj;

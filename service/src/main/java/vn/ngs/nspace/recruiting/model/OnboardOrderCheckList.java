@@ -31,6 +31,7 @@ public class OnboardOrderCheckList extends PersistableEntity<Long> {
     private Date deadline;
     private Date startDate;
     private String state;
+    private String description;
 
     public static OnboardOrderCheckList of (Long cid, String uid, OnboardOrderCheckListDTO dto){
         OnboardOrderCheckList order = OnboardOrderCheckList.builder()
@@ -41,6 +42,7 @@ public class OnboardOrderCheckList extends PersistableEntity<Long> {
                 .participantId(dto.getParticipantId())
                 .startDate(dto.getStartDate())
                 .state(dto.getState())
+                .description(dto.getDescription())
                 .build();
         return order;
     }

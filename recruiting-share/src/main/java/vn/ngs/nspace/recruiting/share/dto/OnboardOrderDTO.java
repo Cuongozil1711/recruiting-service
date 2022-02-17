@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import vn.ngs.nspace.hcm.share.dto.ContractDTO;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 
@@ -21,6 +22,9 @@ public class OnboardOrderDTO {
     private Long jobApplicationId; // id cua ho so xin viec
     private Integer status;
     private Long mentorId;
+    private String state;
+
+    private Date startDate;
 
     private String contractType;
     private EmployeeDTO employeeObj;
