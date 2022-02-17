@@ -193,7 +193,7 @@ public class OnboardTrainingTemplateApi {
             , @Parameter(description = "param in path") @PathVariable(value = "id") Long id) {
         try {
             JobApplication ja = _onboardOrderRepo.getInfoOnboard(cid, id).orElseThrow(()-> new BusinessException("not found OnboardOder"));;
-            List<OnboardTrainingTemplate> templates = _reppo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId());
+            List<OnboardTrainingTemplate> templates = _reppo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId(), ja.getOrgId());
             OnboardTrainingTemplate template = templates.get(0);
             return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, Collections.singletonList(template)));
         } catch (Exception ex) {

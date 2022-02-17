@@ -24,12 +24,13 @@ public class OnboardOrderDTO {
     private Long mentorId;
     private String state;
 
+    private Date startDate;
+
     private String contractType;
     private EmployeeDTO employeeObj;
     private EmployeeDTO buddyObj;
     private EmployeeDTO mentorObj;
     private OrgResp orgResp;
-    private Object contract;
     private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;
 }
