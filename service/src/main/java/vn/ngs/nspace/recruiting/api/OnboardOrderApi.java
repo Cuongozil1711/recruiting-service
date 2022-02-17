@@ -85,8 +85,6 @@ public class OnboardOrderApi {
                 return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
             }
 
-
-
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

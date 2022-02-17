@@ -21,10 +21,12 @@ public interface OnboardTrainingTemplateRepo  extends BaseRepo<OnboardTrainingTe
             " from OnboardTrainingTemplate p " +
             " where (p.companyId = :companyId)" +
             " and (p.positionId = :positionId or :positionId = -1) " +
-            " and (p.titleId = :titleId or :titleId = -1) ")
+            "and (p.titleId = :titleId or :titleId = -1)"+
+            " and (p.orgId = :orgId or :orgIdorgId = -1) ")
     Page<OnboardTrainingTemplate> search(@Param("companyId") Long cid
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId
+            , @Param("orgId") Long orgId
             , Pageable pageable);
 
     @Query(value = " select p " +
