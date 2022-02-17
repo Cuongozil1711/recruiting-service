@@ -40,9 +40,9 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.gender = :gender or :gender = -1)" +
             " and (c.language = :language or :language = 'all')" +
             " and (c.educationLevel = :educationLevel or :educationLevel = -1)" +
-            " and (:educateLocation = 'all' or lower(educateLocation) like '%:educateLocation%') " +
-            " and (:industry = 'all' or lower(industry) like '%:industry%') " +
-            " and (:lastPosition = 'all' or lower(lastPosition) = '%:lastPosition%') " +
+            " and (lower(c.educateLocation) like (concat('%',:educateLocation,'%')) or :educateLocation = 'all')  " +
+            " and (lower(c.industry) like (concat('%',:industry,'%')) or :industry = 'all') " +
+            " and (lower(c.lastPosition) like (concat('%',:lastPosition,'%')) or :lastPosition = 'all') " +
             " and (cast(:ageLess AS java.time.LocalDateTime) is null  or (:ageLess < c.birthDate))" +
             " group by c.id having " +
             " ((case when (experience_unit = 'year') then (experience * 12) else experience" +
