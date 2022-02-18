@@ -47,7 +47,7 @@ public class OnboardTrainingTemplateService {
 
     }
 
-    public List<Map<String, Object>> grant(Long cid, String uid, Long templateId, List<Map<String, Object>> newDatas) throws BusinessException{
+    public List<Map<String, Object>>    grant(Long cid, String uid, Long templateId, List<Map<String, Object>> newDatas) throws BusinessException{
         OnboardTrainingTemplate template = repo.findByCompanyIdAndId(cid, templateId).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplate.class, templateId));
         for (Map<String, Object> data: newDatas) {
             Long positionId = MapUtils.getLong(data, "positionId", 0l);
@@ -103,7 +103,11 @@ public class OnboardTrainingTemplateService {
                 }
 
             } else {
+                template.setPositionId(positionId);
+                template.setTitleId(titileId);
+                template.setOrgId(orgId);
                 OnboardTrainingTemplateDTO dto = new OnboardTrainingTemplateDTO();
+                MapperUtils.copyWithoutAudit(template, dto);
                 List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, templateId, Constants.ENTITY_ACTIVE);
                 if(!items.isEmpty()){
 

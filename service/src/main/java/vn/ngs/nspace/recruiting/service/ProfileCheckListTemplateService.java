@@ -97,6 +97,8 @@ public class ProfileCheckListTemplateService {
                 }
             }
             else{ // neu chua co
+                template.setPositionId(positionId);
+                template.setTitleId(titileId);
                 ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
                 MapperUtils.copyWithoutAudit(template, dto);
                 List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
