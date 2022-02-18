@@ -10,11 +10,12 @@ import vn.ngs.nspace.recruiting.share.dto.CandidateFilterDTO;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CandidateFilterRepo extends BaseRepo<CandidateFilter,Long> {
 
     Optional<CandidateFilter> findByCompanyIdAndId(long cid, Long id);
 
-    List<CandidateFilter> findByCompanyIdAndStatus(Long cid, Integer status);
+    List<CandidateFilter> findByCompanyIdAndAndCreateByInAndStatus(Long cid, Set<String> lstCreateBy, Integer status);
 }
 
