@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.Candidate;
@@ -45,7 +46,7 @@ public class CandidateFilterApi {
             ) {
 
         try {
-            return ResponseUtils.handlerSuccess(repo.findByCompanyId(cid));
+            return ResponseUtils.handlerSuccess(repo.findByCompanyIdAndStatus(cid, Constants.ENTITY_ACTIVE));
         }catch (Exception e){
             return ResponseUtils.handlerException(e);
         }
