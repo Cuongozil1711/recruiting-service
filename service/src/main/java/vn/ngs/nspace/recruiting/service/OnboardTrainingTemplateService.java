@@ -148,7 +148,6 @@ public class OnboardTrainingTemplateService {
                 }
             }
         }
-
         return newDatas;
     }
 
