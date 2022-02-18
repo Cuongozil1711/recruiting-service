@@ -80,10 +80,12 @@ public class ProfileCheckListTemplateService {
                 for (ProfileCheckListTemplate existed: existeds){
                     existed.setStatus(Constants.ENTITY_INACTIVE);
                     existed = repo.save(existed);
-                    template.setPositionId(positionId);
-                    template.setTitleId(titileId);
+
                     ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
                     MapperUtils.copyWithoutAudit(template, dto);
+                    dto.setPositionId(positionId);
+                    dto.setTitleId(titileId);
+
                     List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, templateId, Constants.ENTITY_ACTIVE);
                     List<ProfileCheckListTemplateItemDTO> itemDTOS = new ArrayList<>();
                     for (ProfileCheckListTemplateItem item: items) {
@@ -97,10 +99,11 @@ public class ProfileCheckListTemplateService {
                 }
             }
             else{ // neu chua co
-                template.setPositionId(positionId);
-                template.setTitleId(titileId);
                 ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
                 MapperUtils.copyWithoutAudit(template, dto);
+                dto.setPositionId(positionId);
+                dto.setTitleId(titileId);
+
                 List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
                 List<ProfileCheckListTemplateItemDTO> itemDTOS = new ArrayList<>();
                 MapperUtils.copyWithoutAudit(items, itemDTOS);
@@ -182,8 +185,7 @@ public class ProfileCheckListTemplateService {
             createItem(cid, uid, request);
         }
     }
-
-
+                    
     public void delete(Long cid, String uid, List<Long> ids){
         for (Long id: ids){
             ProfileCheckListTemplate temp = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));
