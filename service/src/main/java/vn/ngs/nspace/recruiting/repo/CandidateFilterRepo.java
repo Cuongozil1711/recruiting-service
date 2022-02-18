@@ -16,6 +16,6 @@ public interface CandidateFilterRepo extends BaseRepo<CandidateFilter,Long> {
 
     Optional<CandidateFilter> findByCompanyIdAndId(long cid, Long id);
 
-    List<CandidateFilter> findByCompanyIdAndCreateByIndStatus(Long cid, Set<String> lstCreateBy, Integer status);
+    List<CandidateFilter> findByCompanyIdAndAndCreateByInAndStatus(Long cid, Set<String> lstCreateBy, Integer status);
 }
 

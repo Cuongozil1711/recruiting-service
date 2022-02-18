@@ -23,7 +23,6 @@ import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.CandidateFilterDTO;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -45,11 +44,11 @@ public class CandidateFilterApi {
     protected ResponseEntity ListAll(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            ,  @RequestBody Set<String> lstCreateby
+            , @RequestBody Set<String> lstCreateBy
             ) {
 
         try {
-            return ResponseUtils.handlerSuccess(repo.findByCompanyIdAndCreateByIndStatus(cid,lstCreateby, Constants.ENTITY_ACTIVE));
+            return ResponseUtils.handlerSuccess(repo.findByCompanyIdAndAndCreateByInAndStatus(cid, lstCreateBy, Constants.ENTITY_ACTIVE));
         }catch (Exception e){
             return ResponseUtils.handlerException(e);
         }
