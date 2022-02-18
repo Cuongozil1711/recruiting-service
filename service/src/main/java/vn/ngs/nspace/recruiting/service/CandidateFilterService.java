@@ -13,9 +13,7 @@ import vn.ngs.nspace.recruiting.share.dto.CandidateFilterDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -75,6 +73,21 @@ public class CandidateFilterService {
                 repo.save(filter);
             }
         });
+    }
 
+    public List<CandidateFilterDTO> toDTOs(long cid, String uid, List<CandidateFilter> objs) {
+        Set<Long> ids = new HashSet<>();
+        List<CandidateFilterDTO> dtos = new ArrayList<>();
+        objs.forEach(o -> {
+
+            ids.add(o.getId());
+        });
+
+        for(CandidateFilter obj : objs){
+            CandidateFilterDTO o = toDTO(obj);
+
+            dtos.add(o);
+        }
+        return dtos;
     }
 }
