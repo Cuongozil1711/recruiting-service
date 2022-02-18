@@ -14,6 +14,8 @@ public class CandidateFilterDTO {
     private String code;
     private String name;
     private Integer status;
+    private String createBy;
+
     private Map<String, Object> configs;
 
 }
