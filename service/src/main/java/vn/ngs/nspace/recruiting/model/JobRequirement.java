@@ -36,8 +36,6 @@ public class JobRequirement extends PersistableEntity<Long> {
     @Size(max = 255)
     private String title;
     private String code;
-//    private Long titleId;
-//    private Long positionId;
     private Long levelId;
     private String specialized;
     private Long quantity;
@@ -77,8 +75,6 @@ public class JobRequirement extends PersistableEntity<Long> {
                 .id(dto.getId())
                 .code(dto.getCode())
                 .title(dto.getTitle())
-//                .titleId(dto.getTitleId())
-//                .positionId(dto.getPositionId())
                 .levelId(dto.getLevelId())
                 .quantity(dto.getQuantity())
                 .industryId(dto.getIndustryId())
