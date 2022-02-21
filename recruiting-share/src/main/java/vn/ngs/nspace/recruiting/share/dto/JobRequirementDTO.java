@@ -21,7 +21,8 @@ public class JobRequirementDTO {
     private String createBy;
     private String title;
     private String code;
-    private Long levelId;
+    private Long titleId;
+//    private Long levelId;
     private String specialized;
     private Long quantity;
     private List<String> industryId; // danh muc dung chung

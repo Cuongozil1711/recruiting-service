@@ -46,15 +46,15 @@ public class JobRequirementService {
         if(StringUtils.isEmpty(dto.getTitle())) {
             throw new BusinessException("title-is-empty");
         }
-//        if(dto.getTitleId() == null){
-//            throw new BusinessException("invalid-titleId");
-//        }
+        if(dto.getTitleId() == null){
+            throw new BusinessException("invalid-titleId");
+        }
 //        if(dto.getPositionId() == null){
 //            throw new BusinessException("invalid-position");
 //        }
-        if(dto.getLevelId() == null){
-            throw new BusinessException("invalid-level");
-        }
+//        if(dto.getLevelId() == null){
+//            throw new BusinessException("invalid-level");
+//        }
         if(dto.getQuantity() == null){
             throw new BusinessException("invalid-quantity");
         }
@@ -210,12 +210,12 @@ public class JobRequirementService {
             if (dto.getGender() != null){
                 dto.setGenderObj(mapCategory.get(dto.getGender()));
             }
-//            if (dto.getTitleId() != null) {
-//                dto.setTitleObj(mapCategory.get(dto.getTitleId()));
-//            }
-            if (dto.getLevelId() != null) {
-                dto.setLevelObj(mapCategory.get(dto.getLevelId()));
+            if (dto.getTitleId() != null) {
+                dto.setTitleObj(mapCategory.get(dto.getTitleId()));
             }
+//            if (dto.getLevelId() != null) {
+//                dto.setLevelObj(mapCategory.get(dto.getLevelId()));
+//            }
             if (dto.getCurrencyId() != null){
                 dto.setCurrencyObj(mapCategory.get(dto.getCurrencyId()));
             }

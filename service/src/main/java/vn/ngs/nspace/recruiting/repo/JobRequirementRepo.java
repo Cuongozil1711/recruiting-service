@@ -17,7 +17,7 @@ public interface JobRequirementRepo extends BaseRepo<JobRequirement,Long> {
             " from JobRequirement j " +
             " where (j.companyId = :companyId)" +
             "and  (lower(j.title) like (concat('%',:title,'%')) or :title = 'all') " +
-            " and (lower(j.code) like (concat('%',:code,'%')) or :code = 'all') "
+            " and (lower(j.code) like (concat('%',:code,'%')) or :code = 'all') " 
     )
     Page<JobRequirement> search(@Param("companyId") Long cid
             , @Param("title") String title
