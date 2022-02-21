@@ -16,12 +16,12 @@ public interface JobRequirementRepo extends BaseRepo<JobRequirement,Long> {
     @Query(value = "select j " +
             " from JobRequirement j " +
             " where (j.companyId = :companyId)" +
-            " and (j.status = 1)" +
-            "and (lower(concat(coalesce(j.title,''), coalesce(j.code,'')))" +
-            " like %:search%)"
+            "and  (lower(j.title) like (concat('%',:title,'%')) or :title = 'all') " +
+            " and (lower(j.code) like (concat('%',:code,'%')) or :code = 'all') "
     )
     Page<JobRequirement> search(@Param("companyId") Long cid
-            , @Param("search") String search
+            , @Param("title") String title
+            , @Param("code") String code
             , Pageable pageable);
 
     Optional<JobRequirement> findByCompanyIdAndCodeAndStatus(Long cid, String code, Integer status);
