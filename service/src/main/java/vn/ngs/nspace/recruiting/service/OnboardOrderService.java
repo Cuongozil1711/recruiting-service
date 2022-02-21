@@ -184,7 +184,6 @@ public class OnboardOrderService {
                 exists.setOnboardOrderId(onboardOrderId);
                 exists.setState("notcomplete");
 
-                exists.setState(Constants.CMD_PENDING);
                 exists = checkListRepo.save(exists);
             }
             finalCheckList.add(exists);
