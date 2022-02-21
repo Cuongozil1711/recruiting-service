@@ -148,12 +148,10 @@ public class OnboardOrderService {
                 dto.setStartDate(ja.getOnboardDate());
             }
 
-
             if(mapCheckLists.get(dto.getId()) != null){
                 List<String> checkState = new ArrayList<>();
 
                 for (OnboardOrderCheckList checkList: mapCheckLists.get(dto.getId()) ){
-                    checkState.add(checkList.getState());
                     checkState.stream().filter(el -> CompareUtil.compare(el, "notcomplete") );
                 }
                 if (checkState != null && !checkState.isEmpty()){
