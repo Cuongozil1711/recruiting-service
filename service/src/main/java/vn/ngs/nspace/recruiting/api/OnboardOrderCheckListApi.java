@@ -45,7 +45,7 @@ public class OnboardOrderCheckListApi {
             @PathVariable(value = "id") Long id
             , @RequestBody List<OnboardOrderCheckListDTO> listDTOS) {
         try {
-            return ResponseUtils.handlerSuccess(_service.updateList(cid, uid, id, listDTOS));
+             return ResponseUtils.handlerSuccess(_service.updateList(cid, uid, id, listDTOS));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
