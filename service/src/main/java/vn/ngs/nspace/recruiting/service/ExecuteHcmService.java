@@ -189,16 +189,16 @@ public class ExecuteHcmService {
 
     public BaseResponse<Map<String, Object>> search(String requestUserId, Long companyId, String keyword){
         try {
-            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/filter");
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/filter?page=0&size=999");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = createHeader(requestUserId,companyId);
             Map<String,Object> payload  = new HashMap<>();
-            Map<String, Object> orgFilter= new HashMap<>();
+//            Map<String, Object> orgFilter= new HashMap<>();
 //            orgFilter.put("allChildren", true);
 //           orgFilter.put("id", null);
             payload.put("keyword", keyword);
-            payload.put("orgFilter", orgFilter);
+//            payload.put("orgFilter", orgFilter);
 
             HttpEntity request = new HttpEntity<>(payload,headers);
 

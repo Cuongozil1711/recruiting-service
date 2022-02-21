@@ -224,7 +224,7 @@ public class ProfileCheckListTemplateApi {
         }
     }
 
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     @ActionMapping(action = Permission.DELETE)
     @Operation(summary = "delete all profile template"
             , description = "profile template delete by id"
