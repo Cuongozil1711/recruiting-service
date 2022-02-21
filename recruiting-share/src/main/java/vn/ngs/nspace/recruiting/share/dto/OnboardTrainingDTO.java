@@ -19,6 +19,8 @@ public class OnboardTrainingDTO {
     private Integer status;
     private Long commenterId;
     private Long suppoterId;
+    private Long ratio;
+    private String result;
 
     private EmployeeDTO employeeObj;
     private EmployeeDTO commenterObj;

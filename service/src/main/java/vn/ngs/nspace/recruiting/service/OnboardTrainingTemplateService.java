@@ -1,5 +1,6 @@
 package vn.ngs.nspace.recruiting.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.camunda.bpm.engine.BadUserRequestException;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
@@ -44,10 +45,32 @@ public class OnboardTrainingTemplateService {
     }
 
     public void validItem(OnboardTrainingTemplateItemDTO request){
-
+        if (StringUtils.isEmpty(request.getName())){
+            throw new BusinessException("invalid-name");
+        }
+        if (request.getCompletion() < 0 && request.getCompletion() > 100){
+            throw new BusinessException("range completion 0-100");
+        }
     }
 
-    public List<Map<String, Object>>    grant(Long cid, String uid, Long templateId, List<Map<String, Object>> newDatas) throws BusinessException{
+    public void validItemChild(OnboardTrainingTemplateItemChildrenDTO request){
+        if (StringUtils.isEmpty(request.getName())){
+            throw new BusinessException("invalid-name");
+        }
+        if (request.getCompletion() < 0 && request.getCompletion() > 100){
+            throw new BusinessException("range completion 0-100");
+        }
+    }
+    public void validItemGrandChild(OnboardTrainingTemplateItemGrandChildDTO request){
+        if (StringUtils.isEmpty(request.getName())){
+            throw new BusinessException("invalid-name");
+        }
+        if (request.getCompletion() < 0 && request.getCompletion() > 100){
+            throw new BusinessException("range completion 0-100");
+        }
+    }
+
+    public List<Map<String, Object>>  grant(Long cid, String uid, Long templateId, List<Map<String, Object>> newDatas) throws BusinessException{
         OnboardTrainingTemplate template = repo.findByCompanyIdAndId(cid, templateId).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplate.class, templateId));
         if(template != null && !template.isNew()){
             for (Map<String, Object> data: newDatas) {
@@ -55,6 +78,7 @@ public class OnboardTrainingTemplateService {
                 Long positionId = MapUtils.getLong(data, "positionId", 0l);
                 Long titileId = MapUtils.getLong(data, "titleId", 0l);
                 Long orgId = MapUtils.getLong(data, "orgId", 0l);
+
 
                 List<OnboardTrainingTemplate> existeds = repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, positionId, titileId, orgId, Constants.ENTITY_ACTIVE);
                 if (existeds.size() >= 1){
@@ -183,7 +207,9 @@ public class OnboardTrainingTemplateService {
 
         item = itemRepo.save(item);
         if (request.getChildren() != null && !request.getChildren().isEmpty()){
+            float sumCompletion = 0;
             for (OnboardTrainingTemplateItemChildrenDTO childrenDTO: request.getChildren()){
+                sumCompletion += childrenDTO.getCompletion();
                 childrenDTO.setTemplateId(item.getTemplateId());
                 childrenDTO.setItemId(item.getId());
                 createItemChildren(cid, uid, childrenDTO);
@@ -193,6 +219,7 @@ public class OnboardTrainingTemplateService {
     }
 
     public void createItemChildren (Long cid, String uid, OnboardTrainingTemplateItemChildrenDTO request) throws BusinessException {
+        validItemChild(request);
         OnboardTrainingTemplateItemChildren children = OnboardTrainingTemplateItemChildren.of(cid, uid, request);
         children.setCompanyId(cid);
         children.setCreateBy(uid);
@@ -211,6 +238,7 @@ public class OnboardTrainingTemplateService {
     }
 
     public void createItemCGrandChild (Long cid, String uid, OnboardTrainingTemplateItemGrandChildDTO request) throws BusinessException {
+        validItemGrandChild(request);
         OnboardTrainingTemplateItemGrandChild grandChild = OnboardTrainingTemplateItemGrandChild.of(cid, uid, request);
         grandChild.setCompanyId(cid);
         grandChild.setCreateBy(uid);
@@ -239,6 +267,7 @@ public class OnboardTrainingTemplateService {
 
     public void updateItem(Long cid, String uid, Long id, OnboardTrainingTemplateItemDTO request) throws BusinessException{
         if(request.getId() != 0l && request.getId() != null){
+            validItem(request);
             OnboardTrainingTemplateItem curr = itemRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItem.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
@@ -260,6 +289,7 @@ public class OnboardTrainingTemplateService {
 
     public void updateItemChildren(Long cid, String uid, Long id, OnboardTrainingTemplateItemChildrenDTO request) throws BusinessException{
         if(request.getId() != 0l && request.getId() != null){
+            validItemChild(request);
             OnboardTrainingTemplateItemChildren curr = childrenRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItemChildren.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
@@ -282,6 +312,7 @@ public class OnboardTrainingTemplateService {
 
     public void updateItemGrandChild(Long cid, String uid, Long id, OnboardTrainingTemplateItemGrandChildDTO request) throws BusinessException{
         if(request.getId() != 0l && request.getId() != null){
+            validItemGrandChild(request);
             OnboardTrainingTemplateItemGrandChild curr = grandChildRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItemGrandChild.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
