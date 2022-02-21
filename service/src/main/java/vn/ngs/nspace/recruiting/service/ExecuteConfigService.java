@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
-public class ExecuteConfigService {
+public class  ExecuteConfigService {
     @Value("${nspace.service.config.url:nothing}")
     public String ConfigServiceURL;
     @Value("${nspace.service.config.key:nothing}")
