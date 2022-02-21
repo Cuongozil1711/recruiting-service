@@ -61,7 +61,10 @@ public class OnboardOrderApi {
             Long employeeId = MapUtils.getLong(condition, "employeeId", -1l);
             Long buddy = MapUtils.getLong(condition, "buddy", -1l);
             Long jobApplicationId = MapUtils.getLong(condition, "jobApplicationId", -1l);
-            String search = MapUtils.getString(condition, "search", "#");
+            Long positionId = MapUtils.getLong(condition, "positionId", -1l);
+            Long titleId = MapUtils.getLong(condition, "titleId", -1l);
+            Long orgId = MapUtils.getLong(condition, "orgId", -1l);
+            String search = MapUtils.getString(condition, "search", "");
             BaseResponse<Map<String, Object>> obj = _hcmService.search(uid, cid, search);
             obj.getData();
             Map<String, Object> data = obj.getData();
@@ -74,13 +77,14 @@ public class OnboardOrderApi {
                 empLoyees.add(empLoyee);
             }
             List<Long> empIds = empLoyees.stream().map(EmployeeDTO::getId).collect(Collectors.toList());
-            if(search == "#"){
-                Page<OnboardOrder> page = _repo.searchAll(cid,buddy, employeeId, jobApplicationId, pageable);
+            if(condition != null && !condition.isEmpty()){
+                Page<OnboardOrder> page = _repo.search(cid, buddy, positionId, titleId, orgId, jobApplicationId, empIds, pageable);
                 List<OnboardOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
                 return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+
             }
-            else{
-                Page<OnboardOrder> page = _repo.search(cid, buddy, jobApplicationId, empIds, pageable);
+            else {
+                Page<OnboardOrder> page = _repo.searchAll(cid,buddy, employeeId, jobApplicationId, pageable);
                 List<OnboardOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
                 return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
             }
