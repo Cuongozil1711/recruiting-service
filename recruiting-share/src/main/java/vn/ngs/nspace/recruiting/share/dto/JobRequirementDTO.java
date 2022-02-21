@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -18,11 +19,11 @@ public class JobRequirementDTO {
     private String createBy;
     private String title;
     private String code;
-    private Long titleId;
-    private Long positionId;
+//    private Long titleId;
+//    private Long positionId;
     private Long levelId;
     private Long quantity;
-    private Long industryId; // danh muc dung chung
+    private List<String> industryId; // danh muc dung chung
     private String specialized;
     private String collaborationType; //full-time, part-time, free-time
     private Long minExperience; // kinh nghiem toi thieu
@@ -46,7 +47,7 @@ public class JobRequirementDTO {
     private Map<String,Object> titleObj;
     private Map<String,Object> levelObj;
     private Map<String,Object> currencyObj;
-    private Map<String,Object> industryObj;
+    private List<Map<String,Object>> industryObj;
     private EmployeeDTO receiptNameObj;
     private Map<String,Object> createByObj;
     private Date createDate;

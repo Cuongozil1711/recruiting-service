@@ -1,7 +1,10 @@
 package vn.ngs.nspace.recruiting.model;
 
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.JobRequirementDTO;
 
@@ -11,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,6 +22,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+@TypeDef(
+        name = "list-array",
+        typeClass = ListArrayType.class
+)
 //chi tiet yeu cau tuyen dung
 public class JobRequirement extends PersistableEntity<Long> {
     @Id
@@ -28,12 +36,14 @@ public class JobRequirement extends PersistableEntity<Long> {
     @Size(max = 255)
     private String title;
     private String code;
-    private Long titleId;
-    private Long positionId;
+//    private Long titleId;
+//    private Long positionId;
     private Long levelId;
     private String specialized;
     private Long quantity;
-    private Long industryId; // danh muc dung chung
+    @Type(type = "list-array")
+    @Column(columnDefinition = "text[]", length = 4000)
+    private List<String> industryId; // danh muc dung chung
     private String collaborationType; //full-time, part-time, free-time:enum
     private Long minExperience; // kinh nghiem toi thieu:enum
     private String minExperienceUnit;//don vi
@@ -67,8 +77,8 @@ public class JobRequirement extends PersistableEntity<Long> {
                 .id(dto.getId())
                 .code(dto.getCode())
                 .title(dto.getTitle())
-                .titleId(dto.getTitleId())
-                .positionId(dto.getPositionId())
+//                .titleId(dto.getTitleId())
+//                .positionId(dto.getPositionId())
                 .levelId(dto.getLevelId())
                 .quantity(dto.getQuantity())
                 .industryId(dto.getIndustryId())
