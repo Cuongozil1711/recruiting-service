@@ -57,4 +57,5 @@ public class CandidateDTO {
     private Map<String, Object> countryCodeObj;
     private Map<String, Object> educateLevelObj;
     private Map<String, Object> applyPositionIdObj;
+    private Map<String, Object> cvSourceObj;
 }

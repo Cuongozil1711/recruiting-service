@@ -22,6 +22,7 @@ import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -63,6 +64,24 @@ public class CandidateApi {
             return ResponseUtils.handlerException(e);
         }
 
+    }
+
+    @PostMapping("/create-list")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "create list candidate"
+            , description = "create list candidate"
+            ,tags = {"Candidate"}
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity creates(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody List<CandidateDTO> dtos){
+        try{
+            return ResponseUtils.handlerSuccess(_service.create(cid, uid, dtos));
+        }catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
     }
 
     @PostMapping()

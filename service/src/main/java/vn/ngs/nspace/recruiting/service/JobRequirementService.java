@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.service;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.common.protocol.types.Field;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
@@ -147,6 +148,12 @@ public class JobRequirementService {
         MapperUtils.copyWithoutAudit(dto,curr);
         curr.setUpdateBy(uid);
         curr = _repo.save(curr);
+        try{
+            _repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(),Constants.ENTITY_ACTIVE).orElse(new JobRequirement());
+
+        }catch (IncorrectResultSizeDataAccessException ex){
+            throw new BusinessException("duplicate-data-with-code");
+        }
 
         return toDTO(curr);
 

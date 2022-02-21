@@ -171,15 +171,34 @@ public class InterviewInvolveService {
     public List<InterviewInvolveDTO> applyInvolves(Long cid, String uid, Long id, List<InterviewInvolveDTO> dtos) {
         InterviewInvolve template = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewInvolve.class, id));
         List<InterviewInvolveDTO> returnDTOs = new ArrayList<>();
-        for (InterviewInvolveDTO dto : dtos) {
-            InterviewInvolveDTO clone = toDTO(template);
-            clone.setPositionId(dto.getPositionId());
-            clone.setTitleId(dto.getTitleId());
-            clone.setOrgId(dto.getOrgId());
+      if(template != null && !template.isNew()){
+          List<InterviewInvolve> exist = repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, template.getPositionId(), template.getTitleId(), template.getOrgId(), Constants.ENTITY_ACTIVE);
+          if (exist.size() >= 1) {
+              InterviewInvolveDTO dto = new InterviewInvolveDTO();
+              for (InterviewInvolve existed : exist) {
+                  existed.setStatus(Constants.ENTITY_INACTIVE);
+                  existed = repo.save(existed);
+                  existed.setPositionId(existed.getPositionId());
+                  existed.setOrgId(existed.getOrgId());
+                  existed.setTitleId(existed.getTitleId());
+                  MapperUtils.copyWithoutAudit(template, dto);
+              }
+              returnDTOs.add(create(cid, uid, dto));
+          }else {
+              for (InterviewInvolveDTO dto : dtos) {
+                  InterviewInvolveDTO clone = toDTO(template);
+                  clone.setPositionId(dto.getPositionId());
+                  clone.setTitleId(dto.getTitleId());
+                  clone.setOrgId(dto.getOrgId());
 
-            returnDTOs.add(create(cid, uid, clone));
-        }
-        return returnDTOs;
+                  returnDTOs.add(create(cid, uid, clone));
+
+              }
+          }
+
+      }
+
+            return returnDTOs;
     }
 
     public void delete(Long cid, String uid, List<Long> ids) {
