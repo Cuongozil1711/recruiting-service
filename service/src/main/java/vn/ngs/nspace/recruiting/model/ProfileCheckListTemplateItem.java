@@ -26,6 +26,7 @@ public class ProfileCheckListTemplateItem extends PersistableEntity<Long> {
     private Long templateId; // ngay nhan
     private String copyType; // hinh thuc : goc, copy, cong chung
     private String description; // ngay nhan
+    private String name;
     private Boolean required = true;
 
     public static ProfileCheckListTemplateItem of(Long cid, String uid, ProfileCheckListTemplateItemDTO dto){
@@ -36,6 +37,7 @@ public class ProfileCheckListTemplateItem extends PersistableEntity<Long> {
                 .description(dto.getDescription())
                 .copyType(dto.getCopyType())
                 .required(dto.getRequired() == null ? false : dto.getRequired())
+                .name(dto.getName())
                 .build();
         return obj;
     }
