@@ -43,7 +43,7 @@ public class OnboardContractService {
         orderRepo.findByCompanyIdAndId(cid, request.getOnboardOrderId()).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, request.getOnboardOrderId()));
         _hcmService.getContract(uid, cid, request.getContractId());
         OnboardContract exists = repo.findByCompanyIdAndOnboardOrderId(cid, request.getOnboardOrderId()).orElse(new OnboardContract());
-        if(exists.isNew()){
+        if(!exists.isNew()){
             exists.setContractId(request.getContractId());
             exists.setUpdateBy(uid);
             exists = repo.save(exists);
