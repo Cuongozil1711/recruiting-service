@@ -8,6 +8,7 @@ import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -19,12 +20,18 @@ public class JobApplicationDTO {
     private Long candidateId;
     private Long positionId;
     private Long titleId;
+    private Double offerSalary;
+    private String salaryUnit;
+    private Long cvSourceId;
+    private List<String> introduceById;
     private Long employeeId;
     private Long orgId;
     private String contractType;
     private Date onboardDate;
     private String state; // interview, offer, requested, cancelled, done
 
+    private Map<String , Object> cvSourceObj;
+    private List<EmployeeDTO> introduceByObj;
     private EmployeeDTO employeeObj;
     private CandidateDTO candidateObj;
     private Map<String, Object> positionObj;
