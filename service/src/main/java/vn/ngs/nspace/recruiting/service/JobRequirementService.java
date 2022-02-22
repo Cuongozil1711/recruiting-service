@@ -179,6 +179,9 @@ public class JobRequirementService {
             if (obj.getTitleId() != null) {
                 categoryIds.add(obj.getTitleId());
             }
+//            if (obj.getLevelId() != null) {
+//                categoryIds.add(obj.getLevelId());
+//            }
             if (obj.getGender() != null){
                 categoryIds.add(obj.getGender());
             }
