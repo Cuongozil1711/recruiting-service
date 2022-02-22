@@ -178,6 +178,7 @@ public class OnboardTrainingService {
         Set<Long> evluatorIds = new HashSet<>();
         Set<Long> hrIds = new HashSet<>();
         Set<Long> leaderIds = new HashSet<>();
+
         OnboardTraining ot = objs.get(0);
         OnboardTrainingTemplate template = new OnboardTrainingTemplate();
         JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, ot.getOnboardOrderId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
