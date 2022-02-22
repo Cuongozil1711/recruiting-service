@@ -11,8 +11,8 @@ import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
-
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
+import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateItemDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 
@@ -160,6 +160,15 @@ public class ProfileCheckListService {
         List<ProfileCheckListDTO> dtos = new ArrayList<>();
         Set<Long> categoryIds = new HashSet<>();
         Set<Long> employeeIds = new HashSet<>();
+
+        ProfileCheckList pr = objs.get(0);
+        ProfileCheckListTemplate template = new ProfileCheckListTemplate();
+        JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, pr.getOnboardOrderId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
+        List<ProfileCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId(), ja.getContractType());
+        if(templates.size() != 0){
+            template = templates.get(0);
+        }
+
         objs.forEach(o -> {
             if(o.getChecklistId() != null){
                 categoryIds.add(o.getChecklistId());
@@ -173,6 +182,10 @@ public class ProfileCheckListService {
 
             dtos.add(toDTO(o));
         });
+
+        List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
+        Map<Long, List<ProfileCheckListTemplateItem>> mapItems = items.stream().collect(Collectors.groupingBy(ProfileCheckListTemplateItem::getTemplateId));
+
         List<EmployeeDTO> employeeDTOS = _hcmService.getEmployees(uid, cid, employeeIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
 
@@ -189,6 +202,15 @@ public class ProfileCheckListService {
                 dto.setSenderObj(employeeDTOS.stream().filter(e -> {
                     return CompareUtil.compare(e.getId(), dto.getSenderId());
                 }).findAny().orElse(null) );
+            }
+            if (mapItems.get(template.getId()) != null){
+                for (ProfileCheckListTemplateItem lst: mapItems.get(template.getId())) {
+                    ProfileCheckListTemplateItemDTO item = new ProfileCheckListTemplateItemDTO();
+                    MapperUtils.copy(lst, item);
+                    if(item != null){
+                        dto.setItem(item);
+                    }
+                }
             }
         }
 

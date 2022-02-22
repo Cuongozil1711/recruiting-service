@@ -170,6 +170,7 @@ public class ProfileCheckListTemplateService {
         ProfileCheckListTemplate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
+        curr.setStatus(request.getStatus() == null ? Constants.ENTITY_ACTIVE : request.getStatus());
         curr = repo.save(curr);
         return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
     }
@@ -180,6 +181,7 @@ public class ProfileCheckListTemplateService {
             ProfileCheckListTemplateItem curr = itemRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplateItem.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
+            curr.setStatus(request.getStatus() == null ? Constants.ENTITY_ACTIVE : request.getStatus());
             curr = itemRepo.save(curr);
         }else{
             createItem(cid, uid, request);
