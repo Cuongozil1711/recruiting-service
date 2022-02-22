@@ -46,6 +46,15 @@ public class JobApplicationService {
     }
 
     public void valid(JobApplicationDTO dto){
+        if (dto.getOrgId() == null){
+            throw new BusinessException("invalid-org");
+        }
+        if (dto.getPositionId() == null){
+            throw new BusinessException("invalid-position");
+        }
+        if (StringUtils.isEmpty(dto.getState())){
+            throw new BusinessException("invalid-state");
+        }
     }
 
     public JobApplicationDTO create(Long cid, String uid, JobApplicationDTO request) {
@@ -139,6 +148,15 @@ public class JobApplicationService {
             if (obj.getTitleId() != null) {
                 categoryIds.add(obj.getTitleId());
             }
+            if(obj.getCvSourceId() != null){
+                categoryIds.add(obj.getCvSourceId());
+            }
+            if (obj.getIntroduceById() != null) {
+                obj.getIntroduceById().forEach(introduceBy -> {
+                    empIds.add(Long.valueOf(introduceBy));
+                });
+
+            }
             if (obj.getEmployeeId() != null && obj.getEmployeeId() != 0) {
                 empIds.add(obj.getEmployeeId());
             }
@@ -163,6 +181,18 @@ public class JobApplicationService {
             }
             if (dto.getEmployeeId() != null && dto.getEmployeeId() != 0){
                 dto.setEmployeeObj(mapEmp.get(dto.getEmployeeId()));
+            }
+            if (dto.getIntroduceById() != null){
+                List<EmployeeDTO> introduceByIds = new ArrayList<>();
+                dto.getIntroduceById().stream().forEach(i -> {
+                    if(!StringUtils.isEmpty(i)){
+                       introduceByIds.add(mapEmp.get(Long.valueOf(i)));
+                    }
+                });
+                dto.setIntroduceByObj(introduceByIds);
+            }
+            if (dto.getCvSourceId() != null){
+                dto.setCvSourceObj(mapCategory.get(dto.getCvSourceId()));
             }
             if(!StringUtils.isEmpty(dto.getCreateBy())){
                 dto.setCreateByObj((Map<String, Object>) mapperUser.get(dto.getCreateBy()));
