@@ -54,6 +54,7 @@ public class OnboardContractService {
         order.setCreateBy(uid);
         order.setUpdateBy(uid);
         order.setCompanyId(cid);
+        order.setOnboardOrderId(request.getOnboardOrderId());
         order = repo.save(order);
         return toDTO(order);
     }

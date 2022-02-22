@@ -79,6 +79,15 @@ public class OnboardTrainingTemplateService {
                 Long titileId = MapUtils.getLong(data, "titleId", 0l);
                 Long orgId = MapUtils.getLong(data, "orgId", 0l);
 
+                if (positionId == 0l && titileId == 0l && orgId == 0l){
+                    List<OnboardTrainingTemplate> lst = repo.findByCompanyIdAndStatus(cid, Constants.ENTITY_ACTIVE);
+                    for (OnboardTrainingTemplate checkTemplate: lst) {
+                        if(checkTemplate.getId() != templateId){
+                            checkTemplate.setStatus(Constants.ENTITY_INACTIVE);
+                            checkTemplate = repo.save(checkTemplate);
+                        }
+                    }
+                }
 
                 List<OnboardTrainingTemplate> existeds = repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, positionId, titileId, orgId, Constants.ENTITY_ACTIVE);
                 if (existeds.size() >= 1){
@@ -169,6 +178,10 @@ public class OnboardTrainingTemplateService {
                         dto.setChildren(itemDTOS);
                     }
                     create(cid, uid, dto);
+                    if (positionId == 0l && titileId == 0l && orgId == 0l){
+                        template.setStatus(Constants.ENTITY_INACTIVE);
+                        template = repo.save(template);
+                    }
                 }
             }
         }

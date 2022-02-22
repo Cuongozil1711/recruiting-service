@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.OnboardTrainingTemplate;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ public interface OnboardTrainingTemplateRepo  extends BaseRepo<OnboardTrainingTe
     Optional<OnboardTrainingTemplate> findByCompanyIdAndId (Long cid, Long id);
     List<OnboardTrainingTemplate> findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(Long cid, Long positionId, Long titleId, Long orgId, Integer status);
     void deleteAllByIdIn(Set<Long> id);
+    List<OnboardTrainingTemplate> findByCompanyIdAndStatus(Long cid, Integer status);
 
     @Query(value = " select p " +
             " from OnboardTrainingTemplate p " +
