@@ -165,7 +165,20 @@ public class ProfileCheckListTemplateService {
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
 
+        List<ProfileCheckListTemplateItem> lstItem = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, request.getId(), Constants.ENTITY_ACTIVE);
+        List<Long> lstItemOfDto = request.getItems().stream().map(dto -> dto.getId()).collect(Collectors.toList());
+        List<Long> lstItemExists = lstItem.stream().map(el -> el.getId()).collect(Collectors.toList());
+
+        List<Long> listCheckListIdForDelete = new ArrayList<>(lstItemExists);
+        listCheckListIdForDelete.removeAll(lstItemOfDto);
+
+        for (Long itemId: listCheckListIdForDelete) {
+            ProfileCheckListTemplateItem item =  itemRepo.findByCompanyIdAndId(cid, itemId).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplateItem.class, itemId));
+            item.setStatus(Constants.ENTITY_INACTIVE);
+            item = itemRepo.save(item);
+        }
         for(ProfileCheckListTemplateItemDTO itemDTO : request.getItems()){
+
             if(CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
                 itemDTO.setStatus(Constants.ENTITY_INACTIVE);
             }
@@ -190,7 +203,7 @@ public class ProfileCheckListTemplateService {
 
     public void updateItem(Long cid, String uid, Long id, ProfileCheckListTemplateItemDTO request) throws BusinessException{
         validItem(request);
-        if(request.getId() != 0l && request.getId() != null){
+        if(request.getId() != null){
             ProfileCheckListTemplateItem curr = itemRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplateItem.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);

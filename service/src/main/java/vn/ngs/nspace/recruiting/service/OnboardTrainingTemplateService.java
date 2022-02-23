@@ -291,7 +291,7 @@ public class OnboardTrainingTemplateService {
     }
 
     public void updateItem(Long cid, String uid, Long id, OnboardTrainingTemplateItemDTO request) throws BusinessException{
-        if(request.getId() != 0l && request.getId() != null){
+        if(request.getId() != null){
             validItem(request);
             OnboardTrainingTemplateItem curr = itemRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItem.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
@@ -325,7 +325,7 @@ public class OnboardTrainingTemplateService {
     }
 
     public void updateItemChildren(Long cid, String uid, Long id, OnboardTrainingTemplateItemChildrenDTO request) throws BusinessException{
-        if(request.getId() != 0l && request.getId() != null){
+        if(request.getId() != null){
             validItemChild(request);
             OnboardTrainingTemplateItemChildren curr = childrenRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItemChildren.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
@@ -363,7 +363,7 @@ public class OnboardTrainingTemplateService {
     }
 
     public void updateItemGrandChild(Long cid, String uid, Long id, OnboardTrainingTemplateItemGrandChildDTO request) throws BusinessException{
-        if(request.getId() != 0l && request.getId() != null){
+        if(request.getId() != null){
             validItemGrandChild(request);
             OnboardTrainingTemplateItemGrandChild curr = grandChildRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItemGrandChild.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
