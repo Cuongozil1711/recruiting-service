@@ -185,6 +185,11 @@ public class OnboardTrainingTemplateService {
                 }
             }
         }
+        Map<String, Object> data = new HashMap<>();
+        data.put("positionId", template.getPositionId());
+        data.put("titleId", template.getTitleId());
+        data.put("orgId", template.getOrgId());
+        newDatas.add(data);
         return newDatas;
     }
 
