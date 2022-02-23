@@ -16,6 +16,7 @@ import java.util.Optional;
 
 public interface ProfileCheckListTemplateRepo extends BaseRepo<ProfileCheckListTemplate,Long> {
     Optional<ProfileCheckListTemplate> findByCompanyIdAndId(long cid, Long id);
+    List<ProfileCheckListTemplate> findByCompanyIdAndStatus(Long cid, Integer status);
     List<ProfileCheckListTemplate> findByCompanyIdAndPositionIdAndTitleIdAndStatus(Long cid, Long positionId, Long titleId, Integer status);
     @Query(value = " select p " +
             " from ProfileCheckListTemplate p " +
@@ -30,6 +31,7 @@ public interface ProfileCheckListTemplateRepo extends BaseRepo<ProfileCheckListT
     @Query(value = " select p " +
             " from ProfileCheckListTemplate p " +
             " where (p.companyId = :companyId)" +
+            " and (p.status = 1 ) " +
             " and (p.positionId = :positionId or coalesce(p.positionId, 0)  = 0) " +
             " and (p.titleId = :titleId or coalesce(p.titleId, 0)  = 0) " +
             " and (p.contractType = :contractType or coalesce(p.contractType, '#')  = '#')" +
