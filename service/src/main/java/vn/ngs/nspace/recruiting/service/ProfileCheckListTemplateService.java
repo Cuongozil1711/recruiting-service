@@ -124,6 +124,11 @@ public class ProfileCheckListTemplateService {
                 }
             }
         }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("positionId", template.getPositionId());
+        data.put("titleId", template.getTitleId());
+        newDatas.add(data);
         return newDatas;
     }
 
