@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.InterviewInvolve;
@@ -148,7 +149,7 @@ public class InterviewInvolveApi {
         }
     }
 
-    @PostMapping("/apply-involves/{id}")
+    @PostMapping("/apply-involves")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "apply interview involve",
             description = "API for aplly interview involve for list org, position and title")
@@ -159,12 +160,18 @@ public class InterviewInvolveApi {
             @RequestHeader Long cid
             ,@Parameter(description = "ID of userID")
             @RequestHeader String uid
-            ,@Parameter(description = "param in path")
-            @PathVariable Long id
-            , @RequestBody List<InterviewInvolveDTO> dtos){
+            , @Parameter(description="Payload DTO to grant mutil {newDatas[{}]; id: }")
+            @RequestBody Map<String, Object> request){
         try {
-            dtos = _service.applyInvolves(cid,uid, id, dtos);
-            return ResponseUtils.handlerSuccess(dtos);
+            if(!request.containsKey("newDatas")){
+                throw new BusinessException("invalid-new-data");
+            }
+            List<Map<String, Object>> newDatas = (List<Map<String, Object>>) vn.ngs.nspace.lib.utils.MapUtils.getObject(request, "newDatas");
+            Long involveId = vn.ngs.nspace.lib.utils.MapUtils.getLong(request, "involveId", 0l);
+            if(involveId == 0l){
+                throw new Exception("invalid-template-id");
+            }
+            return ResponseUtils.handlerSuccess(_service.applyInvolves(cid,uid,involveId,newDatas));
         }catch (Exception e){
             return ResponseUtils.handlerException(e);
         }

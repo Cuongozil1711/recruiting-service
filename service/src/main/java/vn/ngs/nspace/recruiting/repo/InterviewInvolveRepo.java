@@ -53,5 +53,6 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             , @Param("titleId") Long titleId);
 
 
+    List<InterviewInvolve> findByCompanyIdAndStatus(Long cid, Integer status);
 }
 
