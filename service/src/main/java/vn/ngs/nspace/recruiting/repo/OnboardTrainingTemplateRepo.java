@@ -34,6 +34,7 @@ public interface OnboardTrainingTemplateRepo  extends BaseRepo<OnboardTrainingTe
     @Query(value = " select p " +
             " from OnboardTrainingTemplate p " +
             " where (p.companyId = :companyId)" +
+            " and (p.status = 1 ) "+
             " and (p.positionId = :positionId or coalesce(p.positionId, 0)  = 0) " +
             " and (p.titleId = :titleId or coalesce(p.titleId, 0)  = 0) " +
             " and (p.orgId = :orgId or coalesce(p.orgId, 0)  = 0) " +

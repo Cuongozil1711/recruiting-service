@@ -266,6 +266,18 @@ public class OnboardTrainingTemplateService {
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
         if(request.getChildren() != null && !request.getChildren().isEmpty()) {
+            List<OnboardTrainingTemplateItem> lstItem = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, request.getId(), Constants.ENTITY_ACTIVE);
+            List<Long> lstItemOfDto = request.getChildren().stream().map(dto -> dto.getId()).collect(Collectors.toList());
+            List<Long> lstItemExists = lstItem.stream().map(el -> el.getId()).collect(Collectors.toList());
+
+            List<Long> listCheckListIdForDelete = new ArrayList<>(lstItemExists);
+            listCheckListIdForDelete.removeAll(lstItemOfDto);
+
+            for (Long itemId: listCheckListIdForDelete) {
+                OnboardTrainingTemplateItem item =  itemRepo.findByCompanyIdAndId(cid, itemId).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItem.class, itemId));
+                item.setStatus(Constants.ENTITY_INACTIVE);
+                item = itemRepo.save(item);
+            }
             for (OnboardTrainingTemplateItemDTO itemDTO : request.getChildren()) {
                 if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)) {
                     itemDTO.setStatus(Constants.ENTITY_INACTIVE);
@@ -285,6 +297,18 @@ public class OnboardTrainingTemplateService {
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
             if(request.getChildren() != null && !request.getChildren().isEmpty()) {
+                List<OnboardTrainingTemplateItemChildren> lstItem = childrenRepo.findByCompanyIdAndTemplateIdAndItemIdAndStatus(cid, request.getTemplateId(), request.getId(), Constants.ENTITY_ACTIVE);
+                List<Long> lstItemOfDto = request.getChildren().stream().map(dto -> dto.getId()).collect(Collectors.toList());
+                List<Long> lstItemExists = lstItem.stream().map(el -> el.getId()).collect(Collectors.toList());
+
+                List<Long> listCheckListIdForDelete = new ArrayList<>(lstItemExists);
+                listCheckListIdForDelete.removeAll(lstItemOfDto);
+
+                for (Long itemId: listCheckListIdForDelete) {
+                    OnboardTrainingTemplateItemChildren item =  childrenRepo.findByCompanyIdAndId(cid, itemId).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItem.class, itemId));
+                    item.setStatus(Constants.ENTITY_INACTIVE);
+                    item = childrenRepo.save(item);
+                }
                 for (OnboardTrainingTemplateItemChildrenDTO childrenDTO : request.getChildren()) {
                     if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)) {
                         childrenDTO.setStatus(Constants.ENTITY_INACTIVE);
@@ -307,6 +331,20 @@ public class OnboardTrainingTemplateService {
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
             if(request.getChildren() != null && !request.getChildren().isEmpty()){
+
+                List<OnboardTrainingTemplateItemGrandChild> lstItem = grandChildRepo.findByCompanyIdAndTemplateIdAndItemIdAndItemChildrenIdAndStatus(cid, request.getTemplateId(), request.getItemId(), request.getId(), Constants.ENTITY_ACTIVE);
+                List<Long> lstItemOfDto = request.getChildren().stream().map(dto -> dto.getId()).collect(Collectors.toList());
+                List<Long> lstItemExists = lstItem.stream().map(el -> el.getId()).collect(Collectors.toList());
+
+                List<Long> listCheckListIdForDelete = new ArrayList<>(lstItemExists);
+                listCheckListIdForDelete.removeAll(lstItemOfDto);
+
+                for (Long itemId: listCheckListIdForDelete) {
+                    OnboardTrainingTemplateItemGrandChild item =  grandChildRepo.findByCompanyIdAndId(cid, itemId).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplateItemGrandChild.class, itemId));
+                    item.setStatus(Constants.ENTITY_INACTIVE);
+                    item = grandChildRepo.save(item);
+                }
+
                 for(OnboardTrainingTemplateItemGrandChildDTO grandChildDTO : request.getChildren()){
                     if (CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
                         grandChildDTO.setStatus(Constants.ENTITY_INACTIVE);
@@ -315,6 +353,7 @@ public class OnboardTrainingTemplateService {
                     grandChildDTO.setItemId(request.getItemId());
                     grandChildDTO.setItemChildrenId(request.getItemId());
                     updateItemGrandChild(cid, uid, grandChildDTO.getId(), grandChildDTO);
+
                 }
             }
             curr = childrenRepo.save(curr);
