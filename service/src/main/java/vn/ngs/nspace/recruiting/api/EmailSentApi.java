@@ -98,6 +98,8 @@ public class EmailSentApi {
         }
     }
 
+
+
     @PostMapping("/send")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Get Email Sent by ID"

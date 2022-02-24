@@ -75,7 +75,8 @@ public class ProfileCheckListTemplateService {
         for (Map<String, Object> data: newDatas) {
             Long positionId = MapUtils.getLong(data, "positionId", 0l);
             Long titileId = MapUtils.getLong(data, "titleId", 0l);
-            if (positionId == 0l && titileId == 0l){
+            String contractType = MapUtils.getString(data, "contractType", "#");
+            if (positionId == 0l && titileId == 0l && contractType == ""){
                 List<ProfileCheckListTemplate> lst = repo.findByCompanyIdAndStatus(cid, Constants.ENTITY_ACTIVE);
                 for (ProfileCheckListTemplate checkTemplate: lst) {
                     if (checkTemplate.getId() != templateId){
@@ -118,7 +119,7 @@ public class ProfileCheckListTemplateService {
                 MapperUtils.copyWithoutAudit(items, itemDTOS);
                 dto.setItems(itemDTOS);
                 create(cid, uid, dto);
-                if (positionId == 0l && titileId == 0l){
+                if (positionId == 0l && titileId == 0l && contractType == ""){
                     template.setStatus(Constants.ENTITY_INACTIVE);
                     template = repo.save(template);
                 }
@@ -128,6 +129,7 @@ public class ProfileCheckListTemplateService {
         Map<String, Object> data = new HashMap<>();
         data.put("positionId", template.getPositionId());
         data.put("titleId", template.getTitleId());
+        data.put("contractType", template.getContractType());
         newDatas.add(data);
         return newDatas;
     }
