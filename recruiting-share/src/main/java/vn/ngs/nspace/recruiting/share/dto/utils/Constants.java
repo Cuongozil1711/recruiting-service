@@ -19,8 +19,8 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
             "coaching");
 
     public enum ONBOARD_ORDER_CHECK_LIST_STATE{
-        PENDING
-        , DONE
+        notcomplete
+        , complete
 
     }
 
@@ -60,6 +60,7 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
         CANDIDATE
         , EMPLOYEE
     }
+
 
     public enum CMD_TABLE_ACTION {
         DELETE

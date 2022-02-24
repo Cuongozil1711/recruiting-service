@@ -237,8 +237,9 @@ public class OnboardOrderApi {
             ,@Parameter(description="Payload DTO to get email") @RequestBody Map<String, Object> condition ) {
         try {
             String toEmail = MapUtils.getString(condition, "toEmail", "");
+            String refType = MapUtils.getString(condition, "refType", "");
             String type = MapUtils.getString(condition, "type", "");
-            List<EmailSent> list = _repoEmail.findByCompanyIdAndToEmailAndRefType(cid, toEmail, type);
+            List<EmailSent> list = _repoEmail.findByCompanyIdAndToEmailAndRefTypeAndTypeOnboard(cid, toEmail, refType, type);
 
             return ResponseUtils.handlerSuccess(list);
         }catch (Exception ex){
