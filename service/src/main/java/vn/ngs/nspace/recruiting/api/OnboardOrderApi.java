@@ -18,8 +18,10 @@ import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
+import vn.ngs.nspace.recruiting.model.EmailSent;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
+import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
@@ -28,6 +30,7 @@ import vn.ngs.nspace.recruiting.service.ProfileCheckListTemplateService;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +46,7 @@ public class OnboardOrderApi {
     private final OnboardOrderService _service;
     private final OnboardOrderRepo _repo;
     private final ExecuteHcmService _hcmService;
+    private final EmailSentRepo _repoEmail;
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
@@ -219,4 +223,25 @@ public class OnboardOrderApi {
 //
 //        return null;
 
+
+    @PostMapping("/get-email-by-onboarId")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "get many records info email",
+            description = "can get list email")
+
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getEmailByOnboarId(
+            @Parameter(description="id of company") @RequestHeader Long cid
+            , @Parameter(description="id of user") @RequestHeader String uid
+            ,@Parameter(description="Payload DTO to get email") @RequestBody Map<String, Object> condition ) {
+        try {
+            String toEmail = MapUtils.getString(condition, "toEmail", "");
+            List<EmailSent> list = _repoEmail.findByCompanyIdAndToEmail(cid, toEmail);
+            return ResponseUtils.handlerSuccess(list);
+        }catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
+
+    }
 }

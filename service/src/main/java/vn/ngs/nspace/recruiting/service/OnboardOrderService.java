@@ -169,6 +169,7 @@ public class OnboardOrderService {
         return dtos;
     }
 
+
     public List<OnboardOrderCheckListDTO> getOnboardOrderCheckList(Long cid, String uid, Long onboardOrderId){
         OnboardOrder onboard = repo.findByCompanyIdAndId(cid, onboardOrderId).orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, onboardOrderId));
         List<OnboardOrderCheckList> checkList =  checkListRepo.findByCompanyIdAndOnboardOrderIdAndCodeIn(cid, onboardOrderId, Constants.onboardCheckList);
