@@ -21,7 +21,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
             " and (lower(concat(coalesce(c.fullName,''), coalesce(c.wardCode,''), coalesce(c.phone,'')" +
-            ", coalesce(c.email,'') )) like %:search%)" )
+            ", coalesce(c.email,'') )) like (concat('%',:search,'%'))) or coalesce(:search, '#') = '#'" )
     Page<Candidate> search(
             @Param("companyId") Long cid
             ,@Param("search") String search
@@ -38,8 +38,8 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.status = 1)" +
             " and (c.applyPositionId = :applyPosition or :applyPosition = -1 )" +
             " and (c.gender = :gender or :gender = -1)" +
-            " and (c.language = :language or :language = 'all')" +
-            " and (c.educationLevel = :educationLevel or :educationLevel = -1)" +
+            " and (c.language in :language or :language = 'all')" +
+            " and (c.educationLevel in :educationLevel or :educationLevel = -1)" +
             " and (lower(c.educateLocation) like (concat('%',:educateLocation,'%')) or :educateLocation = 'all')  " +
             " and (lower(c.industry) like (concat('%',:industry,'%')) or :industry = 'all') " +
             " and (lower(c.lastPosition) like (concat('%',:lastPosition,'%')) or :lastPosition = 'all') " +

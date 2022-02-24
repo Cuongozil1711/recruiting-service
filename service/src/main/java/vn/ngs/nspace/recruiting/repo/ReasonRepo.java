@@ -21,7 +21,7 @@ public interface ReasonRepo extends BaseRepo<Reason,Long> {
             " from Reason c" +
             " where (c.companyId = :companyId)" +
             " and (c.type = :type)" +
-            " and (concat(coalesce(c.code,''), coalesce(c.title,'')) like %:search% or coalesce(:search, '#') = '#') " )
+            " and (lower(concat(coalesce(c.code,''), coalesce(c.title,''))) like (concat('%',:search,'%')) or coalesce(:search, '#') = '#') " )
     Page<Map<String, Object>> search(
             @Param("companyId") Long cid
             ,@Param("type") String type
