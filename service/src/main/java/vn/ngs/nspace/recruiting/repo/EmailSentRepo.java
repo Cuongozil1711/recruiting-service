@@ -16,7 +16,7 @@ public interface EmailSentRepo extends BaseRepo<EmailSent,Long> {
 
     Optional<Candidate> findByCompanyIdAndId(long cid, Long id);
     List<EmailSent> findByCompanyIdAndRefTypeAndRefId(long cid, String refType, String refId);
-    List<EmailSent> findByCompanyIdAndToEmail(Long cid, String toEmail);
+    List<EmailSent> findByCompanyIdAndToEmailAndRefType(Long cid, String toEmail, String type);
     Optional<EmailSent> findByCompanyIdAndId(Long cid, Long id);
 }
 
