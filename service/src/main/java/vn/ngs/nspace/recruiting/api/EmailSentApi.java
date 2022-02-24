@@ -15,10 +15,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
-import vn.ngs.nspace.recruiting.model.Candidate;
-import vn.ngs.nspace.recruiting.model.EmailSent;
-import vn.ngs.nspace.recruiting.model.EmailSetting;
-import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
+import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
@@ -92,7 +89,7 @@ public class EmailSentApi {
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id) {
         try{
-            return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndId(cid, id));
+             return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndId(cid, id));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
@@ -175,6 +172,26 @@ public class EmailSentApi {
             }
 
             return ResponseUtils.handlerSuccess(es);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @GetMapping("/getById/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get Email Sent by ID"
+            , description = "Get Email Sent by ID"
+            , tags = { "Email" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getById(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id) {
+        try{
+            EmailSent el = _repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(EmailSent.class, id));
+            return ResponseUtils.handlerSuccess(el);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
