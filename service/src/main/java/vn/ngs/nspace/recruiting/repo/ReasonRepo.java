@@ -17,11 +17,11 @@ public interface ReasonRepo extends BaseRepo<Reason,Long> {
     Optional<Reason> findByCompanyIdAndCode(long cid, String code);
     List<Reason> findByCompanyIdAndType(long cid, String type);
     Optional<Reason> findByCompanyIdAndTypeAndCodeAndStatus(long cid, String type, String code, Integer status);
-    @Query(value = "select c.id as id, c.code as code, c.title as title, c.status as status, c.type as type" +
+    @Query(value = "select c.id as id, c.code as code, c.title as title, c.status as status, c.type as type, c.description as description " +
             " from Reason c" +
             " where (c.companyId = :companyId)" +
             " and (c.type = :type)" +
-            " and (lower(concat(coalesce(c.code,''), coalesce(c.title,''))) like (concat('%',:search,'%')) or coalesce(:search, '#') = '#') " )
+            " and (lower(concat(coalesce(c.code,''), coalesce(c.title,''), coalesce(c.description,''))) like (concat('%',:search,'%')) or coalesce(:search, '#') = '#') " )
     Page<Map<String, Object>> search(
             @Param("companyId") Long cid
             ,@Param("type") String type
