@@ -46,7 +46,7 @@ public class CandidateApi {
     protected ResponseEntity search(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @Parameter(description = "Payload filter") @RequestParam(name = "search") String search
+            , @Parameter(description = "Payload filter") @RequestParam(name = "search",defaultValue = "#") String search
             , Pageable pageable) {
         try{
 
@@ -201,7 +201,7 @@ public class CandidateApi {
         }
     }
 
-    @PostMapping("filter")
+    @PostMapping("/filter")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "candidate-filter list Candidate",
             description = "API for candidate-filter list Candidate"
