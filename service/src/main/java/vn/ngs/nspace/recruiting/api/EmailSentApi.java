@@ -114,6 +114,7 @@ public class EmailSentApi {
             Long emailSettingId = MapUtils.getLong(payload, "emailSettingId", 0l);
             Long candidateId = MapUtils.getLong(payload, "candidateId", 0l);
             Long employeeId = MapUtils.getLong(payload, "employeeId", 0l);
+            String typeOnboard = MapUtils.getString(payload, "typeOnboard", "");
             if(employeeId == 0l && candidateId == 0l){
                 throw new BusinessException("can-not-empty-both-employee-and-candidate");
             }
@@ -159,18 +160,19 @@ public class EmailSentApi {
             es.setCompanyId(cid);
             es.setRefType(refType);
             es.setRefId(refId);
-            es = _repo.save(es);
+
 
             Long onboardOrderCheckListId = MapUtils.getLong(payload, "onboardOrderCheckListId", 0l);
             if(onboardOrderCheckListId != null){
                 OnboardOrderCheckList orderCheckList = _onboardOrderCheckListRepo.findByCompanyIdAndId(cid, onboardOrderCheckListId).orElse(new OnboardOrderCheckList());
                 if(!orderCheckList.isNew()){
                     orderCheckList.setUpdateBy(uid);
-                    orderCheckList.setState(Constants.ONBOARD_ORDER_CHECK_LIST_STATE.DONE.name());
+                    orderCheckList.setState(Constants.ONBOARD_ORDER_CHECK_LIST_STATE.complete.name());
                     _onboardOrderCheckListRepo.save(orderCheckList);
                 }
+                es.setTypeOnboard(typeOnboard);
             }
-
+            es = _repo.save(es);
             return ResponseUtils.handlerSuccess(es);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
