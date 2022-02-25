@@ -76,15 +76,7 @@ public class ProfileCheckListTemplateService {
             Long positionId = MapUtils.getLong(data, "positionId", 0l);
             Long titileId = MapUtils.getLong(data, "titleId", 0l);
             String contractType = MapUtils.getString(data, "contractType", "#");
-            if (positionId == 0l && titileId == 0l && contractType == ""){
-                List<ProfileCheckListTemplate> lst = repo.findByCompanyIdAndStatus(cid, Constants.ENTITY_ACTIVE);
-                for (ProfileCheckListTemplate checkTemplate: lst) {
-                    if (checkTemplate.getId() != templateId){
-                        checkTemplate.setStatus(Constants.ENTITY_INACTIVE);
-                        checkTemplate = repo.save(checkTemplate);
-                    }
-                }
-            }
+
             List<ProfileCheckListTemplate> existeds = repo.findByCompanyIdAndPositionIdAndTitleIdAndStatus(cid, positionId, titileId, Constants.ENTITY_ACTIVE);
             if(existeds.size() >= 1){ // da ton tai voi vi tri vai tro nay
                 for (ProfileCheckListTemplate existed: existeds){
@@ -119,10 +111,6 @@ public class ProfileCheckListTemplateService {
                 MapperUtils.copyWithoutAudit(items, itemDTOS);
                 dto.setItems(itemDTOS);
                 create(cid, uid, dto);
-                if (positionId == 0l && titileId == 0l && contractType == ""){
-                    template.setStatus(Constants.ENTITY_INACTIVE);
-                    template = repo.save(template);
-                }
             }
         }
 
