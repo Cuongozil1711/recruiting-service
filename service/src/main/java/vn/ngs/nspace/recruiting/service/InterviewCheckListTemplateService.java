@@ -111,15 +111,13 @@ public class InterviewCheckListTemplateService {
         curr.setUpdateBy(uid);
 
         for(InterviewCheckListTemplateItemDTO itemDTO : dto.getItems()){
-            if(itemDTO.getId() == null || itemDTO.getId() == 0l){
-                createItem(cid, uid, itemDTO);
-            }else{
+
                 if(CompareUtil.compare(dto.getStatus(), Constants.ENTITY_INACTIVE)){
                     itemDTO.setStatus(Constants.ENTITY_INACTIVE);
                 }
                 itemDTO.setTemplateId(dto.getId());
                 updateItem(cid, uid, itemDTO.getId(), itemDTO);
-            }
+
 
         }
 
@@ -129,10 +127,11 @@ public class InterviewCheckListTemplateService {
 
     private void updateItem(long cid, String uid, Long id, InterviewCheckListTemplateItemDTO itemDTO) {
         validItem(itemDTO);
-        if(itemDTO.getId() != 0l && itemDTO.getId() != null){
+        if(itemDTO.getId() != null){
             InterviewCheckListTemplateItem curr = itemRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewCheckListTemplateItem.class, id));
             MapperUtils.copyWithoutAudit(itemDTO, curr);
             curr.setUpdateBy(uid);
+            curr.setStatus(itemDTO.getStatus() == null ? Constants.ENTITY_ACTIVE : itemDTO.getStatus());
             curr = itemRepo.save(curr);
         }else{
             createItem(cid, uid, itemDTO);
