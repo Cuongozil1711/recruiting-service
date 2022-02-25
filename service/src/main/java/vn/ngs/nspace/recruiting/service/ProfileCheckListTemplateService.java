@@ -198,7 +198,7 @@ public class ProfileCheckListTemplateService {
 
     public void updateItem(Long cid, String uid, Long id, ProfileCheckListTemplateItemDTO request) throws BusinessException{
         validItem(request);
-        if(request.getId() != null){
+        if(request.getId() != null || request.getId() == 0l){
             ProfileCheckListTemplateItem curr = itemRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplateItem.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
