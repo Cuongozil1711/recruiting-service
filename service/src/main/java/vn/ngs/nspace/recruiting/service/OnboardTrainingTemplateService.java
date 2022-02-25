@@ -71,6 +71,8 @@ public class OnboardTrainingTemplateService {
     }
 
     public List<Map<String, Object>>  grant(Long cid, String uid, Long templateId, List<Map<String, Object>> newDatas) throws BusinessException{
+        Set<Long> itemIds = new HashSet<>();
+        Set<Long> itemChildIds = new HashSet<>();
         OnboardTrainingTemplate template = repo.findByCompanyIdAndId(cid, templateId).orElseThrow(() -> new EntityNotFoundException(OnboardTrainingTemplate.class, templateId));
         if(template != null && !template.isNew()){
             for (Map<String, Object> data: newDatas) {
@@ -92,41 +94,64 @@ public class OnboardTrainingTemplateService {
                         dto.setTitleId(titileId);
                         dto.setOrgId(orgId);
 
+
                         List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, templateId, Constants.ENTITY_ACTIVE);
-                        if(!items.isEmpty()){
+                        Map<Long, List<OnboardTrainingTemplateItem>> mapItems = items.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItem::getTemplateId));
+                        itemIds = items.stream().map(el -> el.getId()).collect(Collectors.toSet());
 
-                            List<OnboardTrainingTemplateItemDTO> itemDTOS = new ArrayList<>();
-                            List<OnboardTrainingTemplateItemChildrenDTO> itemChildrenDTOS = new ArrayList<>();
-                            List<OnboardTrainingTemplateItemGrandChildDTO> grandChildDTOS = new ArrayList<>();
+                        List<OnboardTrainingTemplateItemChildren> childrens = childrenRepo.findByCompanyIdAndTemplateIdAndItemIdIn(cid, template.getId(), itemIds);
+                        Map<Long, List<OnboardTrainingTemplateItemChildren>> mapItemChildrens = childrens.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItemChildren::getItemId));
+                        itemChildIds = childrens.stream().map(el -> el.getId()).collect(Collectors.toSet());
 
-                            for (OnboardTrainingTemplateItem item: items) {
-                                OnboardTrainingTemplateItemDTO itemDTO = new OnboardTrainingTemplateItemDTO();
-                                MapperUtils.copyWithoutAudit(item, itemDTO);
-                                itemDTOS.add(itemDTO);
-                                List<OnboardTrainingTemplateItemChildren> itemChildrens = childrenRepo.findByCompanyIdAndTemplateIdAndItemIdAndStatus(cid, templateId, item.getId(), Constants.ENTITY_ACTIVE);
-                                if (!itemChildrens.isEmpty()){
-                                    for (OnboardTrainingTemplateItemChildren itemChildren: itemChildrens) {
-                                        OnboardTrainingTemplateItemChildrenDTO childrenDTO = new OnboardTrainingTemplateItemChildrenDTO();
-                                        MapperUtils.copyWithoutAudit(itemChildren, childrenDTO);
-                                        itemChildrenDTOS.add(childrenDTO);
-                                        List<OnboardTrainingTemplateItemGrandChild> itemGrandChildrens = grandChildRepo.findByCompanyIdAndTemplateIdAndItemIdAndItemChildrenIdAndStatus(cid, templateId, item.getId(), itemChildren.getId(), Constants.ENTITY_ACTIVE);
-                                        if (!itemGrandChildrens.isEmpty()){
+                        List<OnboardTrainingTemplateItemGrandChild> itemGrandChildrens = grandChildRepo.findByCompanyIdAndTemplateIdAndItemIdInAndItemChildrenIdIn(cid, template.getId(), itemIds, itemChildIds);
+                        Map<Long, List<OnboardTrainingTemplateItemGrandChild>> mapItemGrandChildrens = itemGrandChildrens.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItemGrandChild::getItemChildrenId));
 
-                                            for (OnboardTrainingTemplateItemGrandChild itemGrandChild: itemGrandChildrens) {
-                                                OnboardTrainingTemplateItemGrandChildDTO itemGrandChildDTO = new OnboardTrainingTemplateItemGrandChildDTO();
-                                                MapperUtils.copyWithoutAudit(itemGrandChild, itemGrandChildDTO);
-                                                grandChildDTOS.add(itemGrandChildDTO);
-                                            }
-                                            childrenDTO.setChildren(grandChildDTOS);
-                                        }
-                                    }
-                                    itemDTO.setChildren(itemChildrenDTOS);
+                        List<OnboardTrainingTemplateItemDTO> lstItemDTO = new ArrayList<>();
+                        List<OnboardTrainingTemplateItemChildrenDTO> lstChilDTO = new ArrayList<>();
+
+                        if (mapItems.get(templateId) != null){
+                            List<OnboardTrainingTemplateItemDTO> lstItem = new ArrayList<>();
+                            if (mapItems.get(templateId) != null){
+                                for (OnboardTrainingTemplateItem lst: mapItems.get(templateId)) {
+                                    OnboardTrainingTemplateItemDTO item = new OnboardTrainingTemplateItemDTO();
+                                    lstItem.add(MapperUtils.copy(lst, item));
                                 }
                             }
-                            dto.setChildren(itemDTOS);
 
+                            if(lstItem != null){
+                                for (OnboardTrainingTemplateItemDTO it: lstItem) {
+                                    List<OnboardTrainingTemplateItemChildrenDTO> lstChild = new ArrayList<>();
+                                    if(mapItemChildrens.get(it.getId()) != null){
+                                        for (OnboardTrainingTemplateItemChildren lst: mapItemChildrens.get(it.getId())) {
+                                            OnboardTrainingTemplateItemChildrenDTO item = new OnboardTrainingTemplateItemChildrenDTO();
+                                            lstChild.add(MapperUtils.copy(lst, item));
+                                        }
+                                        if(lstChild != null){
+                                            it.setChildren(lstChild);
+                                        }
+                                    }
+                                    if(lstChild != null){
+                                        for (OnboardTrainingTemplateItemChildrenDTO child: lstChild) {
+                                            List<OnboardTrainingTemplateItemGrandChildDTO> lstGrandChild = new ArrayList<>();
+                                            if(mapItemGrandChildrens.get(child.getId()) != null){
+                                                for (OnboardTrainingTemplateItemGrandChild lst: mapItemGrandChildrens.get(child.getId())) {
+                                                    OnboardTrainingTemplateItemGrandChildDTO item = new OnboardTrainingTemplateItemGrandChildDTO();
+                                                    lstGrandChild.add(MapperUtils.copy(lst, item));
+                                                }
+                                                if(lstGrandChild != null){
+                                                    child.setChildren(lstGrandChild);
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                }
+                                dto.setChildren(lstItem);
+                            }
                         }
                         create(cid, uid, dto);
+
+
                     }
                 } else {
                     OnboardTrainingTemplateDTO dto = new OnboardTrainingTemplateDTO();
@@ -136,37 +161,58 @@ public class OnboardTrainingTemplateService {
                     dto.setOrgId(orgId);
 
                     List<OnboardTrainingTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, templateId, Constants.ENTITY_ACTIVE);
-                    if(!items.isEmpty()){
+                    Map<Long, List<OnboardTrainingTemplateItem>> mapItems = items.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItem::getTemplateId));
+                    itemIds = items.stream().map(el -> el.getId()).collect(Collectors.toSet());
 
-                        List<OnboardTrainingTemplateItemDTO> itemDTOS = new ArrayList<>();
-                        List<OnboardTrainingTemplateItemChildrenDTO> itemChildrenDTOS = new ArrayList<>();
-                        List<OnboardTrainingTemplateItemGrandChildDTO> grandChildDTOS = new ArrayList<>();
+                    List<OnboardTrainingTemplateItemChildren> childrens = childrenRepo.findByCompanyIdAndTemplateIdAndItemIdIn(cid, template.getId(), itemIds);
+                    Map<Long, List<OnboardTrainingTemplateItemChildren>> mapItemChildrens = childrens.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItemChildren::getItemId));
+                    itemChildIds = childrens.stream().map(el -> el.getId()).collect(Collectors.toSet());
 
-                        for (OnboardTrainingTemplateItem item: items) {
-                            OnboardTrainingTemplateItemDTO itemDTO = new OnboardTrainingTemplateItemDTO();
-                            MapperUtils.copyWithoutAudit(item, itemDTO);
-                            itemDTOS.add(itemDTO);
-                            List<OnboardTrainingTemplateItemChildren> itemChildrens = childrenRepo.findByCompanyIdAndTemplateIdAndItemIdAndStatus(cid, templateId, item.getId(), Constants.ENTITY_ACTIVE);
-                            if (!itemChildrens.isEmpty()){
-                                for (OnboardTrainingTemplateItemChildren itemChildren: itemChildrens) {
-                                    OnboardTrainingTemplateItemChildrenDTO childrenDTO = new OnboardTrainingTemplateItemChildrenDTO();
-                                    MapperUtils.copyWithoutAudit(itemChildren, childrenDTO);
-                                    itemChildrenDTOS.add(childrenDTO);
-                                    List<OnboardTrainingTemplateItemGrandChild> itemGrandChildrens = grandChildRepo.findByCompanyIdAndTemplateIdAndItemIdAndItemChildrenIdAndStatus(cid, templateId, item.getId(), itemChildren.getId(), Constants.ENTITY_ACTIVE);
-                                    if (!itemGrandChildrens.isEmpty()){
+                    List<OnboardTrainingTemplateItemGrandChild> itemGrandChildrens = grandChildRepo.findByCompanyIdAndTemplateIdAndItemIdInAndItemChildrenIdIn(cid, template.getId(), itemIds, itemChildIds);
+                    Map<Long, List<OnboardTrainingTemplateItemGrandChild>> mapItemGrandChildrens = itemGrandChildrens.stream().collect(Collectors.groupingBy(OnboardTrainingTemplateItemGrandChild::getItemChildrenId));
 
-                                        for (OnboardTrainingTemplateItemGrandChild itemGrandChild: itemGrandChildrens) {
-                                            OnboardTrainingTemplateItemGrandChildDTO itemGrandChildDTO = new OnboardTrainingTemplateItemGrandChildDTO();
-                                            MapperUtils.copyWithoutAudit(itemGrandChild, itemGrandChildDTO);
-                                            grandChildDTOS.add(itemGrandChildDTO);
-                                        }
-                                        childrenDTO.setChildren(grandChildDTOS);
-                                    }
-                                }
-                                itemDTO.setChildren(itemChildrenDTOS);
+                    List<OnboardTrainingTemplateItemDTO> lstItemDTO = new ArrayList<>();
+                    List<OnboardTrainingTemplateItemChildrenDTO> lstChilDTO = new ArrayList<>();
+
+                    if (mapItems.get(templateId) != null){
+                        List<OnboardTrainingTemplateItemDTO> lstItem = new ArrayList<>();
+                        if (mapItems.get(templateId) != null){
+                            for (OnboardTrainingTemplateItem lst: mapItems.get(templateId)) {
+                                OnboardTrainingTemplateItemDTO item = new OnboardTrainingTemplateItemDTO();
+                                lstItem.add(MapperUtils.copy(lst, item));
                             }
                         }
-                        dto.setChildren(itemDTOS);
+
+                        if(lstItem != null){
+                            for (OnboardTrainingTemplateItemDTO it: lstItem) {
+                                List<OnboardTrainingTemplateItemChildrenDTO> lstChild = new ArrayList<>();
+                                if(mapItemChildrens.get(it.getId()) != null){
+                                    for (OnboardTrainingTemplateItemChildren lst: mapItemChildrens.get(it.getId())) {
+                                        OnboardTrainingTemplateItemChildrenDTO item = new OnboardTrainingTemplateItemChildrenDTO();
+                                        lstChild.add(MapperUtils.copy(lst, item));
+                                    }
+                                    if(lstChild != null){
+                                        it.setChildren(lstChild);
+                                    }
+                                }
+                                if(lstChild != null){
+                                    for (OnboardTrainingTemplateItemChildrenDTO child: lstChild) {
+                                        List<OnboardTrainingTemplateItemGrandChildDTO> lstGrandChild = new ArrayList<>();
+                                        if(mapItemGrandChildrens.get(child.getId()) != null){
+                                            for (OnboardTrainingTemplateItemGrandChild lst: mapItemGrandChildrens.get(child.getId())) {
+                                                OnboardTrainingTemplateItemGrandChildDTO item = new OnboardTrainingTemplateItemGrandChildDTO();
+                                                lstGrandChild.add(MapperUtils.copy(lst, item));
+                                            }
+                                            if(lstGrandChild != null){
+                                                child.setChildren(lstGrandChild);
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                            dto.setChildren(lstItem);
+                        }
                     }
                     create(cid, uid, dto);
                 }
