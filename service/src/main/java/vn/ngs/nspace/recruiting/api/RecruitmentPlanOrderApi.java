@@ -114,11 +114,12 @@ public class RecruitmentPlanOrderApi {
              @RequestBody Map<String, Object> condition
             , Pageable pageable){
         try{
+            Long orgId = MapUtils.getLong(condition,"orgId",-1l);
             Long positionId = MapUtils.getLong(condition,"positionId", -1l);
             String code = MapUtils.getString(condition,"code", "all");
 
 
-            Page<RecruitmentPlanOrder> page = _repo.filter(cid,positionId, code, pageable);
+            Page<RecruitmentPlanOrder> page = _repo.filter(cid,positionId,orgId, code, pageable);
             List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         }catch (Exception e){
