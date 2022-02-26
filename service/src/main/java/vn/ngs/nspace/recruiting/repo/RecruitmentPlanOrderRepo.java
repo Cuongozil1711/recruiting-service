@@ -29,14 +29,11 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
    @Query(value = "select p " +
            " from RecruitmentPlanOrder p " +
            " where (p.companyId = :companyId)" +
-           " and (p.positionId = :positionId)" +
-           " and (lower( concat(coalesce(p.code,'')" +
-           ", coalesce(p.type,'')" +
-           ", coalesce(p.solutionSuggestType,'')))" +
-           " like %:filter%)")
+           " and (p.positionId = :positionId or :positionId = -1)" +
+           "and (lower(p.code) like (concat('%',:code,'%')) or :code = 'all') ")
    Page<RecruitmentPlanOrder> filter(@Param("companyId") Long cid
             ,@Param("positionId") Long positionId
-            ,@Param("filter") String filter
+            ,@Param("code") String code
             , Pageable pageable);
 
 }
