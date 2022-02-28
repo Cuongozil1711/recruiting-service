@@ -30,6 +30,7 @@ public class AssetCheckList extends PersistableEntity<Long> {
     private Long senderId; // nguoi giao
     private Long employeeId; // nguoi nhan
     private String description;
+    private Integer quantity;
     private String state;
     
 
@@ -42,6 +43,7 @@ public class AssetCheckList extends PersistableEntity<Long> {
                 .receiptDate(dto.getReceiptDate())
                 .senderId(dto.getSenderId())
                 .employeeId(dto.getEmployeeId())
+                .quantity(dto.getQuantity())
                 .description(dto.getDescription())
                 .state(dto.getState())
                 .build();

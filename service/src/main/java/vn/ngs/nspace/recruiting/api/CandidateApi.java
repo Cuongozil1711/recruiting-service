@@ -217,8 +217,8 @@ public class CandidateApi {
         try{
             Long applyPosition = MapUtils.getLong(condition, "applyPosition", -1l);
             Long gender = MapUtils.getLong(condition, "gender", -1l);
-            String language = MapUtils.getString(condition, "language", "all");
-            Long educationLevel = MapUtils.getLong(condition, "educationLevel", -1l);
+            Set<String> language = Collections.singleton(MapUtils.getString(condition, "language", "all"));
+            Set<Long> educationLevel = Collections.singleton(MapUtils.getLong(condition, "educationLevel", -1l));
             String educateLocation = MapUtils.getString(condition, "educateLocation", "all").toLowerCase(Locale.ROOT);
             String industry = MapUtils.getString(condition,"industry", "all").toLowerCase(Locale.ROOT);
             String ageLess = MapUtils.getString(condition,"ageLess", "all");

@@ -91,9 +91,9 @@ public class JobApplicationService {
 
     public EmployeeDTO createEmployee(Long cid, String uid, Long jobAppId, EmployeeRecruitingReq createEmp){
         JobApplication jobApplication = _repo.findByCompanyIdAndId(cid, jobAppId).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, jobAppId));
-        if(!Constants.JOB_APPLICATION_STATE_DONE.equals(jobApplication.getState())){
-            throw new BusinessException("job-application-is-in-process");
-        }
+//        if(!Constants.JOB_APPLICATION_STATE_DONE.equals(jobApplication.getState())){
+//            throw new BusinessException("job-application-is-in-process");
+//        }
         Candidate candidate = _candidateRepo.findByCompanyIdAndId(cid, jobApplication.getCandidateId()).orElseThrow(() -> new EntityNotFoundException(Candidate.class, jobApplication.getCandidateId()));
         EmployeeResp empResp = _hcmService.createEmployee(uid, cid, createEmp);
 

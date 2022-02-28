@@ -11,6 +11,7 @@ import vn.ngs.nspace.recruiting.model.Candidate;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CandidateRepo extends BaseRepo<Candidate,Long> {
 
@@ -51,16 +52,16 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             "      end ) <= :toExp)" )
     Page<Candidate> filter(
             @Param("companyId") Long cid
-            ,@Param("applyPosition") Long applyPosition
-            ,@Param("gender") Long gender
-            ,@Param("language") String language
-            ,@Param("educationLevel") Long educationLevel
-            ,@Param("educateLocation") String educateLocation
-            ,@Param("industry") String industry
-            ,@Param("ageLess") Date ageLess
-            ,@Param("lastPosition") String lastPosition
-            ,@Param("fromExp") Double fromExp
-            ,@Param("toExp") Double toExp
+            , @Param("applyPosition") Long applyPosition
+            , @Param("gender") Long gender
+            , @Param("language") Set<String> language
+            , @Param("educationLevel") Set<Long> educationLevel
+            , @Param("educateLocation") String educateLocation
+            , @Param("industry") String industry
+            , @Param("ageLess") Date ageLess
+            , @Param("lastPosition") String lastPosition
+            , @Param("fromExp") Double fromExp
+            , @Param("toExp") Double toExp
             , Pageable pageable);
 }
 
