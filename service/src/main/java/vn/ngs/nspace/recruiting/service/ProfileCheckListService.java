@@ -57,30 +57,26 @@ public class ProfileCheckListService {
 //        }
     }
 
-    public List<ProfileCheckListDTO> createByOnboardOrder(Long cid, String uid, OnboardOrder onboard){
-        Date receiptDate = new Date();
-        Long id = onboard.getId();
+    public List<ProfileCheckListDTO> createByOnboardOrder(Long cid, String uid, Long id){
+
         JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, id).orElseThrow(()-> new BusinessException("not found OnboardOder"));
 
-        return createByPositionTitleContract(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getContractType(), ja.getEmployeeId(), receiptDate, "", 0l);
+        return createByPositionTitleContract(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getContractType());
     }
 
     public List<ProfileCheckListDTO> createByPositionTitleContract(Long cid, String uid
-            , Long positionId, Long titleId, String contractType
-            , Long employeeId, Date receiptDate, String description, Long senderId ){
+            , Long positionId, Long titleId, String contractType){
         List<ProfileCheckListDTO> profiles = new ArrayList<>();
         List<ProfileCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId, contractType);
-
+        if(templates.size() == 0){
+            throw new BusinessException("invalid-template");
+        }
         ProfileCheckListTemplate template = templates.get(0);
         List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
         for (ProfileCheckListTemplateItem item: items ) {
 
             ProfileCheckListDTO checkListDTO = new ProfileCheckListDTO();
             checkListDTO = MapperUtils.map(item, checkListDTO);
-            checkListDTO.setEmployeeId(employeeId);
-            checkListDTO.setReceiptDate(receiptDate);
-            checkListDTO.setDescription(description);
-            checkListDTO.setSenderId(senderId);
 
             profiles.add(create(cid, uid, checkListDTO));
         }
