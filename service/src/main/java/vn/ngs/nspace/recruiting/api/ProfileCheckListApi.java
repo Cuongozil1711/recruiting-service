@@ -38,28 +38,28 @@ public class ProfileCheckListApi {
     private final ProfileCheckListService _service;
     private final OnboardOrderRepo _repoOnboard;
 
-    @PostMapping("/create")
-    @ActionMapping(action = Permission.CREATE)
-    @Operation(summary = "create profile"
-            , description = "API for create profile"
-            , tags = { "ProfileCheckList" }
-    )
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-            , schema = @Schema(implementation = String.class))
-    protected ResponseEntity createByPositionTitleContract(
-            @Parameter(description="ID of company")
-            @RequestHeader("cid") long cid
-            , @Parameter(description="ID of company")
-            @RequestHeader("uid") String uid
-            , @RequestBody ProfileCheckListDTO dto){
-        try {
-            return ResponseUtils.handlerSuccess(_service.createByPositionTitleContract(cid, uid,dto.getPositionId(), dto.getTitleId(), dto.getContractType(), dto.getEmployeeId(), dto.getReceiptDate(), dto.getDescription(), dto.getSenderId()));
-        }catch (Exception ex){
-            return ResponseUtils.handlerException(ex);
-        }
-    }
+//    @PostMapping("/create")
+//    @ActionMapping(action = Permission.CREATE)
+//    @Operation(summary = "create profile"
+//            , description = "API for create profile"
+//            , tags = { "ProfileCheckList" }
+//    )
+//    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+//            , schema = @Schema(implementation = String.class))
+//    protected ResponseEntity createByPositionTitleContract(
+//            @Parameter(description="ID of company")
+//            @RequestHeader("cid") long cid
+//            , @Parameter(description="ID of company")
+//            @RequestHeader("uid") String uid
+//            , @RequestBody ProfileCheckListDTO dto){
+//        try {
+//            return ResponseUtils.handlerSuccess(_service.createByPositionTitleContract(cid, uid,dto.getPositionId(), dto.getTitleId(), dto.getContractType(), dto.getEmployeeId(), dto.getReceiptDate(), dto.getDescription(), dto.getSenderId()));
+//        }catch (Exception ex){
+//            return ResponseUtils.handlerException(ex);
+//        }
+//    }
 
-        @PostMapping("/create-profile-by-onboard-id")
+    @PutMapping("/create-profile-by-onboard-id/{id}")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Create Profile by OnboardID"
             , description = "API for create profile by onboadrId")
@@ -70,10 +70,10 @@ public class ProfileCheckListApi {
             @RequestHeader("cid") long cid
             , @Parameter(description="ID of company")
             @RequestHeader("uid") String uid
-            , @Parameter(description="param onboardId")
-            @RequestBody OnboardOrder onboardOrder){
+            , @Parameter(description = "Path Variable")
+            @PathVariable(value = "id") Long id){
         try{
-            return ResponseUtils.handlerSuccess(_service.createByOnboardOrder(cid, uid, onboardOrder));
+            return ResponseUtils.handlerSuccess(_service.createByOnboardOrder(cid, uid, id));
         } catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }

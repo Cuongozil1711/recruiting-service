@@ -154,7 +154,7 @@ public class EmailSentApi {
             es.setDate(MapUtils.getDate(payload, "date"));
             es.setToEmail(emailTo);
             es.setSubject(title);
-            es.setStatus(Constants.ENTITY_ACTIVE);
+                es.setStatus(Constants.ENTITY_ACTIVE);
             es.setCreateBy(uid);
             es.setUpdateBy(uid);
             es.setCompanyId(cid);
