@@ -14,5 +14,5 @@ import java.util.Optional;
 public interface ProfileCheckListRepo extends BaseRepo<ProfileCheckList, Long> {
     Optional<ProfileCheckList> findByCompanyIdAndChecklistIdAndEmployeeIdAndStatus(Long cid, Long checkListId, Long employeeId, Integer status);
     List<ProfileCheckList> findByCompanyIdAndOnboardOrderId(Long cid, Long onboarOrderId);
-
+    Optional<ProfileCheckList> findByCompanyIdAndOnboardOrderIdAndStatus(Long cid, Long OnboardId, Integer status);
 }

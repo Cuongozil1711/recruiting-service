@@ -61,11 +61,11 @@ public class ProfileCheckListService {
 
         JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, id).orElseThrow(()-> new BusinessException("not found OnboardOder"));
 
-        return createByPositionTitleContract(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getContractType());
+        return createByPositionTitleContract(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getContractType(), id);
     }
 
     public List<ProfileCheckListDTO> createByPositionTitleContract(Long cid, String uid
-            , Long positionId, Long titleId, String contractType){
+            , Long positionId, Long titleId, String contractType, Long onboarOrderId){
         List<ProfileCheckListDTO> profiles = new ArrayList<>();
         List<ProfileCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId, contractType);
         if(templates.size() == 0){
@@ -74,28 +74,28 @@ public class ProfileCheckListService {
         ProfileCheckListTemplate template = templates.get(0);
         List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
         for (ProfileCheckListTemplateItem item: items ) {
-
             ProfileCheckListDTO checkListDTO = new ProfileCheckListDTO();
             checkListDTO = MapperUtils.map(item, checkListDTO);
 
-            profiles.add(create(cid, uid, checkListDTO));
+            profiles.add(create(cid, uid,onboarOrderId, checkListDTO));
         }
         return profiles;
     }
 
-    public ProfileCheckListDTO create(Long cid, String uid, ProfileCheckListDTO request) throws BusinessException{
+    public ProfileCheckListDTO create(Long cid, String uid, Long onboarOrderId, ProfileCheckListDTO request) throws BusinessException{
         valid(request);
-        ProfileCheckList exists = repo.findByCompanyIdAndChecklistIdAndEmployeeIdAndStatus(cid, request.getChecklistId(), request.getEmployeeId(), Constants.ENTITY_ACTIVE).orElse(new ProfileCheckList());
+        ProfileCheckList exists = repo.findByCompanyIdAndOnboardOrderIdAndStatus(cid, onboarOrderId, Constants.ENTITY_ACTIVE).orElse(new ProfileCheckList());
         if(!exists.isNew()){
-            return toDTO(exists);
+            return toDTOs(cid, uid, Collections.singletonList(exists)).get(0);
         }
         ProfileCheckList obj = ProfileCheckList.of(cid, uid, request);
         obj.setStatus(Constants.ENTITY_ACTIVE);
         obj.setCompanyId(cid);
         obj.setUpdateBy(uid);
         obj.setCreateBy(uid);
-
-        return toDTO(repo.save(obj));
+        obj.setOnboardOrderId(onboarOrderId);
+        repo.save(obj);
+        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
     }
 
     public List<ProfileCheckListDTO> handOverProfile (Long cid, String uid, Long onboarOrderId, List<ProfileCheckListDTO> listDTOS) {
@@ -199,14 +199,17 @@ public class ProfileCheckListService {
                     return CompareUtil.compare(e.getId(), dto.getSenderId());
                 }).findAny().orElse(null) );
             }
+
             if (mapItems.get(template.getId()) != null){
+                List<ProfileCheckListTemplateItemDTO> lstDTO = new ArrayList<>();
                 for (ProfileCheckListTemplateItem lst: mapItems.get(template.getId())) {
                     ProfileCheckListTemplateItemDTO item = new ProfileCheckListTemplateItemDTO();
                     MapperUtils.copy(lst, item);
                     if(item != null){
-                        dto.setItem(item);
+                        lstDTO.add(item);
                     }
                 }
+                dto.setItems(lstDTO);
             }
         }
 
