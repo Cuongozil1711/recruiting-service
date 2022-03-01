@@ -31,5 +31,5 @@ public class ProfileCheckListDTO {
     private EmployeeDTO senderObj; // doi tuong nguoi giao
     private EmployeeDTO employeeObj; // doi tuong nguoi nhan
     private Map<String, Object> checkListObj; // doi tuong ho so
-    private ProfileCheckListTemplateItemDTO item;
+    private List<ProfileCheckListTemplateItemDTO> items;
 }
