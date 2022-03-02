@@ -15,4 +15,5 @@ public interface ProfileCheckListRepo extends BaseRepo<ProfileCheckList, Long> {
     Optional<ProfileCheckList> findByCompanyIdAndChecklistIdAndEmployeeIdAndStatus(Long cid, Long checkListId, Long employeeId, Integer status);
     List<ProfileCheckList> findByCompanyIdAndOnboardOrderId(Long cid, Long onboarOrderId);
     Optional<ProfileCheckList> findByCompanyIdAndOnboardOrderIdAndStatus(Long cid, Long OnboardId, Integer status);
+    Optional<ProfileCheckList> findByCompanyIdAndId(Long cid, Long id);
 }

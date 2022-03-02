@@ -99,57 +99,32 @@ public class ProfileCheckListService {
     }
 
     public List<ProfileCheckListDTO> handOverProfile (Long cid, String uid, Long onboarOrderId, List<ProfileCheckListDTO> listDTOS) {
-        List<ProfileCheckList> profileCheckLists = repo.findByCompanyIdAndOnboardOrderId(cid, onboarOrderId);
-        List<Long> checkListIdOfDto = listDTOS.stream().map(dto -> dto.getChecklistId()).collect(Collectors.toList());
-        List<Long> checkListIdExists = profileCheckLists.stream().map(dto -> dto.getChecklistId()).collect(Collectors.toList());
+        List<ProfileCheckList> lstProfile = new ArrayList<>();
+        for (ProfileCheckListDTO dto: listDTOS) {
+            if(dto.getId() != null || dto.getId() == 0l){
+                ProfileCheckList curr = repo.findByCompanyIdAndId(cid, dto.getId()).orElse(new ProfileCheckList());
+                MapperUtils.copyWithoutAudit(dto, curr);
+                curr.setOnboardOrderId(onboarOrderId);
+                curr.setReceiptDate(dto.getReceiptDate());
+                curr.setSenderId(dto.getSenderId());
+                curr.setUpdateBy(uid);
+                curr.setStatus(dto.getStatus() == null ? Constants.ENTITY_ACTIVE : dto.getStatus());
 
-        List<Long> listCheckListIdForCreate = new ArrayList<>(checkListIdOfDto);
-
-        listCheckListIdForCreate.removeAll(checkListIdExists); // loai bo danh sach profile da ton tai
-
-        List<ProfileCheckList> listOfProfileCheckList = new ArrayList<>(); // Tao 1 array de luu tru ban ghi can luu vao Database
-
-        // Tao moi danh sach ProfileCheckList
-        for (Long checkListId : listCheckListIdForCreate) {
-            ProfileCheckList profileCheckList = new ProfileCheckList();
-
-            ProfileCheckListDTO dto = listDTOS.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
-
-            if (dto != null) {
-                profileCheckList.setCompanyId(cid);
-                profileCheckList.setChecklistId(checkListId);
-                profileCheckList.setEmployeeId(dto.getEmployeeId());
-                profileCheckList.setReceiptDate(dto.getReceiptDate());
-
-                listOfProfileCheckList.add(profileCheckList);
+                repo.save(curr);
+                lstProfile.add(curr);
             }
-        }
-        // Ket thuc tao moi
-
-        // Update danh sach ProfileCheckList
-        List<Long> listCheckListForUpdate = new ArrayList<>(checkListIdOfDto);
-
-        listCheckListForUpdate.retainAll(checkListIdExists); // lay danh sach checkListId da ton tai
-
-        for (Long checkListId : listCheckListForUpdate) {
-            ProfileCheckList profileCheckList = profileCheckLists.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
-
-            ProfileCheckListDTO dto = listDTOS.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
-            if (profileCheckList != null) {
-                profileCheckList.setReceiptDate(dto.getReceiptDate());
-
-                listOfProfileCheckList.add(profileCheckList);
+            else {
+                ProfileCheckList pf = ProfileCheckList.of(cid, uid, dto);
+                pf.setStatus(Constants.ENTITY_ACTIVE);
+                pf.setCreateBy(uid);
+                pf.setCompanyId(cid);
+                pf.setOnboardOrderId(onboarOrderId);
+                repo.save(pf);
+                lstProfile.add(pf);
             }
+
         }
-        // Ket thuc update
-
-        // Luu vao Database
-        if (listOfProfileCheckList != null && !listOfProfileCheckList.isEmpty()) {
-            listOfProfileCheckList = repo.saveAll(listOfProfileCheckList);
-        }
-
-        return toDTOs(cid, uid, listOfProfileCheckList);
-
+        return toDTOs(cid, uid, lstProfile);
     }
 
     public List<ProfileCheckListDTO> toDTOs(Long cid, String uid, List<ProfileCheckList> objs){

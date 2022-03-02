@@ -23,6 +23,7 @@ public class ProfileCheckListDTO {
     private Long senderId; // nguoi giao
     private Long employeeId; // nguoi nhan
     private String description;
+    private Integer status;
 
     private Long positionId;
     private Long titleId;
