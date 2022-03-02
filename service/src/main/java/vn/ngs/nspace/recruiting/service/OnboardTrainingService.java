@@ -68,7 +68,7 @@ public class OnboardTrainingService {
 
         List<OnboardTrainingTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId, orgId);
         if(templates.size() == 0){
-            throw new BusinessException("invalid-template");
+            throw new BusinessException("has-not-template-valid-with-this-employee");
         }
         OnboardTrainingTemplate template = templates.get(0);
 
@@ -81,13 +81,23 @@ public class OnboardTrainingService {
             createItem(cid, uid, trainingDTO);
 
             List<OnboardTrainingTemplateItemChildren> childrens = childrenRepo.findByCompanyIdAndTemplateIdAndItemId(cid, template.getId(), item.getId());
+
             for (OnboardTrainingTemplateItemChildren children: childrens){
-                trainingDTO.setItemChildId(children.getId());
-                createItem(cid, uid, trainingDTO);
+                OnboardTrainingItemDTO trainingChildDTO = new OnboardTrainingItemDTO();
+                trainingChildDTO.setOnboardTrainingId(training.getId());
+                trainingChildDTO.setItemId(item.getId());
+                trainingChildDTO.setItemChildId(children.getId());
+                createItem(cid, uid, trainingChildDTO);
+
                 List<OnboardTrainingTemplateItemGrandChild> grandChildrens = grandChildRepo.findByCompanyIdAndTemplateIdAndItemIdAndItemChildrenId(cid, template.getId(), item.getId(), children.getId());
+
                 for (OnboardTrainingTemplateItemGrandChild grandChild: grandChildrens) {
-                    trainingDTO.setItemGrandChildId(grandChild.getId());
-                    createItem(cid, uid, trainingDTO);
+                    OnboardTrainingItemDTO trainingGrandChildDTO = new OnboardTrainingItemDTO();
+                    trainingGrandChildDTO.setOnboardTrainingId(training.getId());
+                    trainingGrandChildDTO.setItemId(item.getId());
+                    trainingGrandChildDTO.setItemChildId(children.getId());
+                    trainingGrandChildDTO.setItemGrandChildId(grandChild.getId());
+                    createItem(cid, uid, trainingGrandChildDTO);
                 }
             }
 
