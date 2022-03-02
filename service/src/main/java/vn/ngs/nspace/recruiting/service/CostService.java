@@ -125,7 +125,7 @@ public class CostService {
 
     private void updateItem(long cid, String uid, Long detailId, CostDetailDTO detailDTO) {
         validDetail(detailDTO);
-        if(detailDTO.getId() != 0l && detailDTO.getId() != null){
+        if(detailDTO.getId() != null && detailDTO.getId() != 0l){
             CostDetail curr = detailRepo.findByCompanyIdAndId(cid, detailId).orElseThrow(() -> new EntityNotFoundException(CostDetail.class, detailId));
             MapperUtils.copyWithoutAudit(detailDTO, curr);
             curr.setUpdateBy(uid);
