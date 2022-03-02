@@ -170,9 +170,9 @@ public class InterviewCheckListService {
         return MapperUtils.map(obj, InterviewCheckListDTO.class);
     }
 
-    public List<InterviewCheckListDTO> createByPositionOrg(long cid, String uid, Long positionId, Long orgId, Long interviewerId, Double rating, Date interviewDate, String result) {
+    public List<InterviewCheckListDTO> createByPositionOrg(long cid, String uid, Long positionId, Long orgId, Long titleId, Long interviewerId, Double rating, Date interviewDate, String result) {
         List<InterviewCheckListDTO> profiles = new ArrayList<>();
-        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, orgId);
+        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, orgId, titleId);
 
         InterviewCheckListTemplate template = templates.get(0);
         List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());

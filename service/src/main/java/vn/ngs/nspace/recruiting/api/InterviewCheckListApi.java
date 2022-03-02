@@ -47,7 +47,7 @@ public class InterviewCheckListApi {
             @RequestHeader("uid") String uid
             , @RequestBody InterviewCheckListDTO dto){
         try {
-            return ResponseUtils.handlerSuccess(service.createByPositionOrg(cid, uid,dto.getPositionId(), dto.getOrgId(), dto.getInterviewerId(), dto.getRating(), dto.getInterviewDate(), dto.getResult()));
+            return ResponseUtils.handlerSuccess(service.createByPositionOrg(cid, uid,dto.getPositionId(), dto.getOrgId(), dto.getTitleId(), dto.getInterviewerId(), dto.getRating(), dto.getInterviewDate(), dto.getResult()));
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }

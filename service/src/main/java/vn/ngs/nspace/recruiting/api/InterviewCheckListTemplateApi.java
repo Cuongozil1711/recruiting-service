@@ -60,8 +60,9 @@ public class InterviewCheckListTemplateApi {
 
             Long positionId = MapUtils.getLong(condition, "positionId", -1l);
             Long orgId = MapUtils.getLong(condition, "orgId", -1l);
+            Long titleId = MapUtils.getLong(condition, "titleId", -1l);
 
-            Page<InterviewCheckListTemplate> page = _repo.search(cid, positionId, orgId, pageable);
+            Page<InterviewCheckListTemplate> page = _repo.search(cid, positionId, orgId, titleId, pageable);
             List<InterviewCheckListTemplateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         }catch (Exception e){

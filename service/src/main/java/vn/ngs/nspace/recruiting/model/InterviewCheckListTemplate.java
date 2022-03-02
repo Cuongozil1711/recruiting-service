@@ -24,6 +24,7 @@ public class InterviewCheckListTemplate extends PersistableEntity<Long> {
     private Long id;
     private Long orgId;
     private Long positionId;
+    private Long titleId;
     private Date startDate;
     private Date endDate;
 
@@ -33,6 +34,7 @@ public class InterviewCheckListTemplate extends PersistableEntity<Long> {
                 .orgId(dto.getOrgId())
                 .positionId(dto.getPositionId())
                 .startDate(dto.getStartDate())
+                .titleId(dto.getTitleId())
                 .endDate(dto.getEndDate())
                 .build();
         return obj;

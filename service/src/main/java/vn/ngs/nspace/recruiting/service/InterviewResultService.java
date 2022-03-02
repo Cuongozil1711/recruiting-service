@@ -67,11 +67,11 @@ public class InterviewResultService {
 
     public InterviewResultDTO createByCandidateId(Long cid, String uid, Long candidateId, Set<Long> ListInterViewerId){
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId,Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, candidateId));
-        return createByPositionAndOrg(cid, uid, candidateId, ja.getPositionId(), ja.getOrgId(), ListInterViewerId);
+        return createByPositionAndOrg(cid, uid, candidateId, ja.getPositionId(), ja.getOrgId(), ja.getTitleId(), ListInterViewerId);
     }
 
-    public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Set<Long> ListInterViewerId){
-        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId);
+    public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Long titleId, Set<Long> ListInterViewerId){
+        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId, titleId);
         if (templates.size() == 0){
             throw new BusinessException("invalid-template");
         }
@@ -211,7 +211,7 @@ public class InterviewResultService {
         InterviewResult result = objs.get(0);
 
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, result.getCandidateId(),Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, result.getCandidateId()));
-        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getOrgId());
+        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getOrgId(), ja.getTitleId());
         InterviewCheckListTemplate template = new InterviewCheckListTemplate();
         if (templates.size() > 0){
             template  = templates.get(0);
