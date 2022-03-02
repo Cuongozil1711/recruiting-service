@@ -11,8 +11,8 @@ import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
-
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
+import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateItemDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 
@@ -57,109 +57,89 @@ public class ProfileCheckListService {
 //        }
     }
 
-    public List<ProfileCheckListDTO> createByOnboardOrder(Long cid, String uid, OnboardOrder onboard){
-        Date receiptDate = new Date();
-        Long id = onboard.getId();
+    public List<ProfileCheckListDTO> createByOnboardOrder(Long cid, String uid, Long id){
+
         JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, id).orElseThrow(()-> new BusinessException("not found OnboardOder"));
 
-        return createByPositionTitleContract(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getContractType(), ja.getEmployeeId(), receiptDate, "", 0l);
+        return createByPositionTitleContract(cid, uid, ja.getPositionId(), ja.getTitleId(), ja.getContractType(), id);
     }
 
     public List<ProfileCheckListDTO> createByPositionTitleContract(Long cid, String uid
-            , Long positionId, Long titleId, String contractType
-            , Long employeeId, Date receiptDate, String description, Long senderId ){
+            , Long positionId, Long titleId, String contractType, Long onboarOrderId){
         List<ProfileCheckListDTO> profiles = new ArrayList<>();
         List<ProfileCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId, contractType);
-
+        if(templates.size() == 0){
+            throw new BusinessException("invalid-template");
+        }
         ProfileCheckListTemplate template = templates.get(0);
         List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
         for (ProfileCheckListTemplateItem item: items ) {
-
             ProfileCheckListDTO checkListDTO = new ProfileCheckListDTO();
             checkListDTO = MapperUtils.map(item, checkListDTO);
-            checkListDTO.setEmployeeId(employeeId);
-            checkListDTO.setReceiptDate(receiptDate);
-            checkListDTO.setDescription(description);
-            checkListDTO.setSenderId(senderId);
 
-            profiles.add(create(cid, uid, checkListDTO));
+            profiles.add(create(cid, uid,onboarOrderId, checkListDTO));
         }
         return profiles;
     }
 
-    public ProfileCheckListDTO create(Long cid, String uid, ProfileCheckListDTO request) throws BusinessException{
+    public ProfileCheckListDTO create(Long cid, String uid, Long onboarOrderId, ProfileCheckListDTO request) throws BusinessException{
         valid(request);
-        ProfileCheckList exists = repo.findByCompanyIdAndChecklistIdAndEmployeeIdAndStatus(cid, request.getChecklistId(), request.getEmployeeId(), Constants.ENTITY_ACTIVE).orElse(new ProfileCheckList());
+        ProfileCheckList exists = repo.findByCompanyIdAndOnboardOrderIdAndStatus(cid, onboarOrderId, Constants.ENTITY_ACTIVE).orElse(new ProfileCheckList());
         if(!exists.isNew()){
-            return toDTO(exists);
+            return toDTOs(cid, uid, Collections.singletonList(exists)).get(0);
         }
         ProfileCheckList obj = ProfileCheckList.of(cid, uid, request);
         obj.setStatus(Constants.ENTITY_ACTIVE);
         obj.setCompanyId(cid);
         obj.setUpdateBy(uid);
         obj.setCreateBy(uid);
-
-        return toDTO(repo.save(obj));
+        obj.setOnboardOrderId(onboarOrderId);
+        repo.save(obj);
+        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
     }
 
     public List<ProfileCheckListDTO> handOverProfile (Long cid, String uid, Long onboarOrderId, List<ProfileCheckListDTO> listDTOS) {
-        List<ProfileCheckList> profileCheckLists = repo.findByCompanyIdAndOnboardOrderId(cid, onboarOrderId);
-        List<Long> checkListIdOfDto = listDTOS.stream().map(dto -> dto.getChecklistId()).collect(Collectors.toList());
-        List<Long> checkListIdExists = profileCheckLists.stream().map(dto -> dto.getChecklistId()).collect(Collectors.toList());
+        List<ProfileCheckList> lstProfile = new ArrayList<>();
+        for (ProfileCheckListDTO dto: listDTOS) {
+            if(dto.getId() != null || dto.getId() == 0l){
+                ProfileCheckList curr = repo.findByCompanyIdAndId(cid, dto.getId()).orElse(new ProfileCheckList());
+                MapperUtils.copyWithoutAudit(dto, curr);
+                curr.setOnboardOrderId(onboarOrderId);
+                curr.setReceiptDate(dto.getReceiptDate());
+                curr.setSenderId(dto.getSenderId());
+                curr.setUpdateBy(uid);
+                curr.setStatus(dto.getStatus() == null ? Constants.ENTITY_ACTIVE : dto.getStatus());
 
-        List<Long> listCheckListIdForCreate = new ArrayList<>(checkListIdOfDto);
-
-        listCheckListIdForCreate.removeAll(checkListIdExists); // loai bo danh sach profile da ton tai
-
-        List<ProfileCheckList> listOfProfileCheckList = new ArrayList<>(); // Tao 1 array de luu tru ban ghi can luu vao Database
-
-        // Tao moi danh sach ProfileCheckList
-        for (Long checkListId : listCheckListIdForCreate) {
-            ProfileCheckList profileCheckList = new ProfileCheckList();
-
-            ProfileCheckListDTO dto = listDTOS.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
-
-            if (dto != null) {
-                profileCheckList.setCompanyId(cid);
-                profileCheckList.setChecklistId(checkListId);
-                profileCheckList.setEmployeeId(dto.getEmployeeId());
-                profileCheckList.setReceiptDate(dto.getReceiptDate());
-
-                listOfProfileCheckList.add(profileCheckList);
+                repo.save(curr);
+                lstProfile.add(curr);
             }
-        }
-        // Ket thuc tao moi
-
-        // Update danh sach ProfileCheckList
-        List<Long> listCheckListForUpdate = new ArrayList<>(checkListIdOfDto);
-
-        listCheckListForUpdate.retainAll(checkListIdExists); // lay danh sach checkListId da ton tai
-
-        for (Long checkListId : listCheckListForUpdate) {
-            ProfileCheckList profileCheckList = profileCheckLists.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
-
-            ProfileCheckListDTO dto = listDTOS.stream().filter(el -> el.getChecklistId() == checkListId).collect(Collectors.toList()).get(0);
-            if (profileCheckList != null) {
-                profileCheckList.setReceiptDate(dto.getReceiptDate());
-
-                listOfProfileCheckList.add(profileCheckList);
+            else {
+                ProfileCheckList pf = ProfileCheckList.of(cid, uid, dto);
+                pf.setStatus(Constants.ENTITY_ACTIVE);
+                pf.setCreateBy(uid);
+                pf.setCompanyId(cid);
+                pf.setOnboardOrderId(onboarOrderId);
+                repo.save(pf);
+                lstProfile.add(pf);
             }
+
         }
-        // Ket thuc update
-
-        // Luu vao Database
-        if (listOfProfileCheckList != null && !listOfProfileCheckList.isEmpty()) {
-            listOfProfileCheckList = repo.saveAll(listOfProfileCheckList);
-        }
-
-        return toDTOs(cid, uid, listOfProfileCheckList);
-
+        return toDTOs(cid, uid, lstProfile);
     }
 
     public List<ProfileCheckListDTO> toDTOs(Long cid, String uid, List<ProfileCheckList> objs){
         List<ProfileCheckListDTO> dtos = new ArrayList<>();
         Set<Long> categoryIds = new HashSet<>();
         Set<Long> employeeIds = new HashSet<>();
+
+        ProfileCheckList pr = objs.get(0);
+        ProfileCheckListTemplate template = new ProfileCheckListTemplate();
+        JobApplication ja = onboardOrderRepo.getInfoOnboard(cid, pr.getOnboardOrderId()).orElseThrow(()-> new BusinessException("not found OnboardOder"));
+        List<ProfileCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getTitleId(), ja.getContractType());
+        if(templates.size() != 0){
+            template = templates.get(0);
+        }
+
         objs.forEach(o -> {
             if(o.getChecklistId() != null){
                 categoryIds.add(o.getChecklistId());
@@ -173,6 +153,10 @@ public class ProfileCheckListService {
 
             dtos.add(toDTO(o));
         });
+
+        List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
+        Map<Long, List<ProfileCheckListTemplateItem>> mapItems = items.stream().collect(Collectors.groupingBy(ProfileCheckListTemplateItem::getTemplateId));
+
         List<EmployeeDTO> employeeDTOS = _hcmService.getEmployees(uid, cid, employeeIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
 
@@ -189,6 +173,18 @@ public class ProfileCheckListService {
                 dto.setSenderObj(employeeDTOS.stream().filter(e -> {
                     return CompareUtil.compare(e.getId(), dto.getSenderId());
                 }).findAny().orElse(null) );
+            }
+
+            if (mapItems.get(template.getId()) != null){
+                List<ProfileCheckListTemplateItemDTO> lstDTO = new ArrayList<>();
+                for (ProfileCheckListTemplateItem lst: mapItems.get(template.getId())) {
+                    ProfileCheckListTemplateItemDTO item = new ProfileCheckListTemplateItemDTO();
+                    MapperUtils.copy(lst, item);
+                    if(item != null){
+                        lstDTO.add(item);
+                    }
+                }
+                dto.setItems(lstDTO);
             }
         }
 

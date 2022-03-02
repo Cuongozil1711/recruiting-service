@@ -23,6 +23,7 @@ public class ProfileCheckListDTO {
     private Long senderId; // nguoi giao
     private Long employeeId; // nguoi nhan
     private String description;
+    private Integer status;
 
     private Long positionId;
     private Long titleId;
@@ -31,4 +32,5 @@ public class ProfileCheckListDTO {
     private EmployeeDTO senderObj; // doi tuong nguoi giao
     private EmployeeDTO employeeObj; // doi tuong nguoi nhan
     private Map<String, Object> checkListObj; // doi tuong ho so
+    private List<ProfileCheckListTemplateItemDTO> items;
 }

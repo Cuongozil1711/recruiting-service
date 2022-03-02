@@ -22,6 +22,7 @@ import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public class CandidateApi {
     protected ResponseEntity search(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @Parameter(description = "Payload filter") @RequestParam(name = "search") String search
+            , @Parameter(description = "Payload filter") @RequestParam(name = "search",defaultValue = "#") String search
             , Pageable pageable) {
         try{
 
@@ -63,6 +64,24 @@ public class CandidateApi {
             return ResponseUtils.handlerException(e);
         }
 
+    }
+
+    @PostMapping("/create-list")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "create list candidate"
+            , description = "create list candidate"
+            ,tags = {"Candidate"}
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity creates(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody List<CandidateDTO> dtos){
+        try{
+            return ResponseUtils.handlerSuccess(_service.create(cid, uid, dtos));
+        }catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
     }
 
     @PostMapping()
@@ -182,7 +201,7 @@ public class CandidateApi {
         }
     }
 
-    @PostMapping("filter")
+    @PostMapping("/filter")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "candidate-filter list Candidate",
             description = "API for candidate-filter list Candidate"
@@ -198,8 +217,8 @@ public class CandidateApi {
         try{
             Long applyPosition = MapUtils.getLong(condition, "applyPosition", -1l);
             Long gender = MapUtils.getLong(condition, "gender", -1l);
-            String language = MapUtils.getString(condition, "language", "all");
-            Long educationLevel = MapUtils.getLong(condition, "educationLevel", -1l);
+            Set<String> language = Collections.singleton(MapUtils.getString(condition, "language", "all"));
+            Set<Long> educationLevel = Collections.singleton(MapUtils.getLong(condition, "educationLevel", -1l));
             String educateLocation = MapUtils.getString(condition, "educateLocation", "all").toLowerCase(Locale.ROOT);
             String industry = MapUtils.getString(condition,"industry", "all").toLowerCase(Locale.ROOT);
             String ageLess = MapUtils.getString(condition,"ageLess", "all");

@@ -110,7 +110,8 @@ public class OnboardTrainingTemplateApi {
         try {
             Long positionId = MapUtils.getLong(condition, "positionId", -1l);
             Long titleId = MapUtils.getLong(condition, "titleId", -1l);
-            Page<OnboardTrainingTemplate> page = _reppo.search(cid, positionId, titleId, pageable);
+            Long orgId = MapUtils.getLong(condition, "orgId", -1l);
+            Page<OnboardTrainingTemplate> page = _reppo.search(cid, positionId, titleId, orgId, pageable);
             List<OnboardTrainingTemplateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {

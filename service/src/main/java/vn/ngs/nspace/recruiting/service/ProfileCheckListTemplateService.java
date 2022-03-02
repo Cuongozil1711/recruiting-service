@@ -75,15 +75,19 @@ public class ProfileCheckListTemplateService {
         for (Map<String, Object> data: newDatas) {
             Long positionId = MapUtils.getLong(data, "positionId", 0l);
             Long titileId = MapUtils.getLong(data, "titleId", 0l);
+            String contractType = MapUtils.getString(data, "contractType", "#");
+
             List<ProfileCheckListTemplate> existeds = repo.findByCompanyIdAndPositionIdAndTitleIdAndStatus(cid, positionId, titileId, Constants.ENTITY_ACTIVE);
             if(existeds.size() >= 1){ // da ton tai voi vi tri vai tro nay
                 for (ProfileCheckListTemplate existed: existeds){
                     existed.setStatus(Constants.ENTITY_INACTIVE);
                     existed = repo.save(existed);
-                    template.setPositionId(positionId);
-                    template.setTitleId(titileId);
+
                     ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
                     MapperUtils.copyWithoutAudit(template, dto);
+                    dto.setPositionId(positionId);
+                    dto.setTitleId(titileId);
+
                     List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, templateId, Constants.ENTITY_ACTIVE);
                     List<ProfileCheckListTemplateItemDTO> itemDTOS = new ArrayList<>();
                     for (ProfileCheckListTemplateItem item: items) {
@@ -99,6 +103,9 @@ public class ProfileCheckListTemplateService {
             else{ // neu chua co
                 ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
                 MapperUtils.copyWithoutAudit(template, dto);
+                dto.setPositionId(positionId);
+                dto.setTitleId(titileId);
+
                 List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
                 List<ProfileCheckListTemplateItemDTO> itemDTOS = new ArrayList<>();
                 MapperUtils.copyWithoutAudit(items, itemDTOS);
@@ -106,6 +113,12 @@ public class ProfileCheckListTemplateService {
                 create(cid, uid, dto);
             }
         }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("positionId", template.getPositionId());
+        data.put("titleId", template.getTitleId());
+        data.put("contractType", template.getContractType());
+        newDatas.add(data);
         return newDatas;
     }
 
@@ -147,7 +160,20 @@ public class ProfileCheckListTemplateService {
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
 
+        List<ProfileCheckListTemplateItem> lstItem = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, request.getId(), Constants.ENTITY_ACTIVE);
+        List<Long> lstItemOfDto = request.getItems().stream().map(dto -> dto.getId()).collect(Collectors.toList());
+        List<Long> lstItemExists = lstItem.stream().map(el -> el.getId()).collect(Collectors.toList());
+
+        List<Long> listCheckListIdForDelete = new ArrayList<>(lstItemExists);
+        listCheckListIdForDelete.removeAll(lstItemOfDto);
+
+        for (Long itemId: listCheckListIdForDelete) {
+            ProfileCheckListTemplateItem item =  itemRepo.findByCompanyIdAndId(cid, itemId).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplateItem.class, itemId));
+            item.setStatus(Constants.ENTITY_INACTIVE);
+            item = itemRepo.save(item);
+        }
         for(ProfileCheckListTemplateItemDTO itemDTO : request.getItems()){
+
             if(CompareUtil.compare(request.getStatus(), Constants.ENTITY_INACTIVE)){
                 itemDTO.setStatus(Constants.ENTITY_INACTIVE);
             }
@@ -165,23 +191,24 @@ public class ProfileCheckListTemplateService {
         ProfileCheckListTemplate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
         curr.setUpdateBy(uid);
+        curr.setStatus(request.getStatus() == null ? Constants.ENTITY_ACTIVE : request.getStatus());
         curr = repo.save(curr);
         return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
     }
 
     public void updateItem(Long cid, String uid, Long id, ProfileCheckListTemplateItemDTO request) throws BusinessException{
         validItem(request);
-        if(request.getId() != 0l && request.getId() != null){
+        if(request.getId() != null ){
             ProfileCheckListTemplateItem curr = itemRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplateItem.class, id));
             MapperUtils.copyWithoutAudit(request, curr);
             curr.setUpdateBy(uid);
+            curr.setStatus(request.getStatus() == null ? Constants.ENTITY_ACTIVE : request.getStatus());
             curr = itemRepo.save(curr);
         }else{
             createItem(cid, uid, request);
         }
     }
-
-
+                    
     public void delete(Long cid, String uid, List<Long> ids){
         for (Long id: ids){
             ProfileCheckListTemplate temp = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(ProfileCheckListTemplate.class, id));

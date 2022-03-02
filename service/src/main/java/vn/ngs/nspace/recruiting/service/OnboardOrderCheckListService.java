@@ -54,7 +54,7 @@ public class OnboardOrderCheckListService {
                 haveUpdate = true;
             }
             if(!CompareUtil.compare(checkList.getStartDate(), checkListDTO.getStartDate())){
-                checkList.setStartDate(checkList.getStartDate());
+                checkList.setStartDate(checkListDTO.getStartDate());
                 haveUpdate = true;
             }
             if(!CompareUtil.compare(checkList.getDeadline(), checkListDTO.getDeadline())){

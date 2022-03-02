@@ -15,10 +15,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
-import vn.ngs.nspace.recruiting.model.Candidate;
-import vn.ngs.nspace.recruiting.model.EmailSent;
-import vn.ngs.nspace.recruiting.model.EmailSetting;
-import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
+import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
@@ -92,11 +89,13 @@ public class EmailSentApi {
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id) {
         try{
-            return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndId(cid, id));
+             return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndId(cid, id));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
     }
+
+
 
     @PostMapping("/send")
     @ActionMapping(action = Permission.VIEW)
@@ -115,6 +114,7 @@ public class EmailSentApi {
             Long emailSettingId = MapUtils.getLong(payload, "emailSettingId", 0l);
             Long candidateId = MapUtils.getLong(payload, "candidateId", 0l);
             Long employeeId = MapUtils.getLong(payload, "employeeId", 0l);
+            String typeOnboard = MapUtils.getString(payload, "typeOnboard", "");
             if(employeeId == 0l && candidateId == 0l){
                 throw new BusinessException("can-not-empty-both-employee-and-candidate");
             }
@@ -154,25 +154,46 @@ public class EmailSentApi {
             es.setDate(MapUtils.getDate(payload, "date"));
             es.setToEmail(emailTo);
             es.setSubject(title);
-            es.setStatus(Constants.ENTITY_ACTIVE);
+                es.setStatus(Constants.ENTITY_ACTIVE);
             es.setCreateBy(uid);
             es.setUpdateBy(uid);
             es.setCompanyId(cid);
             es.setRefType(refType);
             es.setRefId(refId);
-            es = _repo.save(es);
+
 
             Long onboardOrderCheckListId = MapUtils.getLong(payload, "onboardOrderCheckListId", 0l);
             if(onboardOrderCheckListId != null){
                 OnboardOrderCheckList orderCheckList = _onboardOrderCheckListRepo.findByCompanyIdAndId(cid, onboardOrderCheckListId).orElse(new OnboardOrderCheckList());
                 if(!orderCheckList.isNew()){
                     orderCheckList.setUpdateBy(uid);
-                    orderCheckList.setState(Constants.ONBOARD_ORDER_CHECK_LIST_STATE.DONE.name());
+                    orderCheckList.setState(Constants.ONBOARD_ORDER_CHECK_LIST_STATE.complete.name());
                     _onboardOrderCheckListRepo.save(orderCheckList);
                 }
+                es.setTypeOnboard(typeOnboard);
             }
-
+            es = _repo.save(es);
             return ResponseUtils.handlerSuccess(es);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @GetMapping("/getById/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get Email Sent by ID"
+            , description = "Get Email Sent by ID"
+            , tags = { "Email" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getById(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id) {
+        try{
+            EmailSent el = _repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(EmailSent.class, id));
+            return ResponseUtils.handlerSuccess(el);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

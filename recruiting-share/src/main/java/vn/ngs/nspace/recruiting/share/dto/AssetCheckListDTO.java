@@ -22,6 +22,7 @@ public class AssetCheckListDTO {
     private Long senderId; // id nguoi giao
     private Long employeeId; // id  nguoi nhan
     private String description;
+    private Integer quantity;
 
     private EmployeeDTO senderObj; // doi tuong nguoi giao
     private EmployeeDTO employeeObj; // doi tuong nguoi nhan

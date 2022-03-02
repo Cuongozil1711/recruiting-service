@@ -83,10 +83,10 @@ public class JobRequirementApi {
         try{
             String title = MapUtils.getString(condition, "title", "all");
             String code = MapUtils.getString(condition, "code", "all");
-            Long positionId = MapUtils.getLong(condition,"positionId", -1l);
+//            Long positionId = MapUtils.getLong(condition,"positionId", -1l);
 
 
-          Page<JobRequirement> jobRequirement =  repo.search(cid,title,code,positionId, pageable);
+          Page<JobRequirement> jobRequirement =  repo.search(cid, title , code, pageable);
           List<JobRequirementDTO> dtos = service.toDTOs(cid,uid,jobRequirement.getContent());
           Page<Map<String,Object>> resp = new PageImpl(dtos,pageable, dtos.size());
 

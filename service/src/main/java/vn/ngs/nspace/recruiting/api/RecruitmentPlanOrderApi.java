@@ -110,12 +110,16 @@ public class RecruitmentPlanOrderApi {
             @RequestHeader Long cid
             ,@Parameter(description="ID of user")
             @RequestHeader String uid
-            , @Parameter(description="Payload to search with positionId, orgId, fromDate, deadline")
-            @RequestParam(name = "filter") String filter
-            ,@RequestParam(name = "orgId") Long orgId
+            , @Parameter(description="Payload to search with positionId,code,...")
+             @RequestBody Map<String, Object> condition
             , Pageable pageable){
         try{
-            Page<RecruitmentPlanOrder> page = _repo.filter(cid,orgId, filter, pageable);
+            Long orgId = MapUtils.getLong(condition,"orgId",-1l);
+            Long positionId = MapUtils.getLong(condition,"positionId", -1l);
+            String code = MapUtils.getString(condition,"code", "all");
+
+
+            Page<RecruitmentPlanOrder> page = _repo.filter(cid,positionId,orgId, code, pageable);
             List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         }catch (Exception e){

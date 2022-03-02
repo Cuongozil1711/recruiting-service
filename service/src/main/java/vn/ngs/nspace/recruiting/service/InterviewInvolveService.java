@@ -6,6 +6,7 @@ import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.InterviewInvolve;
 import vn.ngs.nspace.recruiting.repo.InterviewInvolveRepo;
@@ -168,18 +169,40 @@ public class InterviewInvolveService {
         return dto;
     }
 
-    public List<InterviewInvolveDTO> applyInvolves(Long cid, String uid, Long id, List<InterviewInvolveDTO> dtos) {
-        InterviewInvolve template = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewInvolve.class, id));
-        List<InterviewInvolveDTO> returnDTOs = new ArrayList<>();
-        for (InterviewInvolveDTO dto : dtos) {
-            InterviewInvolveDTO clone = toDTO(template);
-            clone.setPositionId(dto.getPositionId());
-            clone.setTitleId(dto.getTitleId());
-            clone.setOrgId(dto.getOrgId());
+    public List<Map<String, Object>> applyInvolves(Long cid, String uid, Long involveId, List<Map<String, Object>> newDatas) throws BusinessException{
+        InterviewInvolve template = repo.findByCompanyIdAndId(cid, involveId).orElseThrow(() -> new EntityNotFoundException(InterviewInvolve.class, involveId));
+        for (Map<String, Object> data: newDatas) {
+            Long positionId = MapUtils.getLong(data, "positionId", 0l);
+            Long titileId = MapUtils.getLong(data, "titleId", 0l);
+            Long orgId = MapUtils.getLong(data, "orgId", 0l);
+            List<InterviewInvolve> exist = repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, positionId, titileId, orgId, Constants.ENTITY_ACTIVE);
+            if (exist.size() >= 1) {
+                for (InterviewInvolve existed : exist) {
+                    existed.setStatus(Constants.ENTITY_INACTIVE);
+                    existed = repo.save(existed);
 
-            returnDTOs.add(create(cid, uid, clone));
+                    InterviewInvolveDTO dto = new InterviewInvolveDTO();
+                    MapperUtils.copyWithoutAudit(template, dto);
+                    dto.setPositionId(positionId);
+                    dto.setTitleId(titileId);
+                    dto.setOrgId(orgId);
+                    create(cid, uid, dto);
+                }
+            } else {
+                InterviewInvolveDTO dto = new InterviewInvolveDTO();
+                MapperUtils.copyWithoutAudit(template, dto);
+                dto.setPositionId(positionId);
+                dto.setTitleId(titileId);
+                dto.setOrgId(orgId);
+                create(cid, uid, dto);
+            }
+
         }
-        return returnDTOs;
+        Map<String, Object> data = new HashMap<>();
+        data.put("positionId", template.getPositionId());
+        data.put("titleId", template.getTitleId());
+        newDatas.add(data);
+        return newDatas;
     }
 
     public void delete(Long cid, String uid, List<Long> ids) {

@@ -25,6 +25,8 @@ public class OnboardTraining extends PersistableEntity<Long> {
     private Long employeeId;
     private Long commenterId;
     private Long suppoterId;
+    private Long ratio;
+    private String result;
 
     public static OnboardTraining of(Long cid, String uid, OnboardTrainingDTO dto) {
         OnboardTraining obj = OnboardTraining.builder()
@@ -33,6 +35,8 @@ public class OnboardTraining extends PersistableEntity<Long> {
                 .employeeId(dto.getEmployeeId())
                 .commenterId(dto.getCommenterId())
                 .suppoterId(dto.getSuppoterId())
+                .ratio(dto.getRatio())
+                .result(dto.getResult())
                 .build();
         return obj;
     }

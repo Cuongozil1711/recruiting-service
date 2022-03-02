@@ -24,6 +24,7 @@ public class OnboardTrainingItemDTO {
     private Long itemId;
     private Long itemChildId;
     private Long itemGrandChildId;
+    private String sourceTL;
     private Integer status;
 
     private OnboardTrainingTemplateItemDTO item;

@@ -12,22 +12,31 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
+import vn.ngs.nspace.lib.dto.BaseResponse;
+import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
+import vn.ngs.nspace.recruiting.model.EmailSent;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
+import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.repo.ProfileCheckListTemplateRepo;
+import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
 import vn.ngs.nspace.recruiting.service.OnboardOrderService;
 import vn.ngs.nspace.recruiting.service.ProfileCheckListTemplateService;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("onboard-order")
@@ -36,6 +45,8 @@ import java.util.Map;
 public class OnboardOrderApi {
     private final OnboardOrderService _service;
     private final OnboardOrderRepo _repo;
+    private final ExecuteHcmService _hcmService;
+    private final EmailSentRepo _repoEmail;
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
@@ -54,10 +65,34 @@ public class OnboardOrderApi {
             Long employeeId = MapUtils.getLong(condition, "employeeId", -1l);
             Long buddy = MapUtils.getLong(condition, "buddy", -1l);
             Long jobApplicationId = MapUtils.getLong(condition, "jobApplicationId", -1l);
-            Page<OnboardOrder> page = _repo.search(cid, buddy, employeeId, jobApplicationId, pageable);
+            Long positionId = MapUtils.getLong(condition, "positionId", -1l);
+            Long titleId = MapUtils.getLong(condition, "titleId", -1l);
+            Long orgId = MapUtils.getLong(condition, "orgId", -1l);
+            String search = MapUtils.getString(condition, "search", "");
+            BaseResponse<Map<String, Object>> obj = _hcmService.search(uid, cid, search);
+            obj.getData();
+            Map<String, Object> data = obj.getData();
+            List<Map<String, Object>> content = (List<Map<String, Object>>) data.get("content");
+            List<EmployeeDTO> empLoyees = new ArrayList<>();
+            for (Map<String, Object> o: content) {
+                EmployeeDTO empLoyee = new EmployeeDTO();
+                Long id = MapUtils.getLong(o, "id", 0l);
+                empLoyee.setId(id);
+                empLoyees.add(empLoyee);
+            }
+            List<Long> empIds = empLoyees.stream().map(EmployeeDTO::getId).collect(Collectors.toList());
+            if(condition != null && !condition.isEmpty()){
+                Page<OnboardOrder> page = _repo.search(cid, buddy, positionId, titleId, orgId, jobApplicationId, empIds, pageable);
+                List<OnboardOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
+                return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
 
-            List<OnboardOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
-            return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+            }
+            else {
+                Page<OnboardOrder> page = _repo.searchAll(cid,buddy, employeeId, jobApplicationId, pageable);
+                List<OnboardOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
+                return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+            }
+
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
@@ -188,4 +223,28 @@ public class OnboardOrderApi {
 //
 //        return null;
 
+
+    @PostMapping("/get-email-by-onboarId")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "get many records info email",
+            description = "can get list email")
+
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getEmailByOnboarId(
+            @Parameter(description="id of company") @RequestHeader Long cid
+            , @Parameter(description="id of user") @RequestHeader String uid
+            ,@Parameter(description="Payload DTO to get email") @RequestBody Map<String, Object> condition ) {
+        try {
+            String toEmail = MapUtils.getString(condition, "toEmail", "");
+            String refType = MapUtils.getString(condition, "refType", "");
+            String type = MapUtils.getString(condition, "type", "");
+            List<EmailSent> list = _repoEmail.findByCompanyIdAndToEmailAndRefTypeAndTypeOnboard(cid, toEmail, refType, type);
+
+            return ResponseUtils.handlerSuccess(list);
+        }catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
+
+    }
 }

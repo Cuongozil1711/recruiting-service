@@ -19,7 +19,8 @@ public interface InterviewCheckListTemplateRepo extends BaseRepo<InterviewCheckL
             " from InterviewCheckListTemplate i " +
             " where (i.companyId = :companyId)" +
             " and (i.positionId = :positionId or :positionId = -1) " +
-            " and (i.orgId = :orgId or :orgId = -1) ")
+            " and (i.orgId = :orgId or :orgId = -1)" +
+            " and (i.status = 1) ")
     Page<InterviewCheckListTemplate> search(@Param("companyId") long cid
             ,@Param("positionId") Long positionId
             ,@Param("orgId") Long orgId

@@ -131,6 +131,9 @@ public class CandidateService {
             if(obj.getApplyPositionId() != null){
                 categoryIds.add(obj.getApplyPositionId());
             }
+            if (obj.getCvSourceId() != null){
+                categoryIds.add(obj.getCvSourceId());
+            }
 
             dtos.add(toDTO(obj));
         });
@@ -159,6 +162,9 @@ public class CandidateService {
             }
             if (dto.getApplyPositionId() != null){
                 dto.setApplyPositionIdObj(mapCategory.get(dto.getApplyPositionId()));
+            }
+            if (dto.getCvSourceId() != null){
+                dto.setCvSourceObj(mapCategory.get(dto.getCvSourceId()));
             }
         }
 

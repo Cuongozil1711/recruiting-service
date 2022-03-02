@@ -30,6 +30,7 @@ public class EmailSent extends PersistableEntity<Long> {
     private String content;
     private String fromEmail;
     private String toEmail;
+    private String typeOnboard;
 
     public static EmailSent of(Long cid, String uid, EmailSent sent){
         EmailSent obj = EmailSent.builder()
@@ -41,6 +42,7 @@ public class EmailSent extends PersistableEntity<Long> {
                 .content(sent.getContent())
                 .fromEmail(sent.getFromEmail())
                 .toEmail(sent.getToEmail())
+                .typeOnboard(sent.getTypeOnboard())
                 .build();
 
         return obj;

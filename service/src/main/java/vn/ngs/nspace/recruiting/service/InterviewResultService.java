@@ -56,7 +56,12 @@ public class InterviewResultService {
 //            throw new BusinessException("invalid-state");
 //        }
 
-
+          if(dto.getContent() == null){
+              throw new BusinessException("invalid-content");
+          }
+//          if (dto.getState() == null){
+//              throw new BusinessException("invalid-state");
+//          }
     }
 
 

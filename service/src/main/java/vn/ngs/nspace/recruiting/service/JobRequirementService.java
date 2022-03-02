@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.service;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.common.protocol.types.Field;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
@@ -48,12 +49,12 @@ public class JobRequirementService {
         if(dto.getTitleId() == null){
             throw new BusinessException("invalid-titleId");
         }
-        if(dto.getPositionId() == null){
-            throw new BusinessException("invalid-position");
-        }
-        if(dto.getLevelId() == null){
-            throw new BusinessException("invalid-level");
-        }
+//        if(dto.getPositionId() == null){
+//            throw new BusinessException("invalid-position");
+//        }
+//        if(dto.getLevelId() == null){
+//            throw new BusinessException("invalid-level");
+//        }
         if(dto.getQuantity() == null){
             throw new BusinessException("invalid-quantity");
         }
@@ -147,6 +148,12 @@ public class JobRequirementService {
         MapperUtils.copyWithoutAudit(dto,curr);
         curr.setUpdateBy(uid);
         curr = _repo.save(curr);
+        try{
+            _repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(),Constants.ENTITY_ACTIVE).orElse(new JobRequirement());
+
+        }catch (IncorrectResultSizeDataAccessException ex){
+            throw new BusinessException("duplicate-data-with-code");
+        }
 
         return toDTO(curr);
 
@@ -162,15 +169,19 @@ public class JobRequirementService {
             if(!StringUtils.isEmpty(obj.getCreateBy())){
                 userIds.add(obj.getCreateBy());
             }
-            if (obj.getPositionId() != null) {
-                categoryIds.add(obj.getPositionId());
-            }
+//            if (obj.getPositionId() != null) {
+//                categoryIds.add(obj.getPositionId());
+//            }
+//            if (obj.getTitleId() != null) {
+//                categoryIds.add(obj.getTitleId());
+//            }
+
             if (obj.getTitleId() != null) {
                 categoryIds.add(obj.getTitleId());
             }
-            if (obj.getLevelId() != null) {
-                categoryIds.add(obj.getLevelId());
-            }
+//            if (obj.getLevelId() != null) {
+//                categoryIds.add(obj.getLevelId());
+//            }
             if (obj.getGender() != null){
                 categoryIds.add(obj.getGender());
             }
@@ -178,7 +189,9 @@ public class JobRequirementService {
                 categoryIds.add(obj.getCurrencyId());
             }
             if (obj.getIndustryId() != null){
-                categoryIds.add(obj.getIndustryId());
+                obj.getIndustryId().forEach(industry -> {
+                    categoryIds.add(Long.valueOf(industry));
+                });
             }
             if(obj.getReceiptName() != null){
                 empIds.add(obj.getReceiptName());
@@ -193,9 +206,9 @@ public class JobRequirementService {
         Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
 
         for (JobRequirementDTO dto : dtos) {
-            if (dto.getPositionId() != null) {
-                dto.setPositionObj(mapCategory.get(dto.getPositionId()));
-            }
+//            if (dto.getPositionId() != null) {
+//                dto.setPositionObj(mapCategory.get(dto.getPositionId()));
+//            }
 
             if (dto.getGender() != null){
                 dto.setGenderObj(mapCategory.get(dto.getGender()));
@@ -203,14 +216,20 @@ public class JobRequirementService {
             if (dto.getTitleId() != null) {
                 dto.setTitleObj(mapCategory.get(dto.getTitleId()));
             }
-            if (dto.getLevelId() != null) {
-                dto.setLevelObj(mapCategory.get(dto.getLevelId()));
-            }
+//            if (dto.getLevelId() != null) {
+//                dto.setLevelObj(mapCategory.get(dto.getLevelId()));
+//            }
             if (dto.getCurrencyId() != null){
                 dto.setCurrencyObj(mapCategory.get(dto.getCurrencyId()));
             }
             if (dto.getIndustryId() != null){
-                dto.setIndustryObj(mapCategory.get(dto.getIndustryId()));
+                List<Map<String,Object>> industryIds = new ArrayList<>();
+                dto.getIndustryId().stream().forEach(i -> {
+                    if(!StringUtils.isEmpty(i)){
+                        industryIds.add(mapCategory.get(Long.valueOf(i)));
+                    }
+                });
+                dto.setIndustryObj(industryIds);
             }
             if (dto.getReceiptName() != null){
                 EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getReceiptName())).findAny().orElse(new EmployeeDTO());

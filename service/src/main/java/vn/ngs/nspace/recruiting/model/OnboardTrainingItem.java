@@ -32,6 +32,7 @@ public class OnboardTrainingItem extends PersistableEntity<Long> {
     private Long itemId;
     private Long itemChildId;
     private Long itemGrandChildId;
+    private String sourceTL;
 
     public static OnboardTrainingItem of(Long cid, String uid, OnboardTrainingItemDTO dto) {
         OnboardTrainingItem obj = OnboardTrainingItem.builder()
@@ -45,6 +46,7 @@ public class OnboardTrainingItem extends PersistableEntity<Long> {
                 .itemId(dto.getItemId())
                 .itemChildId(dto.getItemChildId())
                 .itemGrandChildId(dto.getItemGrandChildId())
+                .sourceTL(dto.getSourceTL())
                 .build();
         return obj;
     }
