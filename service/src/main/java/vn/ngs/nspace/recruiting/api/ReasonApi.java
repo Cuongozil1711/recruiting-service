@@ -57,7 +57,7 @@ public class ReasonApi {
             return ResponseUtils.handlerException(ex);
         }
     }
-    @GetMapping("/search-all")
+    @GetMapping("/searchAll")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Search all Reason with type"
             , description = "Search all Reason "
