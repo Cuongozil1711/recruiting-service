@@ -23,6 +23,7 @@ import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -217,8 +218,22 @@ public class CandidateApi {
         try{
             Long applyPosition = MapUtils.getLong(condition, "applyPosition", -1l);
             Long gender = MapUtils.getLong(condition, "gender", -1l);
-            Set<String> language = Collections.singleton(MapUtils.getString(condition, "language", "all"));
-            Set<Long> educationLevel = Collections.singleton(MapUtils.getLong(condition, "educationLevel", -1l));
+            List<String> languages = new ArrayList<>();
+            if(condition.containsKey("language")){
+                languages = (List<String>)condition.get("language");
+            }
+            if(languages.isEmpty() || !condition.containsKey("language")){
+                languages.add("#");
+            }
+
+            List<Long> educationLevel = new ArrayList<>();
+            if(condition.containsKey("educationLevel")){
+                educationLevel = (List<Long>)condition.get("educationLevel");
+            }
+            if(educationLevel.isEmpty() || !condition.containsKey("educationLevel")){
+                educationLevel.add(-1l);
+            }
+
             String educateLocation = MapUtils.getString(condition, "educateLocation", "all").toLowerCase(Locale.ROOT);
             String industry = MapUtils.getString(condition,"industry", "all").toLowerCase(Locale.ROOT);
             String ageLess = MapUtils.getString(condition,"ageLess", "all");
@@ -228,7 +243,7 @@ public class CandidateApi {
             String expUnit = MapUtils.getString(condition,"expUnit","month");
 
             Date yearLess = null;
-            if(!ageLess.equals("all")){
+            if(!ageLess.equals("all") && !ageLess.equals(Constants.Experience.UNDER_0.name())){
                 Integer year = Integer.parseInt(ageLess.split("_")[1]);
                 yearLess = DateUtil.addDate(new Date(), "year",-year);
             }
@@ -239,7 +254,7 @@ public class CandidateApi {
                toExp = toExp * 12;
             }
 
-            Page<Candidate> page = _repo.filter(cid,applyPosition,gender,language,educationLevel,educateLocation,industry, yearLess,lastPosition,fromExp,toExp, pageable);
+            Page<Candidate> page = _repo.filter(cid,applyPosition,gender,languages,educationLevel,educateLocation,industry, yearLess,lastPosition,fromExp,toExp, pageable);
             List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
 
