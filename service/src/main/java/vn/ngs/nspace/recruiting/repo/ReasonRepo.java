@@ -27,5 +27,15 @@ public interface ReasonRepo extends BaseRepo<Reason,Long> {
             ,@Param("type") String type
             ,@Param("search") String search
             , Pageable pageable);
+
+    @Query(value = "select c.id as id, c.code as code, c.title as title, c.status as status, c.type as type, c.description as description" +
+            " from Reason c" +
+            " where (c.companyId = :companyId)" +
+            " and (concat(coalesce(c.code,''), coalesce(c.title,''), coalesce(c.description,'') ) like lower(concat('%',:search,'%')) or coalesce(:search, '#') = '#') " )
+    Page<Map<String, Object>> searchAll(
+            @Param("companyId") Long cid
+            ,@Param("type") String type
+            ,@Param("search") String search
+            , Pageable pageable);
 }
 

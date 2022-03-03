@@ -57,6 +57,27 @@ public class ReasonApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+    @GetMapping("/search-all")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Search all Reason with type"
+            , description = "Search all Reason "
+            , tags = { "Reason"  }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity searchAll(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestParam(value = "type", defaultValue = "") String type
+            , @RequestParam(value = "search", defaultValue = "#") String search
+            , Pageable pageable) {
+        try{
+            Page<Map<String, Object>> results = _repo.searchAll(cid, type, StringUtils.lowerCase(search), pageable);
+            return ResponseUtils.handlerSuccess(results);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
     @PostMapping("/list/{type}")
     @ActionMapping(action = Permission.VIEW)
