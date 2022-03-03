@@ -31,7 +31,7 @@ public class CandidateDTO {
     private String educateLocation;
     private String industry;
 
-    private String language;
+    private Long language;
     private String languageLevel;
 
     private Double experience;

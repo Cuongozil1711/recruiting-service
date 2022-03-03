@@ -40,8 +40,8 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.status = 1)" +
             " and (c.applyPositionId = :applyPosition or :applyPosition = -1 )" +
             " and (c.gender = :gender or :gender = -1)" +
-            " and (c.language in :language or :language in ('#'))" +
-            " and (c.educationLevel in :educationLevel or :educationLevel in (-1) )" +
+            " and (c.language in :language or -1 in :language)" +
+            " and (c.educationLevel in :educationLevel or -1 in :educationLevel)" +
             " and (lower(c.educateLocation) like (concat('%',:educateLocation,'%')) or :educateLocation = 'all')  " +
             " and (lower(c.industry) like (concat('%',:industry,'%')) or :industry = 'all') " +
             " and (lower(c.lastPosition) like (concat('%',:lastPosition,'%')) or :lastPosition = 'all') " +
@@ -55,7 +55,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             @Param("companyId") Long cid
             , @Param("applyPosition") Long applyPosition
             , @Param("gender") Long gender
-            , @Param("language") List<String> language
+            , @Param("language") List<Long> language
             , @Param("educationLevel") List<Long> educationLevel
             , @Param("educateLocation") String educateLocation
             , @Param("industry") String industry

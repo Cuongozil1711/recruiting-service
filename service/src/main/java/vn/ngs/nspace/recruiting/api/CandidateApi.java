@@ -218,12 +218,12 @@ public class CandidateApi {
         try{
             Long applyPosition = MapUtils.getLong(condition, "applyPosition", -1l);
             Long gender = MapUtils.getLong(condition, "gender", -1l);
-            List<String> languages = new ArrayList<>();
+            List<Long> languages = new ArrayList<>();
             if(condition.containsKey("language")){
-                languages = (List<String>)condition.get("language");
+                languages = (List<Long>)condition.get("language");
             }
             if(languages.isEmpty() || !condition.containsKey("language")){
-                languages.add("#");
+                languages.add(-1l);
             }
 
             List<Long> educationLevel = new ArrayList<>();

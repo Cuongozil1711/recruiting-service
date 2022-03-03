@@ -48,7 +48,7 @@ public class Candidate extends PersistableEntity<Long> {
     private String educateLocation;
     private String industry;
 
-    private String language;
+    private Long language;
     private String languageLevel;
 
     private Double experience;
