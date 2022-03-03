@@ -57,7 +57,7 @@ public class ReasonApi {
             return ResponseUtils.handlerException(ex);
         }
     }
-    @GetMapping("/searchAll")
+    @GetMapping("/find/all")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Search all Reason with type"
             , description = "Search all Reason "
@@ -68,11 +68,9 @@ public class ReasonApi {
     protected ResponseEntity searchAll(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @RequestParam(value = "type", defaultValue = "") String type
-            , @RequestParam(value = "search", defaultValue = "#") String search
             , Pageable pageable) {
         try{
-            Page<Map<String, Object>> results = _repo.searchAll(cid, type, StringUtils.lowerCase(search), pageable);
+            Page<Map<String, Object>> results = _repo.searchAll(cid,  pageable);
             return ResponseUtils.handlerSuccess(results);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
