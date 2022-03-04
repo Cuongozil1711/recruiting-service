@@ -1,5 +1,7 @@
 package vn.ngs.nspace.recruiting.service;
 
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -132,9 +134,12 @@ public class ExecuteHcmService {
             throw new RuntimeException(e);
         }
     }
-
     public EmployeeResp createEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq){
         try {
+            long id  = employeeReq.getEmployee().getId();
+            if(id>0) {
+                return this.updateEmployee(requestUserId,companyId,employeeReq,id);
+            }
             URI uri = new URI(HcmServiceURL + "/generic/employee-profile");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
@@ -146,6 +151,24 @@ public class ExecuteHcmService {
             BaseResponse<EmployeeResp> resp = (BaseResponse<EmployeeResp>) response.getBody();
             return resp.getData();
 
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public EmployeeResp updateEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq,Long id){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/"+id);
+            HttpMethod method = HttpMethod.PUT;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId, companyId);
+            HttpEntity request = new HttpEntity<>(employeeReq, headers);
+
+            ParameterizedTypeReference<BaseResponse<EmployeeResp>> responeType = new ParameterizedTypeReference<BaseResponse<EmployeeResp>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
+            BaseResponse<EmployeeResp> resp = (BaseResponse<EmployeeResp>) response.getBody();
+            return resp.getData();
         } catch (Exception e){
             throw new RuntimeException(e);
         }
