@@ -136,10 +136,7 @@ public class ExecuteHcmService {
     }
     public EmployeeResp createEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq){
         try {
-            long id  = employeeReq.getEmployee().getId();
-            if(id>0) {
-                return this.updateEmployee(requestUserId,companyId,employeeReq,id);
-            }
+
             URI uri = new URI(HcmServiceURL + "/generic/employee-profile");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
@@ -156,19 +153,25 @@ public class ExecuteHcmService {
         }
     }
 
-    public EmployeeResp updateEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq,Long id){
+    public EmployeeResp updateEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq){
         try {
-            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/"+id);
-            HttpMethod method = HttpMethod.PUT;
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId, companyId);
-            HttpEntity request = new HttpEntity<>(employeeReq, headers);
+            long id  = employeeReq.getEmployee().getId();
+            Logger logger = LoggerFactory.getLogger(ExecuteHcmService.class);
+            logger.debug("id "+id);
+            if(id>0) {
+                URI uri = new URI(HcmServiceURL + "/generic/employee-profile/" + id);
+                HttpMethod method = HttpMethod.PUT;
+                RestTemplate restTemplate = new RestTemplate();
+                HttpHeaders headers = createHeader(requestUserId, companyId);
+                HttpEntity request = new HttpEntity<>(employeeReq, headers);
 
-            ParameterizedTypeReference<BaseResponse<EmployeeResp>> responeType = new ParameterizedTypeReference<BaseResponse<EmployeeResp>>() {
-            };
-            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
-            BaseResponse<EmployeeResp> resp = (BaseResponse<EmployeeResp>) response.getBody();
-            return resp.getData();
+                ParameterizedTypeReference<BaseResponse<EmployeeResp>> responeType = new ParameterizedTypeReference<BaseResponse<EmployeeResp>>() {
+                };
+                ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
+                BaseResponse<EmployeeResp> resp = (BaseResponse<EmployeeResp>) response.getBody();
+                return resp.getData();
+            }
+            return null;
         } catch (Exception e){
             throw new RuntimeException(e);
         }
