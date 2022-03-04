@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
-import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.Candidate;
@@ -164,6 +164,24 @@ public class JobApplicationApi {
             , @RequestBody EmployeeRecruitingReq request){
         try {
             return ResponseUtils.handlerSuccess(_service.createEmployee(cid, uid , id, request));
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PostMapping("/update-employee/{id}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "delete list JobApplication",
+            description = "API for delete list JobApplication")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity updateEmployee(
+            @Parameter(description = "ID of company") @RequestHeader Long cid
+            , @Parameter(description = "ID of userID") @RequestHeader String uid
+            , @Parameter(description = "Id of job-application")  @PathVariable(value = "id") Long id
+            , @RequestBody EmployeeRecruitingReq request){
+        try {
+            return ResponseUtils.handlerSuccess(_service.updateEmployee(cid, uid , id, request));
         } catch (Exception e){
             return ResponseUtils.handlerException(e);
         }

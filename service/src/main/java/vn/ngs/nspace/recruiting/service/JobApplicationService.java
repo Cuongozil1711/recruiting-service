@@ -115,6 +115,32 @@ public class JobApplicationService {
 
         return empResp.getEmployee();
     }
+    public EmployeeDTO updateEmployee(Long cid, String uid, Long jobAppId, EmployeeRecruitingReq createEmp){
+        JobApplication jobApplication = _repo.findByCompanyIdAndId(cid, jobAppId).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, jobAppId));
+//        if(!Constants.JOB_APPLICATION_STATE_DONE.equals(jobApplication.getState())){
+//            throw new BusinessException("job-application-is-in-process");
+//        }
+        Candidate candidate = _candidateRepo.findByCompanyIdAndId(cid, jobApplication.getCandidateId()).orElseThrow(() -> new EntityNotFoundException(Candidate.class, jobApplication.getCandidateId()));
+        EmployeeResp empResp = _hcmService.updateEmployee(uid, cid, createEmp);
+
+        candidate.setState(Constants.CANDIDATE_STATE.HIRED.toString());
+        candidate.setUpdateBy(uid);
+        candidate.setEmployeeId(empResp.getEmployee().getId());
+//        candidate.setApplyDate(createEmp.getCandicate().getApplyDate());
+
+        jobApplication.setEmployeeId(empResp.getEmployee().getId());
+        jobApplication.setUpdateBy(uid);
+        jobApplication.setState("DONE");
+        _candidateRepo.save(candidate);
+        _repo.save(jobApplication);
+
+        OnboardOrderDTO onboardOrder = new OnboardOrderDTO();
+        onboardOrder.setEmployeeId(empResp.getEmployee().getId());
+        onboardOrder.setJobApplicationId(jobAppId);
+        _onboardService.create(cid, uid, onboardOrder);
+
+        return empResp.getEmployee();
+    }
 
     public JobApplicationDTO initByCandidate(Long cid, String uid, Long candidateId) {
         JobApplication currentJr = _repo.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId, Constants.ENTITY_ACTIVE).orElse(new JobApplication());
