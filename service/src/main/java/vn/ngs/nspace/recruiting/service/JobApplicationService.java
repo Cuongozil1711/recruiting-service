@@ -104,7 +104,7 @@ public class JobApplicationService {
 
         jobApplication.setEmployeeId(empResp.getEmployee().getId());
         jobApplication.setUpdateBy(uid);
-
+        jobApplication.setState("DONE");
         _candidateRepo.save(candidate);
         _repo.save(jobApplication);
 
