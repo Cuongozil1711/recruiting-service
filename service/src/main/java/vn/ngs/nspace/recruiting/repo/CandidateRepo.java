@@ -23,7 +23,9 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
             " and (lower(concat(coalesce(c.fullName,''), coalesce(c.wardCode,''), coalesce(c.phone,'')" +
-            ", coalesce(c.email,'') )) like (concat('%',:search,'%'))) or coalesce(:search, '#') = '#'" )
+            ", coalesce(c.email,'') )) like (concat('%',:search,'%'))) or coalesce(:search, '#') = '#'" +
+            " order by c.id DESC "
+    )
     Page<Candidate> search(
             @Param("companyId") Long cid
             ,@Param("search") String search
@@ -50,7 +52,9 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " ((case when (experience_unit = 'year') then (experience * 12) else experience" +
             "      end ) >= :fromExp" +
             " and (case when (experience_unit = 'year') then (experience * 12)  else experience " +
-            "      end ) <= :toExp)" )
+            "      end ) <= :toExp)"+
+            " order by c.id DESC "
+    )
     Page<Candidate> filter(
             @Param("companyId") Long cid
             , @Param("applyPosition") Long applyPosition
