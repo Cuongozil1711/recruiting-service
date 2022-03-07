@@ -22,10 +22,10 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
-            " and (lower(concat(coalesce(c.fullName,''), coalesce(c.wardCode,''), coalesce(c.phone,'')" +
-            ", coalesce(c.email,'') )) like (concat('%',:search,'%'))) or coalesce(:search, '#') = '#'" +
+            " and (lower(concat(coalesce(c.fullName,''), coalesce(c.wardCode,''), coalesce(c.phone,''), coalesce(c.email,'') )) like (concat('%',:search,'%')))" +
             " order by c.id DESC "
     )
+    // or coalesce(:search, '#') = '#'
     Page<Candidate> search(
             @Param("companyId") Long cid
             ,@Param("search") String search
