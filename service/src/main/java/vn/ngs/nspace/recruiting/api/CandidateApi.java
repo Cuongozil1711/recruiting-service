@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -55,7 +57,8 @@ public class CandidateApi {
 //        String wardCode = MapUtils.getString(condition, "wardCode", "all");
 //        String phone = MapUtils.getString(condition, "phone", "all");
 //        String email = MapUtils.getString(condition, "email", "all");
-
+            Logger logger = LoggerFactory.getLogger(CandidateApi.class);
+            logger.trace("A TRACE Message {cid}="+cid);
         Page<Candidate> page = _repo.search(cid, search, pageable);
         List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
         return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));

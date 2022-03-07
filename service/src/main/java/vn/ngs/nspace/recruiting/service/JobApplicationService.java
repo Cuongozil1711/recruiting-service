@@ -137,7 +137,8 @@ public class JobApplicationService {
         OnboardOrderDTO onboardOrder = new OnboardOrderDTO();
         onboardOrder.setEmployeeId(empResp.getEmployee().getId());
         onboardOrder.setJobApplicationId(jobAppId);
-        _onboardService.create(cid, uid, onboardOrder);
+        long id  = createEmp.getEmployee().getId();
+        _onboardService.update(cid, uid,id, onboardOrder);
 
         return empResp.getEmployee();
     }
