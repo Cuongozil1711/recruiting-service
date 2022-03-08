@@ -117,9 +117,10 @@ public class RecruitmentPlanOrderApi {
             Long orgId = MapUtils.getLong(condition,"orgId",-1l);
             Long positionId = MapUtils.getLong(condition,"positionId", -1l);
             String code = MapUtils.getString(condition,"code", "all");
+            String solutionSuggestType = MapUtils.getString(condition,"solutionSuggestType","all");
+            String type = MapUtils.getString(condition,"type", "all");
 
-
-            Page<RecruitmentPlanOrder> page = _repo.filter(cid,positionId,orgId, code, pageable);
+            Page<RecruitmentPlanOrder> page = _repo.filter(cid,positionId,orgId, code,solutionSuggestType,type, pageable);
             List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         }catch (Exception e){

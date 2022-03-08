@@ -31,11 +31,15 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            " where (p.companyId = :companyId)" +
            " and (p.positionId = :positionId or :positionId = -1)" +
            " and (p.orgId = :orgId or :orgId = -1)" +
+           " and (p.type = :type or :type = 'all')" +
+           " and (p.solutionSuggestType = :solutionSuggestType or :solutionSuggestType = 'all')" +
            "and (lower(p.code) like (concat('%',:code,'%')) or :code = 'all') ")
    Page<RecruitmentPlanOrder> filter(@Param("companyId") Long cid
             ,@Param("positionId") Long positionId
             ,@Param("orgId") Long orgId
             ,@Param("code") String code
+            ,@Param("solutionSuggestType") String solutionSuggestType
+            ,@Param("type") String type
             , Pageable pageable);
 
 }
