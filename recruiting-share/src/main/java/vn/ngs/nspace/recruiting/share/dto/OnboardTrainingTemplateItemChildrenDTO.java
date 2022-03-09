@@ -17,9 +17,11 @@ public class OnboardTrainingTemplateItemChildrenDTO {
     private Long templateId;
     private Long itemId;
     private String name;
+    private Integer deadline;
     private float completion;
     private String description;
     private Integer status;
+    private Long employeeId;
 
     private List<OnboardTrainingTemplateItemGrandChildDTO> children;
 }
