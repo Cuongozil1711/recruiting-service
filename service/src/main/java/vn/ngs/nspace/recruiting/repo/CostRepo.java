@@ -9,15 +9,13 @@ import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.Cost;
 import vn.ngs.nspace.recruiting.model.EmailSent;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public interface CostRepo extends BaseRepo<Cost,Long> {
 
     Optional<Cost> findByCompanyIdAndId(long cid, Long id);
     List<Cost> findByCompanyIdAndOrgIdAndYearAndStatus(long cid, long orgId, long year, int status);
+    Optional<Cost> findByCompanyIdAndOrgIdAndYearAndStartDateAndEndDateAndStatus(Long cid, Long orgId, Long year, Date startDate, Date endDate, Integer status);
 
     @Query(value = "select t.org_id, t.year, sum(t.total_amount) as request_amount, sum(t.usage_amount) as usage_amount" +
             " from (select cost.org_id as org_id, cost.year as year, cost.total_amount as total_amount, coalesce(costDetail.total_amount, 0) as usage_amount " +
