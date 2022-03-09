@@ -2,17 +2,14 @@ package vn.ngs.nspace.recruiting.service;
 
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
-import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.OnboardOrder;
+import vn.ngs.nspace.recruiting.model.AssetCheckList;
 import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
+import vn.ngs.nspace.recruiting.repo.AssetCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderCheckListRepo;
-import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
-import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
-import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -24,11 +21,13 @@ public class OnboardOrderCheckListService {
     private final OnboardOrderCheckListRepo repo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
+    private final AssetCheckListRepo assetCheckListRepo;
 
-    public OnboardOrderCheckListService(OnboardOrderCheckListRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public OnboardOrderCheckListService(OnboardOrderCheckListRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService, AssetCheckListRepo assetCheckListRepo) {
         this.repo = repo;
         _hcmService = hcmService;
         _configService = configService;
+        this.assetCheckListRepo = assetCheckListRepo;
     }
 
     public void validateChangeState(String code, String oldState, String newState){
@@ -78,6 +77,7 @@ public class OnboardOrderCheckListService {
     public List<OnboardOrderCheckListDTO> checkListToDTOs(Long cid, String uid, List<OnboardOrderCheckList> objs){
         List<OnboardOrderCheckListDTO> dtos = new ArrayList<>();
         Set<Long> employeeIds = new HashSet<>();
+        Set<Long> orderIds = new HashSet<>();
         Map<Long, EmployeeDTO> mapEmp = new HashMap<>();
         objs.stream().forEach(o -> {
             dtos.add(MapperUtils.map(o, OnboardOrderCheckListDTO.class));
@@ -93,7 +93,13 @@ public class OnboardOrderCheckListService {
             if(o.getParticipantId() != null && o.getParticipantId() != 0){
                 employeeIds.add(o.getParticipantId());
             }
+            if (o.getOnboardOrderId() != null && o.getOnboardOrderId() != 0){
+                orderIds.add(o.getOnboardOrderId());
+            }
         });
+        List<AssetCheckList> assetChecklists = assetCheckListRepo.findByCompanyIdAndOnboardOrderIdIn(cid, orderIds);
+        Map<Long, List<AssetCheckList>> mapCheckLists = assetChecklists.stream().collect(Collectors.groupingBy(AssetCheckList::getOnboardOrderId));
+
         if(!employeeIds.isEmpty()){
             mapEmp = _hcmService.getMapEmployees(uid, cid, employeeIds);
         }
@@ -101,6 +107,23 @@ public class OnboardOrderCheckListService {
             dto.setEmployeeObj((dto.getEmployeeId() != null && dto.getEmployeeId() != 0) ? mapEmp.get(dto.getEmployeeId()) : null);
             dto.setResponsibleObj((dto.getResponsibleId() != null && dto.getResponsibleId() != 0) ? mapEmp.get(dto.getResponsibleId()) : null);
             dto.setParticipantObj((dto.getParticipantId() != null && dto.getParticipantId() != 0) ? mapEmp.get(dto.getParticipantId()) : null);
+
+            if (mapCheckLists.get(dto.getOnboardOrderId()) != null) {;
+                List<String> checkState = new ArrayList<>();
+                for (AssetCheckList asset : mapCheckLists.get(dto.getOnboardOrderId())){
+                    if (asset.getState().equals("notcomplete")){
+                        checkState.add(asset.getState());
+                    }
+                }
+                if (checkState != null && !checkState.isEmpty()){
+                    dto.setState("notcomplete");
+                }else {
+                    dto.setState("complete");
+                }
+
+            }else {
+                dto.setState("notcomplete");
+            }
         }
 
         return dtos;
