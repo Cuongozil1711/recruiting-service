@@ -28,7 +28,9 @@ public class OnboardTrainingTemplateItemChildren extends PersistableEntity<Long>
     private Long itemId;
     private String name;
     private float completion;
+    private Integer deadline;
     private String description;
+    private Long employeeId;
 
     public static OnboardTrainingTemplateItemChildren of(Long cid, String uid, OnboardTrainingTemplateItemChildrenDTO dto) {
         OnboardTrainingTemplateItemChildren obj = OnboardTrainingTemplateItemChildren.builder()
@@ -37,8 +39,10 @@ public class OnboardTrainingTemplateItemChildren extends PersistableEntity<Long>
                 .templateId(dto.getTemplateId())
                 .itemId(dto.getItemId())
                 .name(dto.getName())
+                .deadline(dto.getDeadline())
                 .completion(dto.getCompletion())
                 .description(dto.getDescription())
+                .employeeId(dto.getEmployeeId())
                 .build();
         return obj;
     }
