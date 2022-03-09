@@ -173,7 +173,9 @@ public class InterviewCheckListService {
     public List<InterviewCheckListDTO> createByPositionOrg(long cid, String uid, Long positionId, Long orgId, Long titleId, Long interviewerId, Double rating, Date interviewDate, String result) {
         List<InterviewCheckListDTO> profiles = new ArrayList<>();
         List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, orgId, titleId);
-
+        if (templates.size() == 0){
+            throw new BusinessException("has-not-template-valid-with-this-candidate");
+        }
         InterviewCheckListTemplate template = templates.get(0);
         List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
         for (InterviewCheckListTemplateItem item: items ) {
