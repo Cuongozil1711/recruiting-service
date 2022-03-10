@@ -36,6 +36,7 @@ public class InterviewCheckList extends PersistableEntity<Long> {
         InterviewCheckList obj = InterviewCheckList.builder()
                 .id(dto.getId())
                 .interviewResultId(dto.getInterviewResultId())
+                .interviewerId(dto.getInterviewerId())
                 .checkListId(dto.getCheckListId())
                 .rating(dto.getRating())
                 .result(dto.getResult())

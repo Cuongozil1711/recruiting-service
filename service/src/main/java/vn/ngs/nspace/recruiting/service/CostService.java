@@ -73,7 +73,7 @@ public class CostService {
     }
     public CostDTO create(long cid, String uid, CostDTO dto) {
         valid(dto);
-        Cost exist = repo.findByCompanyIdAndOrgIdAndYearAndStartDateAndEndDateAndStatus(cid, dto.getOrgId(),dto.getYear(),dto.getStartDate(),dto.getEndDate(),Constants.ENTITY_ACTIVE).orElse(new Cost());
+        Cost exist = repo.findByCompanyIdAndCostTypeIdAndOrgIdAndYearAndStartDateAndEndDateAndStatus(cid, dto.getCostTypeId(), dto.getOrgId(),dto.getYear(),dto.getStartDate(),dto.getEndDate(),Constants.ENTITY_ACTIVE).orElse(new Cost());
         if (!exist.isNew()){
             throw new BusinessException("duplicate-cost-with-startDate-and-endDate");
         }
@@ -126,7 +126,7 @@ public class CostService {
 
         curr = repo.save(curr);
         try{
-            repo.findByCompanyIdAndOrgIdAndYearAndStartDateAndEndDateAndStatus(cid, dto.getOrgId(), dto.getYear(), dto.getStartDate(),dto.getEndDate(),Constants.ENTITY_ACTIVE).orElse(new Cost());
+            repo.findByCompanyIdAndCostTypeIdAndOrgIdAndYearAndStartDateAndEndDateAndStatus(cid, dto.getCostTypeId(), dto.getOrgId(), dto.getYear(), dto.getStartDate(),dto.getEndDate(),Constants.ENTITY_ACTIVE).orElse(new Cost());
         }catch (IncorrectResultSizeDataAccessException ex){
             throw new BusinessException("duplicate-cost-with-startDate-and-endDate");
         }
