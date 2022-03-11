@@ -24,6 +24,7 @@ public class OnboardTrainingTemplateItemDTO {
     private Integer status;
     private Long employeeId;
 
+    private EmployeeDTO employeeObj;
     private List<OnboardTrainingTemplateItemChildrenDTO> children;
 
 }
