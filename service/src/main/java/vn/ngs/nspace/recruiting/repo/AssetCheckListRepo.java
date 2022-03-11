@@ -21,5 +21,6 @@ public interface AssetCheckListRepo extends BaseRepo<AssetCheckList,Long> {
     List<AssetCheckList> findByCompanyIdAndOnboardOrderId(long cid, long onboardOrderId);
     List<AssetCheckList> findByCompanyIdAndOnboardOrderIdAndAssetType(long cid, long onboardOrderId, String type);
     List<AssetCheckList> findByCompanyIdAndEmployeeId(long cid, long employeeId);
+    List<AssetCheckList> findByCompanyIdAndOnboardOrderIdIn(Long cid, Set<Long> onboardOrderIds);
 }
 

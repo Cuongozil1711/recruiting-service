@@ -10,6 +10,7 @@ import vn.ngs.nspace.recruiting.model.Candidate;
 
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -42,8 +43,8 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.status = 1)" +
             " and (c.applyPositionId = :applyPosition or :applyPosition = -1 )" +
             " and (c.gender = :gender or :gender = -1)" +
-            " and (c.language in :language or :language = 'all')" +
-            " and (c.educationLevel in :educationLevel or :educationLevel = -1)" +
+            " and (c.language in :language or -1 in :language)" +
+            " and (c.educationLevel in :educationLevel or -1 in :educationLevel)" +
             " and (lower(c.educateLocation) like (concat('%',:educateLocation,'%')) or :educateLocation = 'all')  " +
             " and (lower(c.industry) like (concat('%',:industry,'%')) or :industry = 'all') " +
             " and (lower(c.lastPosition) like (concat('%',:lastPosition,'%')) or :lastPosition = 'all') " +
@@ -59,8 +60,8 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             @Param("companyId") Long cid
             , @Param("applyPosition") Long applyPosition
             , @Param("gender") Long gender
-            , @Param("language") Set<String> language
-            , @Param("educationLevel") Set<Long> educationLevel
+            , @Param("language") List<Long> language
+            , @Param("educationLevel") List<Long> educationLevel
             , @Param("educateLocation") String educateLocation
             , @Param("industry") String industry
             , @Param("ageLess") Date ageLess

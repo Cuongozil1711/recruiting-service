@@ -56,9 +56,9 @@ public class InterviewResultService {
 //            throw new BusinessException("invalid-state");
 //        }
 
-          if(dto.getContent() == null){
-              throw new BusinessException("invalid-content");
-          }
+//          if(dto.getContent() == null){
+//              throw new BusinessException("invalid-content");
+//          }
 //          if (dto.getState() == null){
 //              throw new BusinessException("invalid-state");
 //          }
@@ -67,11 +67,11 @@ public class InterviewResultService {
 
     public InterviewResultDTO createByCandidateId(Long cid, String uid, Long candidateId, Set<Long> ListInterViewerId){
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId,Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, candidateId));
-        return createByPositionAndOrg(cid, uid, candidateId, ja.getPositionId(), ja.getOrgId(), ListInterViewerId);
+        return createByPositionAndOrg(cid, uid, candidateId, ja.getPositionId(), ja.getOrgId(), ja.getTitleId(), ListInterViewerId);
     }
 
-    public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Set<Long> ListInterViewerId){
-        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId);
+    public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Long titleId, Set<Long> ListInterViewerId){
+        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId, titleId);
         if (templates.size() == 0){
             throw new BusinessException("invalid-template");
         }
@@ -211,18 +211,16 @@ public class InterviewResultService {
         InterviewResult result = objs.get(0);
 
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, result.getCandidateId(),Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, result.getCandidateId()));
-        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getOrgId());
+        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getOrgId(), ja.getTitleId());
+        Map<Long, List<InterviewCheckListTemplateItem>> mapItems = new HashMap<>();
         InterviewCheckListTemplate template = new InterviewCheckListTemplate();
-        if (templates.size() > 0){
-            template  = templates.get(0);
+        if(!templates.isEmpty()){
+            template = templates.get(0);
+            List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
+            mapItems = items.stream().collect(Collectors.groupingBy(InterviewCheckListTemplateItem::getTemplateId));
         }
-
-
         List<InterviewCheckList> checkLists = checkListRepo.findByCompanyIdAndInterviewResultIdInAndStatus(cid, resultIds, Constants.ENTITY_ACTIVE);
         Map<Long, List<InterviewCheckList>> mapCheckLists = checkLists.stream().collect(Collectors.groupingBy(InterviewCheckList::getInterviewResultId));
-
-        List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
-        Map<Long, List<InterviewCheckListTemplateItem>> mapItems = items.stream().collect(Collectors.groupingBy(InterviewCheckListTemplateItem::getTemplateId));
 
         Map<Long, EmployeeDTO> mapEmp = _hcmService.getMapEmployees(uid, cid, empIds);
         Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
@@ -247,7 +245,7 @@ public class InterviewResultService {
 
                 for (InterviewCheckListDTO checkListDTODTO: checkListInterviewsDTO) {
                     List<InterviewCheckListTemplateItemDTO> lstItems = new ArrayList<>();
-                    if (checkListDTODTO.getItemId() != null ) {
+                    if (checkListDTODTO.getItemId() != null && template.getId() != null) {
                         if (mapItems.get(template.getId()) != null) {
                             for (InterviewCheckListTemplateItem lst : mapItems.get(template.getId())) {
                                 InterviewCheckListTemplateItemDTO item = new InterviewCheckListTemplateItemDTO();

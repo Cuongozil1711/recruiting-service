@@ -30,6 +30,7 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
 
     }
     public enum Experience{
+        UNDER_0,
         UNDER_30,
         UNDER_40,
         UNDER_55,

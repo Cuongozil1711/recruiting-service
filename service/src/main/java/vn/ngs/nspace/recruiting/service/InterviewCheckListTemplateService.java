@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
@@ -73,6 +74,15 @@ public class InterviewCheckListTemplateService {
     }
     public InterviewCheckListTemplateDTO create(long cid, String uid, InterviewCheckListTemplateDTO dto) {
         valid(dto);
+        try{
+            InterviewCheckListTemplate exists = repo.searchExists(cid, dto.getPositionId(),  dto.getOrgId(), dto.getTitleId()).orElse(new InterviewCheckListTemplate());
+            if(!exists.isNew()){
+                throw new BusinessException("duplicate-template-with-position-and-title-and-org");
+            }
+        }catch (IncorrectResultSizeDataAccessException ex){
+            throw new BusinessException("duplicate-template-with-position-and-title-and-org");
+        }
+
         // create template
         InterviewCheckListTemplate template = InterviewCheckListTemplate.of(cid, uid, dto);
         template.setStartDate(new Date());
@@ -119,6 +129,12 @@ public class InterviewCheckListTemplateService {
                 updateItem(cid, uid, itemDTO.getId(), itemDTO);
 
 
+        }
+
+        try{
+            repo.searchExists(cid, dto.getPositionId(), dto.getOrgId(), dto.getTitleId()).orElse(new InterviewCheckListTemplate());
+        }catch (IncorrectResultSizeDataAccessException ex){
+            throw new BusinessException("duplicate-template-with-position-and-title-and-org");
         }
 
         curr = repo.save(curr);

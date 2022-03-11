@@ -24,6 +24,7 @@ public class InterviewCheckListDTO {
     private String description;
     private Long positionId;
     private Long orgId;
+    private Long titleId;
     private Long itemId;
     private Integer status;
 

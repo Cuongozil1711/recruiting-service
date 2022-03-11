@@ -2,6 +2,7 @@ package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Months;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
@@ -72,6 +73,10 @@ public class CostService {
     }
     public CostDTO create(long cid, String uid, CostDTO dto) {
         valid(dto);
+        Cost exist = repo.findByCompanyIdAndCostTypeIdAndOrgIdAndYearAndStartDateAndEndDateAndStatus(cid, dto.getCostTypeId(), dto.getOrgId(),dto.getYear(),dto.getStartDate(),dto.getEndDate(),Constants.ENTITY_ACTIVE).orElse(new Cost());
+        if (!exist.isNew()){
+            throw new BusinessException("duplicate-cost-with-startDate-and-endDate");
+        }
         // create template
         Cost obj = Cost.of(cid, uid, dto);
         obj.setCompanyId(cid);
@@ -120,12 +125,17 @@ public class CostService {
         }
 
         curr = repo.save(curr);
+        try{
+            repo.findByCompanyIdAndCostTypeIdAndOrgIdAndYearAndStartDateAndEndDateAndStatus(cid, dto.getCostTypeId(), dto.getOrgId(), dto.getYear(), dto.getStartDate(),dto.getEndDate(),Constants.ENTITY_ACTIVE).orElse(new Cost());
+        }catch (IncorrectResultSizeDataAccessException ex){
+            throw new BusinessException("duplicate-cost-with-startDate-and-endDate");
+        }
         return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
     }
 
     private void updateItem(long cid, String uid, Long detailId, CostDetailDTO detailDTO) {
         validDetail(detailDTO);
-        if(detailDTO.getId() != 0l && detailDTO.getId() != null){
+        if(detailDTO.getId() != null && detailDTO.getId() != 0l){
             CostDetail curr = detailRepo.findByCompanyIdAndId(cid, detailId).orElseThrow(() -> new EntityNotFoundException(CostDetail.class, detailId));
             MapperUtils.copyWithoutAudit(detailDTO, curr);
             curr.setUpdateBy(uid);

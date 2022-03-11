@@ -16,6 +16,7 @@ public class InterviewCheckListTemplateDTO {
     private Long id;
     private Long orgId;
     private Long positionId;
+    private Long titleId;
     private Date startDate;
     private Date endDate;
     private Integer status;
