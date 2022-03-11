@@ -1,15 +1,10 @@
 package vn.ngs.nspace.recruiting.api;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,21 +13,16 @@ import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
-import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
-import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
 import vn.ngs.nspace.recruiting.service.RecruitmentPlanOrderService;
-import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
-import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
-import javax.swing.*;
 import java.util.*;
 
 @RestController
@@ -144,13 +134,34 @@ public class RecruitmentPlanOrderApi {
              @RequestBody Map<String,Object> search
             , Pageable pageable){
         try{
-          Long orgId = MapUtils.getLong(search,"orgId",-1l);
-          Long positionId = MapUtils.getLong(search,"positionId",-1l);
+          Long orgId = MapUtils.getLong(search,"org_id",-1l);
+          Long positionId = MapUtils.getLong(search,"position_id",-1l);
+          Date startDate = MapUtils.getDate(search,"startDate");
+          Date endDate = MapUtils.getDate(search,"endDate");
+            Page<Map<String, Object>> page = _repo.searchByOrgAndPositionAndStartDateAndEndDate(cid, orgId,positionId, startDate,endDate, pageable);
+            List<Map<String, Object>> dtos = new ArrayList<>();
+            Set<Long> orgIds = new HashSet<>();
+            Set<Long> positionIds = new HashSet<>();
 
-          Page<RecruitmentPlanOrder> list = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,pageable);
-          List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, list.getContent());
-          Page<Map<String,Object>>resp = new PageImpl(dtos, pageable, dtos.size());
-            return ResponseUtils.handlerSuccess(resp);
+            page.getContent().forEach(o -> {
+                Map<String, Object> newData = new HashMap<>(o);
+                if(newData.containsKey("org_id")){
+                    orgIds.add(MapUtils.getLong(newData, "org_id"));
+                }
+                if (newData.containsKey("position_id")){
+                    positionIds.add(MapUtils.getLong(newData,"position_id"));
+                }
+                dtos.add(newData);
+            });
+
+            Map<Long, OrgResp> mapOrg = _hcmService.getMapOrgs(uid, cid, orgIds);
+            Map<Long, Map<String, Object>> mapcate = configService.getCategoryByIds(uid,cid,positionIds);
+            for(Map<String, Object> dto : dtos){
+                dto.put("org", mapOrg.get(MapUtils.getLong(dto, "org_id")));
+                dto.put("position_id",mapcate.get(MapUtils.getLong(dto,"position_id")));
+            }
+
+            return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }
