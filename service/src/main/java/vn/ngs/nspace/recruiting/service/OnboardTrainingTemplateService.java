@@ -505,6 +505,11 @@ public class OnboardTrainingTemplateService {
                             if(lstChild != null){
                                 it.setChildren(lstChild);
                             }
+                            if(it.getEmployeeId() != null){
+                                it.setEmployeeObj(employeeDTOS.stream().filter(e -> {
+                                    return CompareUtil.compare(e.getId(), it.getEmployeeId());
+                                }).findAny().orElse(null) );
+                            }
                         }
                         if(lstChild != null){
                             for (OnboardTrainingTemplateItemChildrenDTO child: lstChild) {
