@@ -138,7 +138,7 @@ public class RecruitmentPlanOrderApi {
           Long positionId = MapUtils.getLong(search,"position_id",-1l);
           Date startDate = MapUtils.getDate(search,"startDate");
           Date endDate = MapUtils.getDate(search,"endDate");
-            Page<Map<String, Object>> page = _repo.searchByOrgAndPositionAndStartDateAndEndDate(cid, orgId,positionId, startDate,endDate, pageable);
+            Page<Map<String, Object>> page = _repo.searchByOrgAndPositionAndStartDateAndEndDate(cid, orgId,positionId, startDate, pageable);
             List<Map<String, Object>> dtos = new ArrayList<>();
             Set<Long> orgIds = new HashSet<>();
             Set<Long> positionIds = new HashSet<>();
@@ -151,14 +151,22 @@ public class RecruitmentPlanOrderApi {
                 if (newData.containsKey("position_id")){
                     positionIds.add(MapUtils.getLong(newData,"position_id"));
                 }
+
                 dtos.add(newData);
             });
 
             Map<Long, OrgResp> mapOrg = _hcmService.getMapOrgs(uid, cid, orgIds);
             Map<Long, Map<String, Object>> mapcate = configService.getCategoryByIds(uid,cid,positionIds);
+            Page<Map<String,Object>> count = _repo.searchByState(cid,orgId,positionId,startDate,pageable);
+            Long total = 0l;
+            Long recruited = 0l;
+            Long remain = 0l;
             for(Map<String, Object> dto : dtos){
                 dto.put("org", mapOrg.get(MapUtils.getLong(dto, "org_id")));
                 dto.put("position_id",mapcate.get(MapUtils.getLong(dto,"position_id")));
+                dto.put("total",0l);
+                dto.put("recruited",0l);
+                dto.put("remain", total - recruited);
             }
 
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));

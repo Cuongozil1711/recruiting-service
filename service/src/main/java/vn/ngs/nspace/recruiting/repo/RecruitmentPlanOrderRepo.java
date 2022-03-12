@@ -34,7 +34,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
                   " and (rpo.org_id = :org_id or :org_id = -1)"+
                   " and (rpo.position_id = :position_id or :position_id = -1)"+
                   " and ((:startDate between rpo.start_date and rpo.deadline )" +
-                  " or (:endDate between rpo.start_date and rpo.deadline))) as a"+
+                  ")) as a"+
                   " group by a.org_id,a.position_id,a.start_date,a.deadline"+
                   " order by a.org_id,a.position_id,a.start_date,a.deadline desc"
    , countQuery = "select count(*)"+
@@ -46,7 +46,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
                   "and (rpo.org_id = org_id or org_id = -1)"+
                   "and (rpo.position_id = :position_id or :position_id = -1)"+
                   "and ((:startDate between rpo.start_date and rpo.deadline )"+
-                  "or (endDate between rpo.start_date and rpo.deadline))) as a"+
+                  ")) as a"+
                   " group by a.org_id,a.position_id)"
            ,nativeQuery = true
    )
@@ -54,8 +54,26 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            ,@Param("position_id") Long positionId
            ,@Param("org_id") Long orgId
            ,@Param("startDate") Date startDate
-           ,@Param("endDate") Date endDate
            ,Pageable pageable);
+
+   @Query(value = "select count(*) as recruited"+
+         "  from (select rpo.org_id as org_id, rpo.position_id as position_id, rpo.quantity as quantity, rpo.start_date as start_date," +
+         "  rpo.deadline as deadline"+
+         "  from recruiting_service.recruitment_plan_order rpo"+
+         "  left join recruiting_service.job_application c on rpo.position_id = c.position_id and rpo.org_id = c.org_id"+
+        "   where (rpo.company_id = :companyId )"+
+         "  and (rpo.status = 1)"+
+         "  and (rpo.org_id = :org_id or :org_id = -1)"+
+         " and (rpo.position_id = :position_id or :position_id = -1)" +
+           "and ((:startDate between rpo.start_date and rpo.deadline )"+
+         " and (c.state = 'STAFF')) as a"+
+         " group by a.org_id, a.position_id"
+   ,nativeQuery = true)
+   Page<Map<String,Object>> searchByState(@Param("companyId") Long cid
+            ,@Param("position_id") Long positionId
+            ,@Param("org_id") Long orgId
+            ,@Param("startDate")Date startDate
+            ,Pageable pageable);
 
    @Query(value = "select p " +
            " from RecruitmentPlanOrder p " +
