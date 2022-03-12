@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -139,14 +141,14 @@ public class RecruitmentPlanOrderApi {
           Date startDate = MapUtils.getDate(search,"startDate");
           Date endDate = MapUtils.getDate(search,"endDate");
 
+            Logger LOGGER=LoggerFactory.getLogger(RecruitmentPlanOrderApi.class);
             Page<Map<String, Object>> page = _repo.searchByOrgAndPositionAndStartDateAndEndDate(cid, orgId,positionId, startDate, pageable);
             Map<String,Object> count = _repo.searchByState(cid,orgId,positionId,startDate);
+
             List<Map<String, Object>> dtos = new ArrayList<>();
             Set<Long> orgIds = new HashSet<>();
             Set<Long> positionIds = new HashSet<>();
-
-            Set<Long> recruiteds = new HashSet<>();
-
+            LOGGER.info("count resul: ${count}");
             page.getContent().forEach(o -> {
                 Map<String, Object> newData = new HashMap<>(o);
                 if(newData.containsKey("org_id")){
@@ -154,9 +156,6 @@ public class RecruitmentPlanOrderApi {
                 }
                 if (newData.containsKey("position_id")){
                     positionIds.add(MapUtils.getLong(newData,"position_id"));
-                }
-                if (newData.containsKey("recruited")) {
-                    recruiteds.add(MapUtils.getLong(newData, "recruited"));
                 }
                 dtos.add(newData);
             });
@@ -168,13 +167,40 @@ public class RecruitmentPlanOrderApi {
             for(Map<String, Object> dto : dtos){
                 dto.put("org_id", mapOrg.get(MapUtils.getLong(dto, "org_id")));
                 dto.put("position_id",mapcate.get(MapUtils.getLong(dto,"position_id")));
-                dto.put("position_ids",count.get(MapUtils.getLong(dto,"position_id")));
+               // dto.put("position_ids",count.get(MapUtils.getLong(dto,"position_id")));
                 dto.put("total",count.get("total"));
                 dto.put("recruited",count.get("recruited"));
-
             }
 
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+        }catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
+
+    }
+    @PostMapping("/find")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Search all recruiting plan order"
+            , description = "Profile search by %name% format")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+
+    protected ResponseEntity findRecruitingPlanOrder(
+            @Parameter(description="ID of company")
+            @RequestHeader Long cid
+            ,@Parameter(description="ID of user")
+            @RequestHeader String uid
+            , @Parameter(description="Payload to search with positionId, orgId, fromDate, deadline")
+            @RequestBody Map<String,Object> search
+            , Pageable pageable){
+        try{
+            Long orgId = MapUtils.getLong(search,"orgId",-1l);
+            Long positionId = MapUtils.getLong(search,"positionId",-1l);
+
+            Page<RecruitmentPlanOrder> list = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,pageable);
+            List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, list.getContent());
+            Page<Map<String,Object>>resp = new PageImpl(dtos, pageable, dtos.size());
+            return ResponseUtils.handlerSuccess(resp);
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }
