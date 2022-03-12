@@ -202,15 +202,16 @@ public class RecruitmentPlanOrderService {
             LOGGER.info("=====>"+dto.getPositionId());
             if(dto.getPositionId() != null){
                 dto.setPositionObj(mapCategory.get(dto.getPositionId()));
-                Integer mapPos = repo.getCountJobApplication(cid,org_id,dto.getPositionId(),startDate);
-                if(mapPos==null) mapPos=0;
+                Long mapPos = repo.getCountJobApplication(cid,org_id,dto.getPositionId(),startDate);
+                if(mapPos==null) mapPos=0l;
                 LOGGER.info("mapPos=====>"+mapPos);
                 dto.setRecruited(mapPos);
-                Integer tPos = repo.getCountJobApplications(cid,org_id,dto.getPositionId(),startDate);
-                if(tPos==null) tPos=0;
+                Long tPos = repo.getCountJobApplications(cid,org_id,dto.getPositionId(),startDate);
+                if(tPos==null) tPos=0l;
                 LOGGER.info("tPos=====>"+tPos);
                 dto.setTotalRecruit(tPos);
-                Integer miss=tPos - mapPos;
+                Long quality=dto.getQuantity();
+                Long miss=quality - mapPos;
                 LOGGER.info("miss=====>"+miss);
                 dto.setTotalMissing(miss);
             }
