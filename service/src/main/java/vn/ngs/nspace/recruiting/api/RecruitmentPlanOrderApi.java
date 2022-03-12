@@ -138,10 +138,14 @@ public class RecruitmentPlanOrderApi {
           Long positionId = MapUtils.getLong(search,"position_id",-1l);
           Date startDate = MapUtils.getDate(search,"startDate");
           Date endDate = MapUtils.getDate(search,"endDate");
+
             Page<Map<String, Object>> page = _repo.searchByOrgAndPositionAndStartDateAndEndDate(cid, orgId,positionId, startDate, pageable);
+            Map<String,Object> count = _repo.searchByState(cid,orgId,positionId,startDate);
             List<Map<String, Object>> dtos = new ArrayList<>();
             Set<Long> orgIds = new HashSet<>();
             Set<Long> positionIds = new HashSet<>();
+
+            Set<Long> recruiteds = new HashSet<>();
 
             page.getContent().forEach(o -> {
                 Map<String, Object> newData = new HashMap<>(o);
@@ -151,22 +155,23 @@ public class RecruitmentPlanOrderApi {
                 if (newData.containsKey("position_id")){
                     positionIds.add(MapUtils.getLong(newData,"position_id"));
                 }
-
+                if (newData.containsKey("recruited")) {
+                    recruiteds.add(MapUtils.getLong(newData, "recruited"));
+                }
                 dtos.add(newData);
             });
 
             Map<Long, OrgResp> mapOrg = _hcmService.getMapOrgs(uid, cid, orgIds);
             Map<Long, Map<String, Object>> mapcate = configService.getCategoryByIds(uid,cid,positionIds);
-            Page<Map<String,Object>> count = _repo.searchByState(cid,orgId,positionId,startDate,pageable);
-            Long total = 0l;
-            Long recruited = 0l;
-            Long remain = 0l;
+
+
             for(Map<String, Object> dto : dtos){
-                dto.put("org", mapOrg.get(MapUtils.getLong(dto, "org_id")));
+                dto.put("org_id", mapOrg.get(MapUtils.getLong(dto, "org_id")));
                 dto.put("position_id",mapcate.get(MapUtils.getLong(dto,"position_id")));
-                dto.put("total",0l);
-                dto.put("recruited",0l);
-                dto.put("remain", total - recruited);
+                dto.put("position_ids",count.get(MapUtils.getLong(dto,"position_id")));
+                dto.put("total",count.get("total"));
+                dto.put("recruited",count.get("recruited"));
+
             }
 
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
