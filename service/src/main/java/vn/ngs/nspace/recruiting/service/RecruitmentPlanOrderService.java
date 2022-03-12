@@ -2,11 +2,18 @@ package vn.ngs.nspace.recruiting.service;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
+import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
@@ -16,6 +23,7 @@ import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
+import java.net.URI;
 import java.util.*;
 
 @Service

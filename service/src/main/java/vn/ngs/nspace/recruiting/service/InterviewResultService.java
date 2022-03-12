@@ -65,39 +65,36 @@ public class InterviewResultService {
     }
 
 
-    public InterviewResultDTO createByCandidateId(Long cid, String uid, Long candidateId, Set<Long> ListInterViewerId){
+    public List<InterviewResultDTO> createByCandidateId(Long cid, String uid, Long candidateId, Set<Long> ListInterViewerId){
         JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId,Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, candidateId));
         return createByPositionAndOrg(cid, uid, candidateId, ja.getPositionId(), ja.getOrgId(), ja.getTitleId(), ListInterViewerId);
     }
 
-    public InterviewResultDTO createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Long titleId, Set<Long> ListInterViewerId){
+    public List<InterviewResultDTO> createByPositionAndOrg(Long cid, String uid, Long candidateId, Long position, Long orgId, Long titleId, Set<Long> ListInterViewerId){
         List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId, titleId);
+        List<InterviewResult> lstResult = new ArrayList<>();
         if (templates.size() == 0){
             throw new BusinessException("invalid-template");
         }
         InterviewCheckListTemplate template = templates.get(0);
         List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
-
-        InterviewResult interviewResult = new InterviewResult();
-        interviewResult.setCompanyId(cid);
-        interviewResult.setCreateBy(uid);
-        interviewResult.setCandidateId(candidateId);
-        interviewResult.setStatus(Constants.ENTITY_ACTIVE);
-        interviewResult = _repo.save(interviewResult);
-
-            for (Long interViewerId: ListInterViewerId) {
-                InterviewCheckListDTO checkListDTO = new InterviewCheckListDTO();
-
-                for (InterviewCheckListTemplateItem item: items) {
-                    checkListDTO.setInterviewResultId(interviewResult.getId());
-                    checkListDTO.setInterviewerId(interViewerId);
-                    checkListDTO.setItemId(item.getId());
-                    createCheckList(cid, uid, checkListDTO);
-                }
+        for (Long interViewerId: ListInterViewerId) {
+            InterviewCheckListDTO checkListDTO = new InterviewCheckListDTO();
+            InterviewResult interviewResult = new InterviewResult();
+            interviewResult.setCompanyId(cid);
+            interviewResult.setCreateBy(uid);
+            interviewResult.setCandidateId(candidateId);
+            interviewResult.setInterviewerId(interViewerId);
+            interviewResult.setStatus(Constants.ENTITY_ACTIVE);
+            interviewResult = _repo.save(interviewResult);
+            for (InterviewCheckListTemplateItem item: items) {
+                checkListDTO.setInterviewResultId(interviewResult.getId());
+                checkListDTO.setItemId(item.getId());
+                createCheckList(cid, uid, checkListDTO);
             }
-
-        return toDTOs(cid, uid, Collections.singletonList(interviewResult)).get(0);
-
+            lstResult.add(interviewResult);
+        }
+        return toDTOs(cid, uid, lstResult);
     }
 
     public void createCheckList(Long cid, String uid, InterviewCheckListDTO request) throws BusinessException {
