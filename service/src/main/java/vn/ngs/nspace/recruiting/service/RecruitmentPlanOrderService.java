@@ -1,29 +1,22 @@
 package vn.ngs.nspace.recruiting.service;
 
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
-import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.Reason;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
-import java.net.URI;
 import java.util.*;
 
 @Service
@@ -143,6 +136,83 @@ public class RecruitmentPlanOrderService {
         for(RecruitmentPlanOrderDTO dto : dtos){
             if(dto.getPositionId() != null){
                 dto.setPositionObj(mapCategory.get(dto.getPositionId()));
+            }
+            if(dto.getTitleId() != null){
+                dto.setTitleObj(mapCategory.get(dto.getTitleId()));
+            }
+            if(dto.getLevelId() != null){
+                dto.setLevelObj(mapCategory.get(dto.getLevelId()));
+            }
+            if(dto.getOrgId() != null){
+                OrgResp org = orgs.stream().filter(o -> CompareUtil.compare(o.getId(), dto.getOrgId())).findAny().orElse(new OrgResp());
+                dto.setOrgResp(org);
+            }
+            if (dto.getPic() != null){
+                EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getPic())).findAny().orElse(new EmployeeDTO());
+                dto.setPicObj(emp);
+            }
+            if (dto.getSupporterId() != null){
+                EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(),dto.getSupporterId())).findAny().orElse(new EmployeeDTO());
+                dto.setSupporterObj(emp);
+            }
+        }
+        return dtos;
+    }
+    public List<RecruitmentPlanOrderDTO> toDTOSeachs(Long cid,String uid, Long org_id,Long position_id,Date startDate, List<RecruitmentPlanOrder> objs){
+        List<RecruitmentPlanOrderDTO> dtos = new ArrayList<>();
+        Set<Long> orgIds = new HashSet<>();
+        Set<Long> categoryIds = new HashSet<>();
+        Set<Long> positionIds = new HashSet<>();
+        Set<Long> titleIds = new HashSet<>();
+        Set<Long> empIds = new HashSet<>();
+
+        objs.forEach(obj -> {
+            if(obj.getOrgId() != null){
+                orgIds.add(obj.getOrgId());
+            }
+            if(obj.getPositionId() != null){
+                categoryIds.add(obj.getPositionId());
+                positionIds.add(obj.getPositionId());
+            }
+            if(obj.getTitleId() != null){
+                categoryIds.add(obj.getTitleId());
+            }
+            if(obj.getLevelId() != null){
+                categoryIds.add(obj.getLevelId());
+            }
+            if (obj.getPic() != null){
+                empIds.add(obj.getPic());
+            }
+            if (obj.getSupporterId() != null){
+                empIds.add(obj.getSupporterId());
+            }
+            dtos.add(toDTO(obj));
+        });
+
+        List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
+        Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
+        List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
+        if(position_id!=null && position_id!=-1l){
+            positionIds.add(position_id);
+        }
+        Logger LOGGER= LoggerFactory.getLogger(RecruitmentPlanOrderService.class);
+       // String strPos = StringUtils.join(positionIds, ",");
+
+        for(RecruitmentPlanOrderDTO dto : dtos){
+            LOGGER.info("=====>"+dto.getPositionId());
+            if(dto.getPositionId() != null){
+                dto.setPositionObj(mapCategory.get(dto.getPositionId()));
+                Integer mapPos = repo.getCountJobApplication(cid,org_id,dto.getPositionId(),startDate);
+                if(mapPos==null) mapPos=0;
+                LOGGER.info("mapPos=====>"+mapPos);
+                dto.setRecruited(mapPos);
+                Integer tPos = repo.getCountJobApplications(cid,org_id,dto.getPositionId(),startDate);
+                if(tPos==null) tPos=0;
+                LOGGER.info("tPos=====>"+tPos);
+                dto.setTotalRecruit(tPos);
+                Integer miss=tPos - mapPos;
+                LOGGER.info("miss=====>"+miss);
+                dto.setTotalMissing(miss);
             }
             if(dto.getTitleId() != null){
                 dto.setTitleObj(mapCategory.get(dto.getTitleId()));

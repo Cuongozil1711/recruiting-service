@@ -39,6 +39,8 @@ public class RecruitmentPlanOrderDTO {
     private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;
     private Map<String, Object> levelObj;
-
+    private Integer totalRecruit;
+    private Integer recruited;
+    private Integer totalMissing;
     private Integer status;
 }
