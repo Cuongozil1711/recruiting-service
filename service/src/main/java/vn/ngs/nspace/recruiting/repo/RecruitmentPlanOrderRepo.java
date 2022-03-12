@@ -5,9 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import vn.ngs.nspace.lib.repo.BaseRepo;
-import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
-import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
 import java.util.*;
 
@@ -73,6 +71,41 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
             ,@Param("org_id") Long orgId
             ,@Param("startDate")Date startDate
             );
+
+    @Query(value = "select  count(*) as totalRecruit"+
+            "  from recruiting_service.job_application c"+
+            "  inner join recruiting_service.recruitment_plan_order rpo on rpo.position_id = c.position_id and rpo.org_id = c.org_id"+
+            "  where (rpo.company_id = :companyId )"+
+            "  and (rpo.status = 1)"+
+            "  and (rpo.org_id = :org_id or :org_id = -1)"+
+            "  and (rpo.position_id = :position_id )" +
+            "  and ((:startDate between rpo.start_date and rpo.deadline ))"+
+            "  group by c.position_id",
+            nativeQuery = true
+    )
+    Integer getCountJobApplications(@Param("companyId") Long cid
+            ,@Param("org_id") Long orgId
+            ,@Param("position_id") Long positionId
+            ,@Param("startDate")Date startDate
+    );
+
+    @Query(value = "select  count(*) as recruited"+
+            "  from recruiting_service.job_application c"+
+            "  inner join recruiting_service.recruitment_plan_order rpo on rpo.position_id = c.position_id and rpo.org_id = c.org_id"+
+            "  where (rpo.company_id = :companyId )"+
+            "  and (rpo.status = 1)"+
+            "  and (rpo.org_id = :org_id or :org_id = -1)"+
+            "  and (rpo.position_id = :position_id )" +
+            "  and ((:startDate between rpo.start_date and rpo.deadline ))"+
+            "  and (c.state = 'STAFF')" +
+            "  group by c.position_id",
+            nativeQuery = true
+    )
+    Integer getCountJobApplication(@Param("companyId") Long cid
+            ,@Param("org_id") Long orgId
+            ,@Param("position_id") Long positionId
+            ,@Param("startDate")Date startDate
+    );
 
    @Query(value = "select p " +
            " from RecruitmentPlanOrder p " +

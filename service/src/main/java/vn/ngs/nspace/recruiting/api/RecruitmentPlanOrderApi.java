@@ -196,9 +196,10 @@ public class RecruitmentPlanOrderApi {
         try{
             Long orgId = MapUtils.getLong(search,"orgId",-1l);
             Long positionId = MapUtils.getLong(search,"positionId",-1l);
+            Date startDate = MapUtils.getDate(search,"startDate");
 
             Page<RecruitmentPlanOrder> list = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,pageable);
-            List<RecruitmentPlanOrderDTO> dtos = _service.toDTOs(cid, uid, list.getContent());
+            List<RecruitmentPlanOrderDTO> dtos = _service.toDTOSeachs(cid, uid,orgId,positionId,startDate, list.getContent());
             Page<Map<String,Object>>resp = new PageImpl(dtos, pageable, dtos.size());
             return ResponseUtils.handlerSuccess(resp);
         }catch (Exception ex){
