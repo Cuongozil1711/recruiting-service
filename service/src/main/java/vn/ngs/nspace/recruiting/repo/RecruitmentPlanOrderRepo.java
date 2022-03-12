@@ -83,7 +83,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
             "  group by c.position_id",
             nativeQuery = true
     )
-    Integer getCountJobApplications(@Param("companyId") Long cid
+    Long getCountJobApplications(@Param("companyId") Long cid
             ,@Param("org_id") Long orgId
             ,@Param("position_id") Long positionId
             ,@Param("startDate")Date startDate
@@ -101,7 +101,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
             "  group by c.position_id",
             nativeQuery = true
     )
-    Integer getCountJobApplication(@Param("companyId") Long cid
+    Long getCountJobApplication(@Param("companyId") Long cid
             ,@Param("org_id") Long orgId
             ,@Param("position_id") Long positionId
             ,@Param("startDate")Date startDate
