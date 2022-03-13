@@ -69,7 +69,7 @@ public class ProfileCheckListService {
         List<ProfileCheckListDTO> profiles = new ArrayList<>();
         List<ProfileCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, positionId, titleId, contractType);
         if(templates.size() == 0){
-            throw new BusinessException("invalid-template");
+            throw new BusinessException("invalid-profile-template");
         }
         ProfileCheckListTemplate template = templates.get(0);
         List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
