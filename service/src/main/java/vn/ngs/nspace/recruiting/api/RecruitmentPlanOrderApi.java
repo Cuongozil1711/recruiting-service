@@ -196,16 +196,18 @@ public class RecruitmentPlanOrderApi {
         try{
             Long orgId = MapUtils.getLong(search,"orgId",-1l);
             Long positionId = MapUtils.getLong(search,"positionId",-1l);
-            Date startDate = MapUtils.getDate(search,"startDate");
-
-            Page<RecruitmentPlanOrder> list = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,pageable);
-            List<RecruitmentPlanOrderDTO> dtos = _service.toDTOSeachs(cid, uid,orgId,positionId,startDate, list.getContent());
+            Date startDate = MapUtils.getDate(search,"startDate",null);
+            Date deadline = MapUtils.getDate(search,"deadline",null);
+            Logger LOGGER= LoggerFactory.getLogger(RecruitmentPlanOrderService.class);
+            LOGGER.info("startDate=="+startDate);
+            LOGGER.info("deadline=="+deadline);
+            Page<RecruitmentPlanOrder> list = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,startDate,deadline,pageable);
+            List<RecruitmentPlanOrderDTO> dtos = _service.toDTOSeachs(cid, uid,orgId,positionId,startDate,deadline, list.getContent());
             Page<Map<String,Object>>resp = new PageImpl(dtos, pageable, dtos.size());
             return ResponseUtils.handlerSuccess(resp);
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
         }
-
     }
 
     @PutMapping("{id}")
