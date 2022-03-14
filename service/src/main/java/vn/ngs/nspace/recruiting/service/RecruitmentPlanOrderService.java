@@ -158,7 +158,7 @@ public class RecruitmentPlanOrderService {
         }
         return dtos;
     }
-    public List<RecruitmentPlanOrderDTO> toDTOSeachs(Long cid,String uid, Long org_id,Long position_id,Date startDate, List<RecruitmentPlanOrder> objs){
+    public List<RecruitmentPlanOrderDTO> toDTOSeachs(Long cid,String uid, Long org_id,Long position_id,Date startDate,Date deadline, List<RecruitmentPlanOrder> objs){
         List<RecruitmentPlanOrderDTO> dtos = new ArrayList<>();
         Set<Long> orgIds = new HashSet<>();
         Set<Long> categoryIds = new HashSet<>();
@@ -202,11 +202,11 @@ public class RecruitmentPlanOrderService {
             LOGGER.info("=====>"+dto.getPositionId());
             if(dto.getPositionId() != null){
                 dto.setPositionObj(mapCategory.get(dto.getPositionId()));
-                Long mapPos = repo.getCountJobApplication(cid,org_id,dto.getPositionId(),startDate);
+                Long mapPos = repo.getCountJobApplication(cid,org_id,dto.getPositionId(),startDate,deadline);
                 if(mapPos==null) mapPos=0l;
                 LOGGER.info("mapPos=====>"+mapPos);
                 dto.setRecruited(mapPos);
-                Long tPos = repo.getCountJobApplications(cid,org_id,dto.getPositionId(),startDate);
+                Long tPos = repo.getCountJobApplications(cid,org_id,dto.getPositionId(),startDate,deadline);
                 if(tPos==null) tPos=0l;
                 LOGGER.info("tPos=====>"+tPos);
                 dto.setTotalRecruit(tPos);
