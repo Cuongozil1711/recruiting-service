@@ -107,6 +107,7 @@ public class ProfileCheckListService {
                 curr.setOnboardOrderId(onboarOrderId);
                 curr.setReceiptDate(dto.getReceiptDate());
                 curr.setSenderId(dto.getSenderId());
+                curr.setCompanyId(cid);
                 curr.setUpdateBy(uid);
                 curr.setStatus(dto.getStatus() == null ? Constants.ENTITY_ACTIVE : dto.getStatus());
 
