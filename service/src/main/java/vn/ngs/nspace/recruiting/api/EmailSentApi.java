@@ -125,19 +125,19 @@ public class EmailSentApi {
             Map<String, Object> noticeConfig = _configService.getEmailConfigById(uid, cid, templateId);
             EmailSetting setting = _emailSettingRepo.findByCompanyIdAndId(cid, emailSettingId).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, emailSettingId));
 
-            String emailTo = "";
+            String emailTo =  MapUtils.getString(payload, "email", null);
             String refType = "";
             String refId = "";
             if(candidateId != 0l){
                 Candidate candidate = _candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
-                emailTo = candidate.getEmail();
+                if(emailTo==null) emailTo = candidate.getEmail();
                 refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
                 refId = candidateId.toString();
             }
             if(employeeId != 0l){
                 List<EmployeeDTO> emps = _hcmService.getEmployees(uid, cid, Collections.singleton(employeeId));
                 EmployeeDTO emp = emps.get(0);
-                emailTo = emp.getWorkEmail();
+                if(emailTo==null) emailTo = emp.getWorkEmail();
                 refType = Constants.EMAIL_SENT_REF.EMPLOYEE.name();
                 refId = employeeId.toString();
             }
