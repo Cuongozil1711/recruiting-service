@@ -21,6 +21,7 @@ public class ProfileCheckListTemplateItemDTO {
     private String name;
     private String copyType;
     private Integer status;
+    private Long onboardOrderId;
 
     private Map<String, Object> checkListObj;
 }
