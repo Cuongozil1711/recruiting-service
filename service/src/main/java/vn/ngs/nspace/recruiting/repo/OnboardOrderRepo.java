@@ -28,7 +28,8 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
             " and (ja.titleId = :titleId or :titleId = -1) " +
             " and (ja.orgId = :orgId or :orgId = -1) " +
             " and (p.employeeId in (:empIds))"+
-            " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1) ")
+            " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1)" +
+            " and (p.status = 1)")
     Page<OnboardOrder> search(@Param("companyId") Long cid
             , @Param("buddy") Long buddy
             , @Param("positionId") Long positionId
@@ -43,7 +44,8 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
             " where (p.companyId = :companyId)" +
             " and (p.buddy = :buddy or :buddy = -1) " +
             " and (p.employeeId = :employeeId or :employeeId = -1) " +
-            " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1) ")
+            " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1) " +
+            " and (p.status = 1)")
     Page<OnboardOrder> searchAll(@Param("companyId") Long cid
             , @Param("buddy") Long buddy
             , @Param("employeeId") Long employeeId
@@ -55,7 +57,8 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
             " from OnboardOrder p " +
             " inner join JobApplication ja on p.jobApplicationId = ja.id" +
             " where (p.companyId = :companyId)" +
-            " and (p.id = :id)" )
+            " and (p.id = :id)" +
+            " and (p.status = 1)" )
     Optional<JobApplication> getInfoOnboard(@Param("companyId") Long cid
             , @Param("id") Long id);
 
