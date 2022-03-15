@@ -73,12 +73,12 @@ public class ProfileCheckListService {
         }
         ProfileCheckListTemplate template = templates.get(0);
         List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
-        for (ProfileCheckListTemplateItem item: items ) {
+
             ProfileCheckListDTO checkListDTO = new ProfileCheckListDTO();
-            checkListDTO = MapperUtils.map(item, checkListDTO);
+
 
             profiles.add(create(cid, uid,onboarOrderId, checkListDTO));
-        }
+
         return profiles;
     }
 
@@ -101,7 +101,7 @@ public class ProfileCheckListService {
     public List<ProfileCheckListDTO> handOverProfile (Long cid, String uid, Long onboarOrderId, List<ProfileCheckListDTO> listDTOS) {
         List<ProfileCheckList> lstProfile = new ArrayList<>();
         for (ProfileCheckListDTO dto: listDTOS) {
-            if(dto.getId() != null || dto.getId() == 0l){
+            if(dto.getId() != null){
                 ProfileCheckList curr = repo.findByCompanyIdAndId(cid, dto.getId()).orElse(new ProfileCheckList());
                 MapperUtils.copyWithoutAudit(dto, curr);
                 curr.setOnboardOrderId(onboarOrderId);
