@@ -74,11 +74,12 @@ public class ProfileCheckListService {
         ProfileCheckListTemplate template = templates.get(0);
         List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
 
+        for (ProfileCheckListTemplateItem item: items ) {
             ProfileCheckListDTO checkListDTO = new ProfileCheckListDTO();
-
+            checkListDTO = MapperUtils.map(item, checkListDTO);
 
             profiles.add(create(cid, uid,onboarOrderId, checkListDTO));
-
+        }
         return profiles;
     }
 

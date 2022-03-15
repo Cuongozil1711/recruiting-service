@@ -22,7 +22,8 @@ public interface ProfileCheckListTemplateRepo extends BaseRepo<ProfileCheckListT
             " from ProfileCheckListTemplate p " +
             " where (p.companyId = :companyId)" +
             " and (p.positionId = :positionId or :positionId = -1) " +
-            " and (p.titleId = :titleId or :titleId = -1) ")
+            " and (p.titleId = :titleId or :titleId = -1)" +
+            " and (p.status = 1)")
     Page<ProfileCheckListTemplate> search(@Param("companyId") Long cid
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId
@@ -48,7 +49,8 @@ public interface ProfileCheckListTemplateRepo extends BaseRepo<ProfileCheckListT
             " where (c.companyId = :companyId)" +
             " and (c.positionId = :positionId)"+
             " and (c.titleId = :titleId)"+
-            " and (c.contractType = :contractType)")
+            " and (c.contractType = :contractType)" +
+            " and (c.status = 1)")
     List<ProfileCheckListTemplate> findProfileCheckListTemplate(
             @Param("companyId") Long companyId
             , @Param("positionId") Long positionId
