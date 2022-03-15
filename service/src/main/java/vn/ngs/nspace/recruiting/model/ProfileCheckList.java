@@ -32,7 +32,7 @@ public class ProfileCheckList extends PersistableEntity<Long> {
     private Long employeeId; // nguoi nhan
     private String description;
     private Integer numbers;
-    private Long templateId;
+//    private Long itemId;
 
 
 
@@ -46,7 +46,7 @@ public class ProfileCheckList extends PersistableEntity<Long> {
                 .senderId(dto.getSenderId())
                 .employeeId(dto.getEmployeeId())
                 .numbers(dto.getNumbers())
-                .templateId(dto.getTemplateId())
+//                .itemId(dto.getItemId())
                 .description(dto.getDescription())
                 .build();
         return obj;
