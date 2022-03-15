@@ -74,7 +74,7 @@ public class InterviewResultService {
         List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, position, orgId, titleId);
         List<InterviewResult> lstResult = new ArrayList<>();
         if (templates.size() == 0){
-            throw new BusinessException("invalid-template");
+            throw new BusinessException("has-no-template-for-position");
         }
         InterviewCheckListTemplate template = templates.get(0);
         List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());

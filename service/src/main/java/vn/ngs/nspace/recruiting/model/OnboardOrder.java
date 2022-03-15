@@ -34,6 +34,7 @@ public class OnboardOrder extends PersistableEntity<Long> {
                 .buddy(dto.getBuddy())
                 .jobApplicationId(dto.getJobApplicationId())
                 .mentorId(dto.getMentorId())
+                .state(dto.getState())
                 .build();
         return order;
     }
