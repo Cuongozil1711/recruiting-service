@@ -63,6 +63,7 @@ public class OnboardOrderService {
         order.setUpdateBy(uid);
         order.setCompanyId(cid);
         order.setCreateDate(new Date());
+        order.setState("notonboard");
         order = repo.save(order);
 
         return toDTOWithObj(cid, uid, order);
