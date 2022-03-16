@@ -76,9 +76,9 @@ public class JobRequirementService {
         if(StringUtils.isEmpty(dto.getSalaryRange() )){
             throw new BusinessException("invalid-salaryRange");
         }
-        if(dto.getSalaryFrom() == null){
-            throw new BusinessException("invalid-salaryFrom");
-        }
+//        if(dto.getSalaryFrom() == null){
+//            throw new BusinessException("invalid-salaryFrom");
+//        }
 //        if(dto.getSalaryTo() == null){
 //            throw new BusinessException("invalid-salaryTo");
 //        }
