@@ -77,13 +77,8 @@ public class ProfileCheckListService {
         for (ProfileCheckListTemplateItem item: items ) {
             ProfileCheckListDTO checkListDTO = new ProfileCheckListDTO();
             checkListDTO = MapperUtils.map(item, checkListDTO);
-            checkListDTO.setPositionId(positionId);
-            checkListDTO.setTitleId(titleId);
-            checkListDTO.setContractType(contractType);
-            checkListDTO.setOnboardOrderId(onboarOrderId);
-            checkListDTO.setItemId(item.getId());
-            ProfileCheckListDTO curr = create(cid, uid,onboarOrderId, checkListDTO);
-            profiles.add(curr);
+
+            profiles.add(create(cid, uid,onboarOrderId, checkListDTO));
         }
         return profiles;
     }
