@@ -108,22 +108,22 @@ public class OnboardOrderCheckListService {
             dto.setResponsibleObj((dto.getResponsibleId() != null && dto.getResponsibleId() != 0) ? mapEmp.get(dto.getResponsibleId()) : null);
             dto.setParticipantObj((dto.getParticipantId() != null && dto.getParticipantId() != 0) ? mapEmp.get(dto.getParticipantId()) : null);
 
-            if (mapCheckLists.get(dto.getOnboardOrderId()) != null) {;
-                List<String> checkState = new ArrayList<>();
-                for (AssetCheckList asset : mapCheckLists.get(dto.getOnboardOrderId())){
-                    if (asset.getState().equals("notcomplete")){
-                        checkState.add(asset.getState());
-                    }
-                }
-                if (checkState != null && !checkState.isEmpty()){
-                    dto.setState("notcomplete");
-                }else {
-                    dto.setState("complete");
-                }
-
-            }else {
-                dto.setState("notcomplete");
-            }
+//            if (mapCheckLists.get(dto.getOnboardOrderId()) != null) {;
+//                List<String> checkState = new ArrayList<>();
+//                for (AssetCheckList asset : mapCheckLists.get(dto.getOnboardOrderId())){
+//                    if (asset.getState().equals("notcomplete")){
+//                        checkState.add(asset.getState());
+//                    }
+//                }
+//                if (checkState != null && !checkState.isEmpty()){
+//                    dto.setState("notcomplete");
+//                }else {
+//                    dto.setState("complete");
+//                }
+//
+//            }else {
+//                dto.setState("notcomplete");
+//            }
         }
 
         return dtos;
