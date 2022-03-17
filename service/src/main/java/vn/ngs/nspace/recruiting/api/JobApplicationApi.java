@@ -110,6 +110,54 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
 
 
 
+    @PostMapping("/sync-state-job-application")
+    @ActionMapping(action = TaskPermission.UPDATE_TASK)
+    protected ResponseEntity syncStateJobApplication(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody Map<String, Object> data) {
+        try {
+            if (data.get("task") == null) {
+                throw new BusinessException("invalid-request-data");
+            }
+            Map<String, Object> requestInfo = (Map<String, Object>) data.get("task");
+            String rootApp = String.valueOf(requestInfo.getOrDefault("rootApp", ""));
+            String rootEntity = String.valueOf(requestInfo.getOrDefault("rootEntity", ""));
+            Long rootId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("rootId", "0")));
+            Long companyId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("companyId", "0")));
+            String requestState = String.valueOf(requestInfo.getOrDefault("state", ""));
+            String updateBy = String.valueOf(requestInfo.getOrDefault("updateBy", ""));
+            if (CompareUtil.compare(rootApp, "recruiting-service")
+                    && CompareUtil.compare(rootEntity, "job_application")
+                    && !CompareUtil.compare(rootId, 0L)
+                    && !CompareUtil.compare(companyId, 0L)) {
+                JobApplication jobApplication = _service.getTaskById(companyId, rootId);
+                String formState = requestState;
+                if (requestState.equals("DONE")) {
+                    formState = Constants.JOB_APPLICATION_STATE.HIRED.name();
+                } else if (requestState.equals("FAILED")) {
+                    formState = Constants.JOB_APPLICATION_STATE.FAILED.name();
+                }
+                if (!StringUtils.isEmpty(formState)) {
+                    if (jobApplication.getState().equals("INIT")) {
+                        JobApplicationRequest jobReq = new JobApplicationRequest();
+                        jobReq.setTask(jobApplication);
+                        return ResponseUtils.handlerSuccess(_service.changeState(companyId, rootId, updateBy, formState, jobReq, new HashSet<>()));
+                    } else if (jobApplication.getState().equals("CANCELED")) {
+                        throw new BusinessException("form-was-be-canceled");
+                    } else {
+                        throw new BusinessException("form-was-be-approved-or-rejected");
+                    }
+                } else {
+                    return ResponseUtils.handlerSuccess();
+                }
+            } else {
+                throw new BusinessException("invalid-request");
+            }
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
 
     @PostMapping("/old/search")
     @ActionMapping(action = Permission.VIEW)
