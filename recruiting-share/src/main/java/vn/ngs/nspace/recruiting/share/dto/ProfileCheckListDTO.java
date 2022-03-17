@@ -24,6 +24,8 @@ public class ProfileCheckListDTO {
     private Long employeeId; // nguoi nhan
     private String description;
     private Integer status;
+    private Integer numbers;
+    private Long itemId;
 
     private Long positionId;
     private Long titleId;

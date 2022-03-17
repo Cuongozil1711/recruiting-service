@@ -31,6 +31,10 @@ public class ProfileCheckList extends PersistableEntity<Long> {
     private Long senderId; // nguoi giao
     private Long employeeId; // nguoi nhan
     private String description;
+    private Integer numbers;
+    private Long itemId;
+
+
 
 
     public static ProfileCheckList of(Long cid, String uid, ProfileCheckListDTO dto){
@@ -41,6 +45,8 @@ public class ProfileCheckList extends PersistableEntity<Long> {
                 .receiptDate(dto.getReceiptDate())
                 .senderId(dto.getSenderId())
                 .employeeId(dto.getEmployeeId())
+                .numbers(dto.getNumbers())
+                .itemId(dto.getItemId())
                 .description(dto.getDescription())
                 .build();
         return obj;

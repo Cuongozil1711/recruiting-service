@@ -63,6 +63,7 @@ public class OnboardOrderService {
         order.setUpdateBy(uid);
         order.setCompanyId(cid);
         order.setCreateDate(new Date());
+        order.setState("notonboard");
         order = repo.save(order);
 
         return toDTOWithObj(cid, uid, order);
@@ -149,14 +150,18 @@ public class OnboardOrderService {
             }
 
             if(mapCheckLists.get(dto.getId()) != null){;
+                Integer count = 0;
                 List<String> checkState = new ArrayList<>();
-                for (OnboardOrderCheckList checkList: mapCheckLists.get(dto.getId()) ){
+                for (OnboardOrderCheckList checkList: mapCheckLists.get(dto.getId())){
                     if (checkList.getState().equals("notcomplete")){
                         checkState.add(checkList.getState());
+                        count++;
                     }
                 }
                 if (checkState != null && !checkState.isEmpty()){
                     dto.setState("notcomplete");
+                }else if(count == mapCheckLists.size()){
+                    dto.setState("notonboard");
                 }
                 else {
                     dto.setState("complete");

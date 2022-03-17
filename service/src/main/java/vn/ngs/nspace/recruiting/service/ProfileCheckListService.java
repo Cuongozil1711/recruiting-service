@@ -72,7 +72,8 @@ public class ProfileCheckListService {
             throw new BusinessException("invalid-profile-template");
         }
         ProfileCheckListTemplate template = templates.get(0);
-        List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateId(cid, template.getId());
+        List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
+
         for (ProfileCheckListTemplateItem item: items ) {
             ProfileCheckListDTO checkListDTO = new ProfileCheckListDTO();
             checkListDTO = MapperUtils.map(item, checkListDTO);
@@ -84,7 +85,7 @@ public class ProfileCheckListService {
 
     public ProfileCheckListDTO create(Long cid, String uid, Long onboarOrderId, ProfileCheckListDTO request) throws BusinessException{
         valid(request);
-        ProfileCheckList exists = repo.findByCompanyIdAndOnboardOrderIdAndStatus(cid, onboarOrderId, Constants.ENTITY_ACTIVE).orElse(new ProfileCheckList());
+        ProfileCheckList exists = repo.findByCompanyIdAndOnboardOrderIdAndItemIdAndStatus(cid, onboarOrderId, request.getItemId(), Constants.ENTITY_ACTIVE).orElse(new ProfileCheckList());
         if(!exists.isNew()){
             return toDTOs(cid, uid, Collections.singletonList(exists)).get(0);
         }
@@ -101,12 +102,13 @@ public class ProfileCheckListService {
     public List<ProfileCheckListDTO> handOverProfile (Long cid, String uid, Long onboarOrderId, List<ProfileCheckListDTO> listDTOS) {
         List<ProfileCheckList> lstProfile = new ArrayList<>();
         for (ProfileCheckListDTO dto: listDTOS) {
-            if(dto.getId() != null || dto.getId() == 0l){
+            if(dto.getId() != null){
                 ProfileCheckList curr = repo.findByCompanyIdAndId(cid, dto.getId()).orElse(new ProfileCheckList());
                 MapperUtils.copyWithoutAudit(dto, curr);
                 curr.setOnboardOrderId(onboarOrderId);
                 curr.setReceiptDate(dto.getReceiptDate());
                 curr.setSenderId(dto.getSenderId());
+                curr.setCompanyId(cid);
                 curr.setUpdateBy(uid);
                 curr.setStatus(dto.getStatus() == null ? Constants.ENTITY_ACTIVE : dto.getStatus());
                 repo.save(curr);

@@ -16,6 +16,7 @@ public interface JobRequirementRepo extends BaseRepo<JobRequirement,Long> {
     @Query(value = "select j " +
             " from JobRequirement j " +
             " where (j.companyId = :companyId)" +
+            " and (j.status = 1)" +
             "and  (lower(j.title) like (concat('%',:title,'%')) or :title = 'all') " +
             " and (lower(j.code) like (concat('%',:code,'%')) or :code = 'all') " 
     )
