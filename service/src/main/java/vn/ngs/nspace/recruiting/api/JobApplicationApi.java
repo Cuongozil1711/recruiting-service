@@ -6,40 +6,112 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections.MapUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
-import vn.ngs.nspace.recruiting.model.Candidate;
-import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.model.JobApplication;
-import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
-import vn.ngs.nspace.recruiting.service.CandidateService;
+import vn.ngs.nspace.recruiting.request.JobApplicationRequest;
 import vn.ngs.nspace.recruiting.service.JobApplicationService;
-import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
+import vn.ngs.nspace.task.core.api.TaskApi;
+import vn.ngs.nspace.task.core.utils.TaskPermission;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("job-application")
-@RequiredArgsConstructor
 @Tag(name = "JobApplication", description = "Job Application API")
-public class JobApplicationApi {
+public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationService, JobApplicationRequest> {
     private final JobApplicationService _service;
     private final JobApplicationRepo _repo;
 
-    @PostMapping("/search")
+    public JobApplicationApi(JobApplicationService service, JobApplicationRepo repo) {
+        super(service);
+        _service = service;
+        _repo = repo;
+    }
+
+
+    @PostMapping("/init")
+    @ActionMapping(action = TaskPermission.CREATE_TASK)
+    public ResponseEntity initForm(@RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @RequestHeader(value = "Accept-Language", defaultValue = "") String locale
+            , @RequestParam(value = "include", defaultValue = "") Set<String> include
+            , @RequestBody JobApplicationRequest formReq) {
+        try {
+            Map<String, Object> response = _service.initJobApplicationForm(cid, uid, locale, include, formReq);
+            return ResponseUtils.handlerSuccess(response);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PostMapping("/sync-request")
+    @ActionMapping(action = TaskPermission.UPDATE_TASK)
+    protected ResponseEntity syncRequest(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody Map<String, Object> data) {
+        try {
+            if (data.get("task") == null) {
+                throw new BusinessException("invalid-request-data");
+            }
+            Map<String, Object> requestInfo = (Map<String, Object>) data.get("task");
+            String rootApp = String.valueOf(requestInfo.getOrDefault("rootApp", ""));
+            String rootEntity = String.valueOf(requestInfo.getOrDefault("rootEntity", ""));
+            Long rootId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("rootId", "0")));
+            Long companyId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("companyId", "0")));
+            String requestState = String.valueOf(requestInfo.getOrDefault("state", ""));
+            String updateBy = String.valueOf(requestInfo.getOrDefault("updateBy", ""));
+            if (CompareUtil.compare(rootApp, "recruiting-service")
+                    && CompareUtil.compare(rootEntity, "job_application")
+                    && !CompareUtil.compare(rootId, 0L)
+                    && !CompareUtil.compare(companyId, 0L)) {
+                JobApplication jobApplication = _service.getTaskById(companyId, rootId);
+                String formState = null;
+                if (requestState.equals("DONE")) {
+                    formState = Constants.JOB_APPLICATION_STATE.HIRED.name();
+                } else if (requestState.equals("FAILED")) {
+                    formState = Constants.JOB_APPLICATION_STATE.FAILED.name();
+                }
+                if (!StringUtils.isEmpty(formState)) {
+                    if (jobApplication.getState().equals("INIT")) {
+                        JobApplicationRequest jobReq = new JobApplicationRequest();
+                        jobReq.setTask(jobApplication);
+                        return ResponseUtils.handlerSuccess(_service.changeState(companyId, rootId, updateBy, formState, jobReq, new HashSet<>()));
+                    } else if (jobApplication.getState().equals("CANCELED")) {
+                        throw new BusinessException("form-was-be-canceled");
+                    } else {
+                        throw new BusinessException("form-was-be-approved-or-rejected");
+                    }
+                } else {
+                    return ResponseUtils.handlerSuccess();
+                }
+            } else {
+                throw new BusinessException("invalid-request");
+            }
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+
+
+
+    @PostMapping("/old/search")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Search all Candidate Order"
             , description = "Search by condition : name, gender, wardCode, phone, email,..."
@@ -70,7 +142,7 @@ public class JobApplicationApi {
 
     }
 
-    @PostMapping()
+    @PostMapping("/old")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Create single JobApplication"
             , description = "Create single JobApplication"
@@ -90,7 +162,7 @@ public class JobApplicationApi {
     }
 
 
-    @PutMapping("{id}")
+    @PutMapping("/old/{id}")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "Update JobApplication by Id"
             , description = "Update JobApplication by Id"
@@ -110,7 +182,7 @@ public class JobApplicationApi {
         }
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/old/{id}")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Get JobApplication by Id"
             , description = "Get JobApplication by Id"
@@ -131,7 +203,7 @@ public class JobApplicationApi {
     }
 
 
-    @PutMapping("/delete")
+    @PutMapping("/old/delete")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "delete list JobApplication",
             description = "API for delete list JobApplication")
@@ -151,7 +223,7 @@ public class JobApplicationApi {
         }
     }
 
-    @PostMapping("/create-employee/{id}")
+    @PostMapping("/old/create-employee/{id}")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "delete list JobApplication",
             description = "API for delete list JobApplication")
@@ -169,7 +241,7 @@ public class JobApplicationApi {
         }
     }
 
-    @PostMapping("/update-employee/{id}")
+    @PostMapping("/old/update-employee/{id}")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "delete list JobApplication",
             description = "API for delete list JobApplication")
@@ -187,7 +259,7 @@ public class JobApplicationApi {
         }
     }
 
-    @GetMapping("/current-by-candidate/{candidateId}")
+    @GetMapping("/old/current-by-candidate/{candidateId}")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "get current active JobApplication by Candidate",
             description = "API get current active JobApplication by Candidate")
@@ -204,7 +276,7 @@ public class JobApplicationApi {
         }
     }
 
-    @PostMapping("/init-by-candidate/{candidateId}")
+    @PostMapping("/old/init-by-candidate/{candidateId}")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "get current active JobApplication by Candidate",
             description = "API get current active JobApplication by Candidate")

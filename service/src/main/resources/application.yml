@@ -99,7 +99,7 @@ nspace:
     notice:
       URL: http://api.ngs.vn/nspace/notice
       #      URL: http://api.gateway.svc.cluster.local:8082/nspace/notice
-      #      URL: http://localhost:8087/
+#      URL: http://localhost:8094/
       key: test
 cache:
   expries: 5

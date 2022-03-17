@@ -48,6 +48,7 @@ subprojects {
         dependencies {
 //            dependency "org.springdoc:springdoc-openapi-ui:${springDocOpenApiVersion}"
 //            dependency "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+            dependency "vn.ngs.nspace:request-share:${requestShareVersion}"
             dependency "io.springfox:springfox-boot-starter:${springfoxVersion}"
             dependency "io.springfox:springfox-swagger-ui:${springfoxVersion}"
 
