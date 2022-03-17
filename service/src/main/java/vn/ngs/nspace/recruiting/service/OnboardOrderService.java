@@ -154,10 +154,11 @@ public class OnboardOrderService {
                 for (OnboardOrderCheckList checkList: mapCheckLists.get(dto.getId())){
                     if (checkList.getState().equals("notcomplete")){
                         checkState.add(checkList.getState());
-                        count++;
+
                     }
+                    count++;
                 }
-                if (0< count && count < checkState.size()){
+                if (0 < checkState.size() && checkState.size() < count){
                     dto.setState("notcomplete");
                 }else if(count == checkState.size()){
                     dto.setState("notonboard");
