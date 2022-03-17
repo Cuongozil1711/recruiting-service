@@ -9,6 +9,7 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     public static enum JOB_APPLICATION_TYPE {
         job
     }
+
     public static List<String> onboardCheckList
             = Arrays.asList(
             "notice-new-member",
@@ -22,18 +23,17 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
             "training",
             "coaching");
 
-    public enum ONBOARD_ORDER_CHECK_LIST_STATE{
-        notcomplete
-        , complete
+    public enum ONBOARD_ORDER_CHECK_LIST_STATE {
+        notcomplete, complete
 
     }
 
-    public enum INTERVIEW_RESULT_STATE{
-        PENDING
-        , REVIEWED
+    public enum INTERVIEW_RESULT_STATE {
+        PENDING, REVIEWED
 
     }
-    public enum Experience{
+
+    public enum Experience {
         UNDER_0,
         UNDER_30,
         UNDER_40,
@@ -47,29 +47,21 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     }
 
     public enum CANDIDATE_STATE {
-        INTERVIEWING
-        , OFFERING
-        , FAILED
-        , HIRED
+        INTERVIEWING, OFFERING, FAILED, HIRED
     }
 
     public enum JOB_APPLICATION_STATE {
-        INIT
-        , OFFERING
-        , FAILED
-        , HIRED
+        INIT, OFFERING, FAILED, HIRED
     }
 
     public static final String JOB_APPLICATION_STATE_DONE = "DONE";
 
     public enum EMAIL_SENT_REF {
-        CANDIDATE
-        , EMPLOYEE
+        CANDIDATE, EMPLOYEE
     }
 
 
     public enum CMD_TABLE_ACTION {
-        DELETE
-        , UPDATE
+        DELETE, UPDATE
     }
 }
