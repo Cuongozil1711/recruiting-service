@@ -109,7 +109,6 @@ public class ProfileCheckListService {
                 curr.setSenderId(dto.getSenderId());
                 curr.setUpdateBy(uid);
                 curr.setStatus(dto.getStatus() == null ? Constants.ENTITY_ACTIVE : dto.getStatus());
-
                 repo.save(curr);
                 lstProfile.add(curr);
             }
