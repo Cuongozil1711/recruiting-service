@@ -171,6 +171,9 @@ public class InterviewInvolveService {
 
     public List<Map<String, Object>> applyInvolves(Long cid, String uid, Long involveId, List<Map<String, Object>> newDatas) throws BusinessException{
         InterviewInvolve template = repo.findByCompanyIdAndId(cid, involveId).orElseThrow(() -> new EntityNotFoundException(InterviewInvolve.class, involveId));
+        if (!template.isNew()){
+            throw new BusinessException("involve-existed");
+        }
         for (Map<String, Object> data: newDatas) {
             Long positionId = MapUtils.getLong(data, "positionId", 0l);
             Long titileId = MapUtils.getLong(data, "titleId", 0l);
