@@ -26,6 +26,7 @@ public class ProfileCheckListDTO {
     private Integer status;
     private Integer numbers;
     private Long itemId;
+    private String state;
 
     private Long positionId;
     private Long titleId;
