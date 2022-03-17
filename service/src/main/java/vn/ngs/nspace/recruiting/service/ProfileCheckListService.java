@@ -111,7 +111,6 @@ public class ProfileCheckListService {
                 curr.setCompanyId(cid);
                 curr.setUpdateBy(uid);
                 curr.setStatus(dto.getStatus() == null ? Constants.ENTITY_ACTIVE : dto.getStatus());
-
                 repo.save(curr);
                 lstProfile.add(curr);
             }
