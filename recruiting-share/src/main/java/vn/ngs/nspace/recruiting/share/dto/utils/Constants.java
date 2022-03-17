@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Constants extends vn.ngs.nspace.lib.utils.Constants {
+
+    public static enum JOB_APPLICATION_TYPE {
+        job
+    }
     public static List<String> onboardCheckList
             = Arrays.asList(
             "notice-new-member",
@@ -39,6 +43,7 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
 
     public enum JOB_APP_STATE {
         DONE
+
     }
 
     public enum CANDIDATE_STATE {

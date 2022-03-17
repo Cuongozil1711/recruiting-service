@@ -4,6 +4,7 @@ dependencies {
     implementation "vn.ngs.nspace:ns-kafka"
     implementation "vn.ngs.nspace:config-share"
     implementation "vn.ngs.nspace:user-share"
+    implementation "vn.ngs.nspace:request-share"
     implementation 'vn.ngs.nspace:ns-cache'
     implementation "vn.ngs.nspace:ns-utils"
     implementation "com.esotericsoftware:kryo"

@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
+import vn.ngs.nspace.task.core.model.TaskEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,7 +27,7 @@ import java.util.List;
         typeClass = ListArrayType.class
 )
 //Quy trình phỏng vấn ứng viên, được liên kết tới danh sách ứng viên
-public class JobApplication extends PersistableEntity<Long> {
+public class JobApplication extends TaskEntity {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
@@ -45,6 +46,7 @@ public class JobApplication extends PersistableEntity<Long> {
     private List <String> introduceById;
     private Long cvSourceId;
     private String state; // interview, offer, requested, cancelled, done
+    private Long requestId;
 
     public static JobApplication of(Long cid, String uid, JobApplicationDTO dto){
         JobApplication builder = JobApplication.builder()
