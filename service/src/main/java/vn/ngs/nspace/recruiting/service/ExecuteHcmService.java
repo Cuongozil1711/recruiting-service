@@ -1,7 +1,9 @@
 package vn.ngs.nspace.recruiting.service;
 
+import camundajar.impl.com.google.gson.JsonObject;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -9,12 +11,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.request.EmployeeReq;
 import vn.ngs.nspace.hcm.share.dto.response.EmployeeResp;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.dto.BaseResponse;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.utils.HttpUtils;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
@@ -49,6 +53,22 @@ public class ExecuteHcmService {
         HttpEntity<ResponseEntity> request = new HttpEntity<>(headers);
         return request;
     }
+//    public void throwCalloutException(Exception e, String defaultMessage) throws BusinessException {
+//        String message;
+//        try {
+//            String responseBody = ((HttpClientErrorException.BadRequest) e).getResponseBodyAsString();
+//            JsonObject response = new JsonObject(responseBody);
+//            message = response.getString("message");
+//            if (!StringUtils.isEmpty(message) & message.contains("BusinessException") && message.indexOf(":") > 0) {
+//                message = message.substring(message.indexOf(":") + 1).trim();
+//            }
+//        } catch (Exception ex) {
+//            throw new BusinessException(defaultMessage);
+//        }
+//        if (message != null) {
+//            throw new BusinessException(message);
+//        }
+//    }
 
     public List<OrgResp> getOrgResp(String requestUserId, long companyId, Set<Long> ids) {
         try {
