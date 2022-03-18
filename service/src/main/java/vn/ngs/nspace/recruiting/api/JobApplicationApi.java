@@ -115,8 +115,8 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             , @RequestBody Map<String, Object> data) {
         try {
 
-            if (data.get("reqOrder") == null) {
-                throw new BusinessException("invalid-request-order");
+            if (data.get("task") == null) {
+                throw new BusinessException("invalid-request-task");
             }
 
             Map<String, Object> requestInfo = (Map<String, Object>) data.get("task");
