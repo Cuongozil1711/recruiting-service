@@ -11,7 +11,6 @@ import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.InterviewInvolve;
 import vn.ngs.nspace.recruiting.repo.InterviewInvolveRepo;
 import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
-import vn.ngs.nspace.recruiting.share.dto.InterviewObj;
 import vn.ngs.nspace.recruiting.share.dto.InterviewObjDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
