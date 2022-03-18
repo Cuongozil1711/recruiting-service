@@ -131,7 +131,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             //CompareUtil.compare(rootApp, "recruiting-service")
             //CompareUtil.compare(rootEntity, "job_application")
             if (!CompareUtil.compare(requestId, 0L)    && !CompareUtil.compare(companyId, 0L)) {
-                JobApplication jobApplication = _service.getTaskById(companyId, requestId);
+                JobApplication jobApplication = _repo.findOne(companyId, requestId).orElse(new JobApplication());
                 String formState = state;// requestState;
 //                if (requestState.equals("DONE")) {
 //                    formState = Constants.JOB_APPLICATION_STATE.HIRED.name();
