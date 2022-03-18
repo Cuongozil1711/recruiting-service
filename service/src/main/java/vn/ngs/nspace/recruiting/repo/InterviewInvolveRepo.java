@@ -51,7 +51,23 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             , @Param("orgId") Long orgId
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId);
-
+    @Query(value = " select p.* " +
+            " from recruiting_service.Interview_Involve p " +
+            " where (p.company_Id = :companyId)" +
+            " and (p.interview_Id = :interviewId or :interviewId = -1) " +
+            " and (p.org_Id = :orgId or :orgId = -1) " +
+            " and (p.position_Id = :positionId or :positionId = -1) " +
+            " and (p.title_Id = :titleId or :titleId = -1)" +
+            " and (:interviewerId = any(p.interviewer_Id) or :interviewerId = '#') " +
+            " and (p.supporter_Id = :supporterId or :supporterId = -1) " +
+            " and (p.status = 1 ) LIMIT 1 ", nativeQuery = true)
+    Optional<InterviewInvolve> find(@Param("companyId") Long cid
+            , @Param("interviewId") Long interviewId
+            , @Param("orgId") Long orgId
+            , @Param("positionId") Long positionId
+            , @Param("titleId") Long titleId
+            , @Param("interviewerId") String interviewerId
+            , @Param("supporterId") Long supporterId);
 
     List<InterviewInvolve> findByCompanyIdAndStatus(Long cid, Integer status);
 }

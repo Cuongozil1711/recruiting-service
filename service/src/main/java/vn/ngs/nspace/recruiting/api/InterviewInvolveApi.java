@@ -60,6 +60,30 @@ public class InterviewInvolveApi {
         }
     }
 
+    @PostMapping("/find")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "search interview involve",
+            description = "search list interview involve by interviewerId, supporterId,orgId,positionId, titleId")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity find(@RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody Map<String, Object> condition
+            , Pageable pageable) {
+        try{
+            Long interviewId = MapUtils.getLong(condition, "interviewId", -1l);
+            String interviewerId = MapUtils.getString(condition, "interviewerId", "#");
+            Long supporterId = MapUtils.getLong(condition, "supporterId", -1l);
+            Long orgId = MapUtils.getLong(condition, "orgId", -1l);
+            Long positionId = MapUtils.getLong(condition, "positionId", -1l);
+            Long titleId = MapUtils.getLong(condition,"titleId", -1l);
+            InterviewInvolve item = _repo.find(cid, interviewId, orgId, positionId, titleId, interviewerId, supporterId).orElse(new InterviewInvolve());
+            return ResponseUtils.handlerSuccess(_service.toDTOWithObject(cid, uid, item));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "create interview involve",
