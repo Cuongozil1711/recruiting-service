@@ -62,7 +62,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
 
     @PostMapping("/sync-request")
     @ActionMapping(action = TaskPermission.UPDATE_TASK)
-    protected ResponseEntity syncRequest(@RequestHeader Long cid
+    public ResponseEntity syncRequest(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody Map<String, Object> data) {
         try {
@@ -108,35 +108,38 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
         }
     }
 
-
-
     @PostMapping("/sync-state-job-application")
     @ActionMapping(action = TaskPermission.UPDATE_TASK)
-    protected ResponseEntity syncStateJobApplication(@RequestHeader Long cid
+    public ResponseEntity syncStateJobApplication(@RequestHeader Long cid
             , @RequestHeader String uid
             , @RequestBody Map<String, Object> data) {
         try {
-            if (data.get("task") == null) {
-                throw new BusinessException("invalid-request-data");
+
+            if (data.get("reqOrder") == null) {
+                throw new BusinessException("invalid-request-order");
             }
-            Map<String, Object> requestInfo = (Map<String, Object>) data.get("task");
+
+            Map<String, Object> requestOrder = (Map<String, Object>) data.get("reqOrder");
+            Map<String, Object> requestInfo = (Map<String, Object>) requestOrder.get("task");
             String rootApp = String.valueOf(requestInfo.getOrDefault("rootApp", ""));
             String rootEntity = String.valueOf(requestInfo.getOrDefault("rootEntity", ""));
             Long rootId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("rootId", "0")));
             Long companyId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("companyId", "0")));
             String requestState = String.valueOf(requestInfo.getOrDefault("state", ""));
             String updateBy = String.valueOf(requestInfo.getOrDefault("updateBy", ""));
+            String state = String.valueOf(data.get("state"));
+
             if (CompareUtil.compare(rootApp, "recruiting-service")
                     && CompareUtil.compare(rootEntity, "job_application")
                     && !CompareUtil.compare(rootId, 0L)
                     && !CompareUtil.compare(companyId, 0L)) {
                 JobApplication jobApplication = _service.getTaskById(companyId, rootId);
-                String formState = requestState;
-                if (requestState.equals("DONE")) {
-                    formState = Constants.JOB_APPLICATION_STATE.HIRED.name();
-                } else if (requestState.equals("FAILED")) {
-                    formState = Constants.JOB_APPLICATION_STATE.FAILED.name();
-                }
+                String formState = state;// requestState;
+//                if (requestState.equals("DONE")) {
+//                    formState = Constants.JOB_APPLICATION_STATE.HIRED.name();
+//                } else if (requestState.equals("FAILED")) {
+//                    formState = Constants.JOB_APPLICATION_STATE.FAILED.name();
+//                }
                 if (!StringUtils.isEmpty(formState)) {
                     if (jobApplication.getState().equals("INIT")) {
                         JobApplicationRequest jobReq = new JobApplicationRequest();
@@ -167,7 +170,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity search(
+    public ResponseEntity search(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Payload filter") @RequestBody Map<String, Object> condition
@@ -198,7 +201,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity create(
+    public ResponseEntity create(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @RequestBody JobApplicationDTO dto) {
@@ -218,7 +221,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity updateById(
+    public ResponseEntity updateById(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id
@@ -238,7 +241,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity getById(
+    public ResponseEntity getById(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id){
@@ -257,7 +260,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             description = "API for delete list JobApplication")
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity deteleList(
+    public ResponseEntity deteleList(
             @Parameter(description = "ID of company")
             @RequestHeader Long cid
             ,@Parameter(description = "ID of userID")
@@ -277,7 +280,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             description = "API for delete list JobApplication")
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity createEmployee(
+    public ResponseEntity createEmployee(
             @Parameter(description = "ID of company") @RequestHeader Long cid
             , @Parameter(description = "ID of userID") @RequestHeader String uid
             , @Parameter(description = "Id of job-application")  @PathVariable(value = "id") Long id
@@ -295,7 +298,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             description = "API for delete list JobApplication")
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity updateEmployee(
+    public ResponseEntity updateEmployee(
             @Parameter(description = "ID of company") @RequestHeader Long cid
             , @Parameter(description = "ID of userID") @RequestHeader String uid
             , @Parameter(description = "Id of job-application")  @PathVariable(value = "id") Long id
@@ -313,7 +316,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             description = "API get current active JobApplication by Candidate")
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity getCurrentJobByCandidate(
+    public ResponseEntity getCurrentJobByCandidate(
             @Parameter(description = "ID of company") @RequestHeader Long cid
             , @Parameter(description = "ID of userID") @RequestHeader String uid
             , @Parameter(description = "Id of candidate")  @PathVariable(value = "candidateId") Long id){
@@ -330,7 +333,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             description = "API get current active JobApplication by Candidate")
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity initJobApplication(
+    public ResponseEntity initJobApplication(
             @Parameter(description = "ID of company") @RequestHeader Long cid
             , @Parameter(description = "ID of userID") @RequestHeader String uid
             , @Parameter(description = "Id of candidate")  @PathVariable(value = "candidateId") Long id){
