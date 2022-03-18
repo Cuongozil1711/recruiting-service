@@ -203,7 +203,7 @@ public class RecruitmentPlanOrderApi {
             LOGGER.info("deadline=="+deadline);
             Page<RecruitmentPlanOrder> list = _repo.searchRecruitingPlanOrder(cid,orgId,positionId,startDate,deadline,pageable);
             List<RecruitmentPlanOrderDTO> dtos = _service.toDTOSeachs(cid, uid,orgId,positionId,startDate,deadline, list.getContent());
-            Page<Map<String,Object>>resp = new PageImpl(dtos, pageable, dtos.size());
+            Page<Map<String,Object>>resp = new PageImpl(dtos, pageable, list.getTotalElements());
             return ResponseUtils.handlerSuccess(resp);
         }catch (Exception ex){
             return ResponseUtils.handlerException(ex);
