@@ -259,6 +259,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         if(currentJr.isNew()){
             currentJr.setCandidateId(candidateId);
             currentJr.setCompanyId(cid);
+            currentJr.setType("job");
             currentJr.setCreateBy(uid);
             currentJr.setUpdateBy(uid);
             currentJr.setState(Constants.JOB_APPLICATION_STATE.INIT.name());
