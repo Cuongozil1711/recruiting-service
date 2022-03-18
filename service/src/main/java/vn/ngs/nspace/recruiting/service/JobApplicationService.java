@@ -169,6 +169,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
     public JobApplicationDTO create(Long cid, String uid, JobApplicationDTO request) {
         valid(request);
         JobApplication obj = JobApplication.of(cid, uid, request);
+        obj.setType("job");
         obj.setCompanyId(cid);
         obj.setCreateBy(uid);
         obj = _repo.save(obj);
@@ -192,6 +193,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         valid(request);
         JobApplication curr = _repo.findByCompanyIdAndId(cid,id).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, id));
         MapperUtils.copyWithoutAudit(request, curr);
+        curr.setType("job");
         curr.setUpdateBy(uid);
         curr = _repo.save(curr);
 

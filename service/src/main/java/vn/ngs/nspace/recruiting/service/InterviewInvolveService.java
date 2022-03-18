@@ -11,6 +11,8 @@ import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.InterviewInvolve;
 import vn.ngs.nspace.recruiting.repo.InterviewInvolveRepo;
 import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
+import vn.ngs.nspace.recruiting.share.dto.InterviewObj;
+import vn.ngs.nspace.recruiting.share.dto.InterviewObjDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
@@ -162,7 +164,17 @@ public class InterviewInvolveService {
     public InterviewInvolveDTO toDTOWithObj(Long cid, String uid, InterviewInvolve involve) {
         return toDTOs(cid, uid, Collections.singletonList(involve)).get(0);
     }
-
+    public Set<InterviewObjDTO> toDTOWithObject(Long cid, String uid, InterviewInvolve involve) {
+        InterviewInvolveDTO item= toDTOs(cid, uid, Collections.singletonList(involve)).get(0);
+        Set<InterviewObjDTO> interviewerObj = new HashSet<>();
+        for (EmployeeDTO itemObj : item.getInterviewerObj()) {
+            InterviewObjDTO iObj = new InterviewObjDTO();
+            iObj.setKey(itemObj.getId().toString());
+            iObj.setValue(itemObj.getFullName().toString());
+            interviewerObj.add(iObj);
+        }
+        return interviewerObj;
+    }
     /* convert model object to DTO before response */
     public InterviewInvolveDTO toDTO(InterviewInvolve involve) {
         InterviewInvolveDTO dto = MapperUtils.map(involve, InterviewInvolveDTO.class);
