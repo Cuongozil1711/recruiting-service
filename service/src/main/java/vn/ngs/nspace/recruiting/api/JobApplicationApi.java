@@ -119,21 +119,20 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
                 throw new BusinessException("invalid-request-order");
             }
 
-            Map<String, Object> requestOrder = (Map<String, Object>) data.get("reqOrder");
-            Map<String, Object> requestInfo = (Map<String, Object>) requestOrder.get("task");
-            String rootApp = String.valueOf(requestInfo.getOrDefault("rootApp", ""));
-            String rootEntity = String.valueOf(requestInfo.getOrDefault("rootEntity", ""));
+            Map<String, Object> requestInfo = (Map<String, Object>) data.get("task");
+           // String rootApp = String.valueOf(requestInfo.getOrDefault("rootApp", ""));
+           // String rootEntity = String.valueOf(requestInfo.getOrDefault("rootEntity", ""));
             Long rootId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("rootId", "0")));
             Long companyId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("companyId", "0")));
-            String requestState = String.valueOf(requestInfo.getOrDefault("state", ""));
+            //String requestState = String.valueOf(requestInfo.getOrDefault("state", ""));
             String updateBy = String.valueOf(requestInfo.getOrDefault("updateBy", ""));
             String state = String.valueOf(data.get("state"));
-
-            if (CompareUtil.compare(rootApp, "recruiting-service")
-                    && CompareUtil.compare(rootEntity, "job_application")
-                    && !CompareUtil.compare(rootId, 0L)
+            Long requestId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("requestId", "0")));
+            //CompareUtil.compare(rootApp, "recruiting-service")
+            //                    && CompareUtil.compare(rootEntity, "job_application")
+            if (!CompareUtil.compare(requestId, 0L)
                     && !CompareUtil.compare(companyId, 0L)) {
-                JobApplication jobApplication = _service.getTaskById(companyId, rootId);
+                JobApplication jobApplication = _service.getTaskById(companyId, requestId);
                 String formState = state;// requestState;
 //                if (requestState.equals("DONE")) {
 //                    formState = Constants.JOB_APPLICATION_STATE.HIRED.name();
