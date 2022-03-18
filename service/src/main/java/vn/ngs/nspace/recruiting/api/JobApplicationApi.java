@@ -139,15 +139,17 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
 //                    formState = Constants.JOB_APPLICATION_STATE.FAILED.name();
 //                }
                 if (!StringUtils.isEmpty(formState)) {
-                    if (jobApplication.getState().equals("INIT")) {
+                   // if (jobApplication.getState().equals("INIT")) {
                         JobApplicationRequest jobReq = new JobApplicationRequest();
                         jobReq.setTask(jobApplication);
                         return ResponseUtils.handlerSuccess(_service.changeState(companyId, rootId, updateBy, formState, jobReq, new HashSet<>()));
-                    } else if (jobApplication.getState().equals("CANCELED")) {
-                        throw new BusinessException("form-was-be-canceled");
-                    } else {
-                        throw new BusinessException("form-was-be-approved-or-rejected");
-                    }
+//                    }
+//                    else if (jobApplication.getState().equals("CANCELED")) {
+//                        throw new BusinessException("form-was-be-canceled");
+//                    }
+//                    else {
+//                        throw new BusinessException("form-was-be-approved-or-rejected");
+//                    }
                 } else {
                     return ResponseUtils.handlerSuccess();
                 }
