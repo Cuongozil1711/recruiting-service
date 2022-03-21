@@ -77,8 +77,8 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
             );
 
     @Query(value = "select  count(*) as totalRecruit"+
-            "  from recruiting_service.recruitment_plan_order rpo"+
-            "  inner join recruiting_service.job_application c  on rpo.position_id = c.position_id and rpo.org_id = c.org_id"+
+            "  from recruiting_service.candidate c"+
+            "  inner join recruiting_service.recruitment_plan_order rpo on rpo.position_id = c.position_id and rpo.org_id = c.org_id"+
             "  where (rpo.company_id = :companyId )"+
             "  and (rpo.status = 1)"+
             "  and (rpo.org_id = :org_id or :org_id = -1)"+
