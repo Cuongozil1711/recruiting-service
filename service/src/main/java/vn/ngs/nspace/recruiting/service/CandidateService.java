@@ -32,27 +32,27 @@ public class CandidateService {
 
     /* logic validate data before insert model */
     public void valid(CandidateDTO dto) throws BusinessException {
-        if(StringUtils.isEmpty(dto.getFullName())){
-            throw new BusinessException("Name-not-valid");
-        }
-        if (dto.getBirthDate() == null) {
-            throw new BusinessException("invalid-birthDate");
-        }
-        if (dto.getGender() == null) {
-            throw new BusinessException("invalid-gender");
-        }
-        if (StringUtils.isEmpty(dto.getPhone())) {
-            throw new BusinessException("invalid-phone");
-        }
-        if (StringUtils.isEmpty(dto.getEmail())) {
-            throw new BusinessException("invalid-email");
-        }
-        if (dto.getApplyPositionId() == null) {
-            throw new BusinessException("invalid-position");
-        }
-        if(dto.getCvSourceId() == null){
-            throw new BusinessException("Cv-cannot-be-empty");
-        }
+//        if(StringUtils.isEmpty(dto.getFullName())){
+//            throw new BusinessException("Name-not-valid");
+//        }
+//        if (dto.getBirthDate() == null) {
+//            throw new BusinessException("invalid-birthDate");
+//        }
+//        if (dto.getGender() == null) {
+//            throw new BusinessException("invalid-gender");
+//        }
+//        if (StringUtils.isEmpty(dto.getPhone())) {
+//            throw new BusinessException("invalid-phone");
+//        }
+//        if (StringUtils.isEmpty(dto.getEmail())) {
+//            throw new BusinessException("invalid-email");
+//        }
+//        if (dto.getApplyPositionId() == null) {
+//            throw new BusinessException("invalid-position");
+//        }
+//        if(dto.getCvSourceId() == null){
+//            throw new BusinessException("Cv-cannot-be-empty");
+//        }
 
 
     }
