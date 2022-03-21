@@ -100,7 +100,7 @@ public class InterviewInvolveService {
         try{
             repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, dto.getPositionId(), dto.getTitleId(), dto.getOrgId(),Constants.ENTITY_ACTIVE);
         }catch (IncorrectResultSizeDataAccessException ex){
-            throw new BusinessException("duplicate-data-with-and-code");
+            throw new BusinessException("involve-existed");
         }
 
         return toDTOWithObj(cid, uid, curr);
@@ -198,17 +198,18 @@ public class InterviewInvolveService {
             Long orgId = MapUtils.getLong(data, "orgId", 0l);
             List<InterviewInvolve> exist = repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, positionId, titileId, orgId, Constants.ENTITY_ACTIVE);
             if (exist.size() >= 1) {
-                for (InterviewInvolve existed : exist) {
-                    existed.setStatus(Constants.ENTITY_INACTIVE);
-                    existed = repo.save(existed);
-
-                    InterviewInvolveDTO dto = new InterviewInvolveDTO();
-                    MapperUtils.copyWithoutAudit(template, dto);
-                    dto.setPositionId(positionId);
-                    dto.setTitleId(titileId);
-                    dto.setOrgId(orgId);
-                    create(cid, uid, dto);
-                }
+                throw new BusinessException("involve-existed");
+//                for (InterviewInvolve existed : exist) {
+//                    existed.setStatus(Constants.ENTITY_INACTIVE);
+//                    existed = repo.save(existed);
+//
+//                    InterviewInvolveDTO dto = new InterviewInvolveDTO();
+//                    MapperUtils.copyWithoutAudit(template, dto);
+//                    dto.setPositionId(positionId);
+//                    dto.setTitleId(titileId);
+//                    dto.setOrgId(orgId);
+//                    create(cid, uid, dto);
+//                }
             } else {
                 InterviewInvolveDTO dto = new InterviewInvolveDTO();
                 MapperUtils.copyWithoutAudit(template, dto);
