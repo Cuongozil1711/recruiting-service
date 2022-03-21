@@ -18,12 +18,12 @@ public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<J
 
     Optional<JobApplication> findByCompanyIdAndCandidateIdAndStatus(long cid, long candidateId, int status);
 
-    @Query(value = "select j " +
-            " from jobApplication j " +
-            " where (j.companyId = :companyId)" +
-            " and (j.requestId = :requestId) LIMIT 1"
-    )
-    Optional<JobApplication> findOne(@Param("companyId") Long cid
-            , @Param("requestId") Long requestId);
+//    @Query(value = "select j " +
+//            " from jobApplication j " +
+//            " where (j.companyId = :companyId)" +
+//            " and (j.requestId = :requestId) LIMIT 1"
+//    )
+//    Optional<JobApplication> findOne(@Param("companyId") Long cid
+//            , @Param("requestId") Long requestId);
 }
 
