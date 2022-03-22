@@ -1,8 +1,10 @@
 package vn.ngs.nspace.recruiting.model;
 
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
@@ -20,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+
 //Kế hoạch tuyển dụng
 public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     @Id
@@ -29,9 +32,7 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     @Size(max = 15)
     private String code;
     private String type; //in-plan , out-plan
-    @Type(type = "list-array")
-    @Column(columnDefinition = "text[]", length = 4000)
-    List<String> solutionSuggestType;
+    private String solutionSuggestType;
     private Long orgId;
     private Long titleId;
     private Long positionId;
