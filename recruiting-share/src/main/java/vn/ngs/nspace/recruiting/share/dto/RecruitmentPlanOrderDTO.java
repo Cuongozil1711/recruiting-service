@@ -19,7 +19,7 @@ public class RecruitmentPlanOrderDTO {
     private Long id;
     private String code;
     private String type; //in-plan , out-plan
-    List<String> solutionSuggestType;
+    private String solutionSuggestType;
     private Long orgId;
     private Long titleId;
     private Long positionId;
