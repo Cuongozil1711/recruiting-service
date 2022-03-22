@@ -123,7 +123,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            " and (p.positionId = :positionId or :positionId = -1)" +
            " and (p.orgId = :orgId or :orgId = -1)" +
            " and (p.type = :type or :type = 'all')" +
-           " and (p.solutionSuggestType = :solutionSuggestType or  '#' = :solutionSuggestType )" +
+           " and (p.solutionSuggestType = :solutionSuggestType or  :solutionSuggestType = '#'  )" +
            "and (lower(p.code) like (concat('%',:code,'%')) or :code = 'all') ")
    Page<RecruitmentPlanOrder> filter(@Param("companyId") Long cid
             ,@Param("positionId") Long positionId
