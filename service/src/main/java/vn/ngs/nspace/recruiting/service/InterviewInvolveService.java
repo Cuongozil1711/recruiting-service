@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
@@ -9,6 +10,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.InterviewInvolve;
+import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.InterviewInvolveRepo;
 import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
 import vn.ngs.nspace.recruiting.share.dto.InterviewObjDTO;
@@ -72,16 +74,18 @@ public class InterviewInvolveService {
             return toDTOWithObj(cid, uid, involve);
         }
         else{
-            InterviewInvolve involve = exists.get(0);
-            List<Map<String,Object>> curDes = involve.getInterviewDescription();
-            curDes.addAll(new ArrayList<>(dto.getInterviewDescription()));
-            involve.setInterviewDescription(new ArrayList<>(new HashSet<>(curDes)));
-            List<String> currInterviewIds = involve.getInterviewerId();
-            currInterviewIds.addAll(new ArrayList<>(dto.getInterviewerId()));
-            involve.setInterviewerId(new ArrayList<>(new HashSet<>(currInterviewIds)));
-            involve = repo.save(involve);
+            throw new BusinessException("involve-existed");
 
-            return toDTOWithObj(cid, uid, involve);
+//            InterviewInvolve involve = exists.get(0);
+//            List<Map<String,Object>> curDes = involve.getInterviewDescription();
+//            curDes.addAll(new ArrayList<>(dto.getInterviewDescription()));
+//            involve.setInterviewDescription(new ArrayList<>(new HashSet<>(curDes)));
+//            List<String> currInterviewIds = involve.getInterviewerId();
+//            currInterviewIds.addAll(new ArrayList<>(dto.getInterviewerId()));
+//            involve.setInterviewerId(new ArrayList<>(new HashSet<>(currInterviewIds)));
+//            involve = repo.save(involve);
+//
+//            return toDTOWithObj(cid, uid, involve);
         }
     }
 
@@ -93,6 +97,11 @@ public class InterviewInvolveService {
         curr.setUpdateBy(uid);
         curr.setStatus(dto.getStatus() != null ? dto.getStatus() : Constants.ENTITY_INACTIVE);
         curr = repo.save(curr);
+        try{
+            repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, dto.getPositionId(), dto.getTitleId(), dto.getOrgId(),Constants.ENTITY_ACTIVE);
+        }catch (IncorrectResultSizeDataAccessException ex){
+            throw new BusinessException("involve-existed");
+        }
 
         return toDTOWithObj(cid, uid, curr);
     }
@@ -189,17 +198,18 @@ public class InterviewInvolveService {
             Long orgId = MapUtils.getLong(data, "orgId", 0l);
             List<InterviewInvolve> exist = repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, positionId, titileId, orgId, Constants.ENTITY_ACTIVE);
             if (exist.size() >= 1) {
-                for (InterviewInvolve existed : exist) {
-                    existed.setStatus(Constants.ENTITY_INACTIVE);
-                    existed = repo.save(existed);
-
-                    InterviewInvolveDTO dto = new InterviewInvolveDTO();
-                    MapperUtils.copyWithoutAudit(template, dto);
-                    dto.setPositionId(positionId);
-                    dto.setTitleId(titileId);
-                    dto.setOrgId(orgId);
-                    create(cid, uid, dto);
-                }
+                throw new BusinessException("involve-existed");
+//                for (InterviewInvolve existed : exist) {
+//                    existed.setStatus(Constants.ENTITY_INACTIVE);
+//                    existed = repo.save(existed);
+//
+//                    InterviewInvolveDTO dto = new InterviewInvolveDTO();
+//                    MapperUtils.copyWithoutAudit(template, dto);
+//                    dto.setPositionId(positionId);
+//                    dto.setTitleId(titileId);
+//                    dto.setOrgId(orgId);
+//                    create(cid, uid, dto);
+//                }
             } else {
                 InterviewInvolveDTO dto = new InterviewInvolveDTO();
                 MapperUtils.copyWithoutAudit(template, dto);

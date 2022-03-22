@@ -84,7 +84,8 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
             "  and (rpo.org_id = :org_id or :org_id = -1)"+
             "  and (rpo.position_id = :position_id )" +
             "  and (rpo.start_date >= :startDate )"+
-            "  and (rpo.deadline <= :deadline )"+
+            "  and (rpo.deadline <= :deadline )" +
+            " and (c.status = 1)"+
             "  group by c.position_id",
             nativeQuery = true
     )
@@ -105,6 +106,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
             "  and (rpo.start_date >= :startDate)"+
             "  and (rpo.deadline <= :deadline)"+
             "  and (c.state = 'STAFF')" +
+            "  and (c.status = 1)" +
             "  group by c.position_id",
             nativeQuery = true
     )

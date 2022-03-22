@@ -3,6 +3,7 @@ stages:
   - qas-deploy
   - release-deploy
   - prod-deploy
+  - pvn-uat
 dev-deploy:
   stage: dev-deploy
   tags:
@@ -45,6 +46,16 @@ prod-deploy:
     - gradle build
     - docker build -t registry.nspace.vn:5000/recruiting-service:prod-1.0.0 --rm=true  -f Dockerfile service/
     - docker push registry.nspace.vn:5000/recruiting-service:prod-1.0.0
-
   only:
     - master
+
+pvn-uat:
+  stage: pvn-uat
+  tags:
+    - nspace
+  script:
+    - gradle build
+    - docker build -t plugonacr.azurecr.io/recruiting-service:pvn-uat-1.0.0 --rm=true  -f Dockerfile service/
+    - docker push plugonacr.azurecr.io/recruiting-service:pvn-uat-1.0.0
+  only:
+    - pvn-uat
