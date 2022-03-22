@@ -130,7 +130,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             Long requestId = Long.valueOf(String.valueOf(requestInfo.getOrDefault("requestId", 0L)));
             //CompareUtil.compare(rootApp, "recruiting-service")
             //CompareUtil.compare(rootEntity, "job_application")
-            if (!CompareUtil.compare(rootId, 0L)    && !CompareUtil.compare(companyId, 0L)) {
+            if (!CompareUtil.compare(rootId, "0") && !CompareUtil.compare(companyId, "0")) {
                 JobApplication jobApplication = _service.getTaskById(companyId, rootId);
                 String formState = state;// requestState;
 //                if (requestState.equals("DONE")) {
