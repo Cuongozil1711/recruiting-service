@@ -39,9 +39,9 @@ public class RecruitmentPlanOrderService {
         if (StringUtils.isEmpty(dto.getType())){
             throw new BusinessException("invalid-type");
         }
-        if (StringUtils.isEmpty(dto.getSolutionSuggestType())){
-            throw new BusinessException("invalid-solutionSuggestType");
-        }
+//        if (StringUtils.isEmpty(dto.getSolutionSuggestType())){
+//            throw new BusinessException("invalid-solutionSuggestType");
+//        }
         if (dto.getPositionId() == null){
             throw new BusinessException("invalid-positon");
         }

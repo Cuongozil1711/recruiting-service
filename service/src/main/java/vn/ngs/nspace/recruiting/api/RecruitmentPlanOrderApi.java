@@ -109,7 +109,13 @@ public class RecruitmentPlanOrderApi {
             Long orgId = MapUtils.getLong(condition,"orgId",-1l);
             Long positionId = MapUtils.getLong(condition,"positionId", -1l);
             String code = MapUtils.getString(condition,"code", "all");
-            String solutionSuggestType = MapUtils.getString(condition,"solutionSuggestType","all");
+            List<String> solutionSuggestType = new ArrayList<>();
+            if(condition.containsKey("solutionSuggestType")){
+                solutionSuggestType = (List<String>)condition.get("solutionSuggestType");
+            }
+            if(solutionSuggestType.isEmpty() || !condition.containsKey("solutionSuggestType")){
+                solutionSuggestType.add("all");
+            }
             String type = MapUtils.getString(condition,"type", "all");
 
             Page<RecruitmentPlanOrder> page = _repo.filter(cid,positionId,orgId, code,solutionSuggestType,type, pageable);
