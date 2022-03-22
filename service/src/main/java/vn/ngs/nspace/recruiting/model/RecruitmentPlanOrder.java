@@ -2,14 +2,17 @@ package vn.ngs.nspace.recruiting.model;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -26,7 +29,9 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     @Size(max = 15)
     private String code;
     private String type; //in-plan , out-plan
-    private String solutionSuggestType; //in-company, out
+    @Type(type = "list-array")
+    @Column(columnDefinition = "text[]", length = 4000)
+    List<String> solutionSuggestType;
     private Long orgId;
     private Long titleId;
     private Long positionId;

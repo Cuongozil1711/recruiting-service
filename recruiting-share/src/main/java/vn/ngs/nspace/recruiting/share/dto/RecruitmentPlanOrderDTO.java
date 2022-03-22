@@ -8,6 +8,7 @@ import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -18,7 +19,7 @@ public class RecruitmentPlanOrderDTO {
     private Long id;
     private String code;
     private String type; //in-plan , out-plan
-    private String solutionSuggestType; //in-company, out
+    List<String> solutionSuggestType;
     private Long orgId;
     private Long titleId;
     private Long positionId;
