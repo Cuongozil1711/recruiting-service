@@ -53,22 +53,22 @@ public class ExecuteHcmService {
         HttpEntity<ResponseEntity> request = new HttpEntity<>(headers);
         return request;
     }
-//    public void throwCalloutException(Exception e, String defaultMessage) throws BusinessException {
-//        String message;
-//        try {
-//            String responseBody = ((HttpClientErrorException.BadRequest) e).getResponseBodyAsString();
-//            JsonObject response = new JsonObject(responseBody);
-//            message = response.getString("message");
-//            if (!StringUtils.isEmpty(message) & message.contains("BusinessException") && message.indexOf(":") > 0) {
-//                message = message.substring(message.indexOf(":") + 1).trim();
-//            }
-//        } catch (Exception ex) {
-//            throw new BusinessException(defaultMessage);
-//        }
-//        if (message != null) {
-//            throw new BusinessException(message);
-//        }
-//    }
+    public void throwCalloutException(Exception e, String defaultMessage) throws BusinessException {
+        String message;
+        try {
+            String responseBody = ((HttpClientErrorException.BadRequest) e).getResponseBodyAsString();
+            JsonObject response = new JsonObject();
+            message = String.valueOf(response.get("message"));
+            if (!StringUtils.isEmpty(message) & message.contains("BusinessException") && message.indexOf(":") > 0) {
+                message = message.substring(message.indexOf(":") + 1).trim();
+            }
+        } catch (Exception ex) {
+            throw new BusinessException(defaultMessage);
+        }
+        if (message != null) {
+            throw new BusinessException(message);
+        }
+    }
 
     public List<OrgResp> getOrgResp(String requestUserId, long companyId, Set<Long> ids) {
         try {
