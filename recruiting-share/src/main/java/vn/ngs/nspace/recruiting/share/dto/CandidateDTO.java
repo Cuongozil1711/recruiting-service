@@ -49,6 +49,7 @@ public class CandidateDTO {
     private List<String> tags;
     private Long employeeId;
     private Integer status;
+    private String state;
 
     private EmployeeDTO employeeObj;
     private Map<String, Object> genderObj;
