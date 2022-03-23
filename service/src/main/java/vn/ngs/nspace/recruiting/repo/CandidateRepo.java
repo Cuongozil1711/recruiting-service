@@ -1,6 +1,5 @@
 package vn.ngs.nspace.recruiting.repo;
 
-import org.camunda.feel.syntaxtree.In;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -12,11 +11,11 @@ import vn.ngs.nspace.recruiting.model.Candidate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface CandidateRepo extends BaseRepo<Candidate,Long> {
 
     Optional<Candidate> findByCompanyIdAndId(long cid, Long id);
+    Optional<Candidate> findByCompanyIdAndPhoneAndStatus(long cid, String phone, int status);
 
     @Query(value = "select c " +
             " from Candidate c" +

@@ -7,6 +7,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
+import vn.ngs.nspace.recruiting.model.Reason;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
@@ -69,6 +70,10 @@ public class CandidateService {
     /* create object */
     public CandidateDTO create(Long cid, String uid, CandidateDTO dto) throws BusinessException {
         valid(dto);
+        Candidate exists = repo.findByCompanyIdAndPhoneAndStatus(cid, dto.getPhone(), Constants.ENTITY_ACTIVE).orElse(new Candidate());
+        if(!exists.isNew()){
+            throw new BusinessException("duplicate-data-with-this-phone");
+        }
         Candidate candidate = Candidate.of(cid, uid, dto);
         candidate.setStatus(Constants.ENTITY_ACTIVE);
         candidate.setCreateBy(uid);
