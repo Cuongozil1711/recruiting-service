@@ -17,12 +17,14 @@ import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;
+import vn.ngs.nspace.recruiting.model.Reason;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.request.JobApplicationRequest;
 import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
+import vn.ngs.nspace.recruiting.share.dto.ReasonDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.task.core.data.UserData;
 import vn.ngs.nspace.task.core.service.TaskService;
@@ -266,7 +268,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
             currentJr.setStatus(Constants.ENTITY_ACTIVE);
             _repo.save(currentJr);
         }
-        return toDTO(currentJr);
+        return toDTOWithObj(cid,uid,currentJr);
     }
 
     public List<JobApplicationDTO> toDTOs(Long cid, String uid, List<JobApplication> objs) {
@@ -302,6 +304,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
             if(obj.getOrgId() != null && obj.getOrgId() != 0){
                 orgIds.add(obj.getOrgId());
             }
+            dtos.add(toDTO(obj));
         });
 
         Map<Long, EmployeeDTO> mapEmp = _hcmService.getMapEmployees(uid,cid,empIds);
@@ -341,7 +344,9 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
 
     }
 
-
+    public JobApplicationDTO toDTOWithObj(Long cid, String uid, JobApplication obj){
+        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
+    }
 
     public JobApplicationDTO toDTO(JobApplication obj){
         JobApplicationDTO dto = MapperUtils.map(obj, JobApplicationDTO.class);
