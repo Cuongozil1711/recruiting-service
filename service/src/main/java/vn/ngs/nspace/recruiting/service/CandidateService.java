@@ -76,7 +76,7 @@ public class CandidateService {
         }
         Candidate candidate = Candidate.of(cid, uid, dto);
         candidate.setStatus(Constants.ENTITY_ACTIVE);
-        candidate.setState("NEW");
+        candidate.setState("ARCHIVE");
         candidate.setCreateBy(uid);
         candidate.setUpdateBy(uid);
         candidate.setCompanyId(cid);
