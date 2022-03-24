@@ -321,7 +321,8 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             , @Parameter(description = "ID of userID") @RequestHeader String uid
             , @Parameter(description = "Id of candidate")  @PathVariable(value = "candidateId") Long id){
         try {
-            return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndCandidateIdAndStatus(cid, id, Constants.ENTITY_ACTIVE).orElse(new JobApplication()));
+            JobApplication curr = _repo.findByCompanyIdAndCandidateIdAndStatus(cid, id, Constants.ENTITY_ACTIVE).orElse(new JobApplication());
+            return ResponseUtils.handlerSuccess(_service.toDTOWithObj(cid,uid,curr));
         } catch (Exception e){
             return ResponseUtils.handlerException(e);
         }
