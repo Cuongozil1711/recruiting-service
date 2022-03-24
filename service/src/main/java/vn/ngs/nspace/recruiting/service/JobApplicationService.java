@@ -199,7 +199,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         curr.setUpdateBy(uid);
         curr = _repo.save(curr);
 
-        return toDTO(curr);
+        return toDTOWithObj(cid,uid,curr);
     }
 
     public EmployeeDTO createEmployee(Long cid, String uid, Long jobAppId, EmployeeRecruitingReq createEmp){

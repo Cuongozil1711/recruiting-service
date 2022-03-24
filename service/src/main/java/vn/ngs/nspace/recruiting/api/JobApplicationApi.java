@@ -247,7 +247,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id){
         try {
             JobApplication obj = _repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, id));
-            return ResponseUtils.handlerSuccess(_service.toDTO(obj));
+            return ResponseUtils.handlerSuccess(_service.toDTOWithObj(cid,uid,obj));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
