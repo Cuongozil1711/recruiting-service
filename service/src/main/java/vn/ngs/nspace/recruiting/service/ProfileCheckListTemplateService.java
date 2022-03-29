@@ -79,26 +79,27 @@ public class ProfileCheckListTemplateService {
 
             List<ProfileCheckListTemplate> existeds = repo.findByCompanyIdAndPositionIdAndTitleIdAndStatus(cid, positionId, titileId, Constants.ENTITY_ACTIVE);
             if(existeds.size() >= 1){ // da ton tai voi vi tri vai tro nay
-                for (ProfileCheckListTemplate existed: existeds){
-                    existed.setStatus(Constants.ENTITY_INACTIVE);
-                    existed = repo.save(existed);
-
-                    ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
-                    MapperUtils.copyWithoutAudit(template, dto);
-                    dto.setPositionId(positionId);
-                    dto.setTitleId(titileId);
-
-                    List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, templateId, Constants.ENTITY_ACTIVE);
-                    List<ProfileCheckListTemplateItemDTO> itemDTOS = new ArrayList<>();
-                    for (ProfileCheckListTemplateItem item: items) {
-                        ProfileCheckListTemplateItemDTO itemDTO = new ProfileCheckListTemplateItemDTO();
-                        MapperUtils.copyWithoutAudit(item, itemDTO);
-                        itemDTOS.add(itemDTO);
-                    }
-                    dto.setItems(itemDTOS);
-                    create(cid, uid, dto);
-
-                }
+                throw new BusinessException("template-existed-for-this-position-and-title");
+//                for (ProfileCheckListTemplate existed: existeds){
+//                    existed.setStatus(Constants.ENTITY_INACTIVE);
+//                    existed = repo.save(existed);
+//
+//                    ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
+//                    MapperUtils.copyWithoutAudit(template, dto);
+//                    dto.setPositionId(positionId);
+//                    dto.setTitleId(titileId);
+//
+//                    List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, templateId, Constants.ENTITY_ACTIVE);
+//                    List<ProfileCheckListTemplateItemDTO> itemDTOS = new ArrayList<>();
+//                    for (ProfileCheckListTemplateItem item: items) {
+//                        ProfileCheckListTemplateItemDTO itemDTO = new ProfileCheckListTemplateItemDTO();
+//                        MapperUtils.copyWithoutAudit(item, itemDTO);
+//                        itemDTOS.add(itemDTO);
+//                    }
+//                    dto.setItems(itemDTOS);
+//                    create(cid, uid, dto);
+//
+//                }
             }
             else{ // neu chua co
                 ProfileCheckListTemplateDTO dto = new ProfileCheckListTemplateDTO();
@@ -108,7 +109,11 @@ public class ProfileCheckListTemplateService {
 
                 List<ProfileCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
                 List<ProfileCheckListTemplateItemDTO> itemDTOS = new ArrayList<>();
-                MapperUtils.copyWithoutAudit(items, itemDTOS);
+                for (ProfileCheckListTemplateItem item: items) {
+                        ProfileCheckListTemplateItemDTO itemDTO = new ProfileCheckListTemplateItemDTO();
+                        MapperUtils.copyWithoutAudit(item, itemDTO);
+                        itemDTOS.add(itemDTO);
+                    }
                 dto.setItems(itemDTOS);
                 create(cid, uid, dto);
             }
