@@ -148,6 +148,8 @@ public class CandidateService {
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
 
         for(CandidateDTO dto : dtos){
+            List<Map<String, Object>> _a = repo.countPositionApply();
+
             if(!StringUtils.isEmpty(dto.getWardCode())){
                 dto.setWardCodeObj(mapTerritory.get(dto.getWardCode()));
             }
@@ -171,6 +173,9 @@ public class CandidateService {
             }
             if (dto.getCvSourceId() != null){
                 dto.setCvSourceObj(mapCategory.get(dto.getCvSourceId()));
+            }
+            if (_a != null) {
+                dto.setCountPositionApply(_a);
             }
         }
 
