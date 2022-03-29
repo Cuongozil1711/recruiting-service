@@ -1,19 +1,23 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
-import vn.ngs.nspace.recruiting.model.Reason;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -23,6 +27,8 @@ public class CandidateService {
     private final CandidateFilterRepo filterRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
+    @Value("${nspace.service.storage.URL}")
+    public String StorageServiceURL;
 
     public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
         this.repo = repo;
@@ -65,6 +71,11 @@ public class CandidateService {
             data.add(create(cid, uid, dto));
         }
         return data;
+    }
+    public void uploadFile(MultipartFile file) throws IllegalStateException, IOException{
+        String uri = StorageServiceURL + "/file/upload";
+        file.transferTo(new File(uri + file.getOriginalFilename()));
+
     }
 
     /* create object */
