@@ -5,14 +5,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.vertx.core.impl.logging.Logger;
-import io.vertx.core.impl.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.DateUtil;
@@ -24,19 +23,19 @@ import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
-import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("candidate")
 @RequiredArgsConstructor
+
 @Tag(name = "Candidate", description = "Candidate API")
 public class CandidateApi {
     private final CandidateService _service;
     private final CandidateRepo _repo;
+
 
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
@@ -204,6 +203,19 @@ public class CandidateApi {
             return ResponseUtils.handlerException(e);
         }
     }
+    @PostMapping("/uploadFile")
+    public void uploadFile(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestParam("file") MultipartFile file){
+        try {
+              _service.uploadFile(file);
+
+        } catch (Exception ex) {
+             ResponseUtils.handlerException(ex);
+        }
+    }
+
 
     @PostMapping("/filter")
     @ActionMapping(action = Permission.VIEW)
