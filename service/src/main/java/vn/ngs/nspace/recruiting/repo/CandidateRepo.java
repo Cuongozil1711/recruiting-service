@@ -10,6 +10,7 @@ import vn.ngs.nspace.recruiting.model.Candidate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface CandidateRepo extends BaseRepo<Candidate,Long> {
@@ -68,5 +69,8 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             , @Param("fromExp") Double fromExp
             , @Param("toExp") Double toExp
             , Pageable pageable);
+
+    @Query(value = " select apply_position_id, count(*) from recruiting_service.candidate where apply_position_id is not null group by apply_position_id", nativeQuery = true)
+    List<Map<String, Object>> countPositionApply();
 }
 
