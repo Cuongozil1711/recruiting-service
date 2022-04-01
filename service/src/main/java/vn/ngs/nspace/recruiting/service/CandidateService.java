@@ -1,8 +1,6 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
@@ -16,7 +14,6 @@ import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -27,14 +24,14 @@ public class CandidateService {
     private final CandidateFilterRepo filterRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
-    @Value("${nspace.service.storage.URL}")
-    public String StorageServiceURL;
+    private final ExecuteStorateService _storageService;
 
-    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, ExecuteStorateService sorateService) {
         this.repo = repo;
         this.filterRepo = filterRepo;
         _hcmService = hcmService;
         _configService = configService;
+        _storageService = sorateService;
     }
 
     /* logic validate data before insert model */
@@ -72,10 +69,8 @@ public class CandidateService {
         }
         return data;
     }
-    public void uploadFile(MultipartFile file) throws IllegalStateException, IOException{
-        String uri = StorageServiceURL + "/file/upload";
-        file.transferTo(new File(uri + file.getOriginalFilename()));
-
+    public void uploadFile( MultipartFile file) throws IllegalStateException, IOException{
+        _storageService.uploadFile(file);
     }
 
     /* create object */
