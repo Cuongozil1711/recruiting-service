@@ -90,15 +90,7 @@ public class RecruitmentPlanOrderService {
     public RecruitmentPlanOrderDTO update(Long cid, String uid, Long id, RecruitmentPlanOrderDTO recruitmentPlanOrderDTO) {
         valid(recruitmentPlanOrderDTO);
         RecruitmentPlanOrder curr = repo.findByCompanyIdAndId(cid, id).orElse(new RecruitmentPlanOrder());
-        MapperUtils.copyWithoutAudit(recruitmentPlanOrderDTO,curr);
-        curr.setUpdateBy(uid);
-        curr.setStatus(recruitmentPlanOrderDTO.getStatus() == null ? Constants.ENTITY_INACTIVE : recruitmentPlanOrderDTO.getStatus());
-        curr = repo.save(curr);
-        try{
-            repo.findByCompanyIdAndCodeAndStatus(cid, recruitmentPlanOrderDTO.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
-        }catch (IncorrectResultSizeDataAccessException ex){
-            throw new BusinessException("duplicate-data-with-and-code");
-        }
+
         return toDTO(curr);
     }
 

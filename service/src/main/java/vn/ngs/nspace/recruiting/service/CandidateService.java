@@ -69,8 +69,8 @@ public class CandidateService {
         }
         return data;
     }
-    public void uploadFile( MultipartFile file) throws IllegalStateException, IOException{
-        _storageService.uploadFile(file);
+    public void uploadFile(String requestUserId, long companyId, MultipartFile file) throws IllegalStateException, IOException{
+        _storageService.uploadFile(requestUserId,companyId,file);
     }
 
     /* create object */

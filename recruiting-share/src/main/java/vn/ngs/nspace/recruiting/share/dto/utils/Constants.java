@@ -6,6 +6,12 @@ import java.util.List;
 
 public class Constants extends vn.ngs.nspace.lib.utils.Constants {
 
+    public static final Long DEFAULT_PARENT_GROUP_ID = 0L;
+    public static final String GROUP_NAME_RECRUITING = "GroupRCID" ;
+    public static final String GROUP_DESCRIPTION_RECRUITING = "auto-generate-by-uploadFile" ;
+    public static final String REFERENCE_GROUP_SERVICE_APPLICATION = "ticket-service";
+    public static final String REFERENCE_RC_FILE_UPLOAD = "rc-file-upload";
+
     public static enum JOB_APPLICATION_TYPE {
         job
     }

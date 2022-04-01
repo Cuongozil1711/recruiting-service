@@ -209,7 +209,8 @@ public class CandidateApi {
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @RequestParam("file") MultipartFile file){
         try {
-              _service.uploadFile(file);
+
+              _service.uploadFile(uid,cid,file);
 
         } catch (Exception ex) {
              ResponseUtils.handlerException(ex);
