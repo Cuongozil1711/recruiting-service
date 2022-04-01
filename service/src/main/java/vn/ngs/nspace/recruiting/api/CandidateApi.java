@@ -263,7 +263,6 @@ public class CandidateApi {
                 yearLess = DateUtil.addDate(new Date(), "year",-year);
             }
 
-
             if (expUnit.equals("year")){
                fromExp = fromExp * 12;
                toExp = toExp * 12;
