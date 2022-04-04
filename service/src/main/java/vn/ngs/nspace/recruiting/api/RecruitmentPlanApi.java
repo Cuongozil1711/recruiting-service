@@ -3,7 +3,9 @@ package vn.ngs.nspace.recruiting.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
+import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
@@ -103,6 +106,35 @@ public class RecruitmentPlanApi {
             Page<RecruitmentPlan> page = _repo.search(cid, pageable);
             List<RecruitmentPlanDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @GetMapping("{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get plan by Id"
+            , description = "API for get plan by Id"
+            , tags = { "plan" }
+            , responses = {
+            @ApiResponse(description = "Plan with id is response OK Wrap in BaseResponse"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = BaseResponse.class ))),
+            @ApiResponse(content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ProfileCheckListTemplateDTO.class))
+                    , responseCode = "200"
+                    , description = "success" )})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getById(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description="param in path") @PathVariable(value = "id") Long id){
+        try {
+            RecruitmentPlan dtos = _repo.findByCompanyIdAndId(cid,id).orElse(new RecruitmentPlan());
+            return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, Collections.singletonList(dtos)));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
