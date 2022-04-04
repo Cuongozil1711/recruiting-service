@@ -18,6 +18,8 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
+import vn.ngs.nspace.recruiting.model.ProfileCheckListTemplate;
+import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRepo;
@@ -25,6 +27,7 @@ import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
 import vn.ngs.nspace.recruiting.service.RecruitmentPlanOrderService;
 import vn.ngs.nspace.recruiting.service.RecruitmentPlanService;
+import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
@@ -77,6 +80,30 @@ public class RecruitmentPlanApi {
             RecruitmentPlanDTO dto = _service.update(cid,uid,id,recruitmentPlanDTO);
             return ResponseUtils.handlerSuccess(dto);
         } catch (Exception ex){
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+    @PostMapping("/search")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Search all recruitment"
+            , description = "recruitment search"
+            , tags = { "recruitment" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity search(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid
+            , @Parameter(description="Payload to search")
+            @RequestBody Map<String, Object> condition
+            , Pageable pageable) {
+        try{
+            Page<RecruitmentPlan> page = _repo.search(cid, pageable);
+            List<RecruitmentPlanDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
+            return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
+        } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
     }

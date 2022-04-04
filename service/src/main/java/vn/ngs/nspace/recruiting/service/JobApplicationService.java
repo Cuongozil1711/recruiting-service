@@ -17,14 +17,12 @@ import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;
-import vn.ngs.nspace.recruiting.model.Reason;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.request.JobApplicationRequest;
 import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
-import vn.ngs.nspace.recruiting.share.dto.ReasonDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.task.core.data.UserData;
 import vn.ngs.nspace.task.core.service.TaskService;
@@ -43,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JobApplicationService extends TaskService<JobApplication, JobApplicationRepo, JobApplicationRequest> {
 
     private final JobApplicationRepo _repo;
+    private final RecruitmentPlanService _planService;
     private final OnboardOrderService _onboardService;
     private final CandidateRepo _candidateRepo;
     private final ExecuteHcmService _hcmService;
@@ -50,9 +49,10 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
     private final ConfigApi configApi;
     private final RequestApi requestApi;
 
-    public JobApplicationService(JobApplicationRepo repo, OnboardOrderService onboardService, CandidateRepo candidateRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, ConfigApi configApi, RequestApi requestApi) {
+    public JobApplicationService(JobApplicationRepo repo, RecruitmentPlanService plandService, OnboardOrderService onboardService, CandidateRepo candidateRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, ConfigApi configApi, RequestApi requestApi) {
         super(repo);
         _repo = repo;
+        _planService = plandService;
         _onboardService = onboardService;
         _candidateRepo = candidateRepo;
         _hcmService = hcmService;

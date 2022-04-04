@@ -7,15 +7,15 @@ import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.Cost;
-import vn.ngs.nspace.recruiting.model.CostDetail;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
+import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRepo;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -97,15 +97,34 @@ public class RecruitmentPlanService {
             createItem(cid, uid, detailDTO);
         }
     }
+    public List<RecruitmentPlanDTO> toDTOs(Long cid, String uid, List<RecruitmentPlan> objs){
+        List<RecruitmentPlanDTO> dtos = new ArrayList<>();
+        Set<Long> planId = new HashSet<>();
+        Set<Long> categoryIds = new HashSet<>();
+        objs.forEach(o -> {
+            planId.add(o.getId());
+        });
+
+        List<RecruitmentPlanOrder> items = repoOder.findByCompanyIdAndPlanIdInAndStatus(cid, planId, Constants.ENTITY_ACTIVE);
+
+        for(RecruitmentPlan obj : objs){
+            RecruitmentPlanDTO o = toDTO(obj);
 
 
+            List<RecruitmentPlanOrderDTO> itemDTOs = new ArrayList<>();
+            items.stream().filter(i -> CompareUtil.compare(i.getPlanId(), obj.getId()))
+                    .collect(Collectors.toList()).stream().forEach(i -> {
+                        RecruitmentPlanOrderDTO itemDTO = MapperUtils.map(i, RecruitmentPlanOrderDTO.class);
+                        itemDTOs.add(itemDTO);
+                    });
 
+            o.setRecruitmentPlanDetails(itemDTOs);
+            dtos.add(o);
+        }
+        return dtos;
+    }
 
-
-
-
-
-        public RecruitmentPlanDTO toDTO(RecruitmentPlan obj){
+    public RecruitmentPlanDTO toDTO(RecruitmentPlan obj){
         return MapperUtils.map(obj, RecruitmentPlanDTO.class);
     }
 }
