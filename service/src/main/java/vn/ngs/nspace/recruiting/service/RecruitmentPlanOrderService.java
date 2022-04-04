@@ -33,7 +33,7 @@ public class RecruitmentPlanOrderService {
         _configService = configService;
     }
     public void valid(RecruitmentPlanOrderDTO dto){
-        if(StringUtils.isEmpty(dto.getCode())){
+        if(StringUtils.isEmpty(dto.getFromCode())){
             throw new BusinessException("invalid-code");
         }
         if (StringUtils.isEmpty(dto.getType())){
@@ -74,7 +74,7 @@ public class RecruitmentPlanOrderService {
 
     public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
         valid(dto);
-        RecruitmentPlanOrder exists = repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
+        RecruitmentPlanOrder exists = repo.findByCompanyIdAndFromCodeAndStatus(cid, dto.getFromCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
         if(!exists.isNew()){
             throw new BusinessException("duplicate-data-with-code");
         }

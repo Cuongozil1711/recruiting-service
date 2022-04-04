@@ -33,6 +33,7 @@ public class JobApplicationDTO {
     private Map<String , Object> cvSourceObj;
     private List<EmployeeDTO> introduceByObj;
     private EmployeeDTO employeeObj;
+    private Long planOderId;
     private CandidateDTO candidateObj;
     private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;

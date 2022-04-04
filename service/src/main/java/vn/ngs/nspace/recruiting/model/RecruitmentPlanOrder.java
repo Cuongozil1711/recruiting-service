@@ -30,7 +30,11 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long planId;
-    private String code;
+    private String fromCode;
+    private Date timeFrom;
+    private Date timeTo;
+    private Long room;
+    private Date endDate;
     private String type; //in-plan , out-plan
     private String solutionSuggestType;
     private Long orgId;
@@ -51,12 +55,17 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     public static RecruitmentPlanOrder of(Long cid, String uid, RecruitmentPlanOrderDTO dto){
         RecruitmentPlanOrder build = RecruitmentPlanOrder.builder()
                 .id(dto.getId())
-                .code(dto.getCode())
+                .fromCode(dto.getFromCode())
+                .endDate(dto.getEndDate())
+                .timeFrom(dto.getTimeFrom())
+                .timeTo(dto.getTimeTo())
+                .room(dto.getRoom())
                 .type(dto.getType())
                 .solutionSuggestType(dto.getSolutionSuggestType())
                 .orgId(dto.getOrgId())
                 .titleId(dto.getTitleId())
                 .levelId(dto.getLevelId())
+                .planId(dto.getPlanId())
                 .positionId(dto.getPositionId())
                 .pic(dto.getPic())
                 .supporterId(dto.getSupporterId())
