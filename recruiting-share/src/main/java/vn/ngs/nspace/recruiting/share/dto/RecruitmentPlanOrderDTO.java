@@ -17,6 +17,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class RecruitmentPlanOrderDTO {
     private Long id;
+    private Long planId;
     private String code;
     private String type; //in-plan , out-plan
     private String solutionSuggestType;
@@ -44,4 +45,5 @@ public class RecruitmentPlanOrderDTO {
     private Long recruited;
     private Long totalMissing;
     private Integer status;
+
 }
