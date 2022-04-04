@@ -29,7 +29,7 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    @Size(max = 15)
+    private Long planId;
     private String code;
     private String type; //in-plan , out-plan
     private String solutionSuggestType;
