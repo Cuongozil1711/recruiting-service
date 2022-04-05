@@ -134,7 +134,7 @@ public class RecruitmentPlanApi {
             , @Parameter(description="param in path") @PathVariable(value = "id") Long id){
         try {
             RecruitmentPlan dtos = _repo.findByCompanyIdAndId(cid,id).orElse(new RecruitmentPlan());
-            return ResponseUtils.handlerSuccess(_service.toDTOs(cid, uid, Collections.singletonList(dtos)));
+            return ResponseUtils.handlerSuccess(_service.toDTOWithObj(cid, uid,dtos));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
