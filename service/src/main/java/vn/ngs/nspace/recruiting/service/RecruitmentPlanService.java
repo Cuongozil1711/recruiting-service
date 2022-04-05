@@ -176,7 +176,9 @@ public class RecruitmentPlanService {
         }
         return dtos;
     }
-
+    public RecruitmentPlanDTO toDTOWithObj(Long cid, String uid, RecruitmentPlan obj) {
+        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
+    }
     public RecruitmentPlanDTO toDTO(RecruitmentPlan obj){
         return MapperUtils.map(obj, RecruitmentPlanDTO.class);
     }
