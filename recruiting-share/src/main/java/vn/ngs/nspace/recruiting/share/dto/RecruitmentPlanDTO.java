@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
 import java.util.List;
@@ -20,6 +21,9 @@ public class RecruitmentPlanDTO {
     private Date endDate;
     private String state;
     private Integer status;
+    private String createBy;
+    private Date create_date;
+    private EmployeeDTO creatByObj;
 
     private List<RecruitmentPlanOrderDTO> recruitmentPlanDetails;
 
