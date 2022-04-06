@@ -17,6 +17,7 @@ import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
+
 import java.util.*;
 
 @Service
@@ -31,8 +32,10 @@ public class RecruitmentPlanOrderService {
         this.repo = repo;
         _hcmService = hcmService;
         _configService = configService;
+
     }
     public void valid(RecruitmentPlanOrderDTO dto){
+
         if(StringUtils.isEmpty(dto.getCode())){
             throw new BusinessException("invalid-code");
         }
