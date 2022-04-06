@@ -247,7 +247,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id){
         try {
             JobApplication obj = _repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, id));
-            return ResponseUtils.handlerSuccess(_service.toDTO(obj));
+            return ResponseUtils.handlerSuccess(_service.toDTOWithObj(cid,uid,obj));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
@@ -321,7 +321,8 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             , @Parameter(description = "ID of userID") @RequestHeader String uid
             , @Parameter(description = "Id of candidate")  @PathVariable(value = "candidateId") Long id){
         try {
-            return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndCandidateIdAndStatus(cid, id, Constants.ENTITY_ACTIVE).orElse(new JobApplication()));
+            JobApplication curr = _repo.findByCompanyIdAndCandidateIdAndStatus(cid, id, Constants.ENTITY_ACTIVE).orElse(new JobApplication());
+            return ResponseUtils.handlerSuccess(_service.toDTOWithObj(cid,uid,curr));
         } catch (Exception e){
             return ResponseUtils.handlerException(e);
         }

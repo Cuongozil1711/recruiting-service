@@ -35,16 +35,15 @@ public class RecruitmentPlanOrderService {
 
     }
     public void valid(RecruitmentPlanOrderDTO dto){
-
-        if(StringUtils.isEmpty(dto.getCode())){
+        if(StringUtils.isEmpty(dto.getFromCode())){
             throw new BusinessException("invalid-code");
         }
         if (StringUtils.isEmpty(dto.getType())){
             throw new BusinessException("invalid-type");
         }
-        if (StringUtils.isEmpty(dto.getSolutionSuggestType())){
-            throw new BusinessException("invalid-solutionSuggestType");
-        }
+//        if (StringUtils.isEmpty(dto.getSolutionSuggestType())){
+//            throw new BusinessException("invalid-solutionSuggestType");
+//        }
         if (dto.getPositionId() == null){
             throw new BusinessException("invalid-positon");
         }
@@ -77,7 +76,7 @@ public class RecruitmentPlanOrderService {
 
     public RecruitmentPlanOrderDTO create(Long cid, String uid, RecruitmentPlanOrderDTO dto) throws BusinessException {
         valid(dto);
-        RecruitmentPlanOrder exists = repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
+        RecruitmentPlanOrder exists = repo.findByCompanyIdAndFromCodeAndStatus(cid, dto.getFromCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
         if(!exists.isNew()){
             throw new BusinessException("duplicate-data-with-code");
         }
@@ -93,15 +92,7 @@ public class RecruitmentPlanOrderService {
     public RecruitmentPlanOrderDTO update(Long cid, String uid, Long id, RecruitmentPlanOrderDTO recruitmentPlanOrderDTO) {
         valid(recruitmentPlanOrderDTO);
         RecruitmentPlanOrder curr = repo.findByCompanyIdAndId(cid, id).orElse(new RecruitmentPlanOrder());
-        MapperUtils.copyWithoutAudit(recruitmentPlanOrderDTO,curr);
-        curr.setUpdateBy(uid);
-        curr.setStatus(recruitmentPlanOrderDTO.getStatus() == null ? Constants.ENTITY_INACTIVE : recruitmentPlanOrderDTO.getStatus());
-        curr = repo.save(curr);
-        try{
-            repo.findByCompanyIdAndCodeAndStatus(cid, recruitmentPlanOrderDTO.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
-        }catch (IncorrectResultSizeDataAccessException ex){
-            throw new BusinessException("duplicate-data-with-and-code");
-        }
+
         return toDTO(curr);
     }
 

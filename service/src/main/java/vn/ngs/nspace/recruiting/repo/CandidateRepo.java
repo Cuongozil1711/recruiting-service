@@ -1,6 +1,5 @@
 package vn.ngs.nspace.recruiting.repo;
 
-import org.camunda.feel.syntaxtree.In;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -11,12 +10,13 @@ import vn.ngs.nspace.recruiting.model.Candidate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public interface CandidateRepo extends BaseRepo<Candidate,Long> {
 
     Optional<Candidate> findByCompanyIdAndId(long cid, Long id);
+    Optional<Candidate> findByCompanyIdAndPhoneAndStatus(long cid, String phone, int status);
 
     @Query(value = "select c " +
             " from Candidate c" +
@@ -69,5 +69,8 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             , @Param("fromExp") Double fromExp
             , @Param("toExp") Double toExp
             , Pageable pageable);
+
+    @Query(value = " select apply_position_id, count(*) from recruiting_service.candidate where apply_position_id is not null group by apply_position_id", nativeQuery = true)
+    List<Map<String, Object>> countPositionApply();
 }
 

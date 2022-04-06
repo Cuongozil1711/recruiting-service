@@ -1,15 +1,20 @@
 package vn.ngs.nspace.recruiting.model;
 
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,16 +22,21 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+
 //Kế hoạch tuyển dụng
 public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    @Size(max = 15)
-    private String code;
+    private Long planId;
+    private String fromCode;
+    private Date timeFrom;
+    private Date timeTo;
+    private Long room;
+    private Date endDate;
     private String type; //in-plan , out-plan
-    private String solutionSuggestType; //in-company, out
+    private String solutionSuggestType;
     private Long orgId;
     private Long titleId;
     private Long positionId;
@@ -45,12 +55,17 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     public static RecruitmentPlanOrder of(Long cid, String uid, RecruitmentPlanOrderDTO dto){
         RecruitmentPlanOrder build = RecruitmentPlanOrder.builder()
                 .id(dto.getId())
-                .code(dto.getCode())
+                .fromCode(dto.getFromCode())
+                .endDate(dto.getEndDate())
+                .timeFrom(dto.getTimeFrom())
+                .timeTo(dto.getTimeTo())
+                .room(dto.getRoom())
                 .type(dto.getType())
                 .solutionSuggestType(dto.getSolutionSuggestType())
                 .orgId(dto.getOrgId())
                 .titleId(dto.getTitleId())
                 .levelId(dto.getLevelId())
+                .planId(dto.getPlanId())
                 .positionId(dto.getPositionId())
                 .pic(dto.getPic())
                 .supporterId(dto.getSupporterId())

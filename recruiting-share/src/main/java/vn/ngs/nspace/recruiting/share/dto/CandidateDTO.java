@@ -49,6 +49,7 @@ public class CandidateDTO {
     private List<String> tags;
     private Long employeeId;
     private Integer status;
+    private String state;
 
     private EmployeeDTO employeeObj;
     private Map<String, Object> genderObj;
@@ -59,4 +60,5 @@ public class CandidateDTO {
     private Map<String, Object> educateLevelObj;
     private Map<String, Object> applyPositionIdObj;
     private Map<String, Object> cvSourceObj;
+    private List<Map<String, Object>> CountPositionApply;
 }

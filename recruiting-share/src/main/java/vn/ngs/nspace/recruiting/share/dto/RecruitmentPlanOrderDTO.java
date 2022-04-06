@@ -16,9 +16,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class RecruitmentPlanOrderDTO {
     private Long id;
-    private String code;
+    private Long planId;
+    private String fromCode;
     private String type; //in-plan , out-plan
-    private String solutionSuggestType; //in-company, out
+    private String solutionSuggestType;
     private Long orgId;
     private Long titleId;
     private Long positionId;
@@ -30,6 +31,10 @@ public class RecruitmentPlanOrderDTO {
     private Date startDate;
     private Date deadline;
     private Date escalateDate;
+    private Date timeFrom;
+    private Date timeTo;
+    private Long room;
+    private Date endDate;
     private Long reasonId;
     private String description;
     private String state;
@@ -43,4 +48,5 @@ public class RecruitmentPlanOrderDTO {
     private Long recruited;
     private Long totalMissing;
     private Integer status;
+
 }

@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.service;
 
 import camundajar.impl.com.google.gson.JsonObject;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import org.apache.commons.lang.StringUtils;
@@ -53,24 +54,24 @@ public class ExecuteHcmService {
         HttpEntity<ResponseEntity> request = new HttpEntity<>(headers);
         return request;
     }
-    public void throwCalloutException(Exception e, String defaultMessage) throws BusinessException {
-        String message;
-        try {
-            String responseBody = ((HttpClientErrorException.BadRequest) e).getResponseBodyAsString();
-            JsonObject response = new JsonObject();
-            message = String.valueOf(response.get("message"));
-            if (!StringUtils.isEmpty(message) & message.contains("BusinessException") && message.indexOf(":") > 0) {
-                message = message.substring(message.indexOf(":") + 1).trim();
-            }
-        } catch (Exception ex) {
-            throw new BusinessException(defaultMessage);
-        }
-        if (message != null) {
-            throw new BusinessException(message);
-        }
-    }
+//    public void throwCalloutException(Exception e, String defaultMessage) throws BusinessException {
+//        String message;
+//        try {
+//            String responseBody = ((HttpClientErrorException.BadRequest) e).getResponseBodyAsString();
+//            JsonObject response = new JsonObject(responseBody).;
+//            message = String.valueOf(response.get("message"));
+//            if (!StringUtils.isEmpty(message) & message.contains("BusinessException") && message.indexOf(":") > 0) {
+//                message = message.substring(message.indexOf(":") + 1).trim();
+//            }
+//        } catch (Exception ex) {
+//            throw new BusinessException(defaultMessage);
+//        }
+//        if (message != null) {
+//            throw new BusinessException(message);
+//        }
+//    }
 
-    public List<OrgResp> getOrgResp(String requestUserId, long companyId, Set<Long> ids) {
+    public List<OrgResp> getOrgResp(String requestUserId, long companyId, Set<Long> ids) throws RuntimeException {
         try {
 
             URI uri = new URI(HcmServiceURL + "/generic/org/byIds") ;
@@ -88,6 +89,26 @@ public class ExecuteHcmService {
             return response.getData();
 
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public List<EmployeeDTO> getEmployeesMapping(String requestUserId, Long companyId){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/by-user-mapping-ids");
+            HttpMethod method = HttpMethod.GET;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            Map<String,Object> payload  = new HashMap<>();
+            payload.put("ids", requestUserId);
+
+            HttpEntity request = new HttpEntity<>(payload,headers);
+
+            ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>> responeType = new ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            BaseResponse<List<EmployeeDTO>> resp = (BaseResponse<List<EmployeeDTO>>) response.getBody();
+            return resp.getData();
+
+        } catch (Exception e){
             throw new RuntimeException(e);
         }
     }
@@ -154,7 +175,7 @@ public class ExecuteHcmService {
             throw new RuntimeException(e);
         }
     }
-    public EmployeeResp createEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq){
+    public EmployeeResp createEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq) throws RuntimeException {
         try {
 
             URI uri = new URI(HcmServiceURL + "/generic/employee-profile");
@@ -169,7 +190,9 @@ public class ExecuteHcmService {
             return resp.getData();
 
         } catch (Exception e){
-            throw new RuntimeException(e);
+            BaseResponse baseResponse = Buffer.buffer(((HttpClientErrorException.BadRequest) e).getResponseBodyAsByteArray()).toJsonObject().mapTo(BaseResponse.class);
+            String message = baseResponse.getMessage();
+            throw new BusinessException(message);
         }
     }
 
@@ -193,7 +216,9 @@ public class ExecuteHcmService {
             }
             return null;
         } catch (Exception e){
-            throw new RuntimeException(e);
+            BaseResponse baseResponse = Buffer.buffer(((HttpClientErrorException.BadRequest) e).getResponseBodyAsByteArray()).toJsonObject().mapTo(BaseResponse.class);
+            String message = baseResponse.getMessage();
+            throw new BusinessException(message);
         }
     }
 

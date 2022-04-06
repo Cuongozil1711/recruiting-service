@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JobApplicationService extends TaskService<JobApplication, JobApplicationRepo, JobApplicationRequest> {
 
     private final JobApplicationRepo _repo;
+    private final RecruitmentPlanService _planService;
     private final OnboardOrderService _onboardService;
     private final CandidateRepo _candidateRepo;
     private final ExecuteHcmService _hcmService;
@@ -48,9 +49,10 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
     private final ConfigApi configApi;
     private final RequestApi requestApi;
 
-    public JobApplicationService(JobApplicationRepo repo, OnboardOrderService onboardService, CandidateRepo candidateRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, ConfigApi configApi, RequestApi requestApi) {
+    public JobApplicationService(JobApplicationRepo repo, RecruitmentPlanService plandService, OnboardOrderService onboardService, CandidateRepo candidateRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, ConfigApi configApi, RequestApi requestApi) {
         super(repo);
         _repo = repo;
+        _planService = plandService;
         _onboardService = onboardService;
         _candidateRepo = candidateRepo;
         _hcmService = hcmService;
@@ -197,7 +199,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         curr.setUpdateBy(uid);
         curr = _repo.save(curr);
 
-        return toDTO(curr);
+        return toDTOWithObj(cid,uid,curr);
     }
 
     public EmployeeDTO createEmployee(Long cid, String uid, Long jobAppId, EmployeeRecruitingReq createEmp){
@@ -266,7 +268,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
             currentJr.setStatus(Constants.ENTITY_ACTIVE);
             _repo.save(currentJr);
         }
-        return toDTO(currentJr);
+        return toDTOWithObj(cid,uid,currentJr);
     }
 
     public List<JobApplicationDTO> toDTOs(Long cid, String uid, List<JobApplication> objs) {
@@ -302,6 +304,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
             if(obj.getOrgId() != null && obj.getOrgId() != 0){
                 orgIds.add(obj.getOrgId());
             }
+            dtos.add(toDTO(obj));
         });
 
         Map<Long, EmployeeDTO> mapEmp = _hcmService.getMapEmployees(uid,cid,empIds);
@@ -341,7 +344,9 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
 
     }
 
-
+    public JobApplicationDTO toDTOWithObj(Long cid, String uid, JobApplication obj){
+        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
+    }
 
     public JobApplicationDTO toDTO(JobApplication obj){
         JobApplicationDTO dto = MapperUtils.map(obj, JobApplicationDTO.class);

@@ -2,6 +2,7 @@ package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
@@ -13,6 +14,7 @@ import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -22,12 +24,14 @@ public class CandidateService {
     private final CandidateFilterRepo filterRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
+    private final ExecuteStorateService _storageService;
 
-    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, ExecuteStorateService sorateService) {
         this.repo = repo;
         this.filterRepo = filterRepo;
         _hcmService = hcmService;
         _configService = configService;
+        _storageService = sorateService;
     }
 
     /* logic validate data before insert model */
@@ -65,12 +69,20 @@ public class CandidateService {
         }
         return data;
     }
+    public void uploadFile(String requestUserId, long companyId, MultipartFile file) throws IllegalStateException, IOException{
+        _storageService.uploadFile(requestUserId,companyId,file);
+    }
 
     /* create object */
     public CandidateDTO create(Long cid, String uid, CandidateDTO dto) throws BusinessException {
         valid(dto);
+        Candidate exists = repo.findByCompanyIdAndPhoneAndStatus(cid, dto.getPhone(), Constants.ENTITY_ACTIVE).orElse(new Candidate());
+        if(!exists.isNew()){
+            throw new BusinessException("duplicate-data-with-this-phone");
+        }
         Candidate candidate = Candidate.of(cid, uid, dto);
         candidate.setStatus(Constants.ENTITY_ACTIVE);
+        candidate.setState("ARCHIVE");
         candidate.setCreateBy(uid);
         candidate.setUpdateBy(uid);
         candidate.setCompanyId(cid);
@@ -142,6 +154,8 @@ public class CandidateService {
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
 
         for(CandidateDTO dto : dtos){
+            List<Map<String, Object>> _a = repo.countPositionApply();
+
             if(!StringUtils.isEmpty(dto.getWardCode())){
                 dto.setWardCodeObj(mapTerritory.get(dto.getWardCode()));
             }
@@ -165,6 +179,9 @@ public class CandidateService {
             }
             if (dto.getCvSourceId() != null){
                 dto.setCvSourceObj(mapCategory.get(dto.getCvSourceId()));
+            }
+            if (_a != null) {
+                dto.setCountPositionApply(_a);
             }
         }
 

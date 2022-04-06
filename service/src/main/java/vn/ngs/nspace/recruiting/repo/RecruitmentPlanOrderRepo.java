@@ -11,12 +11,13 @@ import java.util.*;
 
 public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,Long> {
    Optional<RecruitmentPlanOrder>  findByCompanyIdAndId(Long cid, Long id);
-   Optional<RecruitmentPlanOrder> findByCompanyIdAndCodeAndStatus(Long cid, String code, Integer status);
+   Optional<RecruitmentPlanOrder> findByCompanyIdAndFromCodeAndStatus(Long cid, String fromCode, Integer status);
+   List<RecruitmentPlanOrder> findByCompanyIdAndPlanIdInAndStatus(Long cid, Set<Long> planID, Integer status);
 
    @Query(value = " select p " +
            " from RecruitmentPlanOrder p " +
            " where (p.companyId = :companyId)" +
-           " and (p.orgId in :orgId or :orgId = -1) " +
+           " and (p.orgId = :orgId or :orgId = -1l) " +
            " and (p.startDate >= :startDate)"+
            " and (p.deadline <= :deadline)"+
            " and (p.positionId in :positionId or :positionId = -1) "
@@ -123,8 +124,8 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            " and (p.positionId = :positionId or :positionId = -1)" +
            " and (p.orgId = :orgId or :orgId = -1)" +
            " and (p.type = :type or :type = 'all')" +
-           " and (p.solutionSuggestType = :solutionSuggestType or :solutionSuggestType = 'all')" +
-           "and (lower(p.code) like (concat('%',:code,'%')) or :code = 'all') ")
+           " and (p.solutionSuggestType = :solutionSuggestType or  :solutionSuggestType = '#'  )" +
+           "and (lower(p.fromCode) like (concat('%',:code,'%')) or :code = 'all') ")
    Page<RecruitmentPlanOrder> filter(@Param("companyId") Long cid
             ,@Param("positionId") Long positionId
             ,@Param("orgId") Long orgId
