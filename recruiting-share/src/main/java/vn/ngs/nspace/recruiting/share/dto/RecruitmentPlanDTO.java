@@ -1,15 +1,13 @@
 package vn.ngs.nspace.recruiting.share.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
