@@ -122,21 +122,21 @@ public class RecruitmentPlanService {
         //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
         else states.add("#");
         if(payload.get("startDateTo")!=null)
-         startDateTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+         startDateTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
         else
-            startDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            startDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss");
         if(payload.get("startDateFrom")!=null)
-         startDateFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+         startDateFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss");
         else
-            startDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            startDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
         if(payload.get("endDateTo")!=null)
-            endDateTo = DateUtil.toDate(MapUtils.getString(payload, "endDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            endDateTo = DateUtil.toDate(MapUtils.getString(payload, "endDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
         else
-            endDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            endDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss");
         if(payload.get("endDateFrom")!=null)
-            endDateFrom = DateUtil.toDate(MapUtils.getString(payload, "endDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            endDateFrom = DateUtil.toDate(MapUtils.getString(payload, "endDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss");
         else
-            endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
         Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,pageable);
         List<RecruitmentPlanDTO> result = new ArrayList<>();
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
