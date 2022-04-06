@@ -1,6 +1,9 @@
 package vn.ngs.nspace.recruiting.service;
 
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
@@ -8,6 +11,8 @@ import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
+import vn.ngs.nspace.lib.utils.DateUtil;
+import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
@@ -17,6 +22,7 @@ import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
+import java.text.DateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -100,6 +106,44 @@ public class RecruitmentPlanService {
             createItem(cid, uid, detailDTO);
         }
     }
+    public Page<RecruitmentPlan> search(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
+
+        String dmin="2000-01-01T00:00:00+0700";
+        String dmax="3000-01-01T00:00:00+0700";
+        Date startDateTo=null;
+        Date startDateFrom=null;
+        Date endDateTo=null;
+        Date endDateFrom=null;
+        List<String> states = new ArrayList<>();
+        String search = MapUtils.getString(payload, "search","#");
+        if (payload.containsKey("state")){
+            states = (List<String>) payload.get("state");
+        }
+        //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
+        else states.add("#");
+        if(payload.get("startDateTo")!=null)
+         startDateTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        else
+            startDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        if(payload.get("startDateFrom")!=null)
+         startDateFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        else
+            startDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        if(payload.get("endDateTo")!=null)
+            endDateTo = DateUtil.toDate(MapUtils.getString(payload, "endDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        else
+            endDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        if(payload.get("endDateFrom")!=null)
+            endDateFrom = DateUtil.toDate(MapUtils.getString(payload, "endDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        else
+            endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,pageable);
+        List<RecruitmentPlanDTO> result = new ArrayList<>();
+        if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
+            result = from(recruitmentPlansState.getContent());
+        }
+        return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
+    }
     public List<RecruitmentPlanDTO> toDTOs(Long cid, String uid, List<RecruitmentPlan> objs){
         List<RecruitmentPlanDTO> dtos = new ArrayList<>();
         Set<Long> planId = new HashSet<>();
@@ -176,6 +220,11 @@ public class RecruitmentPlanService {
         }
         return dtos;
     }
+    /* convert list model object to DTO before response */
+    public List<RecruitmentPlanDTO> from(List<RecruitmentPlan> objs) {
+        return objs.stream().map(obj -> obj.toDTO()).collect(Collectors.toList());
+    }
+
     public RecruitmentPlanDTO toDTOWithObj(Long cid, String uid, RecruitmentPlan obj) {
         return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
     }

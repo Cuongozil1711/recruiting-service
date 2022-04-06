@@ -46,4 +46,15 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
         build.setUpdateBy(uid);
         return build;
     }
+
+    public RecruitmentPlanDTO toDTO() {
+        return RecruitmentPlanDTO.builder()
+                .id(this.getId())
+                .code(this.getCode())
+                .name(this.getName())
+                .startDate(this.getStartDate())
+                .endDate(this.getEndDate())
+                .state(this.getState())
+                .build();
+    }
 }
