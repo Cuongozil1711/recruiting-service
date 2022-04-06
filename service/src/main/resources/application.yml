@@ -57,6 +57,7 @@ org:
 
 
 nspace:
+  
   rootContext: http://api.ngs.vn/nspace/
   policy: false
   cache:
