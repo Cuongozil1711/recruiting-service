@@ -36,6 +36,7 @@ public class JobApplication extends TaskEntity {
     private Long positionId;
     private Long titleId;
     private Long orgId;
+    private Long planOderId;
     private String contractType;
     private Date onboardDate;
     private Long employeeId;
@@ -61,7 +62,9 @@ public class JobApplication extends TaskEntity {
                 .onboardDate(dto.getOnboardDate())
                 .cvSourceId(dto.getCvSourceId())
                 .contractType(dto.getContractType())
+                .planOderId(dto.getPlanOderId())
                 .state(dto.getState()).build();
+
 
         return builder;
     }

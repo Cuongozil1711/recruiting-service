@@ -31,6 +31,7 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
     private Date endDate;
     private String sumQuanity;
     private String state;
+    private String recruited;
 
     public static RecruitmentPlan of(Long cid, String uid, RecruitmentPlanDTO dto){
         RecruitmentPlan build = RecruitmentPlan.builder()
@@ -41,6 +42,7 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
                 .state(dto.getState())
+                .recruited(dto.getRecruited())
                 .build();
 
         build.setCompanyId(cid);
@@ -58,6 +60,7 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
                 .endDate(this.getEndDate())
                 .state(this.getState())
                 .sumQuanity(this.getSumQuanity())
+                .recruited(this.getRecruited())
                 .build();
     }
 }
