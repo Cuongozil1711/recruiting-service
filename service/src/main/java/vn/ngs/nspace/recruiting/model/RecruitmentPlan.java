@@ -29,12 +29,14 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
     private String name; //in-plan , out-plan
     private Date startDate;
     private Date endDate;
+    private String sumQuanity;
     private String state;
 
     public static RecruitmentPlan of(Long cid, String uid, RecruitmentPlanDTO dto){
         RecruitmentPlan build = RecruitmentPlan.builder()
                 .id(dto.getId())
                 .code(dto.getCode())
+                .sumQuanity(dto.getSumQuanity())
                 .name(dto.getName())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
