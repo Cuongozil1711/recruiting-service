@@ -15,14 +15,13 @@ import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.*;
+import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRepo;
-import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
-import java.text.DateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,13 +35,15 @@ public class RecruitmentPlanService {
     private final RecruitmentPlanRepo repo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
+    private final JobApplicationRepo _repoJob;
 
 
-    public RecruitmentPlanService(RecruitmentPlanOrderRepo repoOder, RecruitmentPlanRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public RecruitmentPlanService(RecruitmentPlanOrderRepo repoOder, RecruitmentPlanRepo repo, ExecuteHcmService hcmService, ExecuteConfigService configService, JobApplicationRepo repoJob1) {
         this.repo =  repo;
         this.repoOder = repoOder;
         _hcmService = hcmService;
         _configService = configService;
+        _repoJob = repoJob1;
     }
 
     public void valid(RecruitmentPlanOrderDTO dto){
@@ -203,6 +204,17 @@ public class RecruitmentPlanService {
         for(RecruitmentPlan obj : objs){
             RecruitmentPlanDTO o = toDTO(obj);
             List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
+            List<Map<String,Object>> _countStaff = _repoJob.countStaff();
+            items.forEach(d -> {
+                for (Map<String,Object> objCountStaff : _countStaff){
+                    Long _planOderId = parseLong(objCountStaff.get("plan_oder_id").toString());
+                    String _count = objCountStaff.get("count").toString();
+                    if(d.getId().equals(_planOderId)){
+                        o.setRecruited(_count);
+                    }
+                }
+            });
+
 
             for (Map<String, Object> objOfSum : _sumQuanity) {
                 Long _planId = parseLong(objOfSum.get("plan_id").toString());
