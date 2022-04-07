@@ -141,6 +141,19 @@ public class RecruitmentPlanService {
             endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
         Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,pageable);
         List<RecruitmentPlanDTO> result = new ArrayList<>();
+        List<RecruitmentPlan> _a = recruitmentPlansState.getContent();
+        List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
+
+        for (Map<String, Object> objOfSum : _sumQuanity) {
+            Long _planId = parseLong(objOfSum.get("plan_id").toString());
+            String _sum = objOfSum.get("sum").toString();
+            _a.forEach(i -> {
+                if(i.getId().equals(_planId)){
+                    i.setSumQuanity(_sum);
+                }
+            });
+        };
+
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
             result = from(recruitmentPlansState.getContent());
         }
@@ -154,6 +167,7 @@ public class RecruitmentPlanService {
         Set<Long> leverId = new HashSet<>();
         Set<Long> titleIds = new HashSet<>();
         Set<Long> empIds = new HashSet<>();
+        Set<Long> roomIds = new HashSet<>();
         Set<String> createBy = new HashSet<>();
 
         Set<Long> categoryIds = new HashSet<>();
@@ -179,6 +193,9 @@ public class RecruitmentPlanService {
             if(e.getPic() != null){
                 empIds.add(e.getPic());
             }
+            if(e.getRoom() !=null){
+                roomIds.add(e.getRoom());
+            }
 
 
         });
@@ -197,6 +214,7 @@ public class RecruitmentPlanService {
 
             List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
             List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
+
             Map<Long, Map<String, Object>> mapPossion = _configService.getCategoryByIds(uid, cid, positionIds);
             Map<Long, Map<String, Object>> MapTilte = _configService.getCategoryByIds(uid, cid, titleIds);
             Map<Long, Map<String, Object>> MapLevel = _configService.getCategoryByIds(uid, cid, leverId);

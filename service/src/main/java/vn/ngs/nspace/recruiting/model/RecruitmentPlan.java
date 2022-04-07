@@ -57,6 +57,7 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
                 .startDate(this.getStartDate())
                 .endDate(this.getEndDate())
                 .state(this.getState())
+                .sumQuanity(this.getSumQuanity())
                 .build();
     }
 }
