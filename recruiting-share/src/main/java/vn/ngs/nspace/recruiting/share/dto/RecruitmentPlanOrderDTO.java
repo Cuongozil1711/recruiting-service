@@ -44,6 +44,7 @@ public class RecruitmentPlanOrderDTO {
     private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;
     private Map<String, Object> levelObj;
+    private Map<String,Object> roomObj;
     private Long totalRecruit;
     private Long recruited;
     private Long totalMissing;
