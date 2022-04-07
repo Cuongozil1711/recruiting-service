@@ -22,6 +22,7 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
     Page<RecruitmentPlan> search(@Param("companyId") Long cid
             , Pageable pageable);
 
+
     @Query(value = " select s.* from recruiting_service.recruitment_plan s " +
             "where (s.company_id = :companyId) " +
             " and (s.state in :states or '#' in :states)" +

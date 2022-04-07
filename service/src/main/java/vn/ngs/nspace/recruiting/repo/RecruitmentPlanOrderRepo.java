@@ -22,6 +22,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            " and (p.deadline <= :deadline)"+
            " and (p.positionId in :positionId or :positionId = -1) "
            )
+
    Page<RecruitmentPlanOrder> searchRecruitingPlanOrder(@Param("companyId") Long cid
            ,@Param("orgId") Long orgId
            ,@Param("positionId") Long positionId
@@ -29,6 +30,9 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            ,@Param("deadline") Date deadline
            , Pageable pageable);
 
+    @Query(value = "select plan_id, sum(quantity) from recruiting_service.recruitment_plan_order where plan_id is not null group by plan_id",nativeQuery = true)
+
+    List<Map<String,Object>> sumQuanity();
 //   @Query(value = " select a.position_id, a.org_id, count(*) as apply" +
 //                  " from (select rpo.org_id as org_id, rpo.position_id as position_id, rpo.quantity as quantity, rpo.start_date as start_date, rpo.deadline as deadline " +
 //                  " from recruiting_service.recruitment_plan_order rpo"+

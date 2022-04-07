@@ -26,6 +26,8 @@ import java.text.DateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Long.parseLong;
+
 @Service
 @Transactional
 @Log4j2
@@ -183,7 +185,15 @@ public class RecruitmentPlanService {
 
         for(RecruitmentPlan obj : objs){
             RecruitmentPlanDTO o = toDTO(obj);
+            List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
 
+            for (Map<String, Object> objOfSum : _sumQuanity) {
+                Long _planId = parseLong(objOfSum.get("plan_id").toString());
+                String _sum = objOfSum.get("sum").toString();
+                if (obj.getId().equals(_planId)) {
+                    o.setSumQuanity(_sum);
+                }
+            };
 
             List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
             List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
@@ -212,6 +222,7 @@ public class RecruitmentPlanService {
                             EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(), itemDTO.getPic())).findAny().orElse(new EmployeeDTO());
                             itemDTO.setPicObj(emp);
                         }
+
                         itemDTOs.add(itemDTO);
                     });
 

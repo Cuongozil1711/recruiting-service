@@ -5,6 +5,7 @@ import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -21,6 +22,7 @@ public class RecruitmentPlanDTO {
     private Integer status;
     private String createBy;
     private Date create_date;
+    private String sumQuanity;
     private EmployeeDTO creatByObj;
 
     private List<RecruitmentPlanOrderDTO> recruitmentPlanDetails;
