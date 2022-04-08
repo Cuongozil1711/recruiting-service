@@ -170,13 +170,13 @@ public class RecruitmentPlanService {
 
         String solutionSuggestType = MapUtils.getString(payload, "solutionSuggestType","#");
         String type = MapUtils.getString(payload, "type","#");
-        Long planId = Long.parseLong(MapUtils.getString(payload, "planId","#"));
-        Long pic = Long.parseLong(MapUtils.getString(payload, "pic","#"));
-        Long room = Long.parseLong(MapUtils.getString(payload, "room","#"));
-        Long titleId = Long.parseLong(MapUtils.getString(payload, "titleId","#"));
-        Long positionId = Long.parseLong(MapUtils.getString(payload, "positionId","#"));
-        if (payload.containsKey("state")){
-            states = (List<String>) payload.get("state");
+        Long planId = Long.parseLong(MapUtils.getString(payload, "planId","-1"));
+        Long pic = Long.parseLong(MapUtils.getString(payload, "pic","-1"));
+        Long room = Long.parseLong(MapUtils.getString(payload, "room","-1"));
+        Long titleId = Long.parseLong(MapUtils.getString(payload, "titleId","-1"));
+        Long positionId = Long.parseLong(MapUtils.getString(payload, "positionId","-1"));
+        if (payload.containsKey("states")){
+            states = (List<String>) payload.get("states");
         }
         //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
         else states.add("#");
