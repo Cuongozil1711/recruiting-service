@@ -18,7 +18,8 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
     @Query(value = " select p " +
             " from RecruitmentPlan p " +
             " where (p.companyId = :companyId)" +
-            " and (p.status = 1)")
+            " and (p.status = 1)"+
+            "order by p.createDate desc ")
     Page<RecruitmentPlan> search(@Param("companyId") Long cid
             , Pageable pageable);
 
@@ -29,7 +30,7 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
             " and (s.state in :states or '#' in :states)" +
             " and ( coalesce(s.start_date,'2000-01-02') >= :startDateFrom\\:\\:date and coalesce(s.start_date,'2000-01-02')<=:startDateTo\\:\\:date )"+
             " and ( coalesce(s.end_date,'2000-01-02') >= :endDateFrom\\:\\:date and coalesce(s.end_date,'2000-01-02')<=:endDateTo\\:\\:date )"+
-            "desc"
+            "order by s.create_date desc "
 //            " and ((concat(coalesce(s.name,'#')" +
 //            ", ' ', coalesce(s.code,'#'))) like :search) "
             ,nativeQuery = true)
