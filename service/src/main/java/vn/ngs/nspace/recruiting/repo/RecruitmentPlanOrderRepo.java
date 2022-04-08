@@ -74,7 +74,8 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            " and s.position_id = :positionId" +
            " and s.title_id = :titleId" +
            " and s.solution_suggest_type = :solutionSuggestType" +
-           " and s.type = :type desc",nativeQuery = true)
+           " and s.type = :type "+
+           "order by s.create_date desc ",nativeQuery = true)
    Page<RecruitmentPlanOrder> searchByFilter (
            @Param("companyId") Long cid
            ,@Param("planId") String planId
