@@ -155,8 +155,50 @@ public class RecruitmentPlanService {
             });
         };
 
+//        List<RecruitmentPlanOrder> items = repoOder.findByCompanyIdAndPlanIdInAndStatus(cid, Constants.ENTITY_ACTIVE);
+        List<Map<String,Object>> _countStaff = _repoJob.countStaff();
+
+
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
             result = from(recruitmentPlansState.getContent());
+        }
+        return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
+    }
+    public Page<RecruitmentPlan> searchOder(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
+
+        String dmin="2000-01-01T00:00:00+0700";
+        String dmax="3000-01-01T00:00:00+0700";
+        Date deadlineTo=null;
+        Date deadlineFrom=null;
+        List<String> states = new ArrayList<>();
+
+        String solutionSuggestType = MapUtils.getString(payload, "solutionSuggestType","#");
+        String type = MapUtils.getString(payload, "type","#");
+        String planId = MapUtils.getString(payload, "planId","#");
+        String pic = MapUtils.getString(payload, "pic","#");
+        String room = MapUtils.getString(payload, "room","#");
+        String titleId = MapUtils.getString(payload, "titleId","#");
+        String positionId = MapUtils.getString(payload, "positionId","#");
+        if (payload.containsKey("state")){
+            states = (List<String>) payload.get("state");
+        }
+        //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
+        else states.add("#");
+        if(payload.get("deadlineTo")!=null)
+            deadlineTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
+        else
+            deadlineTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss");
+        if(payload.get("startDateFrom")!=null)
+            deadlineFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss");
+        else
+            deadlineFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
+
+        Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
+        List<RecruitmentPlanOrderDTO> result = new ArrayList<>();
+        List<RecruitmentPlanOrder> _a = recruitmentPlansState.getContent();
+
+        if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
+            result = fromOder(recruitmentPlansState.getContent());
         }
         return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
     }
@@ -210,7 +252,9 @@ public class RecruitmentPlanService {
                     Long _planOderId = parseLong(objCountStaff.get("plan_oder_id").toString());
                     String _count = objCountStaff.get("count").toString();
                     if(d.getId().equals(_planOderId)){
-                        o.setRecruited(_count);
+                        if(obj.getId().equals(d.getPlanId())) {
+                            o.setRecruited(_count);
+                        }
                     }
                 }
             });
@@ -265,9 +309,15 @@ public class RecruitmentPlanService {
     public List<RecruitmentPlanDTO> from(List<RecruitmentPlan> objs) {
         return objs.stream().map(obj -> obj.toDTO()).collect(Collectors.toList());
     }
+    public List<RecruitmentPlanOrderDTO> fromOder(List<RecruitmentPlanOrder> objs) {
+        return objs.stream().map(obj -> obj.toDTOOder()).collect(Collectors.toList());
+    }
 
     public RecruitmentPlanDTO toDTOWithObj(Long cid, String uid, RecruitmentPlan obj) {
         return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
+    }
+    public RecruitmentPlanOrderDTO toDTOOder(RecruitmentPlanOrderDTO obj){
+        return MapperUtils.map(obj, RecruitmentPlanOrderDTO.class);
     }
     public RecruitmentPlanDTO toDTO(RecruitmentPlan obj){
         return MapperUtils.map(obj, RecruitmentPlanDTO.class);

@@ -25,9 +25,11 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
 
     @Query(value = " select s.* from recruiting_service.recruitment_plan s " +
             "where (s.company_id = :companyId) " +
+            " and (s.status = 1)"+
             " and (s.state in :states or '#' in :states)" +
             " and ( coalesce(s.start_date,'2000-01-02') >= :startDateFrom\\:\\:date and coalesce(s.start_date,'2000-01-02')<=:startDateTo\\:\\:date )"+
-            " and ( coalesce(s.end_date,'2000-01-02') >= :endDateFrom\\:\\:date and coalesce(s.end_date,'2000-01-02')<=:endDateTo\\:\\:date )"
+            " and ( coalesce(s.end_date,'2000-01-02') >= :endDateFrom\\:\\:date and coalesce(s.end_date,'2000-01-02')<=:endDateTo\\:\\:date )"+
+            "desc"
 //            " and ((concat(coalesce(s.name,'#')" +
 //            ", ' ', coalesce(s.code,'#'))) like :search) "
             ,nativeQuery = true)

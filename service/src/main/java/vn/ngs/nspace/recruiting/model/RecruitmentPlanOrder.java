@@ -1,20 +1,14 @@
 package vn.ngs.nspace.recruiting.model;
 
-import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.validation.constraints.Size;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
@@ -83,5 +77,32 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
         build.setCreateBy(uid);
         build.setUpdateBy(uid);
             return build;
+    }
+    public RecruitmentPlanOrderDTO toDTOOder() {
+        return RecruitmentPlanOrderDTO.builder()
+                .id(this.getId())
+                .fromCode(this.getFromCode())
+                .endDate(this.getEndDate())
+                .timeFrom(this.getTimeFrom())
+                .timeTo(this.getTimeTo())
+                .room(this.getRoom())
+                .type(this.getType())
+                .solutionSuggestType(this.getSolutionSuggestType())
+                .orgId(this.getOrgId())
+                .titleId(this.getTitleId())
+                .levelId(this.getLevelId())
+                .planId(this.getPlanId())
+                .positionId(this.getPositionId())
+                .pic(this.getPic())
+                .supporterId(this.getSupporterId())
+                .quantity(this.getQuantity())
+                .businessAddition(this.getBusinessAddition())
+                .startDate(this.getStartDate())
+                .deadline(this.getDeadline())
+                .escalateDate(this.getEscalateDate())
+                .reasonId(this.getReasonId())
+                .description(this.getDescription())
+                .state(this.getState())
+                .build();
     }
 }

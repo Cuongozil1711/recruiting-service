@@ -33,6 +33,8 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
     @Query(value = "select plan_id, sum(quantity) from recruiting_service.recruitment_plan_order where plan_id is not null group by plan_id",nativeQuery = true)
 
     List<Map<String,Object>> sumQuanity();
+
+
 //   @Query(value = " select a.position_id, a.org_id, count(*) as apply" +
 //                  " from (select rpo.org_id as org_id, rpo.position_id as position_id, rpo.quantity as quantity, rpo.start_date as start_date, rpo.deadline as deadline " +
 //                  " from recruiting_service.recruitment_plan_order rpo"+
@@ -62,6 +64,31 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            ,@Param("org_id") Long orgId
            ,@Param("startDate") Date startDate
            ,Pageable pageable);
+   @Query(value = "select * from recruiting_service.recruitment_plan_order s " +
+           "where s.company_id = :companyId" +
+           " and s.plan_id = :planId "+
+           " and (s.state in :states or '#' in :states)" +
+           " and ( coalesce(s.deadline,'2000-01-02') >= :deadlineFrom\\:\\:date and coalesce(s.deadline,'2000-01-02')<=:deadlineTo\\:\\:date )"+
+           " and s.pic = :pic" +
+           " and s.room = :room" +
+           " and s.position_id = :positionId" +
+           " and s.title_id = :titleId" +
+           " and s.solution_suggest_type = :solutionSuggestType" +
+           " and s.type = :type desc",nativeQuery = true)
+   Page<RecruitmentPlanOrder> searchByFilter (
+           @Param("companyId") Long cid
+           ,@Param("planId") String planId
+           , @Param("states") List<String> states
+           ,@Param("deadlineFrom") Date deadlineFrom
+           ,@Param("deadlineTo") Date deadlineTo
+           ,@Param("pic") String pic
+           ,@Param("room") String room
+           ,@Param("positionId") String positionId
+           ,@Param("titleId") String titleId
+           ,@Param("solutionSuggestType") String solutionSuggestType
+           ,@Param("type") String type
+           ,Pageable pageable
+   );
 
    @Query(value = "select count(*) as recruited, c.position_id"+
          "  from recruiting_service.job_application c"+
