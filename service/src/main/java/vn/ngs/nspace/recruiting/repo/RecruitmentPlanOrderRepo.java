@@ -67,14 +67,15 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
    @Query(value = "select * from recruiting_service.recruitment_plan_order s " +
            "where s.company_id = :companyId" +
            " and s.plan_id = :planId "+
-           " and (s.state in :states or '#' in (:states))" +
+           " and (s.state in (:states) or '#' in (:states))" +
            " and ( coalesce(s.deadline,'2000-01-02') >= :deadlineFrom\\:\\:date and coalesce(s.deadline,'2000-01-02')<=:deadlineTo\\:\\:date )"+
            " and (s.pic = :pic or coalesce(:pic, -1) = -1)" +
+           " and (s.org_id = :orgId or coalesce(:orgId, -1) = -1)"+
            " and (s.room = :room or coalesce(:room, -1) = -1)" +
            " and (s.position_id = :positionId or coalesce(:positionId, -1) = -1)" +
            " and (s.title_id = :titleId or coalesce(:titleId, -1) = -1)" +
-           " and (s.solution_suggest_type = :solutionSuggestType or (coalesce(:solutionSuggestType, '#') = '#'))" +
-           " and (s.type = :type or (coalesce(:type, '#') = '#'))"+
+           " and (s.solution_suggest_type = :solutionSuggestType)" +
+           " and (s.type = :type)"+
            "order by s.create_date desc ",nativeQuery = true)
    Page<RecruitmentPlanOrder> searchByFilter (
            @Param("companyId") Long cid
@@ -82,6 +83,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            , @Param("states") List<String> states
            ,@Param("deadlineFrom") Date deadlineFrom
            ,@Param("deadlineTo") Date deadlineTo
+           ,@Param("orgId") Long orgId
            ,@Param("pic") Long pic
            ,@Param("room") Long room
            ,@Param("positionId") Long positionId

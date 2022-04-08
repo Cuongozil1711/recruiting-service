@@ -130,9 +130,9 @@ public class RecruitmentPlanApi {
     }
     @PostMapping("/filterOder")
     @ActionMapping(action = Permission.VIEW)
-    @Operation(summary = "Get DurationType by type"
-            , description = "Get DurationType by type"
-            , tags = {"DurationType"})
+    @Operation(summary = "Get Oder by filter"
+            , description = "Get Oder by filter"
+            , tags = {"OderFilter"})
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity filterOder(

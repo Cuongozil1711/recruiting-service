@@ -166,20 +166,20 @@ public class RecruitmentPlanService {
         String dmax="3000-01-01T00:00:00+0700";
         Date deadlineTo=null;
         Date deadlineFrom=null;
-        List<String> states = new ArrayList<>();
+        List<String> states = Arrays.asList("#");
 
         String solutionSuggestType = MapUtils.getString(payload, "solutionSuggestType","#");
         String type = MapUtils.getString(payload, "type","#");
         Long planId = Long.parseLong(MapUtils.getString(payload, "planId","-1"));
         Long pic = Long.parseLong(MapUtils.getString(payload, "pic","-1"));
         Long room = Long.parseLong(MapUtils.getString(payload, "room","-1"));
+        Long orgId = Long.parseLong(MapUtils.getString(payload, "orgId","-1"));
         Long titleId = Long.parseLong(MapUtils.getString(payload, "titleId","-1"));
         Long positionId = Long.parseLong(MapUtils.getString(payload, "positionId","-1"));
-        if (payload.containsKey("states")){
+        if (payload.get("states") != null && !((List<String>) payload.get("states")).isEmpty()){
             states = (List<String>) payload.get("states");
         }
         //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
-        else states.add("#");
         if(payload.get("deadlineTo")!=null)
             deadlineTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
         else
@@ -189,7 +189,7 @@ public class RecruitmentPlanService {
         else
             deadlineFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
 
-        Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
+        Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,orgId,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
         List<RecruitmentPlanOrderDTO> result = new ArrayList<>();
         List<RecruitmentPlanOrder> _a = recruitmentPlansState.getContent();
 
