@@ -67,14 +67,14 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
    @Query(value = "select * from recruiting_service.recruitment_plan_order s " +
            "where s.company_id = :companyId" +
            " and s.plan_id = :planId "+
-           " and (s.state in :states or '#' in :states)" +
+           " and (s.state in :states or '#' in (:states))" +
            " and ( coalesce(s.deadline,'2000-01-02') >= :deadlineFrom\\:\\:date and coalesce(s.deadline,'2000-01-02')<=:deadlineTo\\:\\:date )"+
-           " and s.pic = :pic" +
-           " and s.room = :room" +
-           " and s.position_id = :positionId" +
-           " and s.title_id = :titleId" +
-           " and s.solution_suggest_type = :solutionSuggestType" +
-           " and s.type = :type "+
+           " and (s.pic = :pic or coalesce(:pic, -1) = -1)" +
+           " and (s.room = :room or coalesce(:room, -1) = -1)" +
+           " and (s.position_id = :positionId or coalesce(:positionId, -1) = -1)" +
+           " and (s.title_id = :titleId or coalesce(:titleId, -1) = -1)" +
+           " and (s.solution_suggest_type = :solutionSuggestType or (coalesce(:solutionSuggestType, '#') = '#'))" +
+           " and (s.type = :type or (coalesce(:type, '#') = '#'))"+
            "order by s.create_date desc ",nativeQuery = true)
    Page<RecruitmentPlanOrder> searchByFilter (
            @Param("companyId") Long cid
