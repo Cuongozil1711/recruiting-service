@@ -51,7 +51,6 @@ public class CandidateApi {
             , @Parameter(description = "Payload filter") @RequestParam(name = "search",defaultValue = "#") String search
             , Pageable pageable) {
         try{
-
 //        String fullname = MapUtils.getString(condition, "fullname", "all");
 //        Long gender = MapUtils.getLong(condition, "gender", -1l);
 //        String wardCode = MapUtils.getString(condition, "wardCode", "all");
