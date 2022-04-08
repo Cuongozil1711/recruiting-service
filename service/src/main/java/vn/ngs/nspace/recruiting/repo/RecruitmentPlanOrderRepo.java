@@ -78,14 +78,14 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            "order by s.create_date desc ",nativeQuery = true)
    Page<RecruitmentPlanOrder> searchByFilter (
            @Param("companyId") Long cid
-           ,@Param("planId") String planId
+           ,@Param("planId") Long planId
            , @Param("states") List<String> states
            ,@Param("deadlineFrom") Date deadlineFrom
            ,@Param("deadlineTo") Date deadlineTo
-           ,@Param("pic") String pic
-           ,@Param("room") String room
-           ,@Param("positionId") String positionId
-           ,@Param("titleId") String titleId
+           ,@Param("pic") Long pic
+           ,@Param("room") Long room
+           ,@Param("positionId") Long positionId
+           ,@Param("titleId") Long titleId
            ,@Param("solutionSuggestType") String solutionSuggestType
            ,@Param("type") String type
            ,Pageable pageable

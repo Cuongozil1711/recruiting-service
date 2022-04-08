@@ -155,10 +155,6 @@ public class RecruitmentPlanService {
             });
         };
 
-//        List<RecruitmentPlanOrder> items = repoOder.findByCompanyIdAndPlanIdInAndStatus(cid, Constants.ENTITY_ACTIVE);
-        List<Map<String,Object>> _countStaff = _repoJob.countStaff();
-
-
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
             result = from(recruitmentPlansState.getContent());
         }
@@ -174,11 +170,11 @@ public class RecruitmentPlanService {
 
         String solutionSuggestType = MapUtils.getString(payload, "solutionSuggestType","#");
         String type = MapUtils.getString(payload, "type","#");
-        String planId = MapUtils.getString(payload, "planId","#");
-        String pic = MapUtils.getString(payload, "pic","#");
-        String room = MapUtils.getString(payload, "room","#");
-        String titleId = MapUtils.getString(payload, "titleId","#");
-        String positionId = MapUtils.getString(payload, "positionId","#");
+        Long planId = Long.parseLong(MapUtils.getString(payload, "planId","#"));
+        Long pic = Long.parseLong(MapUtils.getString(payload, "pic","#"));
+        Long room = Long.parseLong(MapUtils.getString(payload, "room","#"));
+        Long titleId = Long.parseLong(MapUtils.getString(payload, "titleId","#"));
+        Long positionId = Long.parseLong(MapUtils.getString(payload, "positionId","#"));
         if (payload.containsKey("state")){
             states = (List<String>) payload.get("state");
         }
