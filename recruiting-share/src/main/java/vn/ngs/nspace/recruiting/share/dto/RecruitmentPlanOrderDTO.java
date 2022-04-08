@@ -1,9 +1,6 @@
 package vn.ngs.nspace.recruiting.share.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 
@@ -11,6 +8,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
@@ -44,6 +42,7 @@ public class RecruitmentPlanOrderDTO {
     private Map<String, Object> positionObj;
     private Map<String, Object> titleObj;
     private Map<String, Object> levelObj;
+    private Map<String,Object> roomObj;
     private Long totalRecruit;
     private Long recruited;
     private Long totalMissing;

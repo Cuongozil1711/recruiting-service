@@ -18,6 +18,8 @@ public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<J
 
     Optional<JobApplication> findByCompanyIdAndCandidateIdAndStatus(long cid, long candidateId, int status);
 
+    @Query(value = "select plan_oder_id, count(*) from recruiting_service.job_application where plan_oder_id is not null group by plan_oder_id",nativeQuery = true)
+    List<Map<String,Object>> countStaff();
 //    @Query(value = "select j " +
 //            " from jobApplication j " +
 //            " where (j.companyId = :companyId)" +

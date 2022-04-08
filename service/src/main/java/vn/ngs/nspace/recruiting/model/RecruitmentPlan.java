@@ -29,21 +29,38 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
     private String name; //in-plan , out-plan
     private Date startDate;
     private Date endDate;
+    private String sumQuanity;
     private String state;
+    private String recruited;
 
     public static RecruitmentPlan of(Long cid, String uid, RecruitmentPlanDTO dto){
         RecruitmentPlan build = RecruitmentPlan.builder()
                 .id(dto.getId())
                 .code(dto.getCode())
+                .sumQuanity(dto.getSumQuanity())
                 .name(dto.getName())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
                 .state(dto.getState())
+                .recruited(dto.getRecruited())
                 .build();
 
         build.setCompanyId(cid);
         build.setCreateBy(uid);
         build.setUpdateBy(uid);
         return build;
+    }
+
+    public RecruitmentPlanDTO toDTO() {
+        return RecruitmentPlanDTO.builder()
+                .id(this.getId())
+                .code(this.getCode())
+                .name(this.getName())
+                .startDate(this.getStartDate())
+                .endDate(this.getEndDate())
+                .state(this.getState())
+                .sumQuanity(this.getSumQuanity())
+                .recruited(this.getRecruited())
+                .build();
     }
 }

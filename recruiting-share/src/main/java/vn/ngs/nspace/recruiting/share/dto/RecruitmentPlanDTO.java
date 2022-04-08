@@ -1,15 +1,14 @@
 package vn.ngs.nspace.recruiting.share.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
@@ -23,6 +22,8 @@ public class RecruitmentPlanDTO {
     private Integer status;
     private String createBy;
     private Date create_date;
+    private String sumQuanity;
+    private String recruited;
     private EmployeeDTO creatByObj;
 
     private List<RecruitmentPlanOrderDTO> recruitmentPlanDetails;
