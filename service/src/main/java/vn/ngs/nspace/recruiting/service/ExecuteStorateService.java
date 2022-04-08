@@ -34,7 +34,7 @@ public class ExecuteStorateService {
     public String StorageServiceURL;
     @Value("${nspace.service.storage.key:nothing}")
     public String StorageServiceKey;
-    @Value("${nspace.service.user.URL}")
+   // @Value("${nspace.service.user.URL}")
     public String UserServiceURL;
 
     protected HttpHeaders createHeader(String userId, Long companyId) {
