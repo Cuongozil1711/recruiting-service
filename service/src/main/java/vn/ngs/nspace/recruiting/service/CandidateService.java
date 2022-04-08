@@ -57,8 +57,6 @@ public class CandidateService {
 //        if(dto.getCvSourceId() == null){
 //            throw new BusinessException("Cv-cannot-be-empty");
 //        }
-
-
     }
 
     /* create list object */
