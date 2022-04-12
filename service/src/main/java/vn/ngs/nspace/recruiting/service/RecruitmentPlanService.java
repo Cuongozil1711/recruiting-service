@@ -282,13 +282,21 @@ public class RecruitmentPlanService {
                             Long orgId = Long.parseLong(objAllPlanid.get("org_id").toString());
 
                             List<Map<String,Object>> _countStaff = _repoJob.countStaff(cid,possion_Id,orgId,planOderId);
+                            List<Map<String,Object>> _countAll = _repoJob.countAll(cid,possion_Id,orgId,planOderId);
                             Long sumRecrutingInPlan = Long.valueOf(0);
+                            Long sumRecruting = Long.valueOf(0);
                             for (Map<String,Object> objCount : _countStaff) {
                                 Long sumRecrutingInOder = Long.parseLong(objCount.get("count").toString());
                                 itemDTO.setCountRecruting(sumRecrutingInOder);
                                 sumRecrutingInPlan += sumRecrutingInOder;
                             }
+                            for (Map<String,Object> objCount : _countAll) {
+                                Long sumRecrutingAll = Long.parseLong(objCount.get("count").toString());
+                                itemDTO.setCountAllRecruting(sumRecrutingAll);
+                                sumRecruting += sumRecrutingAll;
+                            }
                             o.setSumRecruting(sumRecrutingInPlan);
+                            o.setSumRecrutingAll(sumRecruting);
                         }
 
                         itemDTOs.add(itemDTO);

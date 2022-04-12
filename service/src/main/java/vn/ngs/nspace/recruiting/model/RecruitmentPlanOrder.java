@@ -43,6 +43,7 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     private Date startDate;
     private Date deadline;
     private Long countRecruting;
+    private Long countAllRecruting;
     private Date escalateDate;
     private Long reasonId;
     private String description;
@@ -74,6 +75,7 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
                 .description(dto.getDescription())
                 .state(dto.getState())
                 .countRecruting(dto.getCountRecruting())
+                .countAllRecruting(dto.getCountAllRecruting())
                 .build();
 
         build.setCompanyId(cid);
