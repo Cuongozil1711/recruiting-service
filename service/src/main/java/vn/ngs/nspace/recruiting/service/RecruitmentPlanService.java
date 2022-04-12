@@ -183,7 +183,6 @@ public class RecruitmentPlanService {
 
         Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,orgId,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
         List<RecruitmentPlanOrderDTO> result = new ArrayList<>();
-        List<RecruitmentPlanOrder> _a = recruitmentPlansState.getContent();
 
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
             result = fromOder(recruitmentPlansState.getContent());
@@ -233,13 +232,13 @@ public class RecruitmentPlanService {
 
         for(RecruitmentPlan obj : objs){
             RecruitmentPlanDTO o = toDTO(obj);
-            List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
+            List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity(cid);
 
 
             // tinh tong ung vien can tuyen
             for (Map<String, Object> objOfSum : _sumQuanity) {
                 Long _planId = parseLong(objOfSum.get("plan_id").toString());
-                String _sum = objOfSum.get("sum").toString();
+                Long _sum = Long.parseLong(objOfSum.get("sum").toString());
                 if (obj.getId().equals(_planId)) {
                     o.setSumQuanity(_sum);
                 }
@@ -307,10 +306,22 @@ public class RecruitmentPlanService {
         }
         return dtos;
     }
-    /* convert list model object to DTO before response */
-    public List<RecruitmentPlanDTO> from(List<RecruitmentPlan> objs) {
-        return objs.stream().map(obj -> obj.toDTO()).collect(Collectors.toList());
+
+    //service sum all
+
+    public RecruitmentPlanDTO sumAll(Long cid, String uid){
+        Map<String,Object> sumAll = repo.sumAll(cid);
+
+        RecruitmentPlan recruitmentPlan = new RecruitmentPlan();
+        recruitmentPlan.setTotalSumQuanity(Long.parseLong(sumAll.get("sum_quanity").toString()));
+        recruitmentPlan.setTotalRecruted(Long.parseLong(sumAll.get("sum_recruting").toString()));
+        recruitmentPlan.setTotalSumRecrutingAll(Long.parseLong(sumAll.get("sum_recruting_all").toString()));
+
+        return RecruitmentPlan.toDTO(recruitmentPlan);
     }
+
+    /* convert list model object to DTO before response */
+
     public List<RecruitmentPlanOrderDTO> fromOder(List<RecruitmentPlanOrder> objs) {
         return objs.stream().map(obj -> obj.toDTOOder()).collect(Collectors.toList());
     }

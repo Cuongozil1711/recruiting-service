@@ -26,10 +26,13 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
     private Long id;
     @Size(max = 15)
     private String code;
+    private Long totalRecruted;
+    private Long totalSumQuanity;
+    private Long totalSumRecrutingAll;
     private String name; //in-plan , out-plan
     private Date startDate;
     private Date endDate;
-    private String sumQuanity;
+    private Long sumQuanity;
     private Long sumRecruting;
     private Long sumRecrutingAll;
     private String state;
@@ -47,6 +50,9 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
                 .recruited(dto.getRecruited())
                 .sumRecruting(dto.getSumRecruting())
                 .sumRecrutingAll(dto.getSumRecrutingAll())
+                .totalSumRecrutingAll(dto.getTotalSumRecrutingAll())
+                .totalRecruted(dto.getTotalRecruted())
+                .totalSumQuanity(dto.getTotalSumQuanity())
                 .build();
 
         build.setCompanyId(cid);
@@ -55,17 +61,11 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
         return build;
     }
 
-    public RecruitmentPlanDTO toDTO() {
+    public static RecruitmentPlanDTO toDTO(RecruitmentPlan obj) {
         return RecruitmentPlanDTO.builder()
-                .id(this.getId())
-                .code(this.getCode())
-                .name(this.getName())
-                .startDate(this.getStartDate())
-                .endDate(this.getEndDate())
-                .state(this.getState())
-                .sumQuanity(this.getSumQuanity())
-                .recruited(this.getRecruited())
-                .sumRecruting(this.sumRecruting)
+                .totalSumRecrutingAll(obj.getTotalSumRecrutingAll())
+                .totalRecruted(obj.getTotalRecruted())
+                .totalSumQuanity(obj.getTotalSumQuanity())
                 .build();
     }
 }

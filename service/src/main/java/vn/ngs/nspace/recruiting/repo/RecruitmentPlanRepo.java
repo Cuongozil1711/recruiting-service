@@ -13,7 +13,7 @@ import java.util.*;
 
 public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
     Optional<RecruitmentPlan>  findByCompanyIdAndId(Long cid, Long id);
-    Optional<RecruitmentPlan> findByCompanyIdAndCodeAndStatus(Long cid, String code, Integer status);
+    List<RecruitmentPlan>   findByCompanyIdAndStatus(Long cid, Integer status);
 
     @Query(value = " select p " +
             " from RecruitmentPlan p " +
@@ -22,7 +22,8 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
             "order by p.createDate desc ")
     Page<RecruitmentPlan> search(@Param("companyId") Long cid
             , Pageable pageable);
-
+    @Query(value = "select sum(job.sum_quanity\\:\\:numeric) as sum_quanity,sum(job.sum_recruting) as sum_recruting,sum(job.sum_recruting_all) as sum_recruting_all from recruiting_service.recruitment_plan job where (job.company_id = ?) and job.state in ('INIT','PROCESSING')",nativeQuery = true)
+    Map<String,Object> sumAll(@Param("companyId") Long cid);
 
     @Query(value = " select s.* from recruiting_service.recruitment_plan s " +
             "where (s.company_id = :companyId) " +
