@@ -22,9 +22,12 @@ public class RecruitmentPlanDTO {
     private Integer status;
     private String createBy;
     private Date create_date;
-    private String sumQuanity;
+    private Long sumQuanity;
     private Long sumRecruting;
     private Long sumRecrutingAll;
+    private Long totalRecruted;
+    private Long totalSumQuanity;
+    private Long totalSumRecrutingAll;
     private String recruited;
     private Object creatByObj;
 
