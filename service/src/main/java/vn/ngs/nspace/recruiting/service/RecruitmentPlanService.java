@@ -246,13 +246,7 @@ public class RecruitmentPlanService {
             List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
 
             //count all recruting
-            Long planIds = obj.getId();
-            List<Map<String,Object>> _getAllPlanId = repoOder.getAllPlanId(cid,planIds);
-            for(Map<String,Object> objAllPlanid : _getAllPlanId){
-                Long planOderId = Long.parseLong(objAllPlanid.get("id").toString());
-                List<Map<String,Object>> _countStaff = _repoJob.countStaff(cid,planOderId);
 
-            }
 
             // tinh tong ung vien
             for (Map<String, Object> objOfSum : _sumQuanity) {
@@ -290,6 +284,17 @@ public class RecruitmentPlanService {
                         if (itemDTO.getPic() != null) {
                             EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(), itemDTO.getPic())).findAny().orElse(new EmployeeDTO());
                             itemDTO.setPicObj(emp);
+                        }
+                        Long planIds = obj.getId();
+                        List<Map<String,Object>> _getAllPlanId = repoOder.getAllPlanId(cid,planIds);
+                        for(Map<String,Object> objAllPlanid : _getAllPlanId){
+                            Long planOderId = Long.parseLong(objAllPlanid.get("id").toString());
+                            Long possion_Id = Long.parseLong(objAllPlanid.get("position_id").toString());
+                            Long orgId = Long.parseLong(objAllPlanid.get("org_id").toString());
+
+                            List<Map<String,Object>> _countStaff = _repoJob.countStaff(cid,possion_Id,orgId,planOderId);
+                            for (Map<String,Object> objCount : _countStaff)
+                            itemDTO.setCountRecruting(objCount);
                         }
 
                         itemDTOs.add(itemDTO);

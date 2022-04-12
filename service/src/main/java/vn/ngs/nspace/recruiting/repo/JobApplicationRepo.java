@@ -20,9 +20,14 @@ public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<J
 
     @Query(value = "select plan_oder_id, count(*) from recruiting_service.job_application job " +
             "where (job.company_id = :companyId)" +
-            " and (job.plan_oder_id = :planOderId group by plan_oder_id)",nativeQuery = true)
+            "and (job.position_id = :positionId )"+
+            "and (job.org_id = :orgId)"+
+            " and (job.plan_oder_id = :planOderId)"+
+            "group by plan_oder_id",nativeQuery = true)
     List<Map<String,Object>> countStaff(@Param("companyId") Long companyId
-                                       ,@Param("planOderId") Long planOderId);
+                                        ,@Param("positionId") Long positionId
+                                        ,@Param("orgId") Long orgId
+                                        ,@Param("planOderId") Long planOderId);
 //    @Query(value = "select j " +
 //            " from jobApplication j " +
 //            " where (j.companyId = :companyId)" +
