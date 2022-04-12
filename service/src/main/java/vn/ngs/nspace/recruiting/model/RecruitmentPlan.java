@@ -30,6 +30,7 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
     private Date startDate;
     private Date endDate;
     private String sumQuanity;
+    private Long sumRecruting;
     private String state;
     private String recruited;
 
@@ -43,6 +44,7 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
                 .endDate(dto.getEndDate())
                 .state(dto.getState())
                 .recruited(dto.getRecruited())
+                .sumRecruting(dto.getSumRecruting())
                 .build();
 
         build.setCompanyId(cid);
@@ -61,6 +63,7 @@ public class RecruitmentPlan extends PersistableEntity<Long> {
                 .state(this.getState())
                 .sumQuanity(this.getSumQuanity())
                 .recruited(this.getRecruited())
+                .sumRecruting(this.sumRecruting)
                 .build();
     }
 }

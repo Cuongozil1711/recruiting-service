@@ -245,10 +245,8 @@ public class RecruitmentPlanService {
             RecruitmentPlanDTO o = toDTO(obj);
             List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
 
-            //count all recruting
 
-
-            // tinh tong ung vien
+            // tinh tong ung vien can tuyen
             for (Map<String, Object> objOfSum : _sumQuanity) {
                 Long _planId = parseLong(objOfSum.get("plan_id").toString());
                 String _sum = objOfSum.get("sum").toString();
@@ -285,6 +283,7 @@ public class RecruitmentPlanService {
                             EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(), itemDTO.getPic())).findAny().orElse(new EmployeeDTO());
                             itemDTO.setPicObj(emp);
                         }
+                        //count all recruting
                         Long planIds = obj.getId();
                         List<Map<String,Object>> _getAllPlanId = repoOder.getAllPlanId(cid,planIds);
                         for(Map<String,Object> objAllPlanid : _getAllPlanId){
@@ -293,8 +292,13 @@ public class RecruitmentPlanService {
                             Long orgId = Long.parseLong(objAllPlanid.get("org_id").toString());
 
                             List<Map<String,Object>> _countStaff = _repoJob.countStaff(cid,possion_Id,orgId,planOderId);
-                            for (Map<String,Object> objCount : _countStaff)
-                            itemDTO.setCountRecruting(objCount);
+                            Long sumRecrutingInPlan = Long.valueOf(0);
+                            for (Map<String,Object> objCount : _countStaff) {
+                                Long sumRecrutingInOder = Long.parseLong(objCount.get("count").toString());
+                                itemDTO.setCountRecruting(sumRecrutingInOder);
+                                sumRecrutingInPlan += sumRecrutingInOder;
+                            }
+                            o.setSumRecruting(sumRecrutingInPlan);
                         }
 
                         itemDTOs.add(itemDTO);
