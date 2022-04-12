@@ -57,12 +57,14 @@ public class RecruitmentPlanService {
         obj.setUpdateBy(uid);
         obj.setStatus(Constants.ENTITY_ACTIVE);
 
+
         obj = repo.save(obj);
         //create detail
         if (dto.getRecruitmentPlanDetails() != null && !dto.getRecruitmentPlanDetails().isEmpty()) {
             for (RecruitmentPlanOrderDTO detailDTO : dto.getRecruitmentPlanDetails()) {
                 detailDTO.setPlanId(obj.getId());
                 createItem(cid, uid, detailDTO);
+                sumQuanity(cid);
             }
         }
         return dto;
@@ -78,6 +80,7 @@ public class RecruitmentPlanService {
         detail.setStatus(Constants.ENTITY_ACTIVE);
 
         detail = repoOder.save(detail);
+        sumQuanity(cid);
     }
 
     public RecruitmentPlanDTO update(long cid, String uid, Long planId, RecruitmentPlanDTO dto) {
@@ -96,6 +99,7 @@ public class RecruitmentPlanService {
         }
 
         curr = repo.save(curr);
+        sumQuanity(cid);
 
         return dto;
     }
@@ -106,6 +110,7 @@ public class RecruitmentPlanService {
             MapperUtils.copyWithoutAudit(detailDTO, curr);
             curr.setUpdateBy(uid);
             curr = repoOder.save(curr);
+            sumQuanity(cid);
         }else{
             createItem(cid, uid, detailDTO);
         }
@@ -183,11 +188,29 @@ public class RecruitmentPlanService {
 
         Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,orgId,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
         List<RecruitmentPlanOrderDTO> result = new ArrayList<>();
-
+        sumQuanity(cid);
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
             result = fromOder(recruitmentPlansState.getContent());
         }
         return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
+    }
+    public void sumQuanity (Long cid){
+       List<RecruitmentPlan> objs = repo.findByCompanyIdAndStatus(cid,Constants.ENTITY_ACTIVE);
+        for(RecruitmentPlan obj : objs) {
+            RecruitmentPlanDTO o = toDTO(obj);
+            List<Map<String, Object>> _sumQuanity = repoOder.sumQuanity(cid);
+
+
+            // tinh tong ung vien can tuyen
+            for (Map<String, Object> objOfSum : _sumQuanity) {
+                Long _planId = parseLong(objOfSum.get("plan_id").toString());
+                Long _sum = Long.parseLong(objOfSum.get("sum").toString());
+                if (obj.getId().equals(_planId)) {
+                    o.setSumQuanity(_sum);
+                }
+            }
+            ;
+        }
     }
     public List<RecruitmentPlanDTO> toDTOs(Long cid, String uid, List<RecruitmentPlan> objs){
         List<RecruitmentPlanDTO> dtos = new ArrayList<>();
@@ -205,6 +228,7 @@ public class RecruitmentPlanService {
             planId.add(o.getId());
             createBy.add(o.getCreateBy());
         });
+        sumQuanity(cid);
 
         List<RecruitmentPlanOrder> items = repoOder.findByCompanyIdAndPlanIdInAndStatus(cid, planId, Constants.ENTITY_ACTIVE);
         items.forEach(e-> {
