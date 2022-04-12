@@ -19,7 +19,6 @@ public class HandlerFactory implements EventHandler<DisruptorEvent<String, byte[
     private static Map<String, Handler> mapper = new ConcurrentHashMap<>();
     private static String MAIL_KEY = "mail";
 
-
     @Autowired
     public HandlerFactory() {
         mapper.put(MAIL_KEY, new NotificationHandler());
@@ -28,7 +27,7 @@ public class HandlerFactory implements EventHandler<DisruptorEvent<String, byte[
     @Override
     public void onEvent(DisruptorEvent<String, byte[]> event, long sequence, boolean endOfBatch) {
         try {
-            //System.out.println("event:" + event);
+            System.out.println("event:" + event);
             Buffer record = Buffer.buffer(event.getConsumerRecord().value());
             EventRequest<Map<String, Object>> eventRequest = Json.decodeValue(record, EventRequest.class);
             mapper.get(eventRequest.getEvent()).process(eventRequest.getPayload());
