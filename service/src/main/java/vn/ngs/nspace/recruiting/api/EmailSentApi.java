@@ -119,8 +119,8 @@ public class EmailSentApi {
             Date schedule_date = MapUtils.getDate(payload,"date");
             ScheduleTaskCommand scheduleAction = new ScheduleTaskCommand();
             scheduleAction.setCompanyId(cid);
-            scheduleAction.setEvent("schedule");
-            scheduleAction.setAction("schedule");
+            scheduleAction.setEvent("schedule_mail");
+            scheduleAction.setAction("schedule_mail");
             scheduleAction.setExecuteTime(schedule_date);
             scheduleAction.setTaskId(templateId);
             scheduleAction.setActionId(candidateId);

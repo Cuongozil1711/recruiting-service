@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HandlerFactory implements EventHandler<DisruptorEvent<String, byte[]>> {
 
     private static Map<String, Handler> mapper = new ConcurrentHashMap<>();
-    private static String MAIL_KEY = "mail";
+    private static String MAIL_KEY = "schedule_mail";
 
     @Autowired
     public HandlerFactory() {
