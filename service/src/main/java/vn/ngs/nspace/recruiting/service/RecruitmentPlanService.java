@@ -110,7 +110,8 @@ public class RecruitmentPlanService {
             createItem(cid, uid, detailDTO);
         }
     }
-    public Page<RecruitmentPlan> search(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
+
+    public Page<RecruitmentPlan> search(Long cid,String uid, Map<String, Object> payload, Pageable pageable) throws Exception {
 
         String dmin="2000-01-01T00:00:00+0700";
         String dmax="3000-01-01T00:00:00+0700";
@@ -144,20 +145,9 @@ public class RecruitmentPlanService {
         Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,pageable);
         List<RecruitmentPlanDTO> result = new ArrayList<>();
         List<RecruitmentPlan> _a = recruitmentPlansState.getContent();
-        List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
-
-        for (Map<String, Object> objOfSum : _sumQuanity) {
-            Long _planId = parseLong(objOfSum.get("plan_id").toString());
-            String _sum = objOfSum.get("sum").toString();
-            _a.forEach(i -> {
-                if(i.getId().equals(_planId)){
-                    i.setSumQuanity(_sum);
-                }
-            });
-        };
 
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
-            result = from(recruitmentPlansState.getContent());
+            result = toDTOs(cid,uid,recruitmentPlansState.getContent());
         }
         return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
     }
