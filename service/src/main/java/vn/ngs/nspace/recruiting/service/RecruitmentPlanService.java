@@ -58,11 +58,13 @@ public class RecruitmentPlanService {
         obj.setStatus(Constants.ENTITY_ACTIVE);
 
         obj = repo.save(obj);
+        sumQuanity(cid);
         //create detail
         if (dto.getRecruitmentPlanDetails() != null && !dto.getRecruitmentPlanDetails().isEmpty()) {
             for (RecruitmentPlanOrderDTO detailDTO : dto.getRecruitmentPlanDetails()) {
                 detailDTO.setPlanId(obj.getId());
                 createItem(cid, uid, detailDTO);
+                sumQuanity(cid);
             }
         }
         return dto;
@@ -76,6 +78,7 @@ public class RecruitmentPlanService {
         detail.setCreateBy(uid);
         detail.setUpdateBy(uid);
         detail.setStatus(Constants.ENTITY_ACTIVE);
+        sumQuanity(cid);
 
         detail = repoOder.save(detail);
     }
@@ -96,6 +99,7 @@ public class RecruitmentPlanService {
         }
 
         curr = repo.save(curr);
+        sumQuanity(cid);
 
         return dto;
     }
@@ -106,8 +110,10 @@ public class RecruitmentPlanService {
             MapperUtils.copyWithoutAudit(detailDTO, curr);
             curr.setUpdateBy(uid);
             curr = repoOder.save(curr);
+            sumQuanity(cid);
         }else{
             createItem(cid, uid, detailDTO);
+
         }
     }
 
@@ -189,6 +195,21 @@ public class RecruitmentPlanService {
         }
         return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
     }
+    public void sumQuanity(Long cid) {
+        List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity(cid);
+        List<RecruitmentPlan> obj = repo.findByCompanyIdAndStatus(cid,Constants.ENTITY_ACTIVE);
+
+        RecruitmentPlanDTO o = toDTO((RecruitmentPlan) obj);
+        // tinh tong ung vien can tuyen
+        for (Map<String, Object> objOfSum : _sumQuanity) {
+            Long _planId = parseLong(objOfSum.get("plan_id").toString());
+            Long _sum = Long.parseLong(objOfSum.get("sum").toString());
+
+            if (o.getId().equals(_planId)) {
+                o.setSumQuanity(_sum);
+            }
+        };
+    }
     public List<RecruitmentPlanDTO> toDTOs(Long cid, String uid, List<RecruitmentPlan> objs){
         List<RecruitmentPlanDTO> dtos = new ArrayList<>();
         Set<Long> planId = new HashSet<>();
@@ -232,18 +253,8 @@ public class RecruitmentPlanService {
 
         for(RecruitmentPlan obj : objs){
             RecruitmentPlanDTO o = toDTO(obj);
-            List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity(cid);
 
-
-            // tinh tong ung vien can tuyen
-            for (Map<String, Object> objOfSum : _sumQuanity) {
-                Long _planId = parseLong(objOfSum.get("plan_id").toString());
-                Long _sum = Long.parseLong(objOfSum.get("sum").toString());
-                if (obj.getId().equals(_planId)) {
-                    o.setSumQuanity(_sum);
-                }
-            };
-
+            sumQuanity(cid);
             List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
             List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
             BaseResponse<Map<String, Object>> objUser = _hcmService.getInfoUserByUserId(uid, cid);
@@ -329,7 +340,7 @@ public class RecruitmentPlanService {
     public RecruitmentPlanDTO toDTOWithObj(Long cid, String uid, RecruitmentPlan obj) {
         return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
     }
-    public RecruitmentPlanOrderDTO toDTOOder(RecruitmentPlanOrderDTO obj){
+    public RecruitmentPlanOrderDTO toDTOPlan(RecruitmentPlanOrderDTO obj){
         return MapperUtils.map(obj, RecruitmentPlanOrderDTO.class);
     }
     public RecruitmentPlanDTO toDTO(RecruitmentPlan obj){

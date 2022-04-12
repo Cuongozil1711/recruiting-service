@@ -34,6 +34,7 @@ public class JobApplication extends TaskEntity {
     private Long id;
     private Long candidateId;
     private Long positionId;
+    private String Code_Candidate;
     private Long titleId;
     private Long orgId;
     private Long planOderId;
