@@ -24,6 +24,7 @@ public class RecruitmentPlanDTO {
     private Date create_date;
     private String sumQuanity;
     private Long sumRecruting;
+    private Long sumRecrutingAll;
     private String recruited;
     private Object creatByObj;
 
