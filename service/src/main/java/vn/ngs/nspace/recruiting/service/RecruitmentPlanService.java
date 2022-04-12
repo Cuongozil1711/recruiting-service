@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
+import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
@@ -189,6 +190,7 @@ public class RecruitmentPlanService {
         else
             deadlineFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
 
+
         Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,orgId,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
         List<RecruitmentPlanOrderDTO> result = new ArrayList<>();
         List<RecruitmentPlanOrder> _a = recruitmentPlansState.getContent();
@@ -242,20 +244,17 @@ public class RecruitmentPlanService {
         for(RecruitmentPlan obj : objs){
             RecruitmentPlanDTO o = toDTO(obj);
             List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
-            List<Map<String,Object>> _countStaff = _repoJob.countStaff();
-            items.forEach(d -> {
-                for (Map<String,Object> objCountStaff : _countStaff){
-                    Long _planOderId = parseLong(objCountStaff.get("plan_oder_id").toString());
-                    String _count = objCountStaff.get("count").toString();
-                    if(d.getId().equals(_planOderId)){
-                        if(obj.getId().equals(d.getPlanId())) {
-                            o.setRecruited(_count);
-                        }
-                    }
-                }
-            });
 
+            //count all recruting
+            Long planIds = obj.getId();
+            List<Map<String,Object>> _getAllPlanId = repoOder.getAllPlanId(cid,planIds);
+            for(Map<String,Object> objAllPlanid : _getAllPlanId){
+                Long planOderId = Long.parseLong(objAllPlanid.get("id").toString());
+                List<Map<String,Object>> _countStaff = _repoJob.countStaff(cid,planOderId);
 
+            }
+
+            // tinh tong ung vien
             for (Map<String, Object> objOfSum : _sumQuanity) {
                 Long _planId = parseLong(objOfSum.get("plan_id").toString());
                 String _sum = objOfSum.get("sum").toString();
@@ -266,11 +265,11 @@ public class RecruitmentPlanService {
 
             List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
             List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
-
+            BaseResponse<Map<String, Object>> objUser = _hcmService.getInfoUserByUserId(uid, cid);
             Map<Long, Map<String, Object>> mapPossion = _configService.getCategoryByIds(uid, cid, positionIds);
             Map<Long, Map<String, Object>> MapTilte = _configService.getCategoryByIds(uid, cid, titleIds);
             Map<Long, Map<String, Object>> MapLevel = _configService.getCategoryByIds(uid, cid, leverId);
-
+            o.setCreatByObj(objUser.getData());
             List<RecruitmentPlanOrderDTO> itemDTOs = new ArrayList<>();
             items.stream().filter(i -> CompareUtil.compare(i.getPlanId(), obj.getId()))
                     .collect(Collectors.toList()).stream().forEach(i -> {

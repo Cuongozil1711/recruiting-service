@@ -34,6 +34,12 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
 
     List<Map<String,Object>> sumQuanity();
 
+    @Query(value = "select * from recruiting_service.recruitment_plan_order s " +
+            "where (s.company_id = :companyId)" +
+            "and (s.plan_id = :planId)",nativeQuery = true)
+    List<Map<String,Object>> getAllPlanId(@Param("companyId") Long companyId
+                                         ,@Param("planId") Long planIds);
+
 
 //   @Query(value = " select a.position_id, a.org_id, count(*) as apply" +
 //                  " from (select rpo.org_id as org_id, rpo.position_id as position_id, rpo.quantity as quantity, rpo.start_date as start_date, rpo.deadline as deadline " +
@@ -74,8 +80,8 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            " and (s.room = :room or coalesce(:room, -1) = -1)" +
            " and (s.position_id = :positionId or coalesce(:positionId, -1) = -1)" +
            " and (s.title_id = :titleId or coalesce(:titleId, -1) = -1)" +
-           " and (s.solution_suggest_type = :solutionSuggestType)" +
-           " and (s.type = :type)"+
+           " and (s.solution_suggest_type = :solutionSuggestType or coalesce(:solutionSuggestType, '#') = '#')" +
+           " and (s.type = :type or coalesce(:type, '#') = '#')"+
            "order by s.create_date desc ",nativeQuery = true)
    Page<RecruitmentPlanOrder> searchByFilter (
            @Param("companyId") Long cid
@@ -130,6 +136,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
             ,@Param("startDate")Date startDate
             ,@Param("deadline") Date deadline
     );
+
 
     @Query(value = "select  count(*) as recruited"+
             "  from recruiting_service.job_application c"+
