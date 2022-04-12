@@ -20,13 +20,12 @@ import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderCheckListRepo;
-import vn.ngs.nspace.recruiting.service.EmailSentService;
-import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
-import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
-import vn.ngs.nspace.recruiting.service.ExecuteNoticeService;
+import vn.ngs.nspace.recruiting.schedule.ScheduleTaskCommand;
+import vn.ngs.nspace.recruiting.service.*;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -96,6 +95,42 @@ public class EmailSentApi {
     }
 
 
+    @PostMapping("/schedule-test")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get Email Sent by ID"
+            , description = "Get Email Sent by ID"
+            , tags = { "Email" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity autoSendEmail(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Payload of record")  @RequestBody Map<String, Object> payload) {
+        try {
+            Long templateId = MapUtils.getLong(payload, "templateId", 0l);
+            Long emailSettingId = MapUtils.getLong(payload, "emailSettingId", 0l);
+            Long candidateId = MapUtils.getLong(payload, "candidateId", 0l);
+            Long employeeId = MapUtils.getLong(payload, "employeeId", 0l);
+            String typeOnboard = MapUtils.getString(payload, "typeOnboard", "");
+            if (employeeId == 0l && candidateId == 0l) {
+                throw new BusinessException("can-not-empty-both-employee-and-candidate");
+            }
+            Date schedule_date = MapUtils.getDate(payload,"date");
+            ScheduleTaskCommand scheduleAction = new ScheduleTaskCommand();
+            scheduleAction.setCompanyId(cid);
+            scheduleAction.setEvent("schedule");
+            scheduleAction.setAction("schedule");
+            scheduleAction.setExecuteTime(schedule_date);
+            scheduleAction.setTaskId(templateId);
+            scheduleAction.setActionId(candidateId);
+            _service.createEmailSchedule(scheduleAction);
+
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+        return null;
+    }
 
     @PostMapping("/send")
     @ActionMapping(action = Permission.VIEW)

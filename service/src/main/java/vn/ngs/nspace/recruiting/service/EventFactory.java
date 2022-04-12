@@ -9,7 +9,7 @@ import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 @Service
 @RequiredArgsConstructor
 public class EventFactory {
-    private final String SCHEDULE_TOPIC = "schedule_recruiting_mail";
+    private final String SCHEDULE_TOPIC = "schedule_request";
 
     public void publishSchedule(EventRequest message) {
         publish(SCHEDULE_TOPIC, message);
