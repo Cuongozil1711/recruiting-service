@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
+import java.util.Map;
 
 @Entity
 @Data
@@ -41,6 +42,8 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     private String businessAddition;
     private Date startDate;
     private Date deadline;
+    private Long countRecruting;
+    private Long countAllRecruting;
     private Date escalateDate;
     private Long reasonId;
     private String description;
@@ -71,6 +74,8 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
                 .reasonId(dto.getReasonId())
                 .description(dto.getDescription())
                 .state(dto.getState())
+                .countRecruting(dto.getCountRecruting())
+                .countAllRecruting(dto.getCountAllRecruting())
                 .build();
 
         build.setCompanyId(cid);
@@ -103,6 +108,7 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
                 .reasonId(this.getReasonId())
                 .description(this.getDescription())
                 .state(this.getState())
+                .countRecruting((this.getCountRecruting()))
                 .build();
     }
 }

@@ -34,6 +34,12 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
 
     List<Map<String,Object>> sumQuanity();
 
+    @Query(value = "select * from recruiting_service.recruitment_plan_order s " +
+            "where (s.company_id = :companyId)" +
+            "and (s.plan_id = :planId)",nativeQuery = true)
+    List<Map<String,Object>> getAllPlanId(@Param("companyId") Long companyId
+                                         ,@Param("planId") Long planIds);
+
 
 //   @Query(value = " select a.position_id, a.org_id, count(*) as apply" +
 //                  " from (select rpo.org_id as org_id, rpo.position_id as position_id, rpo.quantity as quantity, rpo.start_date as start_date, rpo.deadline as deadline " +
@@ -67,25 +73,27 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
    @Query(value = "select * from recruiting_service.recruitment_plan_order s " +
            "where s.company_id = :companyId" +
            " and s.plan_id = :planId "+
-           " and (s.state in :states or '#' in :states)" +
+           " and (s.state in (:states) or '#' in (:states))" +
            " and ( coalesce(s.deadline,'2000-01-02') >= :deadlineFrom\\:\\:date and coalesce(s.deadline,'2000-01-02')<=:deadlineTo\\:\\:date )"+
-           " and s.pic = :pic" +
-           " and s.room = :room" +
-           " and s.position_id = :positionId" +
-           " and s.title_id = :titleId" +
-           " and s.solution_suggest_type = :solutionSuggestType" +
-           " and s.type = :type "+
+           " and (s.pic = :pic or coalesce(:pic, -1) = -1)" +
+           " and (s.org_id = :orgId or coalesce(:orgId, -1) = -1)"+
+           " and (s.room = :room or coalesce(:room, -1) = -1)" +
+           " and (s.position_id = :positionId or coalesce(:positionId, -1) = -1)" +
+           " and (s.title_id = :titleId or coalesce(:titleId, -1) = -1)" +
+           " and (s.solution_suggest_type = :solutionSuggestType or coalesce(:solutionSuggestType, '#') = '#')" +
+           " and (s.type = :type or coalesce(:type, '#') = '#')"+
            "order by s.create_date desc ",nativeQuery = true)
    Page<RecruitmentPlanOrder> searchByFilter (
            @Param("companyId") Long cid
-           ,@Param("planId") String planId
+           ,@Param("planId") Long planId
            , @Param("states") List<String> states
            ,@Param("deadlineFrom") Date deadlineFrom
            ,@Param("deadlineTo") Date deadlineTo
-           ,@Param("pic") String pic
-           ,@Param("room") String room
-           ,@Param("positionId") String positionId
-           ,@Param("titleId") String titleId
+           ,@Param("orgId") Long orgId
+           ,@Param("pic") Long pic
+           ,@Param("room") Long room
+           ,@Param("positionId") Long positionId
+           ,@Param("titleId") Long titleId
            ,@Param("solutionSuggestType") String solutionSuggestType
            ,@Param("type") String type
            ,Pageable pageable
@@ -128,6 +136,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
             ,@Param("startDate")Date startDate
             ,@Param("deadline") Date deadline
     );
+
 
     @Query(value = "select  count(*) as recruited"+
             "  from recruiting_service.job_application c"+

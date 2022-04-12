@@ -92,6 +92,22 @@ public class ExecuteHcmService {
             throw new RuntimeException(e);
         }
     }
+    public BaseResponse<Map<String, Object>> getInfoUserByUserId(String requestUserId, Long companyId){
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/by-user-mapping-id?userMappingId=" + requestUserId );
+            HttpMethod method = HttpMethod.GET;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = createHeader(requestUserId,companyId);
+            HttpEntity request = new HttpEntity<>(headers);
+
+            ParameterizedTypeReference<BaseResponse<Map<String, Object>>> responseType = new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {};
+            ResponseEntity response = restTemplate.exchange(uri,method,request,responseType);
+            BaseResponse<Map<String, Object>> resp = (BaseResponse<Map<String, Object>>) response.getBody();
+            return resp;
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
     public List<EmployeeDTO> getEmployeesMapping(String requestUserId, Long companyId){
         try {
             URI uri = new URI(HcmServiceURL + "/generic/by-user-mapping-ids");

@@ -123,16 +123,16 @@ public class RecruitmentPlanApi {
             , @RequestBody Map<String, Object> filter
             , Pageable pageable) {
         try {
-            return ResponseUtils.handlerSuccess(_service.search(cid, filter, pageable));
+            return ResponseUtils.handlerSuccess(_service.search(cid,uid, filter, pageable));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
     }
     @PostMapping("/filterOder")
     @ActionMapping(action = Permission.VIEW)
-    @Operation(summary = "Get DurationType by type"
-            , description = "Get DurationType by type"
-            , tags = {"DurationType"})
+    @Operation(summary = "Get Oder by filter"
+            , description = "Get Oder by filter"
+            , tags = {"OderFilter"})
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity filterOder(

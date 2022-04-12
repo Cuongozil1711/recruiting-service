@@ -23,8 +23,10 @@ public class RecruitmentPlanDTO {
     private String createBy;
     private Date create_date;
     private String sumQuanity;
+    private Long sumRecruting;
+    private Long sumRecrutingAll;
     private String recruited;
-    private EmployeeDTO creatByObj;
+    private Object creatByObj;
 
     private List<RecruitmentPlanOrderDTO> recruitmentPlanDetails;
 

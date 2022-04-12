@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
+import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
@@ -109,7 +110,8 @@ public class RecruitmentPlanService {
             createItem(cid, uid, detailDTO);
         }
     }
-    public Page<RecruitmentPlan> search(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
+
+    public Page<RecruitmentPlan> search(Long cid,String uid, Map<String, Object> payload, Pageable pageable) throws Exception {
 
         String dmin="2000-01-01T00:00:00+0700";
         String dmax="3000-01-01T00:00:00+0700";
@@ -143,24 +145,9 @@ public class RecruitmentPlanService {
         Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,pageable);
         List<RecruitmentPlanDTO> result = new ArrayList<>();
         List<RecruitmentPlan> _a = recruitmentPlansState.getContent();
-        List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
-
-        for (Map<String, Object> objOfSum : _sumQuanity) {
-            Long _planId = parseLong(objOfSum.get("plan_id").toString());
-            String _sum = objOfSum.get("sum").toString();
-            _a.forEach(i -> {
-                if(i.getId().equals(_planId)){
-                    i.setSumQuanity(_sum);
-                }
-            });
-        };
-
-//        List<RecruitmentPlanOrder> items = repoOder.findByCompanyIdAndPlanIdInAndStatus(cid, Constants.ENTITY_ACTIVE);
-        List<Map<String,Object>> _countStaff = _repoJob.countStaff();
-
 
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
-            result = from(recruitmentPlansState.getContent());
+            result = toDTOs(cid,uid,recruitmentPlansState.getContent());
         }
         return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
     }
@@ -170,20 +157,20 @@ public class RecruitmentPlanService {
         String dmax="3000-01-01T00:00:00+0700";
         Date deadlineTo=null;
         Date deadlineFrom=null;
-        List<String> states = new ArrayList<>();
+        List<String> states = Arrays.asList("#");
 
         String solutionSuggestType = MapUtils.getString(payload, "solutionSuggestType","#");
         String type = MapUtils.getString(payload, "type","#");
-        String planId = MapUtils.getString(payload, "planId","#");
-        String pic = MapUtils.getString(payload, "pic","#");
-        String room = MapUtils.getString(payload, "room","#");
-        String titleId = MapUtils.getString(payload, "titleId","#");
-        String positionId = MapUtils.getString(payload, "positionId","#");
-        if (payload.containsKey("state")){
-            states = (List<String>) payload.get("state");
+        Long planId = Long.parseLong(MapUtils.getString(payload, "planId","-1"));
+        Long pic = Long.parseLong(MapUtils.getString(payload, "pic","-1"));
+        Long room = Long.parseLong(MapUtils.getString(payload, "room","-1"));
+        Long orgId = Long.parseLong(MapUtils.getString(payload, "orgId","-1"));
+        Long titleId = Long.parseLong(MapUtils.getString(payload, "titleId","-1"));
+        Long positionId = Long.parseLong(MapUtils.getString(payload, "positionId","-1"));
+        if (payload.get("states") != null && !((List<String>) payload.get("states")).isEmpty()){
+            states = (List<String>) payload.get("states");
         }
         //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
-        else states.add("#");
         if(payload.get("deadlineTo")!=null)
             deadlineTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
         else
@@ -193,7 +180,8 @@ public class RecruitmentPlanService {
         else
             deadlineFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
 
-        Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
+
+        Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,orgId,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
         List<RecruitmentPlanOrderDTO> result = new ArrayList<>();
         List<RecruitmentPlanOrder> _a = recruitmentPlansState.getContent();
 
@@ -246,20 +234,9 @@ public class RecruitmentPlanService {
         for(RecruitmentPlan obj : objs){
             RecruitmentPlanDTO o = toDTO(obj);
             List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
-            List<Map<String,Object>> _countStaff = _repoJob.countStaff();
-            items.forEach(d -> {
-                for (Map<String,Object> objCountStaff : _countStaff){
-                    Long _planOderId = parseLong(objCountStaff.get("plan_oder_id").toString());
-                    String _count = objCountStaff.get("count").toString();
-                    if(d.getId().equals(_planOderId)){
-                        if(obj.getId().equals(d.getPlanId())) {
-                            o.setRecruited(_count);
-                        }
-                    }
-                }
-            });
 
 
+            // tinh tong ung vien can tuyen
             for (Map<String, Object> objOfSum : _sumQuanity) {
                 Long _planId = parseLong(objOfSum.get("plan_id").toString());
                 String _sum = objOfSum.get("sum").toString();
@@ -270,11 +247,11 @@ public class RecruitmentPlanService {
 
             List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
             List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
-
+            BaseResponse<Map<String, Object>> objUser = _hcmService.getInfoUserByUserId(uid, cid);
             Map<Long, Map<String, Object>> mapPossion = _configService.getCategoryByIds(uid, cid, positionIds);
             Map<Long, Map<String, Object>> MapTilte = _configService.getCategoryByIds(uid, cid, titleIds);
             Map<Long, Map<String, Object>> MapLevel = _configService.getCategoryByIds(uid, cid, leverId);
-
+            o.setCreatByObj(objUser.getData());
             List<RecruitmentPlanOrderDTO> itemDTOs = new ArrayList<>();
             items.stream().filter(i -> CompareUtil.compare(i.getPlanId(), obj.getId()))
                     .collect(Collectors.toList()).stream().forEach(i -> {
@@ -295,6 +272,31 @@ public class RecruitmentPlanService {
                         if (itemDTO.getPic() != null) {
                             EmployeeDTO emp = employees.stream().filter(e -> CompareUtil.compare(e.getId(), itemDTO.getPic())).findAny().orElse(new EmployeeDTO());
                             itemDTO.setPicObj(emp);
+                        }
+                        //count all recruting
+                        Long planIds = obj.getId();
+                        List<Map<String,Object>> _getAllPlanId = repoOder.getAllPlanId(cid,planIds);
+                        for(Map<String,Object> objAllPlanid : _getAllPlanId){
+                            Long planOderId = Long.parseLong(objAllPlanid.get("id").toString());
+                            Long possion_Id = Long.parseLong(objAllPlanid.get("position_id").toString());
+                            Long orgId = Long.parseLong(objAllPlanid.get("org_id").toString());
+
+                            List<Map<String,Object>> _countStaff = _repoJob.countStaff(cid,possion_Id,orgId,planOderId);
+                            List<Map<String,Object>> _countAll = _repoJob.countAll(cid,possion_Id,orgId,planOderId);
+                            Long sumRecrutingInPlan = Long.valueOf(0);
+                            Long sumRecruting = Long.valueOf(0);
+                            for (Map<String,Object> objCount : _countStaff) {
+                                Long sumRecrutingInOder = Long.parseLong(objCount.get("count").toString());
+                                itemDTO.setCountRecruting(sumRecrutingInOder);
+                                sumRecrutingInPlan += sumRecrutingInOder;
+                            }
+                            for (Map<String,Object> objCount : _countAll) {
+                                Long sumRecrutingAll = Long.parseLong(objCount.get("count").toString());
+                                itemDTO.setCountAllRecruting(sumRecrutingAll);
+                                sumRecruting += sumRecrutingAll;
+                            }
+                            o.setSumRecruting(sumRecrutingInPlan);
+                            o.setSumRecrutingAll(sumRecruting);
                         }
 
                         itemDTOs.add(itemDTO);
