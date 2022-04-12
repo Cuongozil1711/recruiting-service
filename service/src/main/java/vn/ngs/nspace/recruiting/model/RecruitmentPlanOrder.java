@@ -42,8 +42,8 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     private String businessAddition;
     private Date startDate;
     private Date deadline;
+    private Long countRecruting;
     private Date escalateDate;
-    private Map<String, Object> countRecruting;
     private Long reasonId;
     private String description;
     private String state;
@@ -106,7 +106,7 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
                 .reasonId(this.getReasonId())
                 .description(this.getDescription())
                 .state(this.getState())
-                .countRecruting(this.getCountRecruting())
+                .countRecruting((this.getCountRecruting()))
                 .build();
     }
 }
