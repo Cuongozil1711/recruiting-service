@@ -11,6 +11,7 @@ import java.util.*;
 
 public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,Long> {
    Optional<RecruitmentPlanOrder>  findByCompanyIdAndId(Long cid, Long id);
+   Optional<RecruitmentPlanOrder> findByCompanyIdAndStatus(Long cid, Integer Status);
    Optional<RecruitmentPlanOrder> findByCompanyIdAndFromCodeAndStatus(Long cid, String fromCode, Integer status);
    List<RecruitmentPlanOrder> findByCompanyIdAndPlanIdInAndStatus(Long cid, Set<Long> planID, Integer status);
 
@@ -30,7 +31,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
            ,@Param("deadline") Date deadline
            , Pageable pageable);
 
-    @Query(value = "select plan_id, sum(quantity) from recruiting_service.recruitment_plan_order s where s.plan_id is not null and s.company_id = :companyId group by s.plan_id",nativeQuery = true)
+    @Query(value = "select plan_id, sum(quantity) from recruiting_service.recruitment_plan_order s where s.plan_id is not null and s.company_id = :companyId and s.status = 1 group by s.plan_id",nativeQuery = true)
 
     List<Map<String,Object>> sumQuanity(@Param("companyId") Long companyId);
 
