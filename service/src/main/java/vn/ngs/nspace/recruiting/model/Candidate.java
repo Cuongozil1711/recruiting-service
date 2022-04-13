@@ -50,6 +50,9 @@ public class Candidate extends PersistableEntity<Long> {
 
     private Long language;
     private String languageLevel;
+    private String codeRecruting;
+    private Long orgRecrutingId;
+    private Long roomRecrutingId;
 
     private String experience;
     private String experienceUnit; // months, years
@@ -58,6 +61,7 @@ public class Candidate extends PersistableEntity<Long> {
     private String lastPosition;
     private Date lastCompanyDateFrom;
     private Date lastCompanyDateTo;
+    private String graduationYear;
 
     private Long applyPositionId;
     private Date applyDate;
@@ -99,6 +103,10 @@ public class Candidate extends PersistableEntity<Long> {
                 .cvSourceId(dto.getCvSourceId())
                 .tags(dto.getTags())
                 .state(dto.getState())
+                .codeRecruting(dto.getCodeRecruting())
+                .orgRecrutingId(dto.getOrgRecrutingId())
+                .roomRecrutingId(dto.getRoomRecrutingId())
+                .graduationYear(dto.getGraduationYear())
                 .build();
 
         candidate.setCompanyId(cid);

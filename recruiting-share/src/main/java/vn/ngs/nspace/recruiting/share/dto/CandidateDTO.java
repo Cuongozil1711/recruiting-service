@@ -26,6 +26,10 @@ public class CandidateDTO {
     private String districtCode;
     private String provinceCode;
     private String countryCode;
+    private String codeRecruting;
+    private Long orgRecrutingId;
+    private Long roomRecrutingId;
+    private String graduationYear;
 
     private Long educationLevel; // danh muc dung chung
     private String educateLocation;
