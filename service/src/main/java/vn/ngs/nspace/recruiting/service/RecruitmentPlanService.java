@@ -330,9 +330,9 @@ public class RecruitmentPlanService {
         Map<String,Object> sumAll = repo.sumAll(cid);
 
         RecruitmentPlan recruitmentPlan = new RecruitmentPlan();
-        recruitmentPlan.setTotalSumQuanity(Long.parseLong(sumAll.get("sum_quanity").toString()));
-        recruitmentPlan.setTotalRecruted(Long.parseLong(sumAll.get("sum_recruting").toString()));
-        recruitmentPlan.setTotalSumRecrutingAll(Long.parseLong(sumAll.get("sum_recruting_all").toString()));
+        recruitmentPlan.setTotalSumQuanity(sumAll.get("sum_quanity") != null ? Long.parseLong(sumAll.get("sum_quanity").toString()) :0L);
+        recruitmentPlan.setTotalRecruted(sumAll.get("sum_recruting") !=null ? Long.parseLong(sumAll.get("sum_recruting").toString()) :0L);
+        recruitmentPlan.setTotalSumRecrutingAll(sumAll.get("sum_recruting_all") !=null ? Long.parseLong(sumAll.get("sum_recruting_all").toString()) :0L);
 
         return RecruitmentPlan.toDTO(recruitmentPlan);
     }
