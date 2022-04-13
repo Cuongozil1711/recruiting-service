@@ -54,7 +54,7 @@ public class RecruitmentPlanService {
         //check trung Code
         RecruitmentPlan exists = repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlan());
         if(!exists.isNew()){
-            throw new BusinessException("duplicate-data-with-this-formCode");
+            throw new BusinessException("duplicate-data-with-this-Code");
         }
         RecruitmentPlan obj = RecruitmentPlan.of(cid, uid, dto);
         obj.setCompanyId(cid);

@@ -36,6 +36,7 @@ public class CandidateDTO {
 
     private Long language;
     private String languageLevel;
+    private String code;
 
     private String experience;
     private String experienceUnit; // months, years

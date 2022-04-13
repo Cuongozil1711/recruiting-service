@@ -62,6 +62,7 @@ public class Candidate extends PersistableEntity<Long> {
     private Date lastCompanyDateFrom;
     private Date lastCompanyDateTo;
     private String graduationYear;
+    private String code;
 
     private Long applyPositionId;
     private Date applyDate;
@@ -107,6 +108,7 @@ public class Candidate extends PersistableEntity<Long> {
                 .orgRecrutingId(dto.getOrgRecrutingId())
                 .roomRecrutingId(dto.getRoomRecrutingId())
                 .graduationYear(dto.getGraduationYear())
+                .code(dto.getCode())
                 .build();
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);
