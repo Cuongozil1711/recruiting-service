@@ -11,7 +11,7 @@ import java.util.*;
 
 public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,Long> {
    Optional<RecruitmentPlanOrder>  findByCompanyIdAndId(Long cid, Long id);
-   Optional<RecruitmentPlanOrder> findByCompanyIdAndStatus(Long cid, Integer Status);
+   List<RecruitmentPlanOrder> getAllByCompanyAndStatus(Long cid, Integer Status);
    Optional<RecruitmentPlanOrder> findByCompanyIdAndFromCodeAndStatus(Long cid, String fromCode, Integer status);
    List<RecruitmentPlanOrder> findByCompanyIdAndPlanIdInAndStatus(Long cid, Set<Long> planID, Integer status);
 
