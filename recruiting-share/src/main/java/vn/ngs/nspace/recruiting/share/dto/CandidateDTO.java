@@ -30,7 +30,6 @@ public class CandidateDTO {
     private Long orgRecrutingId;
     private Long roomRecrutingId;
     private String graduationYear;
-
     private Long educationLevel; // danh muc dung chung
     private String educateLocation;
     private String industry;

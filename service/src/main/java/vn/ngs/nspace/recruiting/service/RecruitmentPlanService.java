@@ -298,11 +298,13 @@ public class RecruitmentPlanService {
                             List<Map<String,Object>> _countAll = _repoJob.countAll(cid,possion_Id,orgId,planOderId);
                             Long sumRecrutingInPlan = Long.valueOf(0);
                             Long sumRecruting = Long.valueOf(0);
+
                             for (Map<String,Object> objCount : _countStaff) {
                                 Long sumRecrutingInOder = Long.parseLong(objCount.get("count").toString());
                                 itemDTO.setCountRecruting(sumRecrutingInOder);
                                 sumRecrutingInPlan += sumRecrutingInOder;
                             }
+
                             for (Map<String,Object> objCount : _countAll) {
                                 Long sumRecrutingAll = Long.parseLong(objCount.get("count").toString());
                                 itemDTO.setCountAllRecruting(sumRecrutingAll);

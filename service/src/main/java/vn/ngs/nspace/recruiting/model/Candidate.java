@@ -108,7 +108,6 @@ public class Candidate extends PersistableEntity<Long> {
                 .roomRecrutingId(dto.getRoomRecrutingId())
                 .graduationYear(dto.getGraduationYear())
                 .build();
-
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);
         return candidate;
