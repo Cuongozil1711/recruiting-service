@@ -30,8 +30,9 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
             "where (s.company_id = :companyId) " +
             " and (s.status = 1)"+
             " and s.state in :states or '#' in (:states)" +
-            " and ( coalesce(s.start_date,'2000-01-02') >= :startDateFrom\\:\\:date and coalesce(s.start_date,'2000-01-02')<=:startDateTo\\:\\:date )"+
-            " and ( coalesce(s.end_date,'2000-01-02') >= :endDateFrom\\:\\:date and coalesce(s.end_date,'2000-01-02')<=:endDateTo\\:\\:date )"+
+            " and ( coalesce(s.start_date,'2000-01-02') >= :startDateFrom\\:\\:date and coalesce(s.start_date,'3000-01-02')<=:startDateTo\\:\\:date )"+
+            " and ( coalesce(s.end_date,'2000-01-02') >= :endDateFrom\\:\\:date and coalesce(s.end_date,'3000-01-02')<=:endDateTo\\:\\:date )"+
+//            "and (lower(concat(coalesce(s.name, ''), coalesce(s.code, ''))) like (concat('%', :search , '%')) or coalesce(:search, '#') = '#')"+
             "order by s.create_date desc "
 //            " and ((concat(coalesce(s.name,'#')" +
 //            ", ' ', coalesce(s.code,'#'))) like :search) "
