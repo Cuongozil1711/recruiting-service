@@ -51,6 +51,11 @@ public class RecruitmentPlanService {
 
     }
     public RecruitmentPlanDTO create(Long cid, String uid, RecruitmentPlanDTO dto) throws BusinessException {
+        //check trung Code
+        RecruitmentPlan exists = repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlan());
+        if(!exists.isNew()){
+            throw new BusinessException("duplicate-data-with-this-formCode");
+        }
         RecruitmentPlan obj = RecruitmentPlan.of(cid, uid, dto);
         obj.setCompanyId(cid);
         obj.setCreateBy(uid);
@@ -71,11 +76,7 @@ public class RecruitmentPlanService {
     }
 
     private void createItem(long cid, String uid, RecruitmentPlanOrderDTO itemDTO) {
-        //check trung formCode
-        RecruitmentPlanOrder exists = repoOder.findByCompanyIdAndFromCodeAndStatus(cid, itemDTO.getFromCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
-        if(!exists.isNew()){
-            throw new BusinessException("duplicate-data-with-this-formCode");
-        }
+
         // create template
         RecruitmentPlanOrder detail = RecruitmentPlanOrder.of(cid, uid, itemDTO);
         detail.setCompanyId(cid);
@@ -109,11 +110,7 @@ public class RecruitmentPlanService {
     }
 
     private void updateItem(long cid, String uid, Long detailId, RecruitmentPlanOrderDTO detailDTO) {
-        //check trung formCode
-        RecruitmentPlanOrder exists = repoOder.findByCompanyIdAndFromCodeAndStatus(cid, detailDTO.getFromCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlanOrder());
-        if(!exists.isNew()){
-            throw new BusinessException("duplicate-data-with-this-formCode");
-        }
+
         if(detailDTO.getId() != null && detailDTO.getId() != 0l){
             RecruitmentPlanOrder curr = repoOder.findByCompanyIdAndId(cid, detailId).orElseThrow(() -> new EntityNotFoundException(CostDetail.class, detailId));
             MapperUtils.copyWithoutAudit(detailDTO, curr);
