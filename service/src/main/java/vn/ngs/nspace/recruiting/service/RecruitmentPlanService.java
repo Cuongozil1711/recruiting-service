@@ -80,7 +80,7 @@ public class RecruitmentPlanService {
         detail.setStatus(Constants.ENTITY_ACTIVE);
 
         detail = repoOder.save(detail);
-        sumQuanity(cid);
+//        sumQuanity(cid);
     }
 
     public RecruitmentPlanDTO update(long cid, String uid, Long planId, RecruitmentPlanDTO dto) {
@@ -110,7 +110,7 @@ public class RecruitmentPlanService {
             MapperUtils.copyWithoutAudit(detailDTO, curr);
             curr.setUpdateBy(uid);
             curr = repoOder.save(curr);
-            sumQuanity(cid);
+//            sumQuanity(cid);
         }else{
             createItem(cid, uid, detailDTO);
         }
@@ -207,9 +207,10 @@ public class RecruitmentPlanService {
                 Long _sum = Long.parseLong(objOfSum.get("sum").toString());
                 if (obj.getId().equals(_planId)) {
                     o.setSumQuanity(_sum);
+                    obj.setSumQuanity(_sum);
                 }
             }
-            ;
+            repo.save(obj);
         }
     }
     public List<RecruitmentPlanDTO> toDTOs(Long cid, String uid, List<RecruitmentPlan> objs){
@@ -256,18 +257,7 @@ public class RecruitmentPlanService {
 
         for(RecruitmentPlan obj : objs){
             RecruitmentPlanDTO o = toDTO(obj);
-            List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity(cid);
-
-
-            // tinh tong ung vien can tuyen
-            for (Map<String, Object> objOfSum : _sumQuanity) {
-                Long _planId = parseLong(objOfSum.get("plan_id").toString());
-                Long _sum = Long.parseLong(objOfSum.get("sum").toString());
-                if (obj.getId().equals(_planId)) {
-                    o.setSumQuanity(_sum);
-                }
-            };
-
+            sumQuanity(cid);
             List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
             List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
             BaseResponse<Map<String, Object>> objUser = _hcmService.getInfoUserByUserId(uid, cid);
@@ -308,11 +298,13 @@ public class RecruitmentPlanService {
                             List<Map<String,Object>> _countAll = _repoJob.countAll(cid,possion_Id,orgId,planOderId);
                             Long sumRecrutingInPlan = Long.valueOf(0);
                             Long sumRecruting = Long.valueOf(0);
+
                             for (Map<String,Object> objCount : _countStaff) {
                                 Long sumRecrutingInOder = Long.parseLong(objCount.get("count").toString());
                                 itemDTO.setCountRecruting(sumRecrutingInOder);
                                 sumRecrutingInPlan += sumRecrutingInOder;
                             }
+
                             for (Map<String,Object> objCount : _countAll) {
                                 Long sumRecrutingAll = Long.parseLong(objCount.get("count").toString());
                                 itemDTO.setCountAllRecruting(sumRecrutingAll);
@@ -328,6 +320,7 @@ public class RecruitmentPlanService {
             o.setRecruitmentPlanDetails(itemDTOs);
             dtos.add(o);
         }
+
         return dtos;
     }
 
@@ -347,6 +340,7 @@ public class RecruitmentPlanService {
     /* convert list model object to DTO before response */
 
     public List<RecruitmentPlanOrderDTO> fromOder(List<RecruitmentPlanOrder> objs) {
+
         return objs.stream().map(obj -> obj.toDTOOder()).collect(Collectors.toList());
     }
 
