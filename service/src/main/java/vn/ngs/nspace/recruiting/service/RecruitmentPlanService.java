@@ -138,22 +138,24 @@ public class RecruitmentPlanService {
         //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
         else states.add("#");
         if(payload.get("startDateTo")!=null)
-         startDateTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
+         startDateTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            startDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss");
+            startDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
         if(payload.get("startDateFrom")!=null)
-         startDateFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss");
+         startDateFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            startDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
+            startDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
         if(payload.get("endDateTo")!=null)
-            endDateTo = DateUtil.toDate(MapUtils.getString(payload, "endDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
+            endDateTo = DateUtil.toDate(MapUtils.getString(payload, "endDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            endDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss");
+            endDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
         if(payload.get("endDateFrom")!=null)
-            endDateFrom = DateUtil.toDate(MapUtils.getString(payload, "endDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss");
+            endDateFrom = DateUtil.toDate(MapUtils.getString(payload, "endDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
-        Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,pageable);
+            endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
+        String createBy = MapUtils.getString(payload, "createBy","#");
+
+        Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,createBy,pageable);
         List<RecruitmentPlanDTO> result = new ArrayList<>();
         List<RecruitmentPlan> _a = recruitmentPlansState.getContent();
 
@@ -183,13 +185,13 @@ public class RecruitmentPlanService {
         }
         //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
         if(payload.get("deadlineTo")!=null)
-            deadlineTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
+            deadlineTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            deadlineTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss");
+            deadlineTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
         if(payload.get("startDateFrom")!=null)
-            deadlineFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss");
+            deadlineFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            deadlineFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
+            deadlineFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
 
 
         Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,orgId,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
