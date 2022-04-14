@@ -33,11 +33,8 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
             " and (s.start_date between :startDateFrom\\:\\:date and :startDateTo\\:\\:date)"+
             " and (s.end_date between :endDateFrom\\:\\:date and :endDateTo\\:\\:date)"+
             " and s.state in :states or '#' in (:states)" +
-
-//            "and (lower(concat(coalesce(s.name, ''), coalesce(s.code, ''))) like (concat('%', :search , '%')) or coalesce(:search, '#') = '#')"+
+            "and ((concat(coalesce(s.name, ''), coalesce(s.code, ''))) like (concat('%', :search\\:\\:text , '%')) or coalesce(:search\\:\\:text, '#') = '#')"+
             "order by s.create_date desc "
-//            " and ((concat(coalesce(s.name,'#')" +
-//            ", ' ', coalesce(s.code,'#'))) like :search) "
             ,nativeQuery = true)
     Page<RecruitmentPlan> filter(@Param("companyId") Long cid
             , @Param("states") List<String> states
@@ -46,6 +43,6 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
             ,@Param("endDateFrom") Date endDateFrom
             ,@Param("endDateTo") Date endDateTo
             ,@Param("createBy") String createBy
-//            , @Param("search") String search
+            , @Param("search") String search
             , Pageable pageable);
 }

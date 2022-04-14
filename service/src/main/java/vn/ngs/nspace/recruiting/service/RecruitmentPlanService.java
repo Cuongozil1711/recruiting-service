@@ -155,7 +155,7 @@ public class RecruitmentPlanService {
             endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
         String createBy = MapUtils.getString(payload, "createBy","#");
 
-        Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,createBy,pageable);
+        Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,createBy,search,pageable);
         List<RecruitmentPlanDTO> result = new ArrayList<>();
         List<RecruitmentPlan> _a = recruitmentPlansState.getContent();
 
