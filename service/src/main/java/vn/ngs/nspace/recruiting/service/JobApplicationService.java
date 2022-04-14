@@ -157,9 +157,6 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
 
 
     public void valid(JobApplicationDTO dto){
-        if (dto.getOrgId() == null){
-            throw new BusinessException("invalid-org");
-        }
         if (dto.getPositionId() == null){
             throw new BusinessException("invalid-position");
         }

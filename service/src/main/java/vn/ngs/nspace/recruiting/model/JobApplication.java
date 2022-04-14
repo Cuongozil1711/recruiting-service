@@ -50,6 +50,10 @@ public class JobApplication extends TaskEntity {
     private String state; // interview, offer, requested, cancelled, done
     private Long requestId;
 
+    private String codeRecruting;
+    private Long orgRecrutingId;
+    private Long roomRecrutingId;
+
     public static JobApplication of(Long cid, String uid, JobApplicationDTO dto){
         JobApplication builder = JobApplication.builder()
                 .id(dto.getId())
@@ -64,6 +68,9 @@ public class JobApplication extends TaskEntity {
                 .cvSourceId(dto.getCvSourceId())
                 .contractType(dto.getContractType())
                 .planOderId(dto.getPlanOderId())
+                .codeRecruting(dto.getCodeRecruting())
+                .orgRecrutingId(dto.getOrgRecrutingId())
+                .roomRecrutingId(dto.getRoomRecrutingId())
                 .state(dto.getState()).build();
 
 
