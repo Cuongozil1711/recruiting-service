@@ -11,6 +11,8 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     public static final String GROUP_DESCRIPTION_RECRUITING = "auto-generate-by-uploadFile" ;
     public static final String REFERENCE_GROUP_SERVICE_APPLICATION = "ticket-service";
     public static final String REFERENCE_RC_FILE_UPLOAD = "rc-file-upload";
+    public static final String EMAIL_TYPE_INVITED_INTERVIEW = "invited_interview";
+    public static final String EMAIL_TYPE_INVITED_ONBOARDING = "invited_onboarding";
 
     public static enum JOB_APPLICATION_TYPE {
         job
