@@ -29,11 +29,11 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan,Long> {
     @Query(value = " select s.* from recruiting_service.recruitment_plan s " +
             "where (s.company_id = :companyId) " +
             " and (s.status = 1)"+
-            "and ((s.create_by = :createBy) or coalesce(:createBy,'#') = '#')"+
+            "and  ((s.create_by = :createBy) or coalesce(:createBy,'#') = '#')"+
             " and (s.start_date between :startDateFrom\\:\\:date and :startDateTo\\:\\:date)"+
             " and (s.end_date between :endDateFrom\\:\\:date and :endDateTo\\:\\:date)"+
-            " and s.state in :states or '#' in (:states)" +
-            "and ((concat(coalesce(s.name, ''), coalesce(s.code, ''))) like (concat('%', :search\\:\\:text , '%')) or coalesce(:search\\:\\:text, '#') = '#')"+
+            " and (s.state in :states or '#' in (:states))" +
+            " and ((concat(coalesce(s.name, ''), coalesce(s.code, ''))) like (concat('%', :search\\:\\:varchar , '%')) or coalesce(:search\\:\\:varchar, '#') = '#')"+
             "order by s.create_date desc "
             ,nativeQuery = true)
     Page<RecruitmentPlan> filter(@Param("companyId") Long cid
