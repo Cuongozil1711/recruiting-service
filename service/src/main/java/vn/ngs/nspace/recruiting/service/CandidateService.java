@@ -1,21 +1,30 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.DateUtil;
+import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
+import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
+import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -202,10 +211,27 @@ public class CandidateService {
 
         return dtos;
     }
+    public Page<Candidate> filterByStates(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
+        List<String> states = Arrays.asList("#");
+        if (payload.get("states") != null && !((List<String>) payload.get("states")).isEmpty()){
+            states = (List<String>) payload.get("states");
+        }
+        String search = MapUtils.getString(payload, "search","#");
+
+
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,pageable);
+        List<CandidateDTO> result = new ArrayList<>();
+
+        return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
+    }
 
     /* convert model object to DTO with data before response */
     public CandidateDTO toDTOWithObj(Long cid, String uid, Candidate candidate){
         return toDTOs(cid, uid, Collections.singletonList(candidate)).get(0);
+    }
+    public List<CandidateDTO> fromOder(List<Candidate> objs) {
+
+        return objs.stream().map(obj -> obj.toDTOS()).collect(Collectors.toList());
     }
 
     /* convert model object to DTO before response */

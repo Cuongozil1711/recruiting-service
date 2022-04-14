@@ -8,6 +8,7 @@ import org.hibernate.annotations.TypeDef;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -133,6 +134,54 @@ public class Candidate extends PersistableEntity<Long> {
         candidate.setUpdateBy(uid);
         return candidate;
     }
+    public CandidateDTO toDTOS(){
+        return CandidateDTO.builder()
+                .id(this.getId())
+                .fullName(this.getFullName())
+                .avatar(this.getAvatar())
+                .birthDate(this.getBirthDate())
+                .gender(this.getGender())
+                .phone(this.getPhone())
+                .email(this.getEmail())
+                .address(this.getAddress())
+                .wardCode(this.getWardCode())
+                .districtCode(this.getDistrictCode())
+                .provinceCode(this.getProvinceCode())
+                .countryCode(this.getCountryCode())
+                .educationLevel(this.getEducationLevel()) // danh muc dung chung
+                .educateLocation(this.getEducateLocation())
+                .industry(this.getIndustry())
+                .language(this.getLanguage())
+                .languageLevel(this.getLanguageLevel())
+                .experience(this.getExperience())
+                .experienceUnit(this.getExperienceUnit()) // months, years
+                .lastCompanyName(this.getLastCompanyName())
+                .lastPosition(this.getLastPosition())
+                .lastCompanyDateFrom(this.getLastCompanyDateFrom())
+                .lastCompanyDateTo(this.getLastCompanyDateTo())
+                .applyPositionId(this.getApplyPositionId())
+                .applyDate(this.getApplyDate())
+                .cvSourceId(this.getCvSourceId())
+                .tags(this.getTags())
+                .state(this.getState())
+                .codeRecruting(this.getCodeRecruting())
+                .orgRecrutingId(this.getOrgRecrutingId())
+                .roomRecrutingId(this.getRoomRecrutingId())
+                .graduationYear(this.getGraduationYear())
+                .code(this.getCode())
+                .countInit(this.getCountInit())
+                .countAppointment(this.getCountAppointment())
+                .countApproved(this.getCountApproved())
+                .countArchive(this.getCountArchive())
+                .countInterviewed(this.getCountInterviewed())
+                .countOnboard(this.getCountOnboard())
+                .countRecruited(this.getCountRecruited())
+                .countStaff(this.getCountStaff())
+                .countDenied(this.getCountDenied())
+                .build();
+
+    }
+
     public static CandidateDTO countAllStates(Candidate obj) {
         return CandidateDTO.builder()
                 .countInit(obj.getCountInit())
