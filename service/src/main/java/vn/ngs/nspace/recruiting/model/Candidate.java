@@ -74,6 +74,7 @@ public class Candidate extends PersistableEntity<Long> {
     private Date lastCompanyDateTo;
     private String graduationYear;
     private String code;
+    private Long introduceBy;
 
     private Long applyPositionId;
     private Date applyDate;
@@ -129,6 +130,7 @@ public class Candidate extends PersistableEntity<Long> {
                 .countRecruited(dto.getCountRecruited())
                 .countStaff(dto.getCountStaff())
                 .countDenied(dto.getCountDenied())
+                .introduceBy(dto.getIntroduceBy())
                 .build();
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);
@@ -178,6 +180,7 @@ public class Candidate extends PersistableEntity<Long> {
                 .countRecruited(this.getCountRecruited())
                 .countStaff(this.getCountStaff())
                 .countDenied(this.getCountDenied())
+                .introduceBy(this.getIntroduceBy())
                 .build();
 
     }
