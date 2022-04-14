@@ -67,6 +67,8 @@ public class CandidateService {
         }
         return data;
     }
+
+    // count all states and status = 1
     public CandidateDTO countAllStatesAndStatus(Long cid ) {
         Map<String, Object> countAllStatesAndStatus = repo.countAllStates(cid);
 
@@ -78,6 +80,8 @@ public class CandidateService {
         countAll.setCountApproved(countAllStatesAndStatus.get("approved") != null ? Long.parseLong(countAllStatesAndStatus.get("approved").toString()) : 0L);
         countAll.setCountOnboard(countAllStatesAndStatus.get("appointment") != null ? Long.parseLong(countAllStatesAndStatus.get("appointment").toString()) : 0L);
         countAll.setCountAppointment(countAllStatesAndStatus.get("onboard") != null ? Long.parseLong(countAllStatesAndStatus.get("onboard").toString()) : 0L);
+        countAll.setCountStaff(countAllStatesAndStatus.get("staff") != null ? Long.parseLong(countAllStatesAndStatus.get("staff").toString()) : 0L);
+        countAll.setCountDenied(countAllStatesAndStatus.get("denied") != null ? Long.parseLong(countAllStatesAndStatus.get("denied").toString()) : 0L);
 
         return Candidate.countAllStates(countAll);
     }

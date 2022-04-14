@@ -64,6 +64,8 @@ public class Candidate extends PersistableEntity<Long> {
     private Long countApproved;
     private Long countAppointment;
     private Long countOnboard;
+    private Long countStaff;
+    private Long countDenied;
 
     private String lastCompanyName;
     private String lastPosition;
@@ -124,6 +126,8 @@ public class Candidate extends PersistableEntity<Long> {
                 .countInterviewed(dto.getCountInterviewed())
                 .countOnboard(dto.getCountOnboard())
                 .countRecruited(dto.getCountRecruited())
+                .countStaff(dto.getCountStaff())
+                .countDenied(dto.getCountDenied())
                 .build();
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);
@@ -138,6 +142,8 @@ public class Candidate extends PersistableEntity<Long> {
                 .countInterviewed(obj.getCountInterviewed())
                 .countOnboard(obj.getCountOnboard())
                 .countRecruited(obj.getCountRecruited())
+                .countStaff(obj.getCountStaff())
+                .countDenied(obj.getCountDenied())
                 .build();
     }
 }
