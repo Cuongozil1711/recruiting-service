@@ -51,6 +51,8 @@ public class CandidateDTO {
     private Long applyPositionId;
     private Date applyDate;
     private Long cvSourceId;
+
+    // count all states
     private Long countInit;
     private Long countRecruited;
     private Long countArchive;
@@ -58,7 +60,9 @@ public class CandidateDTO {
     private Long countApproved;
     private Long countAppointment;
     private Long countOnboard;
-
+    private Long countStaff;
+    private Long countDenied;
+    //
     private List<String> tags;
     private Long employeeId;
     private Integer status;
