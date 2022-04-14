@@ -74,7 +74,7 @@ public class Candidate extends PersistableEntity<Long> {
     private Date lastCompanyDateTo;
     private String graduationYear;
     private String code;
-    private Long introduceBy;
+    private String introduceBy;
 
     private Long applyPositionId;
     private Date applyDate;

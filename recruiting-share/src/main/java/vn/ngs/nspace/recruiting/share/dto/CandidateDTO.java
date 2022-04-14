@@ -51,7 +51,7 @@ public class CandidateDTO {
     private Long applyPositionId;
     private Date applyDate;
     private Long cvSourceId;
-    private Long introduceBy;
+    private String introduceBy;
 
     // count all states
     private Long countInit;
