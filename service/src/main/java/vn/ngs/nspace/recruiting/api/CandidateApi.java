@@ -71,6 +71,23 @@ public class CandidateApi {
         }
 
     }
+    @PostMapping("/filterByStates")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get  by filter"
+            , description = "Get  by filter"
+            , tags = {"Filter"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity filterByStates(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @RequestBody Map<String, Object> filter
+            , Pageable pageable) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.filterByStates(cid, filter, pageable));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
     @PostMapping("/create-list")
     @ActionMapping(action = Permission.CREATE)
