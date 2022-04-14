@@ -17,6 +17,15 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
 
     Optional<Candidate> findByCompanyIdAndId(long cid, Long id);
     Optional<Candidate> findByCompanyIdAndPhoneAndStatus(long cid, String phone, int status);
+    @Query(value = "select c " +
+            " from Candidate c" +
+            " where (c.companyId = :companyId)" +
+            " and (c.status = 1)" +
+            " and (c.id = :id)"
+    )
+    Optional<Candidate> findById(
+            @Param("companyId") Long cid
+            ,@Param("id") Long id);
 
     @Query(value = "select c " +
             " from Candidate c" +

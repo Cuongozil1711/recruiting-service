@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.kafka.disruptor.DisruptorEvent;
 import vn.ngs.nspace.kafka.dto.EventRequest;
+import vn.ngs.nspace.recruiting.service.EmailSentService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,10 +19,11 @@ public class HandlerFactory implements EventHandler<DisruptorEvent<String, byte[
 
     private static Map<String, Handler> mapper = new ConcurrentHashMap<>();
     private static String MAIL_KEY = "schedule_mail";
+    private  EmailSentService _service;
 
     @Autowired
-    public HandlerFactory() {
-        mapper.put(MAIL_KEY, new NotificationHandler());
+    public HandlerFactory(EmailSentService service) {
+        mapper.put(MAIL_KEY, new NotificationHandler(service));
     }
 
     @Override
