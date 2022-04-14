@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.share.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CandidateDTO {
@@ -49,6 +51,13 @@ public class CandidateDTO {
     private Long applyPositionId;
     private Date applyDate;
     private Long cvSourceId;
+    private Long countInit;
+    private Long countRecruited;
+    private Long countArchive;
+    private Long countInterviewed;
+    private Long countApproved;
+    private Long countAppointment;
+    private Long countOnboard;
 
     private List<String> tags;
     private Long employeeId;

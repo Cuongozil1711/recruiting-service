@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,6 +57,13 @@ public class Candidate extends PersistableEntity<Long> {
 
     private String experience;
     private String experienceUnit; // months, years
+    private Long countInit;
+    private Long countRecruited;
+    private Long countArchive;
+    private Long countInterviewed;
+    private Long countApproved;
+    private Long countAppointment;
+    private Long countOnboard;
 
     private String lastCompanyName;
     private String lastPosition;
@@ -109,9 +117,27 @@ public class Candidate extends PersistableEntity<Long> {
                 .roomRecrutingId(dto.getRoomRecrutingId())
                 .graduationYear(dto.getGraduationYear())
                 .code(dto.getCode())
+                .countInit(dto.getCountInit())
+                .countAppointment(dto.getCountAppointment())
+                .countApproved(dto.getCountApproved())
+                .countArchive(dto.getCountArchive())
+                .countInterviewed(dto.getCountInterviewed())
+                .countOnboard(dto.getCountOnboard())
+                .countRecruited(dto.getCountRecruited())
                 .build();
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);
         return candidate;
+    }
+    public static CandidateDTO countAllStates(Candidate obj) {
+        return CandidateDTO.builder()
+                .countInit(obj.getCountInit())
+                .countAppointment(obj.getCountAppointment())
+                .countApproved(obj.getCountApproved())
+                .countArchive(obj.getCountArchive())
+                .countInterviewed(obj.getCountInterviewed())
+                .countOnboard(obj.getCountOnboard())
+                .countRecruited(obj.getCountRecruited())
+                .build();
     }
 }
