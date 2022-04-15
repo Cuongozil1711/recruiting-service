@@ -31,6 +31,8 @@ public class InterviewInvolve extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long interviewId;
+    private String code;
+    private String name;
     private Long orgId;
     private Long positionId;
     private Long titleId;
@@ -52,6 +54,8 @@ public class InterviewInvolve extends PersistableEntity<Long> {
                 .interviewerId(dto.getInterviewerId())
                 .supporterId(dto.getSupporterId())
                 .interviewDescription(dto.getInterviewDescription())
+                .code(dto.getCode())
+                .name(dto.getName())
                 .build();
         return involve;
     }

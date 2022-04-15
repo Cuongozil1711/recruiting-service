@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
@@ -211,16 +212,38 @@ public class CandidateService {
 
         return dtos;
     }
+
+    //filter
     public Page<Candidate> filterByStates(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
         List<String> states = Arrays.asList("#");
         if (payload.get("states") != null && !((List<String>) payload.get("states")).isEmpty()){
             states = (List<String>) payload.get("states");
         }
+        List<Long> educationLevel =  Arrays.asList(-1L);
+        if (payload.get("educationLevel") != null && !((List<String>) payload.get("educationLevel")).isEmpty()){
+            educationLevel = (List<Long>) payload.get("educationLevel");
+        }
+        List<Long> language =  Arrays.asList(-1L);
+        if (payload.get("language") != null && !((List<String>) payload.get("states")).isEmpty()){
+            language = (List<Long>) payload.get("language");
+        }
+
+        String dmin= "2000-01-01T00:00:00+0700";
+        String dmax="3000-01-01T00:00:00+0700";
+        Date defautValueDateStart = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
+        Date defautValueDateEnd = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
+
+        Date applyDateFrom = MapUtils.getDate(payload,"applyDateFrom",defautValueDateStart);
+        Date applyDateTo = MapUtils.getDate(payload,"applyDateTo",defautValueDateEnd);
+        Date graduationFrom = MapUtils.getDate(payload,"graduationFrom",defautValueDateStart);
+        Date graduationTo = MapUtils.getDate(payload,"graduationTo",defautValueDateEnd);
+        String experience = MapUtils.getString(payload, "experience","#");
+        Long gender = MapUtils.getLong(payload,"gender", -1L);
+        Long applyPositionId = MapUtils.getLong(payload,"applyPositionId", -1L);
+        Long resource = MapUtils.getLong(payload,"resource", -1L);
         String search = MapUtils.getString(payload, "search","#");
 
-
-        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,pageable);
-        List<CandidateDTO> result = new ArrayList<>();
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,gender,applyPositionId,resource,experience,pageable);
 
         return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
     }

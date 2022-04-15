@@ -51,18 +51,38 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
             " and c.state in :states or '#' in (:states)" +
+            " and c.applyPositionId = :applyPositionId or :applyPositionId = -1" +
+            " and (c.cvSourceId = :resource or :resource = -1)"+
+//            " and (c.applyDate between :applyDateFrom and :applyDateTo)"+
+//            " and (c.graduationYear between :graduationFrom and :graduationTo)"+
+            " and c.gender = :gender or :gender = -1"+
+            " and c.experience = :experience or coalesce(:experience,'#') ='#'"+
+            " and c.educationLevel in :educationLevel or -1 in (:educationLevel)" +
+            " and c.language in :language or -1 in (:language)" +
             " and (lower(concat(coalesce(c.fullName,''),coalesce(c.code,''), coalesce(c.wardCode,''), coalesce(c.phone,''), coalesce(c.email,'') ))" +
             " like (concat('%',:search,'%')) or coalesce(:search, '#') = '#' )"+
             " order by c.id DESC "
+
     )
         // or coalesce(:search, '#') = '#'
     Page<Candidate> fillterStates(
             @Param("companyId") Long cid
             ,@Param("search") String search
             , @Param("states") List<String> states
+            , @Param("educationLevel") List<Long> educationLevel
+            , @Param("language") List<Long> language
+//            , @Param("applyDateFrom") Date applyDateFrom
+//            , @Param("applyDateTo") Date applyDateTo
+//            , @Param("graduationFrom") Date graduationFrom
+//            , @Param("graduationTo") Date graduationTo
+            ,@Param("gender") Long gender
+            ,@Param("applyPositionId") Long applyPositionId
+            ,@Param("resource") Long resource
+            ,@Param("experience") String experience
             , Pageable pageable);
     @Query(value = "select count( case when state = 'INIT' then 0 end) as init ,count( case when state = 'STAFF' then 0 end) as staff ,count( case when state = 'DENIED' then 0 end) as denied ,count( case when state = 'RECRUITED' then 0 end) as RECRUITED,count( case when state = 'ARCHIVE' then 0 end) as ARCHIVE,count( case when state = 'INTERVIEWED' then 0 end) as INTERVIEWED,count( case when state = 'APPROVED' then 0 end) as APPROVED,count( case when state = 'APPOINTMENT' then 0 end) as APPOINTMENT,count( case when state = 'ONBOARD' then 0 end) as ONBOARD from recruiting_service.candidate where company_id = :companyId and status = 1",nativeQuery = true)
     Map<String,Object> countAllStates(@Param("companyId") Long companyId);
+
     @Query(value = "select c" +
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
