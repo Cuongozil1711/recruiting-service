@@ -25,13 +25,14 @@ public class EmailSetting extends PersistableEntity<Long> {
     private String code;
     @Convert(converter = HashMapConverter.class)
     @Column(columnDefinition =  "text")
-    private Map<String, Object> configs;
+    //private Map<String, Object> configs;
+
 
     public static EmailSetting of(Long cid, String uid, EmailSettingDTO dto){
         EmailSetting builder = EmailSetting.builder()
                 .id(dto.getId())
                 .code(dto.getCode())
-                .configs(dto.getConfigs())
+                //.configs(dto.getConfigs())
                 .build();
 
         return builder;
