@@ -1,11 +1,10 @@
 package vn.ngs.nspace.recruiting.model;
 
 import lombok.*;
-import org.checkerframework.checker.signature.qual.Identifier;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.converter.HashMapConverter;
 import vn.ngs.nspace.lib.models.PersistableEntity;
-import vn.ngs.nspace.recruiting.share.dto.EmailSettingDTO;
+import vn.ngs.nspace.recruiting.share.dto.InterviewRoundDTO;
 
 import javax.persistence.*;
 import java.util.Map;
@@ -17,7 +16,7 @@ import java.util.Map;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 //Thiết lập danh sách hồ sơ cần hoàn thiện
-public class EmailSetting extends PersistableEntity<Long> {
+public class InterviewRound extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
@@ -27,8 +26,8 @@ public class EmailSetting extends PersistableEntity<Long> {
     @Column(columnDefinition =  "text")
     private Map<String, Object> configs;
 
-    public static EmailSetting of(Long cid, String uid, EmailSettingDTO dto){
-        EmailSetting builder = EmailSetting.builder()
+    public static InterviewRound of(Long cid, String uid, InterviewRoundDTO dto){
+        InterviewRound builder = InterviewRound.builder()
                 .id(dto.getId())
                 .code(dto.getCode())
                 .configs(dto.getConfigs())

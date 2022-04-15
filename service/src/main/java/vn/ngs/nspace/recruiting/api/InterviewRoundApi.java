@@ -12,27 +12,30 @@ import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
+import vn.ngs.nspace.recruiting.repo.InterviewRoundRepo;
 import vn.ngs.nspace.recruiting.service.EmailSettingService;
+import vn.ngs.nspace.recruiting.service.InterviewRoundService;
 import vn.ngs.nspace.recruiting.share.dto.EmailSettingDTO;
+import vn.ngs.nspace.recruiting.share.dto.InterviewRoundDTO;
 
 @RestController
-@RequestMapping("email-setting")
-@Tag(name = "EmailSetting", description = "Setting for email of recruiting")
-public class EmailSettingApi {
+@RequestMapping("interview-round")
+@Tag(name = "InterviewRound", description = "Setting for Interview round")
+public class InterviewRoundApi {
 
     @Autowired
-    EmailSettingService _service;
-    private final EmailSettingRepo _repo;
+    InterviewRoundService _service;
+    private final InterviewRoundRepo _repo;
 
-    public EmailSettingApi(EmailSettingRepo repo) {
+    public InterviewRoundApi(InterviewRoundRepo repo) {
         _repo = repo;
     }
 
     @PostMapping("/all")
     @ActionMapping(action = Permission.VIEW)
-    @Operation(summary = "List all Email Setting"
+    @Operation(summary = "List all Interview round Setting"
             , description = "Have no condition, find all !"
-            , tags = { "EmailSetting" }
+            , tags = { "InterviewRound" }
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
@@ -48,9 +51,9 @@ public class EmailSettingApi {
 
     @GetMapping("/{id}")
     @ActionMapping(action = Permission.VIEW)
-    @Operation(summary = "Get Email setting by ID"
+    @Operation(summary = "Get Interview round by ID"
             , description = "Have no condition, find all !"
-            , tags = { "EmailSetting" }
+            , tags = { "InterviewRound" }
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
@@ -67,15 +70,15 @@ public class EmailSettingApi {
 
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
-    @Operation(summary = "Create email Setting"
-            , description = "Create email Setting"
-            , tags = { "EmailSetting" })
+    @Operation(summary = "Create Interview round Setting"
+            , description = "Create Interview round Setting"
+            , tags = { "InterviewRound" })
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity create(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @RequestBody EmailSettingDTO request) {
+            , @RequestBody InterviewRoundDTO request) {
         try {
             return ResponseUtils.handlerSuccess(_service.create(cid, uid, request));
         } catch (Exception ex) {
@@ -83,19 +86,18 @@ public class EmailSettingApi {
         }
     }
 
-
     @PutMapping("{id}")
     @ActionMapping(action = Permission.UPDATE)
-    @Operation(summary = "Update email Setting by id"
-            , description = "Update email Setting by id, all data save in configs param (JSON Object)"
-            , tags = { "EmailSetting" })
+    @Operation(summary = "Update  Interview round by id"
+            , description = "Update Interview round by id, all data save in configs param (JSON Object)"
+            , tags = { "InterviewRound" })
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity update(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id
-            , @Parameter(description = "Payload") @RequestBody EmailSettingDTO request){
+            , @Parameter(description = "Payload") @RequestBody InterviewRoundDTO request){
         try {
             return ResponseUtils.handlerSuccess(_service.update(cid, uid, id,request));
         } catch (Exception ex) {
