@@ -29,7 +29,7 @@ public class HandlerFactory implements EventHandler<DisruptorEvent<String, byte[
     @Override
     public void onEvent(DisruptorEvent<String, byte[]> event, long sequence, boolean endOfBatch) {
         try {
-            System.out.println("event:" + event);
+          //  System.out.println("event:" + event);
             Buffer record = Buffer.buffer(event.getConsumerRecord().value());
             EventRequest<Map<String, Object>> eventRequest = Json.decodeValue(record, EventRequest.class);
             mapper.get(eventRequest.getEvent()).process(eventRequest.getPayload());

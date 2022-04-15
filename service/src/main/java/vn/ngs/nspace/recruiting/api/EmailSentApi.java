@@ -95,7 +95,7 @@ public class EmailSentApi {
     }
 
     @PostMapping("/schedule-invited-interview")
-    @ActionMapping(action = Permission.VIEW)
+    @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Get Email Sent by ID"
             , description = "Get Email Sent by ID"
             , tags = { "Email" }
@@ -114,8 +114,8 @@ public class EmailSentApi {
         }
     }
 
-    @PostMapping("/schedule-invited-oboarding")
-    @ActionMapping(action = Permission.VIEW)
+    @PostMapping("/schedule-invited-onboarding")
+    @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Get Email Sent by ID"
             , description = "Get Email Sent by ID"
             , tags = { "Email" }

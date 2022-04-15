@@ -21,7 +21,7 @@ public class NotificationHandler implements Handler {
     public void process(Map<String, Object> data) {
         try {
             ScheduleTaskCommand scheduleDTO = Json.decodeValue(new JsonObject(data).toBuffer(), ScheduleTaskCommand.class);
-            System.out.println("scheduleDTO {0}"+scheduleDTO);
+            //System.out.println("scheduleDTO {0}"+scheduleDTO);
             service.sendMail(scheduleDTO.getCompanyId(),scheduleDTO.getTaskId());
             //service.remindTaskNotices(scheduleDTO.getCompanyId(), scheduleDTO.getTaskId(), scheduleDTO.getEvent());
         } catch (Exception e) {

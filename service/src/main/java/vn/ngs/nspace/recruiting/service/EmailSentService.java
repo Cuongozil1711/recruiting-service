@@ -177,8 +177,8 @@ public class EmailSentService {
         Date schedule_date = vn.ngs.nspace.lib.utils.MapUtils.getDate(payload,"date");
         ScheduleTaskCommand scheduleAction = new ScheduleTaskCommand();
         scheduleAction.setCompanyId(cid);
-        scheduleAction.setEvent("schedule_mail");
-        scheduleAction.setAction("schedule_mail");
+        scheduleAction.setEvent("schedule_mail_"+type);
+        scheduleAction.setAction("schedule_mail_"+type);
         scheduleAction.setExecuteTime(schedule_date);
         scheduleAction.setTaskId(taskId);
         scheduleAction.setActionId(candidateId);
