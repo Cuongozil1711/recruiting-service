@@ -243,7 +243,7 @@ public class CandidateService {
         Long resource = MapUtils.getLong(payload,"resource", -1L);
         String search = MapUtils.getString(payload, "search","#");
 
-        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,gender,applyPositionId,resource,experience,pageable);
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,pageable);
 
         return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
     }

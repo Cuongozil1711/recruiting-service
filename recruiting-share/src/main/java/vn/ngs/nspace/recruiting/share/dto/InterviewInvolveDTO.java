@@ -20,6 +20,9 @@ public class InterviewInvolveDTO {
     private Long orgId;
     private Long positionId;
     private Long titleId;
+    private Long levelId;
+    private Long roomId;
+    private Long groupId;
     private String code;
     private String name;
     private List<String> interviewerId;
