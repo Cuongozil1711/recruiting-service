@@ -72,7 +72,7 @@ public class Candidate extends PersistableEntity<Long> {
     private String lastPosition;
     private Date lastCompanyDateFrom;
     private Date lastCompanyDateTo;
-    private String graduationYear;
+    private Integer graduationYear;
     private String code;
     private String introduceBy;
 

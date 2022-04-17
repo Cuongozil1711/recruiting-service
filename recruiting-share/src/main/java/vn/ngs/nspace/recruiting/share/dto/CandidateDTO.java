@@ -31,7 +31,7 @@ public class CandidateDTO {
     private String codeRecruting;
     private Long orgRecrutingId;
     private Long roomRecrutingId;
-    private String graduationYear;
+    private Integer graduationYear;
     private Long educationLevel; // danh muc dung chung
     private String educateLocation;
     private String industry;
