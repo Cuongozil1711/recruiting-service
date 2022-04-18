@@ -51,11 +51,17 @@ public class RecruitmentPlanService {
 
     }
     public RecruitmentPlanDTO create(Long cid, String uid, RecruitmentPlanDTO dto) throws BusinessException {
+        //check trung Code
+        RecruitmentPlan exists = repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(), Constants.ENTITY_ACTIVE).orElse(new RecruitmentPlan());
+        if(!exists.isNew()){
+            throw new BusinessException("duplicate-data-with-this-Code");
+        }
         RecruitmentPlan obj = RecruitmentPlan.of(cid, uid, dto);
         obj.setCompanyId(cid);
         obj.setCreateBy(uid);
         obj.setUpdateBy(uid);
         obj.setStatus(Constants.ENTITY_ACTIVE);
+
 
         obj = repo.save(obj);
         //create detail
@@ -63,6 +69,7 @@ public class RecruitmentPlanService {
             for (RecruitmentPlanOrderDTO detailDTO : dto.getRecruitmentPlanDetails()) {
                 detailDTO.setPlanId(obj.getId());
                 createItem(cid, uid, detailDTO);
+                sumQuanity(cid);
             }
         }
         return dto;
@@ -78,6 +85,7 @@ public class RecruitmentPlanService {
         detail.setStatus(Constants.ENTITY_ACTIVE);
 
         detail = repoOder.save(detail);
+//        sumQuanity(cid);
     }
 
     public RecruitmentPlanDTO update(long cid, String uid, Long planId, RecruitmentPlanDTO dto) {
@@ -96,16 +104,19 @@ public class RecruitmentPlanService {
         }
 
         curr = repo.save(curr);
+        sumQuanity(cid);
 
         return dto;
     }
 
     private void updateItem(long cid, String uid, Long detailId, RecruitmentPlanOrderDTO detailDTO) {
+
         if(detailDTO.getId() != null && detailDTO.getId() != 0l){
             RecruitmentPlanOrder curr = repoOder.findByCompanyIdAndId(cid, detailId).orElseThrow(() -> new EntityNotFoundException(CostDetail.class, detailId));
             MapperUtils.copyWithoutAudit(detailDTO, curr);
             curr.setUpdateBy(uid);
             curr = repoOder.save(curr);
+//            sumQuanity(cid);
         }else{
             createItem(cid, uid, detailDTO);
         }
@@ -127,22 +138,24 @@ public class RecruitmentPlanService {
         //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
         else states.add("#");
         if(payload.get("startDateTo")!=null)
-         startDateTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
+         startDateTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            startDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss");
+            startDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
         if(payload.get("startDateFrom")!=null)
-         startDateFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss");
+         startDateFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            startDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
+            startDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
         if(payload.get("endDateTo")!=null)
-            endDateTo = DateUtil.toDate(MapUtils.getString(payload, "endDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
+            endDateTo = DateUtil.toDate(MapUtils.getString(payload, "endDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            endDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss");
+            endDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
         if(payload.get("endDateFrom")!=null)
-            endDateFrom = DateUtil.toDate(MapUtils.getString(payload, "endDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss");
+            endDateFrom = DateUtil.toDate(MapUtils.getString(payload, "endDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
-        Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,pageable);
+            endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
+        String createBy = MapUtils.getString(payload, "createBy","#");
+
+        Page<RecruitmentPlan> recruitmentPlansState = repo.filter(cid,states,startDateFrom,startDateTo,endDateFrom,endDateTo,createBy,search,pageable);
         List<RecruitmentPlanDTO> result = new ArrayList<>();
         List<RecruitmentPlan> _a = recruitmentPlansState.getContent();
 
@@ -172,23 +185,41 @@ public class RecruitmentPlanService {
         }
         //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
         if(payload.get("deadlineTo")!=null)
-            deadlineTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ss");
+            deadlineTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            deadlineTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ss");
+            deadlineTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
         if(payload.get("startDateFrom")!=null)
-            deadlineFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ss");
+            deadlineFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
         else
-            deadlineFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ss");
+            deadlineFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
 
 
         Page<RecruitmentPlanOrder> recruitmentPlansState = repoOder.searchByFilter(cid,planId,states,deadlineFrom,deadlineTo,orgId,pic,room,positionId,titleId,solutionSuggestType,type,pageable);
         List<RecruitmentPlanOrderDTO> result = new ArrayList<>();
-        List<RecruitmentPlanOrder> _a = recruitmentPlansState.getContent();
-
+        sumQuanity(cid);
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
             result = fromOder(recruitmentPlansState.getContent());
         }
         return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
+    }
+    public void sumQuanity (Long cid){
+       List<RecruitmentPlan> objs = repo.findByCompanyIdAndStatus(cid,Constants.ENTITY_ACTIVE);
+        for(RecruitmentPlan obj : objs) {
+            RecruitmentPlanDTO o = toDTO(obj);
+            List<Map<String, Object>> _sumQuanity = repoOder.sumQuanity(cid);
+
+
+            // tinh tong ung vien can tuyen
+            for (Map<String, Object> objOfSum : _sumQuanity) {
+                Long _planId = parseLong(objOfSum.get("plan_id").toString());
+                Long _sum = Long.parseLong(objOfSum.get("sum").toString());
+                if (obj.getId().equals(_planId)) {
+                    o.setSumQuanity(_sum);
+                    obj.setSumQuanity(_sum);
+                }
+            }
+            repo.save(obj);
+        }
     }
     public List<RecruitmentPlanDTO> toDTOs(Long cid, String uid, List<RecruitmentPlan> objs){
         List<RecruitmentPlanDTO> dtos = new ArrayList<>();
@@ -206,6 +237,7 @@ public class RecruitmentPlanService {
             planId.add(o.getId());
             createBy.add(o.getCreateBy());
         });
+        sumQuanity(cid);
 
         List<RecruitmentPlanOrder> items = repoOder.findByCompanyIdAndPlanIdInAndStatus(cid, planId, Constants.ENTITY_ACTIVE);
         items.forEach(e-> {
@@ -233,18 +265,7 @@ public class RecruitmentPlanService {
 
         for(RecruitmentPlan obj : objs){
             RecruitmentPlanDTO o = toDTO(obj);
-            List<Map<String,Object>> _sumQuanity = repoOder.sumQuanity();
-
-
-            // tinh tong ung vien can tuyen
-            for (Map<String, Object> objOfSum : _sumQuanity) {
-                Long _planId = parseLong(objOfSum.get("plan_id").toString());
-                String _sum = objOfSum.get("sum").toString();
-                if (obj.getId().equals(_planId)) {
-                    o.setSumQuanity(_sum);
-                }
-            };
-
+            sumQuanity(cid);
             List<EmployeeDTO> employees = _hcmService.getEmployees(uid,cid,empIds);
             List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
             BaseResponse<Map<String, Object>> objUser = _hcmService.getInfoUserByUserId(uid, cid);
@@ -285,11 +306,13 @@ public class RecruitmentPlanService {
                             List<Map<String,Object>> _countAll = _repoJob.countAll(cid,possion_Id,orgId,planOderId);
                             Long sumRecrutingInPlan = Long.valueOf(0);
                             Long sumRecruting = Long.valueOf(0);
+
                             for (Map<String,Object> objCount : _countStaff) {
                                 Long sumRecrutingInOder = Long.parseLong(objCount.get("count").toString());
                                 itemDTO.setCountRecruting(sumRecrutingInOder);
                                 sumRecrutingInPlan += sumRecrutingInOder;
                             }
+
                             for (Map<String,Object> objCount : _countAll) {
                                 Long sumRecrutingAll = Long.parseLong(objCount.get("count").toString());
                                 itemDTO.setCountAllRecruting(sumRecrutingAll);
@@ -305,13 +328,55 @@ public class RecruitmentPlanService {
             o.setRecruitmentPlanDetails(itemDTOs);
             dtos.add(o);
         }
+
         return dtos;
     }
-    /* convert list model object to DTO before response */
-    public List<RecruitmentPlanDTO> from(List<RecruitmentPlan> objs) {
-        return objs.stream().map(obj -> obj.toDTO()).collect(Collectors.toList());
+
+    //service sum all
+
+    public RecruitmentPlanDTO sumAll(Long cid, Map<String, Object> payload,String uid) throws Exception {
+        String dmin="2000-01-01T00:00:00+0700";
+        String dmax="3000-01-01T00:00:00+0700";
+        Date startDateTo=null;
+        Date startDateFrom=null;
+        Date endDateTo=null;
+        Date endDateFrom=null;
+        List<String> states = new ArrayList<>();
+        String search = MapUtils.getString(payload, "search","#");
+        //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
+
+        if(payload.get("startDateTo")!=null)
+            startDateTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
+        else
+            startDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
+        if(payload.get("startDateFrom")!=null)
+            startDateFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
+        else
+            startDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
+        if(payload.get("endDateTo")!=null)
+            endDateTo = DateUtil.toDate(MapUtils.getString(payload, "endDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
+        else
+            endDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
+        if(payload.get("endDateFrom")!=null)
+            endDateFrom = DateUtil.toDate(MapUtils.getString(payload, "endDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
+        else
+            endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
+        String createBy = MapUtils.getString(payload, "createBy","#");
+
+        Map<String,Object> sumAll = repo.sumAll(cid,startDateFrom,startDateTo,endDateFrom,endDateTo,createBy,search);
+
+        RecruitmentPlan recruitmentPlan = new RecruitmentPlan();
+        recruitmentPlan.setTotalSumQuanity(sumAll.get("sum_quanity") != null ? Long.parseLong(sumAll.get("sum_quanity").toString()) :0L);
+        recruitmentPlan.setTotalRecruted(sumAll.get("sum_recruting") !=null ? Long.parseLong(sumAll.get("sum_recruting").toString()) :0L);
+        recruitmentPlan.setTotalSumRecrutingAll(sumAll.get("sum_recruting_all") !=null ? Long.parseLong(sumAll.get("sum_recruting_all").toString()) :0L);
+
+        return RecruitmentPlan.toDTO(recruitmentPlan);
     }
+
+    /* convert list model object to DTO before response */
+
     public List<RecruitmentPlanOrderDTO> fromOder(List<RecruitmentPlanOrder> objs) {
+
         return objs.stream().map(obj -> obj.toDTOOder()).collect(Collectors.toList());
     }
 

@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.share.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CandidateDTO {
@@ -26,15 +28,19 @@ public class CandidateDTO {
     private String districtCode;
     private String provinceCode;
     private String countryCode;
-
+    private String codeRecruting;
+    private Long orgRecrutingId;
+    private Long roomRecrutingId;
+    private Integer graduationYear;
     private Long educationLevel; // danh muc dung chung
     private String educateLocation;
     private String industry;
 
     private Long language;
     private String languageLevel;
+    private String code;
 
-    private Double experience;
+    private String experience;
     private String experienceUnit; // months, years
 
     private String lastCompanyName;
@@ -45,7 +51,19 @@ public class CandidateDTO {
     private Long applyPositionId;
     private Date applyDate;
     private Long cvSourceId;
+    private String introduceBy;
 
+    // count all states
+    private Long countInit;
+    private Long countRecruited;
+    private Long countArchive;
+    private Long countInterviewed;
+    private Long countApproved;
+    private Long countAppointment;
+    private Long countOnboard;
+    private Long countStaff;
+    private Long countDenied;
+    //
     private List<String> tags;
     private Long employeeId;
     private Integer status;

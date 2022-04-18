@@ -1,21 +1,31 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.DateUtil;
+import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
+import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
+import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -67,6 +77,24 @@ public class CandidateService {
         }
         return data;
     }
+
+    // count all states and status = 1
+    public CandidateDTO countAllStatesAndStatus(Long cid ) {
+        Map<String, Object> countAllStatesAndStatus = repo.countAllStates(cid);
+
+        Candidate countAll = new Candidate();
+        countAll.setCountInit(countAllStatesAndStatus.get("init") != null ? Long.parseLong(countAllStatesAndStatus.get("init").toString()) : 0L);
+        countAll.setCountRecruited(countAllStatesAndStatus.get("recruited") != null ? Long.parseLong(countAllStatesAndStatus.get("recruited").toString()) : 0L);
+        countAll.setCountArchive(countAllStatesAndStatus.get("archive") != null ? Long.parseLong(countAllStatesAndStatus.get("archive").toString()) : 0L);
+        countAll.setCountInterviewed(countAllStatesAndStatus.get("interviewed") != null ? Long.parseLong(countAllStatesAndStatus.get("interviewed").toString()) : 0L);
+        countAll.setCountApproved(countAllStatesAndStatus.get("approved") != null ? Long.parseLong(countAllStatesAndStatus.get("approved").toString()) : 0L);
+        countAll.setCountOnboard(countAllStatesAndStatus.get("appointment") != null ? Long.parseLong(countAllStatesAndStatus.get("appointment").toString()) : 0L);
+        countAll.setCountAppointment(countAllStatesAndStatus.get("onboard") != null ? Long.parseLong(countAllStatesAndStatus.get("onboard").toString()) : 0L);
+        countAll.setCountStaff(countAllStatesAndStatus.get("staff") != null ? Long.parseLong(countAllStatesAndStatus.get("staff").toString()) : 0L);
+        countAll.setCountDenied(countAllStatesAndStatus.get("denied") != null ? Long.parseLong(countAllStatesAndStatus.get("denied").toString()) : 0L);
+
+        return Candidate.countAllStates(countAll);
+    }
     public void uploadFile(String requestUserId, long companyId, MultipartFile file) throws IllegalStateException, IOException{
         _storageService.uploadFile(requestUserId,companyId,file);
     }
@@ -76,11 +104,10 @@ public class CandidateService {
         valid(dto);
         Candidate exists = repo.findByCompanyIdAndPhoneAndStatus(cid, dto.getPhone(), Constants.ENTITY_ACTIVE).orElse(new Candidate());
         if(!exists.isNew()){
-            throw new BusinessException("duplicate-data-with-this-phone");
+            throw new BusinessException("duplicate-data-with-this-phone"+":"+dto.getPhone());
         }
         Candidate candidate = Candidate.of(cid, uid, dto);
         candidate.setStatus(Constants.ENTITY_ACTIVE);
-        candidate.setState("ARCHIVE");
         candidate.setCreateBy(uid);
         candidate.setUpdateBy(uid);
         candidate.setCompanyId(cid);
@@ -186,9 +213,47 @@ public class CandidateService {
         return dtos;
     }
 
+    //filter
+    public Page<Candidate> filterByStates(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
+        List<String> states = Arrays.asList("#");
+        if (payload.get("states") != null && !((List<String>) payload.get("states")).isEmpty()){
+            states = (List<String>) payload.get("states");
+        }
+        List<Long> educationLevel =  Arrays.asList(-1L);
+        if (payload.get("educationLevel") != null && !((List<String>) payload.get("educationLevel")).isEmpty()){
+            educationLevel = (List<Long>) payload.get("educationLevel");
+        }
+        List<Long> language =  Arrays.asList(-1L);
+        if (payload.get("language") != null && !((List<String>) payload.get("states")).isEmpty()){
+            language = (List<Long>) payload.get("language");
+        }
+
+        String dmin= "2000-01-01T00:00:00+0700";
+        String dmax="3000-01-01T00:00:00+0700";
+        Date defautValueDateStart = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
+        Date defautValueDateEnd = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
+
+        Date applyDateFrom = MapUtils.getDate(payload,"applyDateFrom",defautValueDateStart);
+        Date applyDateTo = MapUtils.getDate(payload,"applyDateTo",defautValueDateEnd);
+        Integer graduationFrom = MapUtils.getInteger(payload,"graduationFrom",0);
+        Integer graduationTo = MapUtils.getIntValue(payload,"graduationTo",9999);
+        String experience = MapUtils.getString(payload, "experience","#");
+        Long gender = MapUtils.getLong(payload,"gender", -1L);
+        Long applyPositionId = MapUtils.getLong(payload,"applyPositionId", -1L);
+        Long resource = MapUtils.getLong(payload,"resource", -1L);
+        String search = MapUtils.getString(payload, "search","#");
+
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPositionId,resource,experience,pageable);
+
+        return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
+    }
+
     /* convert model object to DTO with data before response */
     public CandidateDTO toDTOWithObj(Long cid, String uid, Candidate candidate){
         return toDTOs(cid, uid, Collections.singletonList(candidate)).get(0);
+    }
+    public List<CandidateDTO> fromOder(List<Candidate> objs) {
+        return objs.stream().map(obj -> obj.toDTOS()).collect(Collectors.toList());
     }
 
     /* convert model object to DTO before response */

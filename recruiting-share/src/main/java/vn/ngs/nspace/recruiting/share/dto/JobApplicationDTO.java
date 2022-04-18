@@ -30,6 +30,10 @@ public class JobApplicationDTO {
     private Date onboardDate;
     private String state; // interview, offer, requested, cancelled, done
 
+    private String codeRecruting;
+    private Long orgRecrutingId;
+    private Long roomRecrutingId;
+
     private Map<String , Object> cvSourceObj;
     private List<EmployeeDTO> introduceByObj;
     private EmployeeDTO employeeObj;

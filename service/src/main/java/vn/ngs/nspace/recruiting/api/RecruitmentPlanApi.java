@@ -146,6 +146,23 @@ public class RecruitmentPlanApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+    @PostMapping("/sumAll")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get DurationType by type"
+            , description = "Get DurationType by type"
+            , tags = {"DurationType"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity sumAll(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestBody Map<String, Object> filter) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.sumAll(cid, filter,uid));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
     @GetMapping("{id}")
     @ActionMapping(action = Permission.VIEW)

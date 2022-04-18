@@ -3,7 +3,9 @@ package vn.ngs.nspace.recruiting.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
+import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapUtils;
@@ -23,6 +26,7 @@ import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import java.util.*;
@@ -67,6 +71,23 @@ public class CandidateApi {
         }
 
     }
+    @PostMapping("/filterByStates")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get  by filter"
+            , description = "Get  by filter"
+            , tags = {"Filter"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity filterByStates(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @RequestBody Map<String, Object> filter
+            , Pageable pageable) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.filterByStates(cid, filter, pageable));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
     @PostMapping("/create-list")
     @ActionMapping(action = Permission.CREATE)
@@ -85,7 +106,32 @@ public class CandidateApi {
             return ResponseUtils.handlerException(ex);
         }
     }
-
+    @GetMapping("/countAll")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get countall"
+            , description = "API for get countall"
+            , tags = { "countall" }
+            , responses = {
+            @ApiResponse(description = "Plan with id is response OK Wrap in BaseResponse"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = BaseResponse.class ))),
+            @ApiResponse(content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ProfileCheckListTemplateDTO.class))
+                    , responseCode = "200"
+                    , description = "success" )})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getCountAll(
+            @Parameter(description="ID of company")
+            @RequestHeader("cid") long cid
+            , @Parameter(description="ID of company")
+            @RequestHeader("uid") String uid) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.countAllStatesAndStatus(cid));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Create single Candidate"

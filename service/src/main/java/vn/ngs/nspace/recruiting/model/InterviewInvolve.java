@@ -31,8 +31,13 @@ public class InterviewInvolve extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long interviewId;
+    private String code;
+    private String name;
     private Long orgId;
     private Long positionId;
+    private Long levelId;
+    private Long roomId;
+    private Long groupId;
     private Long titleId;
     @Type(type = "list-array")
     @Column(columnDefinition = "text[]", length = 4000)
@@ -52,6 +57,11 @@ public class InterviewInvolve extends PersistableEntity<Long> {
                 .interviewerId(dto.getInterviewerId())
                 .supporterId(dto.getSupporterId())
                 .interviewDescription(dto.getInterviewDescription())
+                .code(dto.getCode())
+                .name(dto.getName())
+                .levelId(dto.getLevelId())
+                .groupId(dto.getGroupId())
+                .roomId(dto.getRoomId())
                 .build();
         return involve;
     }
