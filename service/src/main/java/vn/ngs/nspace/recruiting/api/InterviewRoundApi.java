@@ -58,6 +58,27 @@ public class InterviewRoundApi {
         }
     }
 
+    @GetMapping ("/all")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "List all Interview round Setting"
+            , description = "Have no condition, find all !"
+            , tags = { "InterviewRound" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity findALl(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestParam(value = "search", defaultValue = "#") String search
+            , Pageable pageable
+    ) {
+        try{
+            Page<Map<String, Object>> results = _repo.findAll(cid,  pageable);
+            return ResponseUtils.handlerSuccess(results);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
     @GetMapping("/{id}")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Get Interview round by ID"
