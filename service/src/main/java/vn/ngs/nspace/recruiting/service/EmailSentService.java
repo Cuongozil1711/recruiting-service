@@ -117,9 +117,9 @@ public class EmailSentService {
         Long candidateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "candidateId", 0l);
         Long employeeId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "employeeId", 0l);
         String typeOnboard = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "typeOnboard", "");
-        if(employeeId == 0l && candidateId == 0l){
-            throw new BusinessException("can-not-empty-both-employee-and-candidate");
-        }
+//        if(employeeId == 0l && candidateId == 0l){
+//            throw new BusinessException("can-not-empty-both-employee-and-candidate");
+//        }
         String content = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "content");
         String sign = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "sign", "");
         content = content + "</br>" + sign;
@@ -135,13 +135,14 @@ public class EmailSentService {
             refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
             refId = candidateId.toString();
         }
-        if(employeeId != 0l){
-            List<EmployeeDTO> emps = _hcmService.getEmployees(uid, cid, Collections.singleton(employeeId));
-            EmployeeDTO emp = emps.get(0);
-            if(emailTo==null) emailTo = emp.getWorkEmail();
-            refType = Constants.EMAIL_SENT_REF.EMPLOYEE.name();
-            refId = employeeId.toString();
-        }
+
+//        if(employeeId != 0l){
+//            List<EmployeeDTO> emps = _hcmService.getEmployees(uid, cid, Collections.singleton(employeeId));
+//            EmployeeDTO emp = emps.get(0);
+//            if(emailTo==null) emailTo = emp.getWorkEmail();
+//            refType = Constants.EMAIL_SENT_REF.EMPLOYEE.name();
+//            refId = employeeId.toString();
+//        }
 
         String title = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "title", vn.ngs.nspace.lib.utils.MapUtils.getString(noticeConfig, "title", ""));
         EmailSent es = new EmailSent();
