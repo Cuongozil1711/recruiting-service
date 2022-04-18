@@ -23,6 +23,7 @@ public class InterviewRound extends PersistableEntity<Long> {
     private Long id;
     private String code;
     private String name;
+    private Integer status;
    // @Convert(converter = HashMapConverter.class)
     //@Column(columnDefinition =  "text")
    // private Map<String, Object> configs;
@@ -33,6 +34,7 @@ public class InterviewRound extends PersistableEntity<Long> {
                 .code(dto.getCode())
                 .name(dto.getName())
                 //.configs(dto.getConfigs())
+                .status(dto.getStatus())
                 .build();
 
         return builder;
