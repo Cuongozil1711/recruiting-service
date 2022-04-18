@@ -4,7 +4,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
@@ -14,12 +13,11 @@ import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
+import vn.ngs.nspace.recruiting.model.InterviewInvolve;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
+import vn.ngs.nspace.recruiting.repo.InterviewInvolveRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
-import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
@@ -33,13 +31,15 @@ public class CandidateService {
     private final CandidateRepo repo;
     private final CandidateFilterRepo filterRepo;
     private final ExecuteHcmService _hcmService;
+    private final InterviewInvolveRepo _interviewInvolve;
     private final ExecuteConfigService _configService;
     private final ExecuteStorateService _storageService;
 
-    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, ExecuteStorateService sorateService) {
+    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, InterviewInvolveRepo interviewInvolve, ExecuteConfigService configService, ExecuteStorateService sorateService) {
         this.repo = repo;
         this.filterRepo = filterRepo;
         _hcmService = hcmService;
+        _interviewInvolve = interviewInvolve;
         _configService = configService;
         _storageService = sorateService;
     }
@@ -212,6 +212,14 @@ public class CandidateService {
 
         return dtos;
     }
+    //gui phe duyet hoi dong
+    public Page<Candidate> sendApproval (Long cid , Map<String,Object>payload){
+        Long id = MapUtils.getLong(payload,"id", Long.valueOf(-1));
+        Optional<InterviewInvolve> getInterviewId = _interviewInvolve.findByCompanyIdAndId(cid,id);
+
+        return null;
+    }
+
 
     //filter
     public Page<Candidate> filterByStates(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {

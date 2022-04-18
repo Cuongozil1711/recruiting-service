@@ -23,6 +23,9 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             " and (p.org_Id = :orgId or :orgId = -1) " +
             " and (p.position_Id = :positionId or :positionId = -1) " +
             " and (p.title_Id = :titleId or :titleId = -1)" +
+            " and (p.room_id = :roomId or :roomId = -1)" +
+            " and (p.level_id = :levelId or :levelId = -1)" +
+            " and (p.group_id = :groupId or :groupId = -1)" +
             " and (:interviewerId = any(p.interviewer_Id) or :interviewerId = '#') " +
             " and (p.supporter_Id = :supporterId or :supporterId = -1) " +
             " and (p.status = 1 )", nativeQuery = true)
@@ -31,6 +34,9 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             , @Param("orgId") Long orgId
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId
+            , @Param("roomId") Long roomId
+            , @Param("levelId") Long levelId
+            , @Param("groupId") Long groupId
             , @Param("interviewerId") String interviewerId
             , @Param("supporterId") Long supporterId
             , Pageable pageable);

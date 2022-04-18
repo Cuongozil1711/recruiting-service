@@ -89,6 +89,25 @@ public class CandidateApi {
         }
     }
 
+    //gui phe duyet
+    @PostMapping("/sendApproval")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get  by filter"
+            , description = "Get  by filter"
+            , tags = {"Filter"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity sendApproval(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @RequestBody Map<String, Object> filter
+            , Pageable pageable) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.sendApproval(cid, filter));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
     @PostMapping("/create-list")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "create list candidate"
