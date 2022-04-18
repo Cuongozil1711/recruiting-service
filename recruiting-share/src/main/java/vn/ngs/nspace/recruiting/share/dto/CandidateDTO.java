@@ -52,7 +52,10 @@ public class CandidateDTO {
     private Date applyDate;
     private Long cvSourceId;
     private String introduceBy;
-
+    private String salaryUnit;
+    private Date onboardDate;
+    private Long offerSalary;
+    private Long titleId;
     // count all states
     private Long countInit;
     private Long countRecruited;
@@ -78,5 +81,6 @@ public class CandidateDTO {
     private Map<String, Object> educateLevelObj;
     private Map<String, Object> applyPositionIdObj;
     private Map<String, Object> cvSourceObj;
+    private Map<String, Object> titleObj;
     private List<Map<String, Object>> CountPositionApply;
 }

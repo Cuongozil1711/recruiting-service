@@ -171,6 +171,9 @@ public class CandidateService {
             if (obj.getCvSourceId() != null){
                 categoryIds.add(obj.getCvSourceId());
             }
+            if(obj.getTitleId() !=null){
+                categoryIds.add(obj.getTitleId());
+            }
 
             dtos.add(toDTO(obj));
         });
@@ -204,6 +207,9 @@ public class CandidateService {
             }
             if (dto.getCvSourceId() != null){
                 dto.setCvSourceObj(mapCategory.get(dto.getCvSourceId()));
+            }
+            if (dto.getTitleId() != null){
+                dto.setTitleObj(mapCategory.get(dto.getTitleId()));
             }
             if (_a != null) {
                 dto.setCountPositionApply(_a);
@@ -249,9 +255,10 @@ public class CandidateService {
         Long gender = MapUtils.getLong(payload,"gender", -1L);
         Long applyPositionId = MapUtils.getLong(payload,"applyPositionId", -1L);
         Long resource = MapUtils.getLong(payload,"resource", -1L);
+        Long orgRecrutingId = MapUtils.getLong(payload,"orgRecrutingId", -1L);
         String search = MapUtils.getString(payload, "search","#");
 
-        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPositionId,resource,experience,pageable);
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,orgRecrutingId,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPositionId,resource,experience,pageable);
 
         return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
     }
