@@ -133,6 +133,34 @@ public class EmailSentApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+    //schedule
+
+    @PostMapping("/schedule")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get Email Sent by ID"
+            , description = "Get Email Sent by ID"
+            , tags = { "Email" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity setSchedule(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Payload of record")  @RequestBody Map<String, Object> payload) {
+        try{
+            Boolean booking = MapUtils.getBoolean(payload,"booking",false);
+            if(booking){
+                EmailSent es = _service.setScheduleMail(payload,cid,uid,Constants.EMAIL_TYPE_INVITED_ONBOARDING);
+                return ResponseUtils.handlerSuccess(es);
+            }else{
+                EmailSent es = _service.sendMailNow(payload,cid,uid,Constants.EMAIL_TYPE_INVITED_ONBOARDING);
+                return ResponseUtils.handlerSuccess(es);
+            }
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+    //
     @PostMapping("/send")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Get Email Sent by ID"
