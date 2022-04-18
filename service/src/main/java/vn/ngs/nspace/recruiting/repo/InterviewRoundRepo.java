@@ -23,5 +23,12 @@ public interface InterviewRoundRepo extends BaseRepo<InterviewRound,Long> {
             @Param("companyId") Long cid
             ,@Param("search") String search
             , Pageable pageable);
+
+    @Query(value = "select c.id as id , c.code as code, c.name as name" +
+            " from InterviewRound c" +
+            " where (c.companyId = :companyId) and c.status =1" )
+    Page<Map<String, Object>> findAll(
+            @Param("companyId") Long cid, Pageable pageable
+    );
 }
 
