@@ -255,10 +255,10 @@ public class CandidateService {
         Long gender = MapUtils.getLong(payload,"gender", -1L);
         Long applyPositionId = MapUtils.getLong(payload,"applyPositionId", -1L);
         Long resource = MapUtils.getLong(payload,"resource", -1L);
-        Long orgRecrutingId = MapUtils.getLong(payload,"orgRecrutingId", -1L);
+        Long applyPosition = MapUtils.getLong(payload,"applyPosition", -1L);
         String search = MapUtils.getString(payload, "search","#");
 
-        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,orgRecrutingId,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPositionId,resource,experience,pageable);
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,applyPosition,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPositionId,resource,experience,pageable);
 
         return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
     }
