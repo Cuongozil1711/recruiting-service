@@ -35,18 +35,18 @@ public class InterviewInvolveService {
 
     /* logic validate data before insert model */
     public void valid(InterviewInvolveDTO dto) throws BusinessException {
-        if (dto.getOrgId() == null) {
-            throw new BusinessException("invalid-org");
-        }
-        if (dto.getPositionId() == null) {
-            throw new BusinessException("invalid-position");
-        }
-        if (dto.getTitleId() == null) {
-            throw new BusinessException("invalid-title");
-        }
-        if (dto.getInterviewerId() == null) {
-            throw new BusinessException("invalid-interviewer");
-        }
+//        if (dto.getOrgId() == null) {
+//            throw new BusinessException("invalid-org");
+//        }
+//        if (dto.getPositionId() == null) {
+//            throw new BusinessException("invalid-position");
+//        }
+//        if (dto.getTitleId() == null) {
+//            throw new BusinessException("invalid-title");
+//        }
+//        if (dto.getInterviewerId() == null) {
+//            throw new BusinessException("invalid-interviewer");
+//        }
 
     }
 
