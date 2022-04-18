@@ -22,15 +22,17 @@ public class InterviewRound extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private String code;
-    @Convert(converter = HashMapConverter.class)
-    @Column(columnDefinition =  "text")
-    private Map<String, Object> configs;
+    private String name;
+   // @Convert(converter = HashMapConverter.class)
+    //@Column(columnDefinition =  "text")
+   // private Map<String, Object> configs;
 
     public static InterviewRound of(Long cid, String uid, InterviewRoundDTO dto){
         InterviewRound builder = InterviewRound.builder()
                 .id(dto.getId())
                 .code(dto.getCode())
-                .configs(dto.getConfigs())
+                .name(dto.getName())
+                //.configs(dto.getConfigs())
                 .build();
 
         return builder;
