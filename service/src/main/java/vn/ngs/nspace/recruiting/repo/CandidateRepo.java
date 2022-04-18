@@ -50,7 +50,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
-            "and (c.orgRecrutingId = :orgRecrutingId)"+
+            "and (c.applyPositionId = :applyPosition)"+
             " and (c.state in :states or '#' in (:states))" +
             " and (c.applyPositionId = :applyPositionId or :applyPositionId = -1)" +
             " and (c.cvSourceId = :resource or :resource = -1)"+
@@ -69,7 +69,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
     Page<Candidate> fillterStates(
             @Param("companyId") Long cid
             ,@Param("search") String search
-            ,@Param("orgRecrutingId") Long orgRecrutingId
+            ,@Param("applyPosition") Long applyPosition
             , @Param("states") List<String> states
             , @Param("educationLevel") List<Long> educationLevel
             , @Param("language") List<Long> language
