@@ -73,6 +73,10 @@ public class Candidate extends PersistableEntity<Long> {
     private Date lastCompanyDateFrom;
     private Date lastCompanyDateTo;
     private Integer graduationYear;
+    private String salaryUnit;
+    private Date onboardDate;
+    private Long offerSalary;
+    private Long titleId;
     private String code;
     private String introduceBy;
 
@@ -131,6 +135,10 @@ public class Candidate extends PersistableEntity<Long> {
                 .countStaff(dto.getCountStaff())
                 .countDenied(dto.getCountDenied())
                 .introduceBy(dto.getIntroduceBy())
+                .salaryUnit(dto.getSalaryUnit())
+                .onboardDate(dto.getOnboardDate())
+                .offerSalary(dto.getOfferSalary())
+                .titleId(dto.getTitleId())
                 .build();
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);
@@ -181,6 +189,10 @@ public class Candidate extends PersistableEntity<Long> {
                 .countStaff(this.getCountStaff())
                 .countDenied(this.getCountDenied())
                 .introduceBy(this.getIntroduceBy())
+                .salaryUnit(this.getSalaryUnit())
+                .onboardDate(this.getOnboardDate())
+                .offerSalary(this.getOfferSalary())
+                .titleId(this.getTitleId())
                 .build();
 
     }
