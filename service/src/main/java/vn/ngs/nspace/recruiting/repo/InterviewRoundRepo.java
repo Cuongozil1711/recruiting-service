@@ -15,7 +15,7 @@ public interface InterviewRoundRepo extends BaseRepo<InterviewRound,Long> {
     Optional<InterviewRound> findByCompanyIdAndId(long cid, Long id);
     Optional<InterviewRound> findByCompanyIdAndCode(long cid, String code);
     List<InterviewRound> findByCompanyId(long cid);
-    @Query(value = "select c.id as id , c.code as code, c.name as name" +
+    @Query(value = "select c.id as id , c.code as code, c.name as name,c.status as status" +
             " from InterviewRound c" +
             " where (c.companyId = :companyId)" +
             " and (concat(coalesce(c.code,''), coalesce(c.name,'')) like lower(concat('%',:search,'%')) or coalesce(:search, '#') = '#') " )
