@@ -31,7 +31,7 @@ public class InterviewRoundApi {
         _repo = repo;
     }
 
-    @PostMapping("/all")
+    @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "List all Interview round Setting"
             , description = "Have no condition, find all !"

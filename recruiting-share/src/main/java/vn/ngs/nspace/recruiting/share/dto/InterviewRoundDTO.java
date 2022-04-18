@@ -14,6 +14,7 @@ import java.util.Map;
 public class InterviewRoundDTO {
     private Long id;
     private String code;
-    private Map<String, Object> configs;
+    private String name;
+    //private Map<String, Object> configs;
     private Integer status;
 }
