@@ -235,15 +235,15 @@ public class CandidateService {
 
         Date applyDateFrom = MapUtils.getDate(payload,"applyDateFrom",defautValueDateStart);
         Date applyDateTo = MapUtils.getDate(payload,"applyDateTo",defautValueDateEnd);
-        Date graduationFrom = MapUtils.getDate(payload,"graduationFrom",defautValueDateStart);
-        Date graduationTo = MapUtils.getDate(payload,"graduationTo",defautValueDateEnd);
+        Integer graduationFrom = MapUtils.getInteger(payload,"graduationFrom",0);
+        Integer graduationTo = MapUtils.getIntValue(payload,"graduationTo",9999);
         String experience = MapUtils.getString(payload, "experience","#");
         Long gender = MapUtils.getLong(payload,"gender", -1L);
         Long applyPositionId = MapUtils.getLong(payload,"applyPositionId", -1L);
         Long resource = MapUtils.getLong(payload,"resource", -1L);
         String search = MapUtils.getString(payload, "search","#");
 
-        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,pageable);
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPositionId,resource,experience,pageable);
 
         return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
     }
@@ -253,7 +253,6 @@ public class CandidateService {
         return toDTOs(cid, uid, Collections.singletonList(candidate)).get(0);
     }
     public List<CandidateDTO> fromOder(List<Candidate> objs) {
-
         return objs.stream().map(obj -> obj.toDTOS()).collect(Collectors.toList());
     }
 

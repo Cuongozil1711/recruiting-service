@@ -146,28 +146,19 @@ public class RecruitmentPlanApi {
             return ResponseUtils.handlerException(ex);
         }
     }
-    @GetMapping("/sumAll")
+    @PostMapping("/sumAll")
     @ActionMapping(action = Permission.VIEW)
-    @Operation(summary = "Get plan by Id"
-            , description = "API for get plan by Id"
-            , tags = { "plan" }
-            , responses = {
-            @ApiResponse(description = "Plan with id is response OK Wrap in BaseResponse"
-                    , content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = BaseResponse.class ))),
-            @ApiResponse(content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = ProfileCheckListTemplateDTO.class))
-                    , responseCode = "200"
-                    , description = "success" )})
+    @Operation(summary = "Get DurationType by type"
+            , description = "Get DurationType by type"
+            , tags = {"DurationType"})
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity getSumAll(
-            @Parameter(description="ID of company")
-            @RequestHeader("cid") long cid
-            , @Parameter(description="ID of company")
-            @RequestHeader("uid") String uid) {
+    protected ResponseEntity sumAll(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestBody Map<String, Object> filter) {
         try {
-            return ResponseUtils.handlerSuccess(_service.sumAll(cid, uid));
+            return ResponseUtils.handlerSuccess(_service.sumAll(cid, filter,uid));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

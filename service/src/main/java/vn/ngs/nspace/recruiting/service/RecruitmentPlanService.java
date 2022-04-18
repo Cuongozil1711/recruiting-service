@@ -334,8 +334,36 @@ public class RecruitmentPlanService {
 
     //service sum all
 
-    public RecruitmentPlanDTO sumAll(Long cid, String uid){
-        Map<String,Object> sumAll = repo.sumAll(cid);
+    public RecruitmentPlanDTO sumAll(Long cid, Map<String, Object> payload,String uid) throws Exception {
+        String dmin="2000-01-01T00:00:00+0700";
+        String dmax="3000-01-01T00:00:00+0700";
+        Date startDateTo=null;
+        Date startDateFrom=null;
+        Date endDateTo=null;
+        Date endDateFrom=null;
+        List<String> states = new ArrayList<>();
+        String search = MapUtils.getString(payload, "search","#");
+        //String state = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "state","#");
+
+        if(payload.get("startDateTo")!=null)
+            startDateTo = DateUtil.toDate(MapUtils.getString(payload, "startDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
+        else
+            startDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
+        if(payload.get("startDateFrom")!=null)
+            startDateFrom = DateUtil.toDate(MapUtils.getString(payload, "startDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
+        else
+            startDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
+        if(payload.get("endDateTo")!=null)
+            endDateTo = DateUtil.toDate(MapUtils.getString(payload, "endDateTo", dmax), "yyyy-MM-dd'T'HH:mm:ssZ");
+        else
+            endDateTo = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
+        if(payload.get("endDateFrom")!=null)
+            endDateFrom = DateUtil.toDate(MapUtils.getString(payload, "endDateFrom", dmin), "yyyy-MM-dd'T'HH:mm:ssZ");
+        else
+            endDateFrom = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
+        String createBy = MapUtils.getString(payload, "createBy","#");
+
+        Map<String,Object> sumAll = repo.sumAll(cid,startDateFrom,startDateTo,endDateFrom,endDateTo,createBy,search);
 
         RecruitmentPlan recruitmentPlan = new RecruitmentPlan();
         recruitmentPlan.setTotalSumQuanity(sumAll.get("sum_quanity") != null ? Long.parseLong(sumAll.get("sum_quanity").toString()) :0L);
