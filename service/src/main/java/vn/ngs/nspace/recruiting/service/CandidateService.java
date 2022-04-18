@@ -11,6 +11,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.handler.NoticeEvent;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
 import vn.ngs.nspace.recruiting.model.InterviewInvolve;
@@ -31,14 +32,16 @@ public class CandidateService {
     private final CandidateRepo repo;
     private final CandidateFilterRepo filterRepo;
     private final ExecuteHcmService _hcmService;
+    private final NoticeEvent _noticeEvent;
     private final InterviewInvolveRepo _interviewInvolve;
     private final ExecuteConfigService _configService;
     private final ExecuteStorateService _storageService;
 
-    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, InterviewInvolveRepo interviewInvolve, ExecuteConfigService configService, ExecuteStorateService sorateService) {
+    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, NoticeEvent noticeEvent, InterviewInvolveRepo interviewInvolve, ExecuteConfigService configService, ExecuteStorateService sorateService) {
         this.repo = repo;
         this.filterRepo = filterRepo;
         _hcmService = hcmService;
+        _noticeEvent = noticeEvent;
         _interviewInvolve = interviewInvolve;
         _configService = configService;
         _storageService = sorateService;
@@ -219,10 +222,25 @@ public class CandidateService {
         return dtos;
     }
     //gui phe duyet hoi dong
-    public Page<Candidate> sendApproval (Long cid , Map<String,Object>payload){
+    public Page<Candidate> sendApproval (Long cid,String uid , Map<String,Object>payload){
         Long id = MapUtils.getLong(payload,"id", Long.valueOf(-1));
         Optional<InterviewInvolve> getInterviewId = _interviewInvolve.findByCompanyIdAndId(cid,id);
+        String action = "change_deadline";
+        Map<String, Object> entityData = new HashMap<>();
+        List<String> interviewId = new ArrayList<>();
+        if (getInterviewId.get().getInterviewerId() !=null){
+            interviewId.addAll(getInterviewId.get().getInterviewerId());
+        }
+        interviewId.forEach(e-> {
+            try {
+                _noticeEvent.send(cid,uid,action,Constants.NOITY_TYPE_INVITED_INTERVIEW,entityData, Collections.singleton(e.toString()));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
+
+//        _noticeEvent.send(cid,uid,);
         return null;
     }
 

@@ -99,10 +99,11 @@ public class CandidateApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity sendApproval(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @RequestHeader String uid
             , @RequestBody Map<String, Object> filter
             , Pageable pageable) {
         try {
-            return ResponseUtils.handlerSuccess(_service.sendApproval(cid, filter));
+            return ResponseUtils.handlerSuccess(_service.sendApproval(cid, uid,filter));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
