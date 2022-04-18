@@ -50,12 +50,11 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
-            "and (c.applyPositionId = :applyPosition)"+
             " and (c.state in :states or '#' in (:states))" +
-            " and (c.applyPositionId = :applyPositionId or :applyPositionId = -1)" +
+            " and (c.applyPositionId = :applyPosition or :applyPosition = -1)" +
             " and (c.cvSourceId = :resource or :resource = -1)"+
             " and (c.applyDate between :applyDateFrom and :applyDateTo)"+
-            " and (c.applyDate between :graduationFrom and :graduationTo)"+
+            " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo)"+
             " and (c.gender = :gender or :gender = -1)"+
             " and (c.experience = :experience or coalesce(:experience,'#') ='#')"+
             " and (c.educationLevel in :educationLevel or -1 in (:educationLevel))" +
@@ -69,7 +68,6 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
     Page<Candidate> fillterStates(
             @Param("companyId") Long cid
             ,@Param("search") String search
-            ,@Param("applyPosition") Long applyPosition
             , @Param("states") List<String> states
             , @Param("educationLevel") List<Long> educationLevel
             , @Param("language") List<Long> language
@@ -78,7 +76,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             , @Param("graduationFrom") Integer graduationFrom
             , @Param("graduationTo") Integer graduationTo
             ,@Param("gender") Long gender
-            ,@Param("applyPositionId") Long applyPositionId
+            ,@Param("applyPosition") Long applyPosition
             ,@Param("resource") Long resource
             ,@Param("experience") String experience
             , Pageable pageable);
