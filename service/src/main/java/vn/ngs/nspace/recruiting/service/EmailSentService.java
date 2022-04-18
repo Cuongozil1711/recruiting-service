@@ -185,4 +185,75 @@ public class EmailSentService {
         createEmailSchedule(scheduleAction);
         return es;
     }
+    /**
+     * sendMailNow
+     * @param payload
+     * @param cid
+     * @param uid
+     * @param type
+     * @return
+     */
+    public  EmailSent sendMailNow(Map<String, Object> payload,Long cid, String uid,String type){
+        Long templateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "templateId", 0l);
+        Long emailSettingId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "emailSettingId", 0l);
+        Long candidateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "candidateId", 0l);
+        Long employeeId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "employeeId", 0l);
+        String typeOnboard = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "typeOnboard", "");
+        if(employeeId == 0l && candidateId == 0l){
+            throw new BusinessException("can-not-empty-both-employee-and-candidate");
+        }
+        String content = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "content");
+        String sign = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "sign", "");
+        content = content + "</br>" + sign;
+        Map<String, Object> noticeConfig = _configService.getEmailConfigById(uid, cid, templateId);
+        EmailSetting setting = _emailSettingRepo.findByCompanyIdAndId(cid, emailSettingId).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, emailSettingId));
+
+        String emailTo =  vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "email", null);
+        String refType = "";
+        String refId = "";
+        if(candidateId != 0l){
+            Candidate candidate = _candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
+            if(emailTo==null) emailTo = candidate.getEmail();
+            refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
+            refId = candidateId.toString();
+        }
+        if(employeeId != 0l){
+            List<EmployeeDTO> emps = _hcmService.getEmployees(uid, cid, Collections.singleton(employeeId));
+            EmployeeDTO emp = emps.get(0);
+            if(emailTo==null) emailTo = emp.getWorkEmail();
+            refType = Constants.EMAIL_SENT_REF.EMPLOYEE.name();
+            refId = employeeId.toString();
+        }
+
+        String title = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "title", vn.ngs.nspace.lib.utils.MapUtils.getString(noticeConfig, "title", ""));
+        _noticeService.publishEmail(uid, cid, vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "email", "")
+                , vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "password", "")
+                , title
+                , content, Collections.singleton(uid), Collections.singleton(emailTo));
+
+        EmailSent es = new EmailSent();
+        es.setFromEmail(vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "email", ""));
+        es.setContent(content);
+        es.setDate(vn.ngs.nspace.lib.utils.MapUtils.getDate(payload, "date"));
+        es.setToEmail(emailTo);
+        es.setSubject(title);
+        es.setStatus(Constants.ENTITY_ACTIVE);
+        es.setCreateBy(uid);
+        es.setUpdateBy(uid);
+        es.setCompanyId(cid);
+        es.setRefType(refType);
+        es.setRefId(refId);
+        Long onboardOrderCheckListId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "onboardOrderCheckListId", 0l);
+        if(onboardOrderCheckListId != null){
+            OnboardOrderCheckList orderCheckList = _onboardOrderCheckListRepo.findByCompanyIdAndId(cid, onboardOrderCheckListId).orElse(new OnboardOrderCheckList());
+            if(!orderCheckList.isNew()){
+                orderCheckList.setUpdateBy(uid);
+                orderCheckList.setState(Constants.ONBOARD_ORDER_CHECK_LIST_STATE.complete.name());
+                _onboardOrderCheckListRepo.save(orderCheckList);
+            }
+            es.setTypeOnboard(typeOnboard);
+        }
+        es = repo.save(es);
+        return  es;
+    }
 }
