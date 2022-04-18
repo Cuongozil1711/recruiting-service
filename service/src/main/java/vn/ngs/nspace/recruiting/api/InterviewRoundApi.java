@@ -5,7 +5,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
@@ -17,6 +20,8 @@ import vn.ngs.nspace.recruiting.service.EmailSettingService;
 import vn.ngs.nspace.recruiting.service.InterviewRoundService;
 import vn.ngs.nspace.recruiting.share.dto.EmailSettingDTO;
 import vn.ngs.nspace.recruiting.share.dto.InterviewRoundDTO;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("interview-round")
@@ -31,7 +36,7 @@ public class InterviewRoundApi {
         _repo = repo;
     }
 
-    @PostMapping("/search")
+    @GetMapping ("/search")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "List all Interview round Setting"
             , description = "Have no condition, find all !"
@@ -41,9 +46,13 @@ public class InterviewRoundApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity search(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
-            , @Parameter(description = "Id of User") @RequestHeader String uid) {
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestParam(value = "search", defaultValue = "#") String search
+            , Pageable pageable
+    ) {
         try{
-            return ResponseUtils.handlerSuccess(_repo.findByCompanyId(cid));
+            Page<Map<String, Object>> results = _repo.search(cid, StringUtils.lowerCase(search), pageable);
+            return ResponseUtils.handlerSuccess(results);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
