@@ -83,6 +83,17 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             , @Param("ageLess") Date ageLess
             , Pageable pageable);
 
+    @Query(value = "select c " +
+            " from Candidate c" +
+            " where (c.companyId = :companyId)" +
+            " and (c.status = 1)" +
+            " and (c.state in :states or '#' in (:states))" +
+            " order by c.id DESC "
+    )
+    Page<Candidate> filterCandidate(
+            @Param("companyId") Long cid
+            , @Param("states") List<String> states
+            , Pageable pageable);
 
 
     @Query(value = "select count( case when state = 'INIT' then 0 end) as init ,count( case when state = 'STAFF' then 0 end) as staff ,count( case when state = 'DENIED' then 0 end) as denied ,count( case when state = 'RECRUITED' then 0 end) as RECRUITED,count( case when state = 'ARCHIVE' then 0 end) as ARCHIVE,count( case when state = 'INTERVIEWED' then 0 end) as INTERVIEWED,count( case when state = 'APPROVED' then 0 end) as APPROVED,count( case when state = 'APPOINTMENT' then 0 end) as APPOINTMENT,count( case when state = 'ONBOARD' then 0 end) as ONBOARD from recruiting_service.candidate where company_id = :companyId and status = 1",nativeQuery = true)

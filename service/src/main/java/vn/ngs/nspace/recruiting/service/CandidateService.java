@@ -285,6 +285,22 @@ public class CandidateService {
         List<CandidateDTO> data = toDTOs(cid, uid, CandidateStates.getContent());
         return new PageImpl(data, CandidateStates.getPageable(), CandidateStates.getTotalElements());
     }
+    //candidate
+    public Page<Candidate> filterCandidate(Long cid,String uid, Map<String, Object> payload, Pageable pageable) throws Exception {
+        List<String> states = Arrays.asList("#");
+        if (payload.get("states") != null && !((List<String>) payload.get("states")).isEmpty()){
+            states = (List<String>) payload.get("states");
+        }
+
+
+        String search = MapUtils.getString(payload, "search","#");
+        Integer ageLess = MapUtils.getInteger(payload,"ageLess", 1000);
+        Date yearLess = null;
+        yearLess = DateUtil.addDate(new Date(), "year",-ageLess);
+        Page<Candidate> CandidateStates = repo.filterCandidate(cid,states,pageable);
+        List<CandidateDTO> data = toDTOs(cid, uid, CandidateStates.getContent());
+        return new PageImpl(data, CandidateStates.getPageable(), CandidateStates.getTotalElements());
+    }
 
     /* convert model object to DTO with data before response */
     public CandidateDTO toDTOWithObj(Long cid, String uid, Candidate candidate){
