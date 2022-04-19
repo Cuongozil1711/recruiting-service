@@ -222,24 +222,15 @@ public class CandidateService {
         return dtos;
     }
     //gui phe duyet hoi dong
-    public Page<Candidate> sendApproval (Long cid,String uid , Map<String,Object>payload){
-        Long id = MapUtils.getLong(payload,"id", Long.valueOf(-1));
-        Optional<InterviewInvolve> getInterviewId = _interviewInvolve.findByCompanyIdAndId(cid,id);
-        String action = "change_deadline";
-        Map<String, Object> entityData = new HashMap<>();
+    public List<String> sendApproval (Long cid,String uid , Map<String,Object>payload){
+        Long involveId = MapUtils.getLong(payload,"involveId", Long.valueOf(-1));
+        Optional<InterviewInvolve> getInterviewId = _interviewInvolve.findByCompanyIdAndId(cid,involveId);
         List<String> interviewId = new ArrayList<>();
         if (getInterviewId.get().getInterviewerId() !=null){
             interviewId.addAll(getInterviewId.get().getInterviewerId());
         }
-        interviewId.forEach(e-> {
-            try {
-                _noticeEvent.send(cid,uid,action,Constants.NOITY_TYPE_INVITED_INTERVIEW,entityData, Collections.singleton(e));
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
 
-        return null;
+        return interviewId;
     }
 
 

@@ -26,6 +26,7 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
     private Long id;
     private Long templateId;
     private Long checkListId;
+    private String name;
     private String optionType; // number , select
     private Double minRating; //enable when optionType = number
     private Double maxRating; //enable when optionType = number
@@ -46,6 +47,7 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
                 .optionValues(dto.getOptionValues())
                 .priority(dto.getPriority())
                 .description(dto.getDescription())
+                .name(dto.getName())
                 .build();
         return obj;
     }
