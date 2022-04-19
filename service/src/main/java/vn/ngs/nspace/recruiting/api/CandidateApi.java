@@ -80,10 +80,11 @@ public class CandidateApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity filterByStates(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
+            ,@RequestHeader String uid
             , @RequestBody Map<String, Object> filter
             , Pageable pageable) {
         try {
-            return ResponseUtils.handlerSuccess(_service.filterByStates(cid, filter, pageable));
+            return ResponseUtils.handlerSuccess(_service.filterByStates(cid,uid, filter, pageable));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

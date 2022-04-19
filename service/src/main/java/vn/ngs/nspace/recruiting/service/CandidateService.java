@@ -244,7 +244,7 @@ public class CandidateService {
 
 
     //filter
-    public Page<Candidate> filterByStates(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
+    public Page<Candidate> filterByStates(Long cid,String uid, Map<String, Object> payload, Pageable pageable) throws Exception {
         List<String> states = Arrays.asList("#");
         if (payload.get("states") != null && !((List<String>) payload.get("states")).isEmpty()){
             states = (List<String>) payload.get("states");
@@ -278,20 +278,17 @@ public class CandidateService {
         Long applyPosition = MapUtils.getLong(payload,"applyPosition", -1L);
         Long resource = MapUtils.getLong(payload,"resource", -1L);
         String search = MapUtils.getString(payload, "search","#");
-        Integer ageLess = MapUtils.getInteger(payload,"ageLess", -1);
+        Integer ageLess = MapUtils.getInteger(payload,"ageLess", 1000);
         Date yearLess = null;
             yearLess = DateUtil.addDate(new Date(), "year",-ageLess);
         Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPosition,resource,experience,yearLess,pageable);
-
-        return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
+        List<CandidateDTO> data = toDTOs(cid, uid, CandidateStates.getContent());
+        return new PageImpl(data, CandidateStates.getPageable(), CandidateStates.getTotalElements());
     }
 
     /* convert model object to DTO with data before response */
     public CandidateDTO toDTOWithObj(Long cid, String uid, Candidate candidate){
         return toDTOs(cid, uid, Collections.singletonList(candidate)).get(0);
-    }
-    public List<CandidateDTO> fromOder(List<Candidate> objs) {
-        return objs.stream().map(obj -> obj.toDTOS()).collect(Collectors.toList());
     }
 
     /* convert model object to DTO before response */
