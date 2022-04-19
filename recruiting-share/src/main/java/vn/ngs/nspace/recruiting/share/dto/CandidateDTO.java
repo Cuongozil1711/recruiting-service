@@ -71,6 +71,7 @@ public class CandidateDTO {
     private Long employeeId;
     private Integer status;
     private String state;
+    private Long involveId;
 
     private EmployeeDTO employeeObj;
     private Map<String, Object> genderObj;

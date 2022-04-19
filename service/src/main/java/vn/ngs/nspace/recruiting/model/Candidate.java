@@ -79,6 +79,7 @@ public class Candidate extends PersistableEntity<Long> {
     private Long titleId;
     private String code;
     private String introduceBy;
+    private Long involveId;
 
     private Long applyPositionId;
     private Date applyDate;
@@ -139,6 +140,7 @@ public class Candidate extends PersistableEntity<Long> {
                 .onboardDate(dto.getOnboardDate())
                 .offerSalary(dto.getOfferSalary())
                 .titleId(dto.getTitleId())
+                .involveId(dto.getInvolveId())
                 .build();
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);

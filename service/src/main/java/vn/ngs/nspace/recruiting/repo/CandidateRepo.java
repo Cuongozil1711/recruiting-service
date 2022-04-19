@@ -50,7 +50,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
-            " and (c.state in :states or '#' in (:states))" +
+
             " and (c.applyPositionId = :applyPosition or :applyPosition = -1)" +
             " and (c.cvSourceId = :resource or :resource = -1)"+
             " and (c.applyDate between :applyDateFrom and :applyDateTo)"+
@@ -60,6 +60,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.experience = :experience or coalesce(:experience,'#') ='#')"+
             " and (c.educationLevel in :educationLevel or -1L in (:educationLevel))" +
             " and (c.language in :language or -1L in (:language))" +
+            " and (c.state in :states or '#' in (:states))" +
             " and ((concat(coalesce(c.fullName,''),coalesce(c.code,''), coalesce(c.wardCode,''), coalesce(c.phone,''), coalesce(c.email,'') ))" +
             " like (concat('%',:search,'%')) or coalesce(:search, '#') = '#' )"+
             " order by c.id DESC "
