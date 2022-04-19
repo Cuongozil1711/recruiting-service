@@ -57,6 +57,7 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             , @Param("orgId") Long orgId
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId);
+
     @Query(value = " select p.* " +
             " from recruiting_service.Interview_Involve p " +
             " where (p.company_Id = :companyId)" +
