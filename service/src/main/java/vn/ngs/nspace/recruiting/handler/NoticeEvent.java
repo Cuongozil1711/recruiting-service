@@ -88,7 +88,7 @@ public class NoticeEvent {
         }
     }
 
-    public void send(Long companyId, String userId, String templateType, String application, String action, Map<String, Object> entityData, Set<String> involves) throws Exception {
+    public void send(Long companyId, String userId, String code, String application, String action, Map<String, Object> entityData, Set<String> involves) throws Exception {
         List<EventRequest> events = new ArrayList<>();
         if (involves != null && !involves.isEmpty()) {
             Map<String, Map<String, Object>> users = StaticContextAccessor.getBean(UserData.class).getLocaleUsers(involves);
@@ -101,7 +101,7 @@ public class NoticeEvent {
                     }
                 }
             }
-            JsonObject templateConfig = StaticContextAccessor.getBean(ExtConfigService.class).getTemplate(userId, companyId, templateType, action, application);
+            JsonObject templateConfig = StaticContextAccessor.getBean(ExtConfigService.class).getTemplate(userId, companyId, code, action, application);
             users.keySet().forEach(locale -> {
                 /*if (entityData.containsKey("reaction")) {
                     Locale objLocale;
