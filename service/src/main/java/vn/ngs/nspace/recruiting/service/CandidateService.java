@@ -233,14 +233,12 @@ public class CandidateService {
         }
         interviewId.forEach(e-> {
             try {
-                _noticeEvent.send(cid,uid,action,Constants.NOITY_TYPE_INVITED_INTERVIEW,entityData, Collections.singleton(e.toString()));
+                _noticeEvent.send(cid,uid,action,Constants.NOITY_TYPE_INVITED_INTERVIEW,entityData, Collections.singleton(e));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
 
-
-//        _noticeEvent.send(cid,uid,);
         return null;
     }
 
@@ -255,9 +253,15 @@ public class CandidateService {
         if (payload.get("educationLevel") != null && !((List<String>) payload.get("educationLevel")).isEmpty()){
             educationLevel = (List<Long>) payload.get("educationLevel");
         }
+        else {
+            educationLevel =  Arrays.asList(-1L);
+        }
         List<Long> language =  Arrays.asList(-1L);
-        if (payload.get("language") != null && !((List<String>) payload.get("states")).isEmpty()){
+        if (payload.get("language") != null && !((List<String>) payload.get("language")).isEmpty()){
             language = (List<Long>) payload.get("language");
+        }
+        else {
+            language =  Arrays.asList(-1L);
         }
 
         String dmin= "2000-01-01T00:00:00+0700";
@@ -274,8 +278,10 @@ public class CandidateService {
         Long applyPosition = MapUtils.getLong(payload,"applyPosition", -1L);
         Long resource = MapUtils.getLong(payload,"resource", -1L);
         String search = MapUtils.getString(payload, "search","#");
-
-        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPosition,resource,experience,pageable);
+        Integer ageLess = MapUtils.getInteger(payload,"ageLess", -1);
+        Date yearLess = null;
+            yearLess = DateUtil.addDate(new Date(), "year",-ageLess);
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPosition,resource,experience,yearLess,pageable);
 
         return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
     }
