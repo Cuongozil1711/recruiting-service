@@ -56,9 +56,10 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.applyDate between :applyDateFrom and :applyDateTo)"+
             " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo)"+
             " and (c.gender = :gender or :gender = -1)"+
+            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or (:ageLess < c.birthDate))" +
             " and (c.experience = :experience or coalesce(:experience,'#') ='#')"+
-            " and (c.educationLevel in :educationLevel or -1 in (:educationLevel))" +
-            " and (c.language in :language or -1 in (:language))" +
+            " and (c.educationLevel in :educationLevel or -1L in (:educationLevel))" +
+            " and (c.language in :language or -1L in (:language))" +
             " and ((concat(coalesce(c.fullName,''),coalesce(c.code,''), coalesce(c.wardCode,''), coalesce(c.phone,''), coalesce(c.email,'') ))" +
             " like (concat('%',:search,'%')) or coalesce(:search, '#') = '#' )"+
             " order by c.id DESC "
@@ -79,6 +80,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             ,@Param("applyPosition") Long applyPosition
             ,@Param("resource") Long resource
             ,@Param("experience") String experience
+            , @Param("ageLess") Date ageLess
             , Pageable pageable);
 
 
