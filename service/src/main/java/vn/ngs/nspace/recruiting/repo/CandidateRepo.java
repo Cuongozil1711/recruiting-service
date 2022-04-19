@@ -60,11 +60,10 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
-
             " and (c.applyPositionId = :applyPosition or :applyPosition = -1)" +
             " and (c.cvSourceId = :resource or :resource = -1)"+
             " and (c.applyDate between :applyDateFrom and :applyDateTo)"+
-            " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo)"+
+            " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo or c.graduationYear is null )"+
             " and (c.gender = :gender or :gender = -1)"+
             " and (cast(:ageLess AS java.time.LocalDateTime) is null  or (:ageLess < c.birthDate))" +
             " and (c.experience = :experience or coalesce(:experience,'#') ='#')"+
