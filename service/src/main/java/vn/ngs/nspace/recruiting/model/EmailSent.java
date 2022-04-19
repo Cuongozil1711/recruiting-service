@@ -35,6 +35,9 @@ public class EmailSent extends PersistableEntity<Long> {
     private Long emailSettingId;
     private String uid;
     private String type;
+    private String mails;
+    private String candidates;
+    private Long council;
 
     public static EmailSent of(Long cid, String uid, EmailSent sent){
         EmailSent obj = EmailSent.builder()
@@ -51,6 +54,9 @@ public class EmailSent extends PersistableEntity<Long> {
                 .emailSettingId(sent.getEmailSettingId())
                 .uid(sent.getUid())
                 .type(sent.getType())
+                .council(sent.getCouncil())
+                .mails(sent.getMails())
+                .candidates(sent.getCandidates())
                 .build();
 
         return obj;

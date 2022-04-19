@@ -8,23 +8,14 @@ import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
-import vn.ngs.nspace.recruiting.model.Candidate;
-import vn.ngs.nspace.recruiting.model.EmailSent;
-import vn.ngs.nspace.recruiting.model.EmailSetting;
-import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
-import vn.ngs.nspace.recruiting.repo.CandidateRepo;
-import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
-import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
-import vn.ngs.nspace.recruiting.repo.OnboardOrderCheckListRepo;
+import vn.ngs.nspace.recruiting.model.*;
+import vn.ngs.nspace.recruiting.repo.*;
 import vn.ngs.nspace.recruiting.schedule.ScheduleRequest;
 import vn.ngs.nspace.recruiting.schedule.ScheduleTaskCommand;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -36,12 +27,14 @@ public class EmailSentService {
     private final ExecuteConfigService _configService;
     private  final CandidateRepo _candidateRepo;
     private final ExecuteHcmService _hcmService;
+    private final InterviewInvolveRepo _interviewInvolveRepo;
     private final OnboardOrderCheckListRepo _onboardOrderCheckListRepo;
     @Value("${nspace.scheduleTopic:recruiting-schedule}")
     public String scheduleTopic;
 
     public EmailSentService(EmailSentRepo repo, EventFactory eventFactory,ExecuteNoticeService noticeService,EmailSettingRepo emailSettingRepo,
-                            ExecuteConfigService configService,CandidateRepo candidateRepo,ExecuteHcmService hcmService,OnboardOrderCheckListRepo onboardOrderCheckListRepo) {
+                            ExecuteConfigService configService,CandidateRepo candidateRepo,ExecuteHcmService hcmService,OnboardOrderCheckListRepo onboardOrderCheckListRepo,
+                            InterviewInvolveRepo interviewInvolveRepo) {
 
         this.repo = repo;
         this.eventFactory = eventFactory;
@@ -51,6 +44,7 @@ public class EmailSentService {
         _candidateRepo=candidateRepo;
         _hcmService=hcmService;
         _onboardOrderCheckListRepo=onboardOrderCheckListRepo;
+        _interviewInvolveRepo=interviewInvolveRepo;
     }
 
     /* create object */
@@ -117,6 +111,7 @@ public class EmailSentService {
         Long candidateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "candidateId", 0l);
         Long employeeId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "employeeId", 0l);
         String typeOnboard = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "typeOnboard", "");
+        Long councilSelect =vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "councilSelect", 0l);
 //        if(employeeId == 0l && candidateId == 0l){
 //            throw new BusinessException("can-not-empty-both-employee-and-candidate");
 //        }
@@ -161,6 +156,7 @@ public class EmailSentService {
         es.setTemplateId(templateId);
         es.setUid(uid);
         es.setType(type);
+        es.setCouncil(councilSelect);
 
         Long onboardOrderCheckListId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "onboardOrderCheckListId", 0l);
         if(onboardOrderCheckListId != null){
@@ -197,46 +193,64 @@ public class EmailSentService {
     public  EmailSent sendMailNow(Map<String, Object> payload,Long cid, String uid,String type){
         Long templateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "templateId", 0l);
         Long emailSettingId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "emailSettingId", 0l);
-        Long candidateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "candidateId", 0l);
-        Long employeeId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "employeeId", 0l);
+        List<Long> candidateId  = convertList((List) payload.getOrDefault("orgIds", new ArrayList()));
+        // Long employeeId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "employeeId", 0l);
         String typeOnboard = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "typeOnboard", "");
-        if(employeeId == 0l && candidateId == 0l){
-            throw new BusinessException("can-not-empty-both-employee-and-candidate");
-        }
+        Long councilSelect =vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "councilSelect", 0l);
         String content = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "content");
         String sign = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "sign", "");
         content = content + "</br>" + sign;
         Map<String, Object> noticeConfig = _configService.getEmailConfigById(uid, cid, templateId);
         EmailSetting setting = _emailSettingRepo.findByCompanyIdAndId(cid, emailSettingId).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, emailSettingId));
 
-        String emailTo =  vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "email", null);
+        //String emailTo =  vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "email", null);
         String refType = "";
         String refId = "";
-        if(candidateId != 0l){
-            Candidate candidate = _candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
-            if(emailTo==null) emailTo = candidate.getEmail();
-            refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
-            refId = candidateId.toString();
+        String title = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "title", vn.ngs.nspace.lib.utils.MapUtils.getString(noticeConfig, "title", ""));
+        String mailSendUser=vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "email", "");
+        String mailSendPwd=vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "password", "");
+        //gửi mail ứng viên
+        List<String> mails = convertListString((List) payload.getOrDefault("orgIds", new ArrayList()));
+        if(candidateId.size()>0){
+            List<Candidate> _candidate = _candidateRepo.findByArrayId(cid, candidateId);
+            String finalContent = content;
+            _candidate.stream().forEach(e -> {
+                String emailTo = e.getEmail();
+                _noticeService.publishEmail(uid, cid, mailSendUser
+                        , mailSendPwd
+                        , title
+                        , finalContent, Collections.singleton(uid), Collections.singleton(emailTo));
+
+            });
         }
-        if(employeeId != 0l){
+        //gửi mail hội đồng
+        InterviewInvolve interviewInvolve =_interviewInvolveRepo.findByCompanyIdAndId(cid,councilSelect).orElse(new InterviewInvolve());
+        List<String> interviewIds=interviewInvolve.getInterviewerId();
+        //List<Long> emps=new ArrayList<>();
+        String finalContentCouncil = content;
+        interviewIds.forEach(e->{
+            Long employeeId = Long.valueOf(String.valueOf(e));
+            //emps.add(value);
             List<EmployeeDTO> emps = _hcmService.getEmployees(uid, cid, Collections.singleton(employeeId));
             EmployeeDTO emp = emps.get(0);
-            if(emailTo==null) emailTo = emp.getWorkEmail();
-            refType = Constants.EMAIL_SENT_REF.EMPLOYEE.name();
-            refId = employeeId.toString();
-        }
+            String emailToCouncil = emp.getWorkEmail();
+            if(!emailToCouncil.isEmpty()) {
+                _noticeService.publishEmail(uid, cid, mailSendUser
+                        , mailSendPwd
+                        , title
+                        , finalContentCouncil, Collections.singleton(uid), Collections.singleton(emailToCouncil));
+            }
+        });
+        //
 
-        String title = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "title", vn.ngs.nspace.lib.utils.MapUtils.getString(noticeConfig, "title", ""));
-        _noticeService.publishEmail(uid, cid, vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "email", "")
-                , vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "password", "")
-                , title
-                , content, Collections.singleton(uid), Collections.singleton(emailTo));
-
+        //
+        refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
+        refId = candidateId.toString();
         EmailSent es = new EmailSent();
-        es.setFromEmail(vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "email", ""));
+        es.setFromEmail(mailSendUser);
         es.setContent(content);
         es.setDate(vn.ngs.nspace.lib.utils.MapUtils.getDate(payload, "date"));
-        es.setToEmail(emailTo);
+        //es.setToEmail(emailTo);
         es.setSubject(title);
         es.setStatus(Constants.ENTITY_ACTIVE);
         es.setCreateBy(uid);
@@ -244,6 +258,9 @@ public class EmailSentService {
         es.setCompanyId(cid);
         es.setRefType(refType);
         es.setRefId(refId);
+        es.setCandidates(refId);
+        es.setMails(mails.toString());
+        es.setCouncil(councilSelect);
         Long onboardOrderCheckListId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "onboardOrderCheckListId", 0l);
         if(onboardOrderCheckListId != null){
             OnboardOrderCheckList orderCheckList = _onboardOrderCheckListRepo.findByCompanyIdAndId(cid, onboardOrderCheckListId).orElse(new OnboardOrderCheckList());
@@ -256,5 +273,47 @@ public class EmailSentService {
         }
         es = repo.save(es);
         return  es;
+    }
+    /**
+     * @convertList
+     * @param ids
+     * @return
+     */
+    private List<Long> convertList(List ids) {
+        List<Long> result = new ArrayList<>();
+        if (ids != null && !ids.isEmpty()) {
+            ids.forEach(id -> {
+                try {
+                    Long value = Long.valueOf(String.valueOf(id));
+                    result.add(value);
+                } catch (Exception e) {
+                }
+            });
+        }
+        if (ids == null || ids.isEmpty()) {
+            result.add(0L);
+        }
+        return result;
+    }
+    /**
+     * @convertList
+     * @param ids
+     * @return
+     */
+    private List<String> convertListString(List ids) {
+        List<String> result = new ArrayList<>();
+        if (ids != null && !ids.isEmpty()) {
+            ids.forEach(id -> {
+                try {
+                    String value = String.valueOf(id);
+                    result.add(value);
+                } catch (Exception e) {
+                }
+            });
+        }
+        if (ids == null || ids.isEmpty()) {
+            result.add("");
+        }
+        return result;
     }
 }
