@@ -84,4 +84,5 @@ public class CandidateDTO {
     private Map<String, Object> cvSourceObj;
     private Map<String, Object> titleObj;
     private List<Map<String, Object>> CountPositionApply;
+    private List<String> listInvolveId;
 }

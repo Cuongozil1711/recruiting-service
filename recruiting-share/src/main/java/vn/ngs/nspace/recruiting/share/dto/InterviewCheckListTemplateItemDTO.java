@@ -13,6 +13,7 @@ import java.util.Map;
 public class InterviewCheckListTemplateItemDTO {
     private Long id;
     private Long templateId;
+    private String name;
     private Long checkListId;
     private String optionType; // number , select
     private Double minRating; //enable when optionType = number
