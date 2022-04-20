@@ -28,6 +28,8 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             " and (p.group_id = :groupId or :groupId = -1)" +
             " and (:interviewerId = any(p.interviewer_Id) or :interviewerId = '#') " +
             " and (p.supporter_Id = :supporterId or :supporterId = -1) " +
+            " and ((concat(coalesce(p.name,''),coalesce(p.code,'') ))" +
+            " like (concat('%',:search,'%')) or coalesce(:search, '#') = '#' )"+
             " and (p.status = 1 )", nativeQuery = true)
     Page<InterviewInvolve> search(@Param("companyId") Long cid
             , @Param("interviewId") Long interviewId
@@ -39,6 +41,7 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             , @Param("groupId") Long groupId
             , @Param("interviewerId") String interviewerId
             , @Param("supporterId") Long supporterId
+            , @Param("search") String search
             , Pageable pageable);
 
     @Query(value = " select p " +
