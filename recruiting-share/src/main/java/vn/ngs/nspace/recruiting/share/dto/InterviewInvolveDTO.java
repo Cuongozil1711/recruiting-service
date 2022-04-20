@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -35,4 +36,5 @@ public class InterviewInvolveDTO {
     private OrgResp org;
     private Map<String, Object> positionObj;
     private Map<String,Object> titleObj;
+    private Date createDate;
 }

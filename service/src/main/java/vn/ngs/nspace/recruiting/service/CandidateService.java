@@ -120,18 +120,23 @@ public class CandidateService {
     }
 
     /* update by id object */
-    public CandidateDTO update(Long cid, String uid, Long id, CandidateDTO dto) throws BusinessException {
+    public CandidateDTO update(Long cid, String uid, Long id, CandidateDTO dto) throws Exception {
         valid(dto);
         Candidate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(Candidate.class, id));
         MapperUtils.copyWithoutAudit(dto, curr);
         curr.setUpdateBy(uid);
         curr = repo.save(curr);
-
+    // sent noity and email
         if (curr.getInvolveId() != null){
+            Optional<InterviewInvolve> getInterviewId = _interviewInvolve.findByCompanyIdAndId(cid,curr.getInvolveId());
+            List<String> interviewId = new ArrayList<>();
+            if (getInterviewId.get().getInterviewerId() !=null){
+                interviewId.addAll(getInterviewId.get().getInterviewerId());
+            }
             String code = "HCM-Recruting";
             String action = "NTD";
             String application = "recruiting-service";
-//            _noticeEvent.send(cid,uid,code,action,application);
+            _noticeEvent.send(cid,uid,code,action,Constants.NOITY_TYPE_INVITED_INTERVIEW, Collections.singleton(application));
         }
 
 
