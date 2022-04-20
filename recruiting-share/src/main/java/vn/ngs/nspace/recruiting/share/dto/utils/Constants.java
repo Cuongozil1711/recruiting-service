@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.share.dto.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class Constants extends vn.ngs.nspace.lib.utils.Constants {
 
@@ -12,7 +13,7 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     public static final String REFERENCE_GROUP_SERVICE_APPLICATION = "ticket-service";
     public static final String REFERENCE_RC_FILE_UPLOAD = "rc-file-upload";
     public static final String EMAIL_TYPE_INVITED_INTERVIEW = "invited_interview";
-    public static final String NOITY_TYPE_INVITED_INTERVIEW = "change_deadline";
+    public static final Map<String, Object> NOITY_TYPE_INVITED_INTERVIEW = "change_deadline";
     public static final String EMAIL_TYPE_INVITED_ONBOARDING = "invited_onboarding";
 
     public static enum JOB_APPLICATION_TYPE {

@@ -183,6 +183,7 @@ public class InterviewResultService {
 
     public List<InterviewResultDTO> toDTOs(Long cid, String uid, List<InterviewResult> objs) {
 
+        Set<String> createBy = new HashSet<>();
         List<InterviewResultDTO> dtos = new ArrayList<>();
         if(objs.size() == 0){
             InterviewResultDTO dto = new InterviewResultDTO();
@@ -202,6 +203,7 @@ public class InterviewResultService {
             if(obj.getId() != null){
                 resultIds.add(obj.getId());
             }
+            createBy.add(obj.getCreateBy());
             dtos.add(toDTO(obj));
         });
 
