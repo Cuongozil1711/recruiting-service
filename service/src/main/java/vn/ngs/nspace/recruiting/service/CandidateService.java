@@ -127,6 +127,14 @@ public class CandidateService {
         curr.setUpdateBy(uid);
         curr = repo.save(curr);
 
+        if (curr.getInvolveId() != null){
+            String code = "HCM-Recruting";
+            String action = "NTD";
+            String application = "recruiting-service";
+//            _noticeEvent.send(cid,uid,code,action,application);
+        }
+
+
         return toDTOWithObj(cid, uid, curr);
     }
 
