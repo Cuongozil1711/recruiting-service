@@ -55,8 +55,8 @@ public class InterviewInvolveApi {
             Long roomId = MapUtils.getLong(condition, "roomId", -1l);
             Long levelId = MapUtils.getLong(condition,"levelId", -1l);
             Long groupId = MapUtils.getLong(condition, "groupId", -1l);
-
-            Page<InterviewInvolve> page = _repo.search(cid, interviewId, orgId, positionId, titleId,roomId,levelId,groupId, interviewerId, supporterId, pageable);
+            String search = MapUtils.getString(condition, "search", "#");
+            Page<InterviewInvolve> page = _repo.search(cid, interviewId, orgId, positionId, titleId,roomId,levelId,groupId, interviewerId, supporterId,search, pageable);
             List<InterviewInvolveDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {
