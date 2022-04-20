@@ -29,7 +29,7 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             " and (:interviewerId = any(p.interviewer_Id) or :interviewerId = '#') " +
             " and (p.supporter_Id = :supporterId or :supporterId = -1) " +
             " and ((concat(coalesce(p.name,''),coalesce(p.code,'') ))" +
-            " like (concat('%',:search,'%')) or coalesce(:search, '#') = '#' )"+
+            " like (concat('%',:search\\:\\:varchar ,'%')) or coalesce(:search\\:\\:varchar, '#') = '#' )"+
             " and (p.status = 1 )", nativeQuery = true)
     Page<InterviewInvolve> search(@Param("companyId") Long cid
             , @Param("interviewId") Long interviewId
