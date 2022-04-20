@@ -87,6 +87,7 @@ public class Candidate extends PersistableEntity<Long> {
     @Type(type = "list-array")
     @Column(columnDefinition = "text[]", length = 4000)
     List<String> tags;
+    private String createBy;
 
     private Long employeeId;
     private String state;
