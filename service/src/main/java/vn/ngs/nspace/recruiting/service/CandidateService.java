@@ -161,6 +161,7 @@ public class CandidateService {
         List<CandidateDTO> dtos = new ArrayList<>();
         Set<String> territoryCodes = new HashSet<>();
         Set<Long> categoryIds = new HashSet<>();
+        Set<String> createBy = new HashSet<>();
 
         objs.forEach(obj -> {
             if(!StringUtils.isEmpty(obj.getWardCode())){
@@ -190,6 +191,7 @@ public class CandidateService {
             if(obj.getTitleId() !=null){
                 categoryIds.add(obj.getTitleId());
             }
+            createBy.add(obj.getCreateBy());
 
             dtos.add(toDTO(obj));
         });
