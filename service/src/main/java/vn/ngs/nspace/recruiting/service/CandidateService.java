@@ -136,7 +136,7 @@ public class CandidateService {
             String code = "HCM-Recruting";
             String action = "NTD";
             String application = "recruiting-service";
-            _noticeEvent.send(cid,uid,code,action,Constants.NOITY_TYPE_INVITED_INTERVIEW, Collections.singleton(application));
+//            _noticeEvent.send(cid,uid,code,action,Constants.NOITY_TYPE_INVITED_INTERVIEW, Collections.singleton(application));
         }
 
 
