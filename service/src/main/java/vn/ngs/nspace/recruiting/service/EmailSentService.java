@@ -1,13 +1,17 @@
 package vn.ngs.nspace.recruiting.service;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
+import vn.ngs.nspace.lib.utils.StaticContextAccessor;
+import vn.ngs.nspace.recruiting.handler.NoticeEvent;
 import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.*;
 import vn.ngs.nspace.recruiting.schedule.ScheduleRequest;
@@ -16,6 +20,7 @@ import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -29,12 +34,13 @@ public class EmailSentService {
     private final ExecuteHcmService _hcmService;
     private final InterviewInvolveRepo _interviewInvolveRepo;
     private final OnboardOrderCheckListRepo _onboardOrderCheckListRepo;
+    private final NoticeEvent _noticeEvent;
     @Value("${nspace.scheduleTopic:recruiting-schedule}")
     public String scheduleTopic;
 
     public EmailSentService(EmailSentRepo repo, EventFactory eventFactory,ExecuteNoticeService noticeService,EmailSettingRepo emailSettingRepo,
                             ExecuteConfigService configService,CandidateRepo candidateRepo,ExecuteHcmService hcmService,OnboardOrderCheckListRepo onboardOrderCheckListRepo,
-                            InterviewInvolveRepo interviewInvolveRepo) {
+                            InterviewInvolveRepo interviewInvolveRepo, NoticeEvent noticeEvent) {
 
         this.repo = repo;
         this.eventFactory = eventFactory;
@@ -45,6 +51,7 @@ public class EmailSentService {
         _hcmService=hcmService;
         _onboardOrderCheckListRepo=onboardOrderCheckListRepo;
         _interviewInvolveRepo=interviewInvolveRepo;
+        _noticeEvent=noticeEvent;
     }
 
     /* create object */
@@ -202,51 +209,33 @@ public class EmailSentService {
         content = content + "</br>" + sign;
         Map<String, Object> noticeConfig = _configService.getEmailConfigById(uid, cid, templateId);
         EmailSetting setting = _emailSettingRepo.findByCompanyIdAndId(cid, emailSettingId).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, emailSettingId));
-
         //String emailTo =  vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "email", null);
-        String refType = "";
-        String refId = "";
         String title = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "title", vn.ngs.nspace.lib.utils.MapUtils.getString(noticeConfig, "title", ""));
         String mailSendUser=vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "email", "");
-        String mailSendPwd=vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "password", "");
-        //gửi mail ứng viên
-        List<String> mails = convertListString((List) payload.getOrDefault("orgIds", new ArrayList()));
-        if(candidateId.size()>0){
-            List<Candidate> _candidate = _candidateRepo.findByArrayId(cid, candidateId);
-            String finalContent = content;
-            _candidate.stream().forEach(e -> {
-                String emailTo = e.getEmail();
-                _noticeService.publishEmail(uid, cid, mailSendUser
-                        , mailSendPwd
-                        , title
-                        , finalContent, Collections.singleton(uid), Collections.singleton(emailTo));
-
-            });
-        }
-        //gửi mail hội đồng
-        InterviewInvolve interviewInvolve =_interviewInvolveRepo.findByCompanyIdAndId(cid,councilSelect).orElse(new InterviewInvolve());
-        List<String> interviewIds=interviewInvolve.getInterviewerId();
-        //List<Long> emps=new ArrayList<>();
-        String finalContentCouncil = content;
-        interviewIds.forEach(e->{
-            Long employeeId = Long.valueOf(String.valueOf(e));
-            //emps.add(value);
-            List<EmployeeDTO> emps = _hcmService.getEmployees(uid, cid, Collections.singleton(employeeId));
-            EmployeeDTO emp = emps.get(0);
-            String emailToCouncil = emp.getWorkEmail();
-            if(!emailToCouncil.isEmpty()) {
-                _noticeService.publishEmail(uid, cid, mailSendUser
-                        , mailSendPwd
-                        , title
-                        , finalContentCouncil, Collections.singleton(uid), Collections.singleton(emailToCouncil));
-            }
-        });
-        //
-
-        //
-        refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
-        refId = candidateId.toString();
+        setSendUserAndCouncil(payload,cid,uid,setting,candidateId,title,content);
+       EmailSent  es = saveEmailSend(payload,cid,uid,councilSelect,candidateId,mailSendUser,content,title,setting);
+        return  es;
+    }
+    /**
+     * @saveEmailSend
+     * @param payload
+     * @param cid
+     * @param uid
+     * @param councilSelect
+     * @param candidateId
+     * @param mailSendUser
+     * @param content
+     * @param title
+     * @param setting
+     * @return
+     */
+    private EmailSent saveEmailSend( Map<String, Object> payload, Long cid,String uid, Long councilSelect, List<Long> candidateId,String mailSendUser,String content,String title,EmailSetting setting){
         EmailSent es = new EmailSent();
+        String refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
+        String refId = candidateId.toString();
+        List<String> mails = convertListString((List) payload.getOrDefault("orgIds", new ArrayList()));
+        String typeOnboard = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "typeOnboard", "");
+
         es.setFromEmail(mailSendUser);
         es.setContent(content);
         es.setDate(vn.ngs.nspace.lib.utils.MapUtils.getDate(payload, "date"));
@@ -272,7 +261,76 @@ public class EmailSentService {
             es.setTypeOnboard(typeOnboard);
         }
         es = repo.save(es);
-        return  es;
+        return es;
+    }
+    /**
+     * @setSendUserAndCouncil
+     * @param payload
+     * @param cid
+     * @param uid
+     * @param setting
+     * @param candidateId
+     * @param title
+     * @param content
+     */
+    private void setSendUserAndCouncil(Map<String, Object> payload,Long cid, String uid,EmailSetting setting,List<Long>candidateId,String title,String content){
+        EmailSent finalEs = new EmailSent();
+        String mailSendUser=vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "email", "");
+        String mailSendPwd=vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "password", "");
+        Long councilSelect =vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "councilSelect", 0l);
+
+       String refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
+       String refId = candidateId.toString();
+        //gửi mail ứng viên
+        List<String> mails = convertListString((List) payload.getOrDefault("orgIds", new ArrayList()));
+        if(candidateId.size()>0){
+            List<Candidate> _candidate = _candidateRepo.findByArrayId(cid, candidateId);
+            _candidate.stream().forEach(e -> {
+                String emailTo = e.getEmail();
+                _noticeService.publishEmail(uid, cid, mailSendUser
+                        , mailSendPwd
+                        , title
+                        , content, Collections.singleton(uid), Collections.singleton(emailTo));
+
+            });
+        }
+        //gửi mail hội đồng
+        InterviewInvolve interviewInvolve =_interviewInvolveRepo.findByCompanyIdAndId(cid,councilSelect).orElse(new InterviewInvolve());
+        List<String> interviewIds=interviewInvolve.getInterviewerId();
+
+        String finalContentCouncil = content;
+        String finalRefType = refType;
+        Long templId=211L;
+        Map<String, Object> noticeConfig = _configService.getEmailConfigById(uid, cid, templId);
+       // String finalRefId = refId;
+        interviewIds.forEach(e->{
+            Long employeeId = Long.valueOf(String.valueOf(e));
+            //emps.add(value);
+            List<EmployeeDTO> emps = _hcmService.getEmployees(uid, cid, Collections.singleton(employeeId));
+            EmployeeDTO emp = emps.get(0);
+            String emailToCouncil = emp.getWorkEmail();
+            if(!emailToCouncil.isEmpty()) {
+                _noticeService.publishEmail(uid, cid, vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "email", "")
+                        , vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "password", "")
+                        , title
+                        , content, Collections.singleton(uid), Collections.singleton(emailToCouncil));
+
+                Map<String, Object> entityData = new HashMap<>();
+                entityData.put("refId", emp.getId().toString());
+                entityData.put("content", content);
+                entityData.put("reaction", title);
+
+                Set<String> involves = new HashSet<>();
+               // if (!CompareUtil.compare(emp.getUserMappingId(), uid)) {
+                    involves.add(emp.getUserMappingId());
+               //}
+                String application= vn.ngs.nspace.lib.utils.MapUtils.getString(noticeConfig, "application", Constants.HCM_SERVICE_RECRUITING);
+                String action =vn.ngs.nspace.lib.utils.MapUtils.getString(noticeConfig, "action", Constants.HCM_SERVICE_RECRUITING);
+                String code =vn.ngs.nspace.lib.utils.MapUtils.getString(noticeConfig, "code", Constants.HCM_SERVICE_RECRUITING);
+                String templateType =code.toString();// application +"." + code.toString()+"."+action;
+                _noticeEvent.send(cid,emp.getUserMappingId(),templateType,action,entityData,involves);
+            }
+        });
     }
     /**
      * @convertList

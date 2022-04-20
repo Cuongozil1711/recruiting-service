@@ -13,7 +13,8 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     public static final String REFERENCE_RC_FILE_UPLOAD = "rc-file-upload";
     public static final String EMAIL_TYPE_INVITED_INTERVIEW = "invited_interview";
     public static final String EMAIL_TYPE_INVITED_ONBOARDING = "invited_onboarding";
-
+    public final static String RECRUITING_EMAIL = "email";
+    public final static String HCM_SERVICE_RECRUITING="recruiting-service";
     public static enum JOB_APPLICATION_TYPE {
         job
     }
