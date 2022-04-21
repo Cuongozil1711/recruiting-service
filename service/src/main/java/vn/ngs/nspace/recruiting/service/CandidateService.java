@@ -269,7 +269,6 @@ public class CandidateService {
         else {
             language =  Arrays.asList(-1L);
         }
-
         String dmin= "1000-01-01T00:00:00+0700";
         String dmax="5000-01-01T00:00:00+0700";
         Date defautValueDateStart = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
@@ -283,7 +282,8 @@ public class CandidateService {
         Long gender = MapUtils.getLong(payload,"gender", -1L);
         Long applyPosition = MapUtils.getLong(payload,"applyPosition", -1L);
         Long resource = MapUtils.getLong(payload,"resource", -1L);
-        String search = MapUtils.getString(payload, "search","#");
+        String search = MapUtils.getString(payload, "search","#").toLowerCase();
+
         Integer ageLess = MapUtils.getInteger(payload,"ageLess", 1000);
         Date yearLess = null;
             yearLess = DateUtil.addDate(new Date(), "year",-ageLess);
