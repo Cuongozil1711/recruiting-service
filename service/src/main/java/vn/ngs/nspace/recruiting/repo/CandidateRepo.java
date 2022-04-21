@@ -71,7 +71,7 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " and (c.language in :language or -1L in (:language))" +
             " and (c.state in :states or '#' in (:states))" +
             " and ((concat(coalesce(c.fullName,''),coalesce(c.code,''), coalesce(c.wardCode,''), coalesce(c.phone,''), coalesce(c.email,'') ))" +
-            " like (concat('%',:search,'%')) or coalesce(:search, '#') = '#' )"+
+            " like lower(concat('%',:search,'%')) or coalesce(:search, '#') = '#' )"+
             " order by c.id DESC "
 
     )
