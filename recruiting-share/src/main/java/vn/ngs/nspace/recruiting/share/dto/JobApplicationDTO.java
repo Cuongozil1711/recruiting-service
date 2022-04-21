@@ -18,6 +18,7 @@ public class JobApplicationDTO {
     private Long id;
     private String createBy;
     private Long candidateId;
+    private Long planningId;
     private Long positionId;
     private Long titleId;
     private Double offerSalary;

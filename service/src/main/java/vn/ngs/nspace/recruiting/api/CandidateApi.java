@@ -325,4 +325,25 @@ public class CandidateApi {
         }
 
     }
+
+    @PutMapping("/change-status-on-off")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "delete list Candidate",
+            description = "API for delete list Candidate")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity changeStatusOnOff(
+            @Parameter(description = "ID of company")
+            @RequestHeader Long cid
+            ,@Parameter(description = "ID of userID")
+            @RequestHeader String uid
+            , @RequestBody List<Long> ids){
+        try {
+            _service.delete(cid, uid , ids);
+            return ResponseUtils.handlerSuccess();
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
 }

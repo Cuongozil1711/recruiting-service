@@ -273,6 +273,24 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             return ResponseUtils.handlerException(e);
         }
     }
+    //create-job-apply
+
+    @PostMapping("/create-job-apply")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "delete list JobApplication",
+            description = "API for delete list JobApplication")
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    public ResponseEntity createJobApply(
+            @Parameter(description = "ID of company") @RequestHeader Long cid
+            , @Parameter(description = "ID of userID") @RequestHeader String uid
+            ,@RequestBody Map<String, Object> payload){
+        try {
+            return ResponseUtils.handlerSuccess(_service.createJobApply(cid, uid , payload));
+        } catch (Exception e){
+            return ResponseUtils.handlerException(e);
+        }
+    }
 
     @PostMapping("/old/create-employee/{id}")
     @ActionMapping(action = Permission.UPDATE)

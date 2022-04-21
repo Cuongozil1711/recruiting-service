@@ -13,6 +13,7 @@ import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 
+import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.model.Candidate;
@@ -20,6 +21,7 @@ import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.request.JobApplicationRequest;
+import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
@@ -253,6 +255,44 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         return empResp.getEmployee();
     }
 
+    /**
+     * createJobApply
+     * @param cid
+     * @param uid
+     * @param payload
+     * @return
+     */
+    public JobApplicationDTO createJobApply(Long cid, String uid,Map<String, Object> payload){
+        Long planningId =  MapUtils.getLong(payload, "planningId", 0l);
+        Long planOrderId =  MapUtils.getLong(payload, "planOrderId", 0l);
+        Long positionId =  MapUtils.getLong(payload, "positionId", 0l);
+        Long candidateId =  MapUtils.getLong(payload, "candidateId", 0l);
+
+        JobApplication currentJr = _repo.checkJobApplicationDuplicate(cid,positionId,planningId,planOrderId, candidateId).orElse(new JobApplication());
+        if(currentJr.getId()==null){
+            currentJr.setCandidateId(candidateId);
+            currentJr.setCompanyId(cid);
+            currentJr.setType("job");
+            currentJr.setCreateBy(uid);
+            currentJr.setUpdateBy(uid);
+            currentJr.setPlanningId(planningId);
+            currentJr.setPlanOderId(planOrderId);
+            currentJr.setPositionId(positionId);
+            currentJr.setState(Constants.JOB_APPLICATION_STATE.INIT.name());
+            currentJr.setStatus(Constants.ENTITY_ACTIVE);
+            _repo.save(currentJr);
+            updateCandidate(cid,uid,candidateId);
+        }
+        return toDTOWithObj(cid,uid,currentJr);
+    }
+    public Candidate updateCandidate(Long cid, String uid, Long id) throws BusinessException {
+
+        Candidate curr = _candidateRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(Candidate.class, id));
+        curr.setState(Constants.HCM_RECRUITMENT.RECRUITED.name());
+        curr.setUpdateBy(uid);
+        curr = _candidateRepo.save(curr);
+        return curr;
+    }
     public JobApplicationDTO initByCandidate(Long cid, String uid, Long candidateId) {
         JobApplication currentJr = _repo.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId, Constants.ENTITY_ACTIVE).orElse(new JobApplication());
         if(currentJr.isNew()){

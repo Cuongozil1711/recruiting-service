@@ -34,6 +34,7 @@ public class JobApplication extends TaskEntity {
     private Long id;
     private Long candidateId;
     private Long positionId;
+    private Long planningId;
     private String Code_Candidate;
     private Long titleId;
     private Long orgId;
@@ -58,6 +59,7 @@ public class JobApplication extends TaskEntity {
         JobApplication builder = JobApplication.builder()
                 .id(dto.getId())
                 .candidateId(dto.getCandidateId())
+                .planningId(dto.getPlanningId())
                 .titleId(dto.getTitleId())
                 .positionId(dto.getPositionId())
                 .offerSalary(dto.getOfferSalary())

@@ -123,7 +123,6 @@ public class CandidateService {
         MapperUtils.copyWithoutAudit(dto, curr);
         curr.setUpdateBy(uid);
         curr = repo.save(curr);
-
         return toDTOWithObj(cid, uid, curr);
     }
 

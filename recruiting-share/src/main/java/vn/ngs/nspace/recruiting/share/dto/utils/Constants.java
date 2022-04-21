@@ -73,4 +73,14 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     public enum CMD_TABLE_ACTION {
         DELETE, UPDATE
     }
+    public  enum HCM_RECRUITMENT{
+        INIT,
+        RECRUITED,
+        APPROVED,
+        APPOINTMENT,
+        INTERVIEWED,
+        ONBOARD,
+        STAFF,
+        DENIED,
+    }
 }
