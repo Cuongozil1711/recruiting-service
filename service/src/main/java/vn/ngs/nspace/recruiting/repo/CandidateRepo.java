@@ -2,10 +2,12 @@ package vn.ngs.nspace.recruiting.repo;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.Candidate;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 
 import java.util.Date;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public interface CandidateRepo extends BaseRepo<Candidate,Long> {
+public interface CandidateRepo extends BaseRepo<Candidate,Long>, JpaSpecificationExecutor<Candidate> {
 
     Optional<Candidate> findByCompanyIdAndId(long cid, Long id);
     Optional<Candidate> findByCompanyIdAndPhoneAndStatus(long cid, String phone, int status);
