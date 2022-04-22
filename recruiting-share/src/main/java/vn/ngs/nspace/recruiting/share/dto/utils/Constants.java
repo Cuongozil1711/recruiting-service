@@ -83,4 +83,10 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
         STAFF,
         DENIED,
     }
+    public  enum HCM_RECRUITMENT_ONBOARD{
+        INIT,
+        ONBOARDING,
+        APPROVED,
+        DENIED,
+    }
 }
