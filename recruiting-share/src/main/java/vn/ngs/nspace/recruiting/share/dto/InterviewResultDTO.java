@@ -25,6 +25,7 @@ public class InterviewResultDTO {
     private String state ;
     private String createBy;
     private Integer status;
+    private String finalResult;
     private List<Map<String,Object>> items; // luu diem danh gia
 
     private Map<String, Object> createByObj;
