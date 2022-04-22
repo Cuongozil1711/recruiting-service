@@ -164,7 +164,7 @@ public class RecruitmentPlanService {
         }
         return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
     }
-    public Page<RecruitmentPlan> searchOder(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
+    public Page<RecruitmentPlanOrderDTO> searchOder(Long cid,String uid, Map<String, Object> payload, Pageable pageable) throws Exception {
 
         String dmin="2000-01-01T00:00:00+0700";
         String dmax="3000-01-01T00:00:00+0700";
@@ -198,10 +198,11 @@ public class RecruitmentPlanService {
         List<RecruitmentPlanOrderDTO> result = new ArrayList<>();
         sumQuanity(cid);
         if (recruitmentPlansState.getContent() != null && !recruitmentPlansState.getContent().isEmpty()) {
-            result = fromOder(recruitmentPlansState.getContent());
+            result = toDTOOrders(cid,uid,recruitmentPlansState.getContent());
         }
         return new PageImpl(result, recruitmentPlansState.getPageable(), recruitmentPlansState.getTotalElements());
     }
+
     public void sumQuanity (Long cid){
        List<RecruitmentPlan> objs = repo.findByCompanyIdAndStatus(cid,Constants.ENTITY_ACTIVE);
         for(RecruitmentPlan obj : objs) {
@@ -375,16 +376,66 @@ public class RecruitmentPlanService {
 
     /* convert list model object to DTO before response */
 
-    public List<RecruitmentPlanOrderDTO> fromOder(List<RecruitmentPlanOrder> objs) {
 
-        return objs.stream().map(obj -> obj.toDTOOder()).collect(Collectors.toList());
-    }
 
     public RecruitmentPlanDTO toDTOWithObj(Long cid, String uid, RecruitmentPlan obj) {
         return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
     }
-    public RecruitmentPlanOrderDTO toDTOOder(RecruitmentPlanOrderDTO obj){
+
+    public RecruitmentPlanOrderDTO toDTOOrder(RecruitmentPlanOrder obj){
         return MapperUtils.map(obj, RecruitmentPlanOrderDTO.class);
+    }
+    public List<RecruitmentPlanOrderDTO> toDTOOrders(Long cid , String uid ,List<RecruitmentPlanOrder> objs){
+        List<RecruitmentPlanOrderDTO> recruitmentPlanOrderDTOS = new ArrayList<>();
+        objs.forEach(i ->{
+            Set<Long> orgIds = new HashSet<>();
+            Set<Long> positionIds = new HashSet<>();
+            Set<Long> leverId = new HashSet<>();
+            Set<Long> titleIds = new HashSet<>();
+            Set<Long> empIds = new HashSet<>();
+            Set<Long> roomIds = new HashSet<>();
+            if(i.getOrgId() != null){
+                orgIds.add(i.getOrgId());
+            }
+            if(i.getPositionId() != null){
+                positionIds.add(i.getPositionId());
+            }
+            if(i.getTitleId() != null){
+                titleIds.add(i.getTitleId());
+            }
+            if(i.getLevelId() != null){
+                leverId.add(i.getLevelId());
+            }
+            if(i.getPic() != null){
+                empIds.add(i.getPic());
+            }
+            if(i.getRoom() !=null){
+                roomIds.add(i.getRoom());
+            }
+
+            List<OrgResp> orgs = _hcmService.getOrgResp(uid, cid, orgIds);
+            BaseResponse<Map<String, Object>> objUser = _hcmService.getInfoUserByUserId(uid, cid);
+            Map<Long, Map<String, Object>> mapPossion = _configService.getCategoryByIds(uid, cid, positionIds);
+            Map<Long, Map<String, Object>> MapTilte = _configService.getCategoryByIds(uid, cid, titleIds);
+            Map<Long, Map<String, Object>> MapLevel = _configService.getCategoryByIds(uid, cid, leverId);
+            RecruitmentPlanOrderDTO itemDTO = MapperUtils.map(i, RecruitmentPlanOrderDTO.class);
+            if (itemDTO.getTitleId() != null) {
+                itemDTO.setTitleObj(MapTilte.get(itemDTO.getTitleId()));
+            }
+            if (itemDTO.getLevelId() != null) {
+                itemDTO.setLevelObj(MapLevel.get(itemDTO.getLevelId()));
+            }
+            if (itemDTO.getPositionId() != null) {
+                itemDTO.setPositionObj(mapPossion.get(itemDTO.getPositionId()));
+            }
+            if (itemDTO.getOrgId() != null) {
+                OrgResp org = orgs.stream().filter(b -> CompareUtil.compare(b.getId(), itemDTO.getOrgId())).findAny().orElse(new OrgResp());
+                itemDTO.setOrgResp(org);
+            }
+            recruitmentPlanOrderDTOS.add(itemDTO);
+
+        });
+        return recruitmentPlanOrderDTOS;
     }
     public RecruitmentPlanDTO toDTO(RecruitmentPlan obj){
         return MapperUtils.map(obj, RecruitmentPlanDTO.class);
