@@ -141,7 +141,7 @@ public class RecruitmentPlanApi {
             , @RequestBody Map<String, Object> filter
             , Pageable pageable) {
         try {
-            return ResponseUtils.handlerSuccess(_service.searchOder(cid, filter, pageable));
+            return ResponseUtils.handlerSuccess(_service.searchOder(cid,uid, filter, pageable));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
