@@ -192,7 +192,6 @@ public class CandidateService {
                 categoryIds.add(obj.getTitleId());
             }
             createBy.add(obj.getCreateBy());
-
             dtos.add(toDTO(obj));
         });
 
