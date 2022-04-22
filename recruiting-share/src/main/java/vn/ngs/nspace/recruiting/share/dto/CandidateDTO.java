@@ -56,6 +56,7 @@ public class CandidateDTO {
     private Date onboardDate;
     private Long offerSalary;
     private Long titleId;
+    private String createBy;
     // count all states
     private Long countInit;
     private Long countRecruited;
