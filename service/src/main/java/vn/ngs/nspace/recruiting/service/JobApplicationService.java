@@ -254,7 +254,6 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
 
         return empResp.getEmployee();
     }
-
     /**
      * createJobApply
      * @param cid
@@ -269,6 +268,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         Long candidateId =  MapUtils.getLong(payload, "candidateId", 0l);
 
         JobApplication currentJr = _repo.checkJobApplicationDuplicate(cid,positionId,planningId,planOrderId, candidateId).orElse(new JobApplication());
+        System.out.println("currentJr.getId= "+currentJr.getId());
         if(currentJr.getId()==null){
             currentJr.setCandidateId(candidateId);
             currentJr.setCompanyId(cid);
@@ -285,14 +285,28 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         }
         return toDTOWithObj(cid,uid,currentJr);
     }
+    /**
+     * @updateCandidate
+     * @param cid
+     * @param uid
+     * @param id
+     * @return
+     * @throws BusinessException
+     */
     public Candidate updateCandidate(Long cid, String uid, Long id) throws BusinessException {
-
         Candidate curr = _candidateRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(Candidate.class, id));
         curr.setState(Constants.HCM_RECRUITMENT.RECRUITED.name());
         curr.setUpdateBy(uid);
         curr = _candidateRepo.save(curr);
         return curr;
     }
+    /***
+     * initByCandidate
+     * @param cid
+     * @param uid
+     * @param candidateId
+     * @return
+     */
     public JobApplicationDTO initByCandidate(Long cid, String uid, Long candidateId) {
         JobApplication currentJr = _repo.findByCompanyIdAndCandidateIdAndStatus(cid, candidateId, Constants.ENTITY_ACTIVE).orElse(new JobApplication());
         if(currentJr.isNew()){
@@ -307,7 +321,13 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         }
         return toDTOWithObj(cid,uid,currentJr);
     }
-
+    /**
+     * toDTOs
+     * @param cid
+     * @param uid
+     * @param objs
+     * @return
+     */
     public List<JobApplicationDTO> toDTOs(Long cid, String uid, List<JobApplication> objs) {
         List<JobApplicationDTO> dtos = new ArrayList<>();
 
@@ -378,13 +398,22 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
             }
         }
         return dtos;
-
     }
-
+    /**
+     * toDTOWithObj
+     * @param cid
+     * @param uid
+     * @param obj
+     * @return
+     */
     public JobApplicationDTO toDTOWithObj(Long cid, String uid, JobApplication obj){
         return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
     }
-
+    /**
+     * toDTO
+     * @param obj
+     * @return
+     */
     public JobApplicationDTO toDTO(JobApplication obj){
         JobApplicationDTO dto = MapperUtils.map(obj, JobApplicationDTO.class);
         return dto;

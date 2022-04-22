@@ -156,6 +156,13 @@ public class CandidateService {
         return filterRepo.save(obj);
     }
 
+    public CandidateDTO updateStatus(Long cid, String uid, Long id, String state) throws BusinessException {
+        Candidate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(Candidate.class, id));
+        curr.setUpdateBy(uid);
+        curr.setState(state);
+        curr = repo.save(curr);
+        return toDTOWithObj(cid, uid, curr);
+    }
     /* convert list model object to DTO before response */
     public List<CandidateDTO> toDTOs(Long cid, String uid, List<Candidate> objs){
         List<CandidateDTO> dtos = new ArrayList<>();
