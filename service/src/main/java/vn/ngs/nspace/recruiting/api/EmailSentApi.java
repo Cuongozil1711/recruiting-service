@@ -160,6 +160,33 @@ public class EmailSentApi {
             return ResponseUtils.handlerException(ex);
         }
     }
+
+    // set Sent Email list
+    @PostMapping("/schedule-list")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get Email Sent by ID"
+            , description = "Get Email Sent by ID"
+            , tags = { "Email" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity setScheduleList(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Payload of record")  @RequestBody Map<String, Object> payload) {
+        try{
+            Boolean booking = MapUtils.getBoolean(payload,"booking",false);
+            if(booking){
+                EmailSent es = _service.setScheduleMailList(payload,cid,uid,Constants.EMAIL_TYPE_INVITED_ONBOARDING);
+                return ResponseUtils.handlerSuccess(es);
+            }else{
+                EmailSent es = _service.sendMailNowList(payload,cid,uid,Constants.EMAIL_TYPE_INVITED_ONBOARDING);
+                return ResponseUtils.handlerSuccess(es);
+            }
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
     //
     @PostMapping("/send")
     @ActionMapping(action = Permission.VIEW)
@@ -243,6 +270,90 @@ public class EmailSentApi {
         }
     }
 
+
+    //send list email
+    @PostMapping("/send/offer")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get Email Sent by ID"
+            , description = "Get Email Sent by ID"
+            , tags = { "Email" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity sendEmailList(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Payload of record")  @RequestBody Map<String, Object> payload) {
+        try{
+
+            Long templateId = MapUtils.getLong(payload, "templateId", 0l);
+            Long emailSettingId = MapUtils.getLong(payload, "emailSettingId", 0l);
+            Long candidateId = MapUtils.getLong(payload, "candidateId", 0l);
+            Long employeeId = MapUtils.getLong(payload, "employeeId", 0l);
+            String typeOnboard = MapUtils.getString(payload, "typeOnboard", "");
+            if(employeeId == 0l && candidateId == 0l){
+                throw new BusinessException("can-not-empty-both-employee-and-candidate");
+            }
+
+            String content = MapUtils.getString(payload, "content");
+            String sign = MapUtils.getString(payload, "sign", "");
+            content = content + "</br>" + sign;
+            Map<String, Object> noticeConfig = _configService.getEmailConfigById(uid, cid, templateId);
+            EmailSetting setting = _emailSettingRepo.findByCompanyIdAndId(cid, emailSettingId).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, emailSettingId));
+
+            String emailTo =  MapUtils.getString(payload, "email", null);
+            String refType = "";
+            String refId = "";
+            if(candidateId != 0l){
+                Candidate candidate = _candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
+                if(emailTo==null) emailTo = candidate.getEmail();
+                refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
+                refId = candidateId.toString();
+            }
+            if(employeeId != 0l){
+                List<EmployeeDTO> emps = _hcmService.getEmployees(uid, cid, Collections.singleton(employeeId));
+                EmployeeDTO emp = emps.get(0);
+                if(emailTo==null) emailTo = emp.getWorkEmail();
+                refType = Constants.EMAIL_SENT_REF.EMPLOYEE.name();
+                refId = employeeId.toString();
+            }
+
+            String title = MapUtils.getString(payload, "title", MapUtils.getString(noticeConfig, "title", ""));
+            _noticeService.publishEmail(uid, cid, MapUtils.getString(setting.getConfigs(), "email", "")
+                    , MapUtils.getString(setting.getConfigs(), "password", "")
+                    , title
+                    , content, Collections.singleton(uid), Collections.singleton(emailTo));
+
+            EmailSent es = new EmailSent();
+            es.setFromEmail(MapUtils.getString(setting.getConfigs(), "email", ""));
+            es.setContent(content);
+            es.setDate(MapUtils.getDate(payload, "date"));
+            es.setToEmail(emailTo);
+            es.setSubject(title);
+            es.setStatus(Constants.ENTITY_ACTIVE);
+            es.setCreateBy(uid);
+            es.setUpdateBy(uid);
+            es.setCompanyId(cid);
+            es.setRefType(refType);
+            es.setRefId(refId);
+
+
+            Long onboardOrderCheckListId = MapUtils.getLong(payload, "onboardOrderCheckListId", 0l);
+            if(onboardOrderCheckListId != null){
+                OnboardOrderCheckList orderCheckList = _onboardOrderCheckListRepo.findByCompanyIdAndId(cid, onboardOrderCheckListId).orElse(new OnboardOrderCheckList());
+                if(!orderCheckList.isNew()){
+                    orderCheckList.setUpdateBy(uid);
+                    orderCheckList.setState(Constants.ONBOARD_ORDER_CHECK_LIST_STATE.complete.name());
+                    _onboardOrderCheckListRepo.save(orderCheckList);
+                }
+                es.setTypeOnboard(typeOnboard);
+            }
+            es = _repo.save(es);
+            return ResponseUtils.handlerSuccess(es);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
     @GetMapping("/getById/{id}")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Get Email Sent by ID"
