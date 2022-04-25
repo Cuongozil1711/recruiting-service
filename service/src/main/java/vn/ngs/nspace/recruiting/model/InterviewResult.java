@@ -2,13 +2,14 @@ package vn.ngs.nspace.recruiting.model;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import vn.ngs.nspace.lib.converter.ListHashMapConverter;
 import vn.ngs.nspace.lib.models.PersistableEntity;
 import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @Data
@@ -26,7 +27,12 @@ public class InterviewResult extends PersistableEntity<Long> {
     private Date interviewDate;
     private String content;
     private Long interviewerId;
+    private String finalResult;
     private String state ;
+    @Convert(converter = ListHashMapConverter.class)
+    @Column(columnDefinition = "text")
+    private List<Map<String,Object>> items;
+
 
 
     public static InterviewResult of(Long cid, String uid, InterviewResultDTO dto){
@@ -37,6 +43,8 @@ public class InterviewResult extends PersistableEntity<Long> {
                 .interviewDate(dto.getInterviewDate())
                 .content(dto.getContent())
                 .state(dto.getState())
+                .items(dto.getItems())
+                .finalResult(dto.getFinalResult())
                 .build();
 
         return builder;

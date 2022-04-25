@@ -80,10 +80,50 @@ public class CandidateApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity filterByStates(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
+            ,@RequestHeader String uid
             , @RequestBody Map<String, Object> filter
             , Pageable pageable) {
         try {
-            return ResponseUtils.handlerSuccess(_service.filterByStates(cid, filter, pageable));
+            return ResponseUtils.handlerSuccess(_service.filterByStates(cid,uid, filter, pageable));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PostMapping("/filterByCandidate")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get  by filter"
+            , description = "Get  by filter"
+            , tags = {"Filter"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity filterCandidate(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            ,@RequestHeader String uid
+            , @RequestBody Map<String, Object> filter
+            , Pageable pageable) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.filterCandidate(cid,uid, filter, pageable));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    //gui phe duyet
+    @PostMapping("/sendApproval")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get  by filter"
+            , description = "Get  by filter"
+            , tags = {"Filter"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity sendApproval(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @RequestHeader String uid
+            , @RequestBody Map<String, Object> filter
+            , Pageable pageable) {
+        try {
+            return ResponseUtils.handlerSuccess(_service.sendApproval(cid, uid,filter));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

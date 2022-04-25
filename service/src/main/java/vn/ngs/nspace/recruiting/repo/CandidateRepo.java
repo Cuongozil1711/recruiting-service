@@ -2,10 +2,12 @@ package vn.ngs.nspace.recruiting.repo;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.Candidate;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 
 import java.util.Date;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public interface CandidateRepo extends BaseRepo<Candidate,Long> {
+public interface CandidateRepo extends BaseRepo<Candidate,Long>, JpaSpecificationExecutor<Candidate> {
 
     Optional<Candidate> findByCompanyIdAndId(long cid, Long id);
     Optional<Candidate> findByCompanyIdAndPhoneAndStatus(long cid, String phone, int status);
@@ -60,17 +62,18 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             " from Candidate c" +
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
-            " and (c.state in :states or '#' in (:states))" +
-            " and (c.applyPositionId = :applyPositionId or :applyPositionId = -1)" +
+            " and (c.applyPositionId = :applyPosition or :applyPosition = -1)" +
             " and (c.cvSourceId = :resource or :resource = -1)"+
             " and (c.applyDate between :applyDateFrom and :applyDateTo)"+
-           " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo)"+
+            " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo or c.graduationYear is null )"+
             " and (c.gender = :gender or :gender = -1)"+
+            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or (:ageLess < c.birthDate))" +
             " and (c.experience = :experience or coalesce(:experience,'#') ='#')"+
-            " and (c.educationLevel in :educationLevel or -1 in (:educationLevel))" +
-            " and (c.language in :language or -1 in (:language))" +
-            " and ((concat(coalesce(c.fullName,''),coalesce(c.code,''), coalesce(c.wardCode,''), coalesce(c.phone,''), coalesce(c.email,'') ))" +
-            " like (concat('%',:search,'%')) or coalesce(:search, '#') = '#' )"+
+            " and (c.educationLevel in :educationLevel or -1L in (:educationLevel))" +
+            " and (c.language in :language or -1L in (:language))" +
+            " and (c.state in :states or '#' in (:states))" +
+            " and ((concat(lower(coalesce(c.fullName,'')),lower(coalesce(c.code,'')),lower(coalesce(c.wardCode,'')), lower(coalesce(c.phone,'')), lower(coalesce(c.email,'') )))" +
+            " like lower(concat('%',:search,'%')) or coalesce(:search, '#') = '#' )"+
             " order by c.id DESC "
 
     )
@@ -86,11 +89,23 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long> {
             , @Param("graduationFrom") Integer graduationFrom
             , @Param("graduationTo") Integer graduationTo
             ,@Param("gender") Long gender
-            ,@Param("applyPositionId") Long applyPositionId
+            ,@Param("applyPosition") Long applyPosition
             ,@Param("resource") Long resource
             ,@Param("experience") String experience
+            , @Param("ageLess") Date ageLess
             , Pageable pageable);
 
+    @Query(value = "select c " +
+            " from Candidate c" +
+            " where (c.companyId = :companyId)" +
+            " and (c.status = 1)" +
+            " and (c.state in :states or '#' in (:states))" +
+            " order by c.id DESC "
+    )
+    Page<Candidate> filterCandidate(
+            @Param("companyId") Long cid
+            , @Param("states") List<String> states
+            , Pageable pageable);
 
 
     @Query(value = "select count( case when state = 'INIT' then 0 end) as init ,count( case when state = 'STAFF' then 0 end) as staff ,count( case when state = 'DENIED' then 0 end) as denied ,count( case when state = 'RECRUITED' then 0 end) as RECRUITED,count( case when state = 'ARCHIVE' then 0 end) as ARCHIVE,count( case when state = 'INTERVIEWED' then 0 end) as INTERVIEWED,count( case when state = 'APPROVED' then 0 end) as APPROVED,count( case when state = 'APPOINTMENT' then 0 end) as APPOINTMENT,count( case when state = 'ONBOARD' then 0 end) as ONBOARD from recruiting_service.candidate where company_id = :companyId and status = 1",nativeQuery = true)

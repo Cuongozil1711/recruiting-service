@@ -38,12 +38,12 @@ public class InterviewCheckListTemplateService {
 
     public void valid(InterviewCheckListTemplateDTO dto){
 
-        if (dto.getPositionId() == null){
-            throw new BusinessException("invalid-position");
-        }
-        if (dto.getOrgId() == null){
-            throw new BusinessException("invalid-org");
-        }
+//        if (dto.getPositionId() == null){
+//            throw new BusinessException("invalid-position");
+//        }
+//        if (dto.getOrgId() == null){
+//            throw new BusinessException("invalid-org");
+//        }
 //        if (dto.getStartDate() == null){
 //            throw new BusinessException("invalid-startDate");
 //        }
@@ -59,9 +59,9 @@ public class InterviewCheckListTemplateService {
 //        if (dto.getTemplateId() == null){
 //            throw new BusinessException("invalid-template");
 //        }
-        if (StringUtils.isEmpty(dto.getOptionType())){
-            throw new BusinessException("invalid-optionType");
-        }
+//        if (StringUtils.isEmpty(dto.getOptionType())){
+//            throw new BusinessException("invalid-optionType");
+//        }
 //        if (dto.getMinRating() == null){
 //            throw new BusinessException("invalid-minRating");
 //        }
@@ -74,14 +74,14 @@ public class InterviewCheckListTemplateService {
     }
     public InterviewCheckListTemplateDTO create(long cid, String uid, InterviewCheckListTemplateDTO dto) {
         valid(dto);
-        try{
-            InterviewCheckListTemplate exists = repo.searchExists(cid, dto.getPositionId(),  dto.getOrgId(), dto.getTitleId()).orElse(new InterviewCheckListTemplate());
-            if(!exists.isNew()){
-                throw new BusinessException("duplicate-template-with-position-and-title-and-org");
-            }
-        }catch (IncorrectResultSizeDataAccessException ex){
-            throw new BusinessException("duplicate-template-with-position-and-title-and-org");
-        }
+//        try{
+//            InterviewCheckListTemplate exists = repo.searchExists(cid, dto.getPositionId(),  dto.getOrgId(), dto.getTitleId()).orElse(new InterviewCheckListTemplate());
+//            if(!exists.isNew()){
+//                throw new BusinessException("duplicate-template-with-position-and-title-and-org");
+//            }
+//        }catch (IncorrectResultSizeDataAccessException ex){
+//            throw new BusinessException("duplicate-template-with-position-and-title-and-org");
+//        }
 
         // create template
         InterviewCheckListTemplate template = InterviewCheckListTemplate.of(cid, uid, dto);

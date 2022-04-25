@@ -62,7 +62,7 @@ public class InterviewInvolveService {
     /* create object */
     public InterviewInvolveDTO create(Long cid, String uid, InterviewInvolveDTO dto) throws BusinessException {
         valid(dto);
-        List<InterviewInvolve> exists = repo.findByCompanyIdAndPositionIdAndTitleIdAndOrgIdAndStatus(cid, dto.getPositionId(), dto.getTitleId(), dto.getOrgId(), Constants.ENTITY_ACTIVE);
+        List<InterviewInvolve> exists = repo.findByCompanyIdAndCodeAndStatus(cid, dto.getCode(), Constants.ENTITY_ACTIVE);
         if(exists == null || exists.isEmpty()){
             InterviewInvolve involve = InterviewInvolve.of(cid, uid, dto);
             involve.setStatus(Constants.ENTITY_ACTIVE);
@@ -74,7 +74,7 @@ public class InterviewInvolveService {
             return toDTOWithObj(cid, uid, involve);
         }
         else{
-            throw new BusinessException("involve-existed");
+            throw new BusinessException("code-involve-existed");
 
 //            InterviewInvolve involve = exists.get(0);
 //            List<Map<String,Object>> curDes = involve.getInterviewDescription();
@@ -145,7 +145,7 @@ public class InterviewInvolveService {
             if (dto.getInterviewerId() != null) {
                 List<EmployeeDTO> interviewerIds = new ArrayList<>();
                 dto.getInterviewerId().stream().forEach(i -> {
-                    if(!StringUtils.isEmpty(i)){
+                    if(!StringUtils.isEmpty(String.valueOf(i))){
                         interviewerIds.add(mapEmployee.get(Long.valueOf(i)));
                     }
                 });

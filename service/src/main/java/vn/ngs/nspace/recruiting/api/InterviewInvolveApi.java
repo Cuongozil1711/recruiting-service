@@ -9,6 +9,7 @@ import org.apache.commons.collections.MapUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
@@ -51,8 +52,11 @@ public class InterviewInvolveApi {
             Long orgId = MapUtils.getLong(condition, "orgId", -1l);
             Long positionId = MapUtils.getLong(condition, "positionId", -1l);
             Long titleId = MapUtils.getLong(condition,"titleId", -1l);
-
-            Page<InterviewInvolve> page = _repo.search(cid, interviewId, orgId, positionId, titleId, interviewerId, supporterId, pageable);
+            Long roomId = MapUtils.getLong(condition, "roomId", -1l);
+            Long levelId = MapUtils.getLong(condition,"levelId", -1l);
+            Long groupId = MapUtils.getLong(condition, "groupId", -1l);
+            String search = MapUtils.getString(condition, "search", "#");
+            Page<InterviewInvolve> page = _repo.search(cid, interviewId, orgId, positionId, titleId,roomId,levelId,groupId, interviewerId, supporterId,search, pageable);
             List<InterviewInvolveDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
         } catch (Exception ex) {

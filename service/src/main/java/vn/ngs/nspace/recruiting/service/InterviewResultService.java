@@ -183,6 +183,9 @@ public class InterviewResultService {
 
     public List<InterviewResultDTO> toDTOs(Long cid, String uid, List<InterviewResult> objs) {
 
+        Set<String> createBy = new HashSet<>();
+        Set<String> createDate = new HashSet<>();
+
         List<InterviewResultDTO> dtos = new ArrayList<>();
         if(objs.size() == 0){
             InterviewResultDTO dto = new InterviewResultDTO();
@@ -202,22 +205,13 @@ public class InterviewResultService {
             if(obj.getId() != null){
                 resultIds.add(obj.getId());
             }
+            createBy.add(obj.getCreateBy());
+            createDate.add(String.valueOf(obj.getCreateDate()));
             dtos.add(toDTO(obj));
         });
 
         InterviewResult result = objs.get(0);
 
-        JobApplication ja = _repoJob.findByCompanyIdAndCandidateIdAndStatus(cid, result.getCandidateId(),Constants.ENTITY_ACTIVE).orElseThrow(()-> new EntityNotFoundException(JobApplication.class, result.getCandidateId()));
-        List<InterviewCheckListTemplate> templates = templateRepo.searchConfigTemplate(cid, ja.getPositionId(), ja.getOrgId(), ja.getTitleId());
-        Map<Long, List<InterviewCheckListTemplateItem>> mapItems = new HashMap<>();
-        InterviewCheckListTemplate template = new InterviewCheckListTemplate();
-        if(!templates.isEmpty()){
-            template = templates.get(0);
-            List<InterviewCheckListTemplateItem> items = itemRepo.findByCompanyIdAndTemplateIdAndStatus(cid, template.getId(), Constants.ENTITY_ACTIVE);
-            mapItems = items.stream().collect(Collectors.groupingBy(InterviewCheckListTemplateItem::getTemplateId));
-        }
-        List<InterviewCheckList> checkLists = checkListRepo.findByCompanyIdAndInterviewResultIdInAndStatus(cid, resultIds, Constants.ENTITY_ACTIVE);
-        Map<Long, List<InterviewCheckList>> mapCheckLists = checkLists.stream().collect(Collectors.groupingBy(InterviewCheckList::getInterviewResultId));
 
         Map<Long, EmployeeDTO> mapEmp = _hcmService.getMapEmployees(uid, cid, empIds);
         Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
@@ -229,34 +223,6 @@ public class InterviewResultService {
                 dto.setCreateByObj((Map<String, Object>) mapperUser.get(dto.getCreateBy()));
             }
 
-            if(mapCheckLists.get(dto.getId()) != null){
-                List<InterviewCheckListDTO> checkListInterviewsDTO = new ArrayList<>();
-                for (InterviewCheckList checkList: mapCheckLists.get(dto.getId())) {
-                    InterviewCheckListDTO checkListDTO = new InterviewCheckListDTO();
-                    MapperUtils.copy(checkList, checkListDTO);
-                    if (checkListDTO != null){
-                        checkListInterviewsDTO.add(checkListDTO);
-                    }
-                    dto.setCheckLists(checkListInterviewsDTO);
-                }
-
-                for (InterviewCheckListDTO checkListDTODTO: checkListInterviewsDTO) {
-                    List<InterviewCheckListTemplateItemDTO> lstItems = new ArrayList<>();
-                    if (checkListDTODTO.getItemId() != null && template.getId() != null) {
-                        if (mapItems.get(template.getId()) != null) {
-                            for (InterviewCheckListTemplateItem lst : mapItems.get(template.getId())) {
-                                InterviewCheckListTemplateItemDTO item = new InterviewCheckListTemplateItemDTO();
-                                MapperUtils.copy(lst, item);
-                                if (item != null && lst.getId().equals(checkListDTODTO.getItemId())) {
-                                    lstItems.add(item);
-
-                                }
-                            }
-                        }
-                        checkListDTODTO.setItems(lstItems);
-                    }
-                }
-            }
         }
         return dtos;
     }

@@ -4,7 +4,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
@@ -12,14 +11,14 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.handler.NoticeEvent;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.CandidateFilter;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlanOrder;
+import vn.ngs.nspace.recruiting.model.InterviewInvolve;
 import vn.ngs.nspace.recruiting.repo.CandidateFilterRepo;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
+import vn.ngs.nspace.recruiting.repo.InterviewInvolveRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
-import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
@@ -33,13 +32,17 @@ public class CandidateService {
     private final CandidateRepo repo;
     private final CandidateFilterRepo filterRepo;
     private final ExecuteHcmService _hcmService;
+    private final NoticeEvent _noticeEvent;
+    private final InterviewInvolveRepo _interviewInvolve;
     private final ExecuteConfigService _configService;
     private final ExecuteStorateService _storageService;
 
-    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, ExecuteStorateService sorateService) {
+    public CandidateService(CandidateRepo repo, CandidateFilterRepo filterRepo, ExecuteHcmService hcmService, NoticeEvent noticeEvent, InterviewInvolveRepo interviewInvolve, ExecuteConfigService configService, ExecuteStorateService sorateService) {
         this.repo = repo;
         this.filterRepo = filterRepo;
         _hcmService = hcmService;
+        _noticeEvent = noticeEvent;
+        _interviewInvolve = interviewInvolve;
         _configService = configService;
         _storageService = sorateService;
     }
@@ -117,12 +120,26 @@ public class CandidateService {
     }
 
     /* update by id object */
-    public CandidateDTO update(Long cid, String uid, Long id, CandidateDTO dto) throws BusinessException {
+    public CandidateDTO update(Long cid, String uid, Long id, CandidateDTO dto) throws Exception {
         valid(dto);
         Candidate curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(Candidate.class, id));
         MapperUtils.copyWithoutAudit(dto, curr);
         curr.setUpdateBy(uid);
         curr = repo.save(curr);
+    // sent noity and email
+        if (curr.getInvolveId() != null){
+            Optional<InterviewInvolve> getInterviewId = _interviewInvolve.findByCompanyIdAndId(cid,curr.getInvolveId());
+            List<String> interviewId = new ArrayList<>();
+            if (getInterviewId.get().getInterviewerId() !=null){
+                interviewId.addAll(getInterviewId.get().getInterviewerId());
+            }
+            String code = "HCM-Recruting";
+            String action = "NTD";
+            String application = "recruiting-service";
+//            _noticeEvent.send(cid,uid,code,action,Constants.NOITY_TYPE_INVITED_INTERVIEW, Collections.singleton(application));
+        }
+
+
         return toDTOWithObj(cid, uid, curr);
     }
 
@@ -151,6 +168,7 @@ public class CandidateService {
         List<CandidateDTO> dtos = new ArrayList<>();
         Set<String> territoryCodes = new HashSet<>();
         Set<Long> categoryIds = new HashSet<>();
+        Set<String> createBy = new HashSet<>();
 
         objs.forEach(obj -> {
             if(!StringUtils.isEmpty(obj.getWardCode())){
@@ -177,7 +195,10 @@ public class CandidateService {
             if (obj.getCvSourceId() != null){
                 categoryIds.add(obj.getCvSourceId());
             }
-
+            if(obj.getTitleId() !=null){
+                categoryIds.add(obj.getTitleId());
+            }
+            createBy.add(obj.getCreateBy());
             dtos.add(toDTO(obj));
         });
 
@@ -211,6 +232,9 @@ public class CandidateService {
             if (dto.getCvSourceId() != null){
                 dto.setCvSourceObj(mapCategory.get(dto.getCvSourceId()));
             }
+            if (dto.getTitleId() != null){
+                dto.setTitleObj(mapCategory.get(dto.getTitleId()));
+            }
             if (_a != null) {
                 dto.setCountPositionApply(_a);
             }
@@ -218,9 +242,21 @@ public class CandidateService {
 
         return dtos;
     }
+    //gui phe duyet hoi dong
+    public List<String> sendApproval (Long cid,String uid , Map<String,Object>payload){
+        Long involveId = MapUtils.getLong(payload,"involveId", Long.valueOf(-1));
+        Optional<InterviewInvolve> getInterviewId = _interviewInvolve.findByCompanyIdAndId(cid,involveId);
+        List<String> interviewId = new ArrayList<>();
+        if (getInterviewId.get().getInterviewerId() !=null){
+            interviewId.addAll(getInterviewId.get().getInterviewerId());
+        }
+
+        return interviewId;
+    }
+
 
     //filter
-    public Page<Candidate> filterByStates(Long cid, Map<String, Object> payload, Pageable pageable) throws Exception {
+    public Page<Candidate> filterByStates(Long cid,String uid, Map<String, Object> payload, Pageable pageable) throws Exception {
         List<String> states = Arrays.asList("#");
         if (payload.get("states") != null && !((List<String>) payload.get("states")).isEmpty()){
             states = (List<String>) payload.get("states");
@@ -229,13 +265,18 @@ public class CandidateService {
         if (payload.get("educationLevel") != null && !((List<String>) payload.get("educationLevel")).isEmpty()){
             educationLevel = (List<Long>) payload.get("educationLevel");
         }
+        else {
+            educationLevel =  Arrays.asList(-1L);
+        }
         List<Long> language =  Arrays.asList(-1L);
-        if (payload.get("language") != null && !((List<String>) payload.get("states")).isEmpty()){
+        if (payload.get("language") != null && !((List<String>) payload.get("language")).isEmpty()){
             language = (List<Long>) payload.get("language");
         }
-
-        String dmin= "2000-01-01T00:00:00+0700";
-        String dmax="3000-01-01T00:00:00+0700";
+        else {
+            language =  Arrays.asList(-1L);
+        }
+        String dmin= "1000-01-01T00:00:00+0700";
+        String dmax="5000-01-01T00:00:00+0700";
         Date defautValueDateStart = DateUtil.toDate(dmin,"yyyy-MM-dd'T'HH:mm:ssZ");
         Date defautValueDateEnd = DateUtil.toDate(dmax,"yyyy-MM-dd'T'HH:mm:ssZ");
 
@@ -245,21 +286,31 @@ public class CandidateService {
         Integer graduationTo = MapUtils.getIntValue(payload,"graduationTo",9999);
         String experience = MapUtils.getString(payload, "experience","#");
         Long gender = MapUtils.getLong(payload,"gender", -1L);
-        Long applyPositionId = MapUtils.getLong(payload,"applyPositionId", -1L);
+        Long applyPosition = MapUtils.getLong(payload,"applyPosition", -1L);
         Long resource = MapUtils.getLong(payload,"resource", -1L);
-        String search = MapUtils.getString(payload, "search","#");
+        String search = MapUtils.getString(payload, "search","#").toLowerCase();
 
-        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPositionId,resource,experience,pageable);
-
-        return new PageImpl(fromOder(CandidateStates.getContent()), CandidateStates.getPageable(), CandidateStates.getTotalElements());
+        Integer ageLess = MapUtils.getInteger(payload,"ageLess", 1000);
+        Date yearLess = null;
+            yearLess = DateUtil.addDate(new Date(), "year",-ageLess);
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPosition,resource,experience,yearLess,pageable);
+        List<CandidateDTO> data = toDTOs(cid, uid, CandidateStates.getContent());
+        return new PageImpl(data, CandidateStates.getPageable(), CandidateStates.getTotalElements());
+    }
+    //candidate
+    public Page<Candidate> filterCandidate(Long cid,String uid, Map<String, Object> payload, Pageable pageable) throws Exception {
+        List<String> states = Arrays.asList("#");
+        if (payload.get("states") != null && !((List<String>) payload.get("states")).isEmpty()){
+            states = (List<String>) payload.get("states");
+        }
+        Page<Candidate> filterCandidateStates = repo.filterCandidate(cid,states,pageable);
+        List<CandidateDTO> data = toDTOs(cid, uid, filterCandidateStates.getContent());
+        return new PageImpl(data, filterCandidateStates.getPageable(), filterCandidateStates.getTotalElements());
     }
 
     /* convert model object to DTO with data before response */
     public CandidateDTO toDTOWithObj(Long cid, String uid, Candidate candidate){
         return toDTOs(cid, uid, Collections.singletonList(candidate)).get(0);
-    }
-    public List<CandidateDTO> fromOder(List<Candidate> objs) {
-        return objs.stream().map(obj -> obj.toDTOS()).collect(Collectors.toList());
     }
 
     /* convert model object to DTO before response */
