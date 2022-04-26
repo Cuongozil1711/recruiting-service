@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -181,9 +182,8 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             , Pageable pageable) {
         try{
 
-        Page<JobApplication> page = _repo.search(cid,pageable);
-        List<JobApplicationDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
-        return ResponseUtils.handlerSuccess(dtos);
+
+        return ResponseUtils.handlerSuccess(_service.search(cid,uid,condition,pageable));
 
 
         }catch (Exception e){
