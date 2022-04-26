@@ -1,10 +1,8 @@
 package vn.ngs.nspace.recruiting.service;
 
-import camundajar.impl.com.google.gson.JsonObject;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -20,16 +18,10 @@ import vn.ngs.nspace.hcm.share.dto.response.EmployeeResp;
 import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.dto.BaseResponse;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
-import vn.ngs.nspace.lib.utils.HttpUtils;
-import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanOrderDTO;
+import vn.ngs.nspace.recruiting.request.OnboardEmployeeFilterRequest;
 
-import java.lang.reflect.Type;
 import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class ExecuteHcmService {
@@ -74,17 +66,18 @@ public class ExecuteHcmService {
     public List<OrgResp> getOrgResp(String requestUserId, long companyId, Set<Long> ids) throws RuntimeException {
         try {
 
-            URI uri = new URI(HcmServiceURL + "/generic/org/byIds") ;
+            URI uri = new URI(HcmServiceURL + "/generic/org/byIds");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
-            Map<String,Object> payload = new HashMap<>();
-            payload.put("orgIds",ids);
+            HttpHeaders headers = createHeader(requestUserId, companyId);
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("orgIds", ids);
 
-            HttpEntity request = new HttpEntity<>(payload,headers);
+            HttpEntity request = new HttpEntity<>(payload, headers);
 
-            ParameterizedTypeReference<BaseResponse<List<OrgResp>>> responeType = new ParameterizedTypeReference<BaseResponse<List<OrgResp>>>() {};
-            ResponseEntity resp = restTemplate.exchange(uri,method,request,responeType);
+            ParameterizedTypeReference<BaseResponse<List<OrgResp>>> responeType = new ParameterizedTypeReference<BaseResponse<List<OrgResp>>>() {
+            };
+            ResponseEntity resp = restTemplate.exchange(uri, method, request, responeType);
             BaseResponse<List<OrgResp>> response = (BaseResponse<List<OrgResp>>) resp.getBody();
             return response.getData();
 
@@ -92,132 +85,141 @@ public class ExecuteHcmService {
             throw new RuntimeException(e);
         }
     }
-    public BaseResponse<Map<String, Object>> getInfoUserByUserId(String requestUserId, Long companyId){
+
+    public BaseResponse<Map<String, Object>> getInfoUserByUserId(String requestUserId, Long companyId) {
         try {
-            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/by-user-mapping-id?userMappingId=" + requestUserId );
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/by-user-mapping-id?userMappingId=" + requestUserId);
             HttpMethod method = HttpMethod.GET;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
+            HttpHeaders headers = createHeader(requestUserId, companyId);
             HttpEntity request = new HttpEntity<>(headers);
 
-            ParameterizedTypeReference<BaseResponse<Map<String, Object>>> responseType = new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {};
-            ResponseEntity response = restTemplate.exchange(uri,method,request,responseType);
+            ParameterizedTypeReference<BaseResponse<Map<String, Object>>> responseType = new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responseType);
             BaseResponse<Map<String, Object>> resp = (BaseResponse<Map<String, Object>>) response.getBody();
             return resp;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-    public List<EmployeeDTO> getEmployeesMapping(String requestUserId, Long companyId){
+
+    public List<EmployeeDTO> getEmployeesMapping(String requestUserId, Long companyId) {
         try {
             URI uri = new URI(HcmServiceURL + "/generic/by-user-mapping-ids");
             HttpMethod method = HttpMethod.GET;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
-            Map<String,Object> payload  = new HashMap<>();
+            HttpHeaders headers = createHeader(requestUserId, companyId);
+            Map<String, Object> payload = new HashMap<>();
             payload.put("ids", requestUserId);
 
-            HttpEntity request = new HttpEntity<>(payload,headers);
+            HttpEntity request = new HttpEntity<>(payload, headers);
 
-            ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>> responeType = new ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>>() {};
-            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>> responeType = new ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
             BaseResponse<List<EmployeeDTO>> resp = (BaseResponse<List<EmployeeDTO>>) response.getBody();
             return resp.getData();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<EmployeeDTO> getEmployees(String requestUserId, Long companyId, Set<Long> empIds){
+    public List<EmployeeDTO> getEmployees(String requestUserId, Long companyId, Set<Long> empIds) {
         try {
             URI uri = new URI(HcmServiceURL + "/generic/employee-profile/byIds");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
-            Map<String,Object> payload  = new HashMap<>();
+            HttpHeaders headers = createHeader(requestUserId, companyId);
+            Map<String, Object> payload = new HashMap<>();
             payload.put("ids", empIds);
 
-            HttpEntity request = new HttpEntity<>(payload,headers);
+            HttpEntity request = new HttpEntity<>(payload, headers);
 
-            ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>> responeType = new ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>>() {};
-            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>> responeType = new ParameterizedTypeReference<BaseResponse<List<EmployeeDTO>>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
             BaseResponse<List<EmployeeDTO>> resp = (BaseResponse<List<EmployeeDTO>>) response.getBody();
             return resp.getData();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Map<Long, EmployeeDTO> getMapEmployees(String requestUserId, Long companyId, Set<Long> empIds){
+    public Map<Long, EmployeeDTO> getMapEmployees(String requestUserId, Long companyId, Set<Long> empIds) {
         try {
             URI uri = new URI(HcmServiceURL + "/generic/employee-profile/mapByIds");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
-            Map<String,Object> payload  = new HashMap<>();
+            HttpHeaders headers = createHeader(requestUserId, companyId);
+            Map<String, Object> payload = new HashMap<>();
             payload.put("ids", empIds);
 
-            HttpEntity request = new HttpEntity<>(payload,headers);
+            HttpEntity request = new HttpEntity<>(payload, headers);
 
-            ParameterizedTypeReference<BaseResponse<Map<Long, EmployeeDTO>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<Long, EmployeeDTO>>>() {};
-            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            ParameterizedTypeReference<BaseResponse<Map<Long, EmployeeDTO>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<Long, EmployeeDTO>>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
             BaseResponse<Map<Long, EmployeeDTO>> resp = (BaseResponse<Map<Long, EmployeeDTO>>) response.getBody();
             return resp.getData();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Map<Long, OrgResp> getMapOrgs(String requestUserId, Long companyId, Set<Long> orgIds){
+    public Map<Long, OrgResp> getMapOrgs(String requestUserId, Long companyId, Set<Long> orgIds) {
         try {
             URI uri = new URI(HcmServiceURL + "/generic/org/mapByIds");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
-            Map<String,Object> payload  = new HashMap<>();
+            HttpHeaders headers = createHeader(requestUserId, companyId);
+            Map<String, Object> payload = new HashMap<>();
             payload.put("orgIds", orgIds);
 
-            HttpEntity request = new HttpEntity<>(payload,headers);
+            HttpEntity request = new HttpEntity<>(payload, headers);
 
-            ParameterizedTypeReference<BaseResponse<Map<Long, OrgResp>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<Long, OrgResp>>>() {};
-            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            ParameterizedTypeReference<BaseResponse<Map<Long, OrgResp>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<Long, OrgResp>>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
             BaseResponse<Map<Long, OrgResp>> resp = (BaseResponse<Map<Long, OrgResp>>) response.getBody();
             return resp.getData();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
     public EmployeeResp createEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq) throws RuntimeException {
         try {
 
             URI uri = new URI(HcmServiceURL + "/generic/employee-profile");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
+            HttpHeaders headers = createHeader(requestUserId, companyId);
             HttpEntity request = new HttpEntity<>(employeeReq, headers);
 
-            ParameterizedTypeReference<BaseResponse<EmployeeResp>> responeType = new ParameterizedTypeReference<BaseResponse<EmployeeResp>>() {};
-            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            ParameterizedTypeReference<BaseResponse<EmployeeResp>> responeType = new ParameterizedTypeReference<BaseResponse<EmployeeResp>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
             BaseResponse<EmployeeResp> resp = (BaseResponse<EmployeeResp>) response.getBody();
             return resp.getData();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             BaseResponse baseResponse = Buffer.buffer(((HttpClientErrorException.BadRequest) e).getResponseBodyAsByteArray()).toJsonObject().mapTo(BaseResponse.class);
             String message = baseResponse.getMessage();
             throw new BusinessException(message);
         }
     }
 
-    public EmployeeResp updateEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq){
+    public EmployeeResp updateEmployee(String requestUserId, Long companyId, EmployeeReq employeeReq) {
         try {
-            long id  = employeeReq.getEmployee().getId();
+            long id = employeeReq.getEmployee().getId();
             Logger logger = LoggerFactory.getLogger(ExecuteHcmService.class);
-            logger.debug("id "+id);
-            if(id>0) {
+            logger.debug("id " + id);
+            if (id > 0) {
                 URI uri = new URI(HcmServiceURL + "/generic/employee-profile/" + id);
                 HttpMethod method = HttpMethod.PUT;
                 RestTemplate restTemplate = new RestTemplate();
@@ -231,71 +233,106 @@ public class ExecuteHcmService {
                 return resp.getData();
             }
             return null;
-        } catch (Exception e){
+        } catch (Exception e) {
             BaseResponse baseResponse = Buffer.buffer(((HttpClientErrorException.BadRequest) e).getResponseBodyAsByteArray()).toJsonObject().mapTo(BaseResponse.class);
             String message = baseResponse.getMessage();
             throw new BusinessException(message);
         }
     }
 
-    public  Map<String, List<Map<String, Object>>> getMapByTypeCodes(String requestUserId, Long companyId, EmployeeReq employeeReq){
+    public Map<String, List<Map<String, Object>>> getMapByTypeCodes(String requestUserId, Long companyId, EmployeeReq employeeReq) {
         try {
             URI uri = new URI(HcmServiceURL + "/generic/map-by-type-codes");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
+            HttpHeaders headers = createHeader(requestUserId, companyId);
             HttpEntity request = new HttpEntity<>(employeeReq, headers);
 
-            ParameterizedTypeReference<BaseResponse<Map<String, List<Map<String, Object>>>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<String, List<Map<String, Object>>>>>() {};
-            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            ParameterizedTypeReference<BaseResponse<Map<String, List<Map<String, Object>>>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<String, List<Map<String, Object>>>>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
             BaseResponse<Map<String, List<Map<String, Object>>>> resp = (BaseResponse<Map<String, List<Map<String, Object>>>>) response.getBody();
             return resp.getData();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Object getContract(String requestUserId, Long companyId, Long contractId){
+    public Object getContract(String requestUserId, Long companyId, Long contractId) {
         try {
             URI uri = new URI(HcmServiceURL + "/generic/contract/" + contractId);
             HttpMethod method = HttpMethod.GET;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
+            HttpHeaders headers = createHeader(requestUserId, companyId);
             HttpEntity request = new HttpEntity<>(headers);
 
-            ParameterizedTypeReference<BaseResponse<Object>> responeType = new ParameterizedTypeReference<BaseResponse<Object>>() {};
-            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            ParameterizedTypeReference<BaseResponse<Object>> responeType = new ParameterizedTypeReference<BaseResponse<Object>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
             BaseResponse<Object> resp = (BaseResponse<Object>) response.getBody();
             return resp.getData();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public BaseResponse<Map<String, Object>> search(String requestUserId, Long companyId, String keyword){
+    public BaseResponse<Map<String, Object>> search(String requestUserId, Long companyId, String keyword) {
         try {
             URI uri = new URI(HcmServiceURL + "/generic/employee-profile/filter?page=0&size=999");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = createHeader(requestUserId,companyId);
-            Map<String,Object> payload  = new HashMap<>();
+            HttpHeaders headers = createHeader(requestUserId, companyId);
+            Map<String, Object> payload = new HashMap<>();
 //            Map<String, Object> orgFilter= new HashMap<>();
 //            orgFilter.put("allChildren", true);
 //           orgFilter.put("id", null);
             payload.put("keyword", keyword);
 //            payload.put("orgFilter", orgFilter);
 
-            HttpEntity request = new HttpEntity<>(payload,headers);
+            HttpEntity request = new HttpEntity<>(payload, headers);
 
-            ParameterizedTypeReference<BaseResponse<Map<String, Object>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {};
-            ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
+            ParameterizedTypeReference<BaseResponse<Map<String, Object>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
             BaseResponse<Map<String, Object>> resp = (BaseResponse<Map<String, Object>>) response.getBody();
             return resp;
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+    public BaseResponse<Map<String, Object>> filter(String requestUserId, Long companyId, OnboardEmployeeFilterRequest filterRequest) {
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/filter?page=0&size=999");
+            HttpMethod method = HttpMethod.POST;
+            RestTemplate restTemplate = new RestTemplate();
+            List<Long> positionIds = new ArrayList<>();
+            if (filterRequest.getPositionId() != -1L)
+                positionIds.add(filterRequest.getPositionId());
+
+            HttpHeaders headers = createHeader(requestUserId, companyId);
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("keyword", filterRequest.getSearch());
+            payload.put("states", filterRequest.getStates());
+            payload.put("positionId", positionIds);
+            payload.put("probationaryDateFrom",filterRequest.getStartDateFrom());
+            payload.put("probationaryDateTo",filterRequest.getStartDateTo());
+
+            HttpEntity request = new HttpEntity<>(payload, headers);
+
+            ParameterizedTypeReference<BaseResponse<Map<String, Object>>> responeType = new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
+            BaseResponse<Map<String, Object>> resp = (BaseResponse<Map<String, Object>>) response.getBody();
+            return resp;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }
