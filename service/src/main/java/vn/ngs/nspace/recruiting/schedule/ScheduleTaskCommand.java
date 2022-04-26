@@ -17,5 +17,6 @@ public class ScheduleTaskCommand {
     private String event;
     private String action;
     private Long actionId;
+    private String candidates;
     private Date executeTime;
 }
