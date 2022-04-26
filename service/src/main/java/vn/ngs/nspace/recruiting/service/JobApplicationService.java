@@ -3,6 +3,9 @@ package vn.ngs.nspace.recruiting.service;
 import io.vertx.core.json.JsonObject;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.config.share.ConfigApi;
@@ -13,6 +16,7 @@ import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 
+import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
@@ -321,6 +325,13 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         }
         return toDTOWithObj(cid,uid,currentJr);
     }
+    public Page<Candidate> search(Long cid,String uid, Map<String, Object> payload, Pageable pageable) throws Exception {
+
+        Page<JobApplication> page = _repo.search(cid,pageable);
+        List<JobApplicationDTO> dtos = toDTOs(cid, uid, page.getContent());
+        return new PageImpl(dtos, page.getPageable(), page.getTotalElements());
+    }
+
     /**
      * toDTOs
      * @param cid
