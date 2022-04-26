@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
-import vn.ngs.nspace.recruiting.repo.spec.OnboardEmployeeFilterSpecification;
 import vn.ngs.nspace.recruiting.request.OnboardEmployeeFilterRequest;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -33,9 +33,16 @@ public class OnboardEmployeeService {
             , OnboardEmployeeFilterRequest request
             , Pageable pageable
     ) {
-        OnboardEmployeeFilterSpecification specification = new OnboardEmployeeFilterSpecification(request);
+        String name, code, state;
+        Long orgRecruitingId, gender;
 
-        Page<Candidate> candidatePage = candidateRepo.findAll(specification, pageable);
+        code = request.getCode();
+        name = request.getName();
+        state = request.getState();
+        gender = request.getGender();
+        orgRecruitingId = request.getOrgRecruitingId();
+
+        Page<Candidate> candidatePage = candidateRepo.filterCandidateOnboard(code, name, gender, orgRecruitingId, state, Constants.HCM_RECRUITMENT.STAFF.toString(), pageable);
 
         List<CandidateDTO> candidateDTOS = new ArrayList<>();
 
