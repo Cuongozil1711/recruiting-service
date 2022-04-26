@@ -9,6 +9,7 @@ import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
+import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
 import vn.ngs.nspace.recruiting.handler.NoticeEvent;
@@ -91,19 +92,28 @@ public class EmailSentService {
             EmailSent es = repo.findByCompanyIdAndId(cid,emailSentId).orElse(new EmailSent());
             Long emailSettingId = es.getEmailSettingId();
             EmailSetting setting = _emailSettingRepo.findByCompanyIdAndId(cid, emailSettingId).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class,emailSettingId));
-            List<String> emails = Collections.singletonList(es.getMails());
+            String emailStr = es.getMails();
+            String emails = emailStr.replace("[","").replace("]","");
+            //somewhere in your code
+            String emailArray[] = emails.split(",");
+            //System.out.println("===>"+emailArray);
             // gủi mail cho ứng viên
-            emails.forEach(mail->{
-                _noticeService.publishEmail(es.getUid(), es.getCompanyId(), MapUtils.getString(setting.getConfigs(), "email", "")
-                        , MapUtils.getString(setting.getConfigs(), "password", "")
+            Arrays.stream(emailArray).distinct().forEach(mail->{
+               // System.out.println("mail===>"+mail);
+                String email=mail.replace("[","").replace("]","");
+                String mailsend =MapUtils.getString(setting.getConfigs(), "email", "");
+                String pwd =MapUtils.getString(setting.getConfigs(), "password", "");
+               // System.out.println("mail to===>"+email+"| mail from "+mailsend+":"+pwd);
+                _noticeService.publishEmail(es.getUid(), es.getCompanyId(), mailsend
+                        , pwd
                         , es.getSubject()
-                        , es.getContent(), Collections.singleton(es.getUid()), Collections.singleton(mail));
+                        , es.getContent(), Collections.singleton(es.getUid()), Collections.singleton(email));
             });
             // thông báo hội đồng
             sendNotify(cid,es.getUid(),es.getCouncil(),setting,es.getSubject(),es.getContent());
-            EmailSent est = new EmailSent();
+            //cập nhập trạng thái
+            EmailSent est = repo.findByCompanyIdAndId(cid,emailSentId).orElseThrow(() -> new EntityNotFoundException(EmailSent.class, emailSentId));
             est.setStatus(Constants.ENTITY_ACTIVE);
-            est.setId(emailSentId);
             est = repo.save(est);
             return ResponseUtils.handlerSuccess(est);
         } catch (Exception ex) {
@@ -120,7 +130,7 @@ public class EmailSentService {
     public  EmailSent setScheduleMail(Map<String, Object> payload,Long cid, String uid,String type){
         Long templateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "templateId", 0l);
         Long emailSettingId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "emailSettingId", 0l);
-        Long candidateId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "candidateId", 0l);
+        List<Long> candidateIds = convertList((List) payload.getOrDefault("candidateId", new ArrayList()));
         String typeOnboard = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "typeOnboard", "");
         Long councilSelect =vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "councilSelect", 0l);
         List<String> mails = convertListString((List) payload.getOrDefault("mails", new ArrayList()));
@@ -132,15 +142,8 @@ public class EmailSentService {
         EmailSetting setting = _emailSettingRepo.findByCompanyIdAndId(cid, emailSettingId).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, emailSettingId));
 
         String emailTo =  vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "email", null);
-        String refType = "";
-        String refId = "";
-        if(candidateId != 0l){
-            Candidate candidate = _candidateRepo.findById(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
-            if(emailTo==null) emailTo = candidate.getEmail();
-            refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
-            refId = candidateId.toString();
-        }
-
+        String refType = Constants.EMAIL_SENT_REF.CANDIDATE.name();
+        String refId = candidateIds.toString();
         String title = vn.ngs.nspace.lib.utils.MapUtils.getString(payload, "title", vn.ngs.nspace.lib.utils.MapUtils.getString(noticeConfig, "title", ""));
         EmailSent es = new EmailSent();
         es.setFromEmail(vn.ngs.nspace.lib.utils.MapUtils.getString(setting.getConfigs(), "email", ""));
@@ -160,6 +163,7 @@ public class EmailSentService {
         es.setType(type);
         es.setCouncil(councilSelect);
         es.setMails(mails.toString());
+        es.setCandidates(candidateIds.toString());
 
         Long onboardOrderCheckListId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "onboardOrderCheckListId", 0l);
         if(onboardOrderCheckListId != null){
@@ -181,7 +185,8 @@ public class EmailSentService {
         scheduleAction.setAction("schedule_mail");
         scheduleAction.setExecuteTime(schedule_date);
         scheduleAction.setTaskId(taskId);
-        scheduleAction.setActionId(candidateId);
+        scheduleAction.setActionId(taskId);
+        scheduleAction.setCandidates(candidateIds.toString());
         createEmailSchedule(scheduleAction);
         return es;
     }
@@ -244,6 +249,7 @@ public class EmailSentService {
         es.setUid(uid);
         es.setType(type);
         es.setCouncil(councilSelect);
+        es.setCandidates(candidateId.toString());
 
         Long onboardOrderCheckListId = vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "onboardOrderCheckListId", 0l);
         if(onboardOrderCheckListId != null){
@@ -266,6 +272,7 @@ public class EmailSentService {
         scheduleAction.setExecuteTime(schedule_date);
         scheduleAction.setTaskId(taskId);
         scheduleAction.setActionId(candidateId);
+        scheduleAction.setCandidates(candidateId.toString());
         createEmailSchedule(scheduleAction);
         return es;
     }
