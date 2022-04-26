@@ -278,7 +278,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
             currentJr.setPlanningId(planningId);
             currentJr.setPlanOderId(planOrderId);
             currentJr.setPositionId(positionId);
-            currentJr.setState(Constants.JOB_APPLICATION_STATE.INIT.name());
+            currentJr.setState(Constants.HCM_RECRUITMENT.APPROVED.name());
             currentJr.setStatus(Constants.ENTITY_ACTIVE);
             _repo.save(currentJr);
             updateCandidate(cid,uid,candidateId);
