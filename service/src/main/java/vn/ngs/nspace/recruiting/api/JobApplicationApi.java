@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +18,12 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
+import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.request.JobApplicationRequest;
 import vn.ngs.nspace.recruiting.service.JobApplicationService;
+import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
@@ -176,15 +180,10 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             , @Parameter(description = "Payload filter") @RequestBody Map<String, Object> condition
             , Pageable pageable) {
         try{
-//        String fullname = MapUtils.getString(condition, "fullname", "all");
-//        Long gender = MapUtils.getLong(condition, "gender", -1l);
-//        String wardCode = MapUtils.getString(condition, "wardCode", "all");
-//        String phone = MapUtils.getString(condition, "phone", "all");
-//        String email = MapUtils.getString(condition, "email", "all");
 
-//        Page<Candidate> page = _repo.search(cid, fullname, gender , wardCode, phone, email, pageable);
-//        List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
-        return ResponseUtils.handlerSuccess("");
+        Page<JobApplication> page = _repo.search(cid,pageable);
+        List<JobApplicationDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
+        return ResponseUtils.handlerSuccess(dtos);
 
 
         }catch (Exception e){

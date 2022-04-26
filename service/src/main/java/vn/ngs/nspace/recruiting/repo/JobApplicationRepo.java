@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import vn.ngs.nspace.lib.repo.BaseRepo;
+import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.model.JobRequirement;
 import vn.ngs.nspace.task.core.repo.TaskRepo;
@@ -41,6 +42,22 @@ public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<J
             ,@Param("orgId") Long orgId
             ,@Param("planOderId") Long planOderId);
 
+    @Query(value = "select c " +
+            " from JobApplication c" +
+            " where (c.companyId = :companyId)" +
+            " and (c.status = 1)" +
+            " order by c.id DESC "
+    )
+        // or coalesce(:search, '#') = '#'
+    Page<JobApplication> search(
+            @Param("companyId") Long cid
+//            ,@Param("search") String search
+//            ,@Param("fullname") String fullname
+//            ,@Param("gender") Long gender
+//            ,@Param("wardCode") String wardCode
+//            ,@Param("phone") String phone
+//            ,@Param("email") String email
+            , Pageable pageable);
     @Query(value = "select * from recruiting_service.job_application job " +
             "where (job.company_id = :companyId)" +
             "and (job.position_id = :positionId )"+
