@@ -52,15 +52,15 @@ public class OnboardEmployeeApi {
             , description = "Filter list employee onboard"
             , tags = {"OnboardEmployee", "OnboardEmployeeFilter"}
     )
-    @GetMapping(value = "/change-state-job/{id}/{state}")
-    public ResponseEntity changeStateJob(
+    @GetMapping(value = "/change-state-job-application/{id}/{state}")
+    public ResponseEntity changeStateJobApplication(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
             , @Parameter(description = "Path Variable") @PathVariable(value = "state") String state
     ) {
         try {
-            JobApplication jobApplication = this.onboardEmployeeService.changeStateJob(cid, uid, id,state);
+            JobApplication jobApplication = this.onboardEmployeeService.changeStateJobApplication(cid, uid, id,state);
             return ResponseUtils.handlerSuccess(jobApplication);
         } catch (Exception exception) {
             return ResponseUtils.handlerException(exception);
