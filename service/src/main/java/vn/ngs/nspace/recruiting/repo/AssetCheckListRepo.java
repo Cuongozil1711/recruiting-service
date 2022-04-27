@@ -28,12 +28,14 @@ public interface AssetCheckListRepo extends BaseRepo<AssetCheckList,Long> {
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
             " and (c.employeeId = :employeeId)" +
-            " and (c.id = :id)"
+            " and (c.assetId = :assetId)"+
+            " and (c.senderId = :senderId)"
     )
 
     Optional<AssetCheckList> findState(
             @Param("companyId") Long cid
             ,@Param("employeeId") Long employeeId
-            ,@Param("id") Long id);
+            ,@Param("assetId") Long assetId
+            ,@Param("senderId") Long senderId);
 }
 

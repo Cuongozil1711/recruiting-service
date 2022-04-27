@@ -127,15 +127,16 @@ public class AssetCheckListApi {
             , description = "Change state AssetCheckList for employee"
             , tags = {"ChangeStateAssetCheckList", "changeStateAssetCheckList"}
     )
-    @GetMapping(value = "/change-state-job-application/{employeeId}/{id}")
+    @PutMapping(value = "/change-state-job-application/{employeeId}/{assetId}/{senderId}")
     public ResponseEntity changeStateAssetCheckList(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Path Variable") @PathVariable(value = "employeeId") Long employeeId
-            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
+            , @Parameter(description = "Path Variable") @PathVariable(value = "assetId") Long assetId
+            , @Parameter(description = "Path Variable") @PathVariable(value = "senderId") Long senderId
     ) {
         try {
-            AssetCheckList assetCheckList = _service.changeStateAssetCheckList(cid, employeeId, id);
+            AssetCheckList assetCheckList = _service.changeStateAssetCheckList(cid, employeeId, assetId,senderId);
             return ResponseUtils.handlerSuccess(assetCheckList);
         } catch (Exception exception) {
             return ResponseUtils.handlerException(exception);
