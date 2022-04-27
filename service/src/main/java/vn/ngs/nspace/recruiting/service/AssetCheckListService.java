@@ -8,8 +8,10 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.AssetCheckList;
+import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.repo.AssetCheckListRepo;
+import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.AssetCheckListDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
@@ -24,12 +26,14 @@ public class AssetCheckListService {
     private final OnboardOrderRepo orderRepo;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
+    private final JobApplicationRepo jobApplicationRepo;
 
-    public AssetCheckListService(AssetCheckListRepo repo, OnboardOrderRepo orderRepo, ExecuteHcmService hcmService, ExecuteConfigService configService) {
+    public AssetCheckListService(AssetCheckListRepo repo, OnboardOrderRepo orderRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, JobApplicationRepo _jobApplicationRepo) {
         this.repo = repo;
         this.orderRepo = orderRepo;
         _hcmService = hcmService;
         _configService = configService;
+        jobApplicationRepo=_jobApplicationRepo;
     }
 
     public void valid(Long cid, AssetCheckListDTO dto){
@@ -128,6 +132,24 @@ public class AssetCheckListService {
         }
 
         return returnData;
+    }
+
+    /**
+     * @AssetCheckList
+     * @param cid
+     * @param emp_id
+     * @param id
+     * @return
+     */
+    public AssetCheckList changeStateAssetCheckList(
+            Long cid
+            , Long emp_id
+            , Long id
+    ) {
+        AssetCheckList assetCheckList = repo.findState(cid,emp_id,id).orElseThrow(() -> new EntityNotFoundException(AssetCheckList.class, id));
+        assetCheckList.setState(  Constants.ONBOARD_ORDER_CHECK_LIST_STATE.complete.name());
+        assetCheckList = repo.save(assetCheckList);
+        return assetCheckList;
     }
 
     public AssetCheckListDTO toDTOWithObj (Long cid, String uid,  AssetCheckList obj){
