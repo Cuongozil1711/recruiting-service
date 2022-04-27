@@ -28,6 +28,7 @@ public class InterviewResult extends PersistableEntity<Long> {
     private String content;
     private Long interviewerId;
     private String finalResult;
+    private Integer evaluate;
     private String state ;
     @Convert(converter = ListHashMapConverter.class)
     @Column(columnDefinition = "text")
@@ -45,6 +46,7 @@ public class InterviewResult extends PersistableEntity<Long> {
                 .state(dto.getState())
                 .items(dto.getItems())
                 .finalResult(dto.getFinalResult())
+                .evaluate(dto.getEvaluate())
                 .build();
 
         return builder;
