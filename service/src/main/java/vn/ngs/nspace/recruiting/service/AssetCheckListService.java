@@ -143,10 +143,11 @@ public class AssetCheckListService {
      */
     public AssetCheckList changeStateAssetCheckList(
             Long cid
-            , Long emp_id
-            , Long id
+            , Long empId
+            , Long assetId
+            ,Long senderId
     ) {
-        AssetCheckList assetCheckList = repo.findState(cid,emp_id,id).orElseThrow(() -> new EntityNotFoundException(AssetCheckList.class, id));
+        AssetCheckList assetCheckList = repo.findState(cid,empId,assetId,senderId).orElseThrow(() -> new EntityNotFoundException(AssetCheckList.class, senderId));
         assetCheckList.setState(  Constants.ONBOARD_ORDER_CHECK_LIST_STATE.complete.name());
         assetCheckList = repo.save(assetCheckList);
         return assetCheckList;
