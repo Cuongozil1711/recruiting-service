@@ -30,6 +30,7 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
     private String optionType; // number , select
     private Double minRating; //enable when optionType = number
     private Double maxRating; //enable when optionType = number
+    private Integer evaluate;
     @Type(type = "list-array")
     @Column(columnDefinition = "text[]", length = 4000)
     List<String> optionValues;
@@ -48,6 +49,7 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
                 .priority(dto.getPriority())
                 .description(dto.getDescription())
                 .name(dto.getName())
+                .evaluate(dto.getEvaluate())
                 .build();
         return obj;
     }
