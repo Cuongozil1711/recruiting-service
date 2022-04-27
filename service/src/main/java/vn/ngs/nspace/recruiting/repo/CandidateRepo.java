@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.Candidate;
+import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 
@@ -146,5 +147,17 @@ public interface CandidateRepo extends BaseRepo<Candidate,Long>, JpaSpecificatio
 
     @Query(value = " select apply_position_id, count(*) from recruiting_service.candidate where apply_position_id is not null group by apply_position_id", nativeQuery = true)
     List<Map<String, Object>> countPositionApply();
+
+    @Query(value = "select c " +
+            " from JobApplication c" +
+            " where (c.companyId = :companyId)" +
+            " and (c.status = 1)" +
+            " and (c.state = :state)" +
+            " and (c.id = :id)"
+    )
+    Optional<JobApplication> findState(
+            @Param("companyId") Long cid
+            ,@Param("id") Long id
+            ,@Param("state") String state);
 }
 

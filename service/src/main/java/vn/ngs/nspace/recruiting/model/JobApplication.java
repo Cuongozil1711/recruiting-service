@@ -54,6 +54,7 @@ public class JobApplication extends TaskEntity {
     private String codeRecruting;
     private Long orgRecrutingId;
     private Long roomRecrutingId;
+    private String onboardState;
 
     public static JobApplication of(Long cid, String uid, JobApplicationDTO dto){
         JobApplication builder = JobApplication.builder()
@@ -73,6 +74,7 @@ public class JobApplication extends TaskEntity {
                 .codeRecruting(dto.getCodeRecruting())
                 .orgRecrutingId(dto.getOrgRecrutingId())
                 .roomRecrutingId(dto.getRoomRecrutingId())
+                .onboardState(dto.getOnboardState())
                 .state(dto.getState()).build();
 
 

@@ -4,27 +4,31 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
+import vn.ngs.nspace.recruiting.model.EmailSent;
+import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
+import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.repo.spec.OnboardEmployeeFilterSpecification;
 import vn.ngs.nspace.recruiting.request.OnboardEmployeeFilterRequest;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
 public class OnboardEmployeeService {
 
     private final CandidateRepo candidateRepo;
+    private final JobApplicationRepo jobApplicationRepo;
 
-    public OnboardEmployeeService(CandidateRepo candidateRepo) {
+    public OnboardEmployeeService(CandidateRepo candidateRepo,JobApplicationRepo _jobApplicationRepo) {
         this.candidateRepo = candidateRepo;
+        jobApplicationRepo=_jobApplicationRepo;
     }
 
     public Page<CandidateDTO> filterEmployeeOnboard(
@@ -44,7 +48,18 @@ public class OnboardEmployeeService {
 
         return new PageImpl(candidateDTOS, candidatePage.getPageable(), candidatePage.getTotalElements());
     }
-
+    public JobApplication changeStateJob(
+            Long cid
+            , String uid
+            , Long id
+            ,String state
+    ) {
+       if(state.isEmpty()) state = Constants.HCM_RECRUITMENT_ONBOARD.ONBOARDING.name();
+        JobApplication jobApplication = candidateRepo.findState(cid,id, Constants.HCM_RECRUITMENT.STAFF.name()).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, id));
+        jobApplication.setState( state);
+        jobApplication = jobApplicationRepo.save(jobApplication);
+        return jobApplication;
+    }
     public List<CandidateDTO> toDTOs(List<Candidate> candidates) {
         Set<Long> ids = new HashSet<>();
         List<CandidateDTO> candidateDTOS = new ArrayList<>();

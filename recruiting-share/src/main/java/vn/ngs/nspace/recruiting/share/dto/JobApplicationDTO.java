@@ -45,6 +45,7 @@ public class JobApplicationDTO {
     private Map<String, Object> contractTypeObj;
     private Map<String, Object> createByObj;
     private OrgResp org;
+    private String onboardState;
 
     private Integer status;
 }
