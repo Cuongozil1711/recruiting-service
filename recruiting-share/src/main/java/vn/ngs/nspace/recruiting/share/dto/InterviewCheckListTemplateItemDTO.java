@@ -19,6 +19,7 @@ public class InterviewCheckListTemplateItemDTO {
     private Double minRating; //enable when optionType = number
     private Double maxRating; //enable when optionType = number
     private List<String> optionValues; //enable when optionType = select
+    private Integer evaluate;
     private Integer status;
     private String description;
     private String priority;
