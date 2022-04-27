@@ -1,5 +1,6 @@
 package vn.ngs.nspace.recruiting.api;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,6 +13,7 @@ import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.AssetCheckList;
+import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.repo.AssetCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanOrderRepo;
 import vn.ngs.nspace.recruiting.service.AssetCheckListService;
@@ -120,4 +122,24 @@ public class AssetCheckListApi {
         }
     }
 
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Change state AssetCheckList for employee"
+            , description = "Change state AssetCheckList for employee"
+            , tags = {"ChangeStateAssetCheckList", "changeStateAssetCheckList"}
+    )
+    @GetMapping(value = "/change-state-job-application/{employeeId}/{id}")
+    public ResponseEntity changeStateAssetCheckList(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Path Variable") @PathVariable(value = "employeeId") Long employeeId
+            , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
+    ) {
+        try {
+            AssetCheckList assetCheckList = _service.changeStateAssetCheckList(cid, employeeId, id);
+            return ResponseUtils.handlerSuccess(assetCheckList);
+        } catch (Exception exception) {
+            return ResponseUtils.handlerException(exception);
+        }
+
+    }
 }
