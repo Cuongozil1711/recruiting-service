@@ -48,7 +48,15 @@ public class OnboardEmployeeService {
 
         return new PageImpl(candidateDTOS, candidatePage.getPageable(), candidatePage.getTotalElements());
     }
-    public JobApplication changeStateJob(
+    /**
+     * changeStateJob
+     * @param cid
+     * @param uid
+     * @param id
+     * @param state
+     * @return
+     */
+    public JobApplication changeStateJobApplication(
             Long cid
             , String uid
             , Long id
@@ -66,13 +74,10 @@ public class OnboardEmployeeService {
         candidates.forEach(o -> {
             ids.add(o.getId());
         });
-
         for (Candidate obj : candidates) {
             CandidateDTO o = toDTO(obj);
-
             candidateDTOS.add(o);
         }
-
         return candidateDTOS;
     }
 
