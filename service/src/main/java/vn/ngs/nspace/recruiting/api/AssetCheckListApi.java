@@ -115,7 +115,6 @@ public class AssetCheckListApi {
             , @Parameter(description = "Path Variable") @PathVariable(value = "id") Long id
             , @RequestBody List<AssetCheckListDTO> listDTOS) {
         try {
-
             return ResponseUtils.handlerSuccess(_service.handOverAsset(cid, uid, id, listDTOS));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
@@ -127,15 +126,16 @@ public class AssetCheckListApi {
             , description = "Change state AssetCheckList for employee"
             , tags = {"ChangeStateAssetCheckList", "changeStateAssetCheckList"}
     )
-    @PutMapping(value = "/change-state-job-application/{employeeId}/{assetId}/{senderId}")
+    @PutMapping(value = "/change-state-asset-check-list")
     public ResponseEntity changeStateAssetCheckList(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
-            , @Parameter(description = "Path Variable") @PathVariable(value = "employeeId") Long employeeId
-            , @Parameter(description = "Path Variable") @PathVariable(value = "assetId") Long assetId
-            , @Parameter(description = "Path Variable") @PathVariable(value = "senderId") Long senderId
+            , @Parameter(description = "Payload of record")  @RequestBody Map<String, Object> payload
     ) {
         try {
+            Long employeeId =   vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "employeeId", 0l);
+            Long assetId =   vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "assetId", 0l);
+            Long senderId =   vn.ngs.nspace.lib.utils.MapUtils.getLong(payload, "senderId", 0l);
             AssetCheckList assetCheckList = _service.changeStateAssetCheckList(cid, employeeId, assetId,senderId);
             return ResponseUtils.handlerSuccess(assetCheckList);
         } catch (Exception exception) {
