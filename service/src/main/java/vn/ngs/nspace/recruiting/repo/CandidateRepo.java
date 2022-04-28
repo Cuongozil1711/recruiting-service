@@ -72,7 +72,7 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
             " and (c.education_level in :educationLevel or -1 in (:educationLevel))" +
             " and (c.language in :language or -1 in (:language))" +
             " and (c.state in :states or '#' in (:states))" +
-            " and (regexp_replace(regexp_replace(regexp_replace(regexp_replace(regexp_replace(lower(concat(coalesce(c.full_name,''),coalesce(c.code,''),coalesce(c.ward_code,''),coalesce(c.phone,''),coalesce(c.email,''))), '[ớôốơợộồỗờợỡởổ]', 'o'), '[áàạảãăẳằặẵắầẩẫậấâ]', 'a'),'[ểệềếê]','e'),'[ứửựừư]','u'),'[ỉịìĩí]','i') like lower(concat('%',:search\\:\\:varchar ,'%')) or coalesce(:search, '#') = '#' )" +
+            " and (lower(concat(coalesce(c.full_name,''),coalesce(c.code,''),coalesce(c.ward_code,''),coalesce(c.phone,''),coalesce(c.email,''))) like lower(concat('%',:search\\:\\:varchar ,'%')) or coalesce(:search, '#') = '#' )" +
             " order by c.id DESC ", nativeQuery = true
 
     )
