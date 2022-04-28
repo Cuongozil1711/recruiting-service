@@ -65,13 +65,10 @@ public class ExecuteNoticeService {
             payload.put("content", content);
             payload.put("to", toUserIds);
             payload.put("emails", toEmails);
-
             cmd.put("channel","email");
             cmd.put("payload", payload);
-
-
+            //System.out.println("cmd=>"+cmd);
             HttpEntity request = new HttpEntity<>(cmd,headers);
-
             ParameterizedTypeReference<BaseResponse<Object>> responeType = new ParameterizedTypeReference<BaseResponse<Object>>() {};
             ResponseEntity response = restTemplate.exchange(uri,method,request,responeType);
         } catch (Exception e) {
