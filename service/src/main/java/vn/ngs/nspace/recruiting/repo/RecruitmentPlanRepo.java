@@ -28,11 +28,11 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan, Long> {
             , Pageable pageable);
 
     @Query(value = "select sum(job.sum_quanity\\:\\:numeric) as sum_quanity,sum(job.sum_recruting) as sum_recruting,sum(job.sum_recruting_all) as sum_recruting_all from recruiting_service.recruitment_plan job where (job.company_id = :companyId) and (job.status = 1) " +
-            "and job.state in ('INIT','PROCESSING')" +
+            "and job.state in ('INIT','PROCESSING')"+
             "and  ((job.create_by = :createBy) or coalesce(:createBy,'#') = '#')" +
             " and (job.start_date between :startDateFrom\\:\\:date and :startDateTo\\:\\:date)" +
             " and (job.end_date between :endDateFrom\\:\\:date and :endDateTo\\:\\:date)" +
-            " and (lower(concat(coalesce(job.name, ''), coalesce(job.code, '')))) like (lower(concat('%', :search\\:\\:varchar , '%'))) or coalesce(:search\\:\\:varchar, '#') = '#')", nativeQuery = true)
+            " and ((concat(coalesce(job.name, ''), coalesce(job.code, ''))) like (concat('%', :search\\:\\:varchar , '%')) or coalesce(:search\\:\\:varchar, '#') = '#')",nativeQuery = true)
     Map<String, Object> sumAll(@Param("companyId") Long cid
 
             , @Param("startDateFrom") Date startDateFrom
