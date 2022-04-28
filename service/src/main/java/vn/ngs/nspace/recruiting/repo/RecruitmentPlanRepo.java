@@ -49,7 +49,7 @@ public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan, Long> {
             " and (s.start_date between :startDateFrom\\:\\:date and :startDateTo\\:\\:date)" +
             " and (s.end_date between :endDateFrom\\:\\:date and :endDateTo\\:\\:date)" +
             " and (s.state in :states or '#' in (:states))" +
-            " and ((regexp_replace(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(lower(concat(coalesce(s.name, ''), coalesce(s.code, ''))), '[ớôốơợộồỗờợỡởổ]', 'o'), '[áàạảãăẳằặẵắầẩẫậấâ]', 'a'),'[ểệềếê]','e'),'[ứửựừư]','u'),'[ỉịìĩí]','i')) like lower(concat('%', :search\\:\\:varchar , '%')) or coalesce(:search\\:\\:varchar, '#') = '#')"+
+            " and (lower(concat(coalesce(s.name, ''), coalesce(s.code, ''))) like lower(concat('%', :search\\:\\:varchar , '%')) or coalesce(:search\\:\\:varchar, '#') = '#')"+
             "order by s.create_date desc "
             , nativeQuery = true)
     Page<RecruitmentPlan> filter(@Param("companyId") Long cid
