@@ -58,23 +58,22 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
 //            ,@Param("email") String email
             , Pageable pageable);
 
-    @Query(value = "select c " +
-            " from Candidate c" +
-            " where (c.companyId = :companyId)" +
+    @Query(value = "select *" +
+            " from recruiting_service.candidate c" +
+            " where (c.company_id = :companyId)" +
             " and (c.status = 1)" +
-            " and (c.applyPositionId = :applyPosition or :applyPosition = -1)" +
-            " and (c.cvSourceId = :resource or :resource = -1)" +
-            " and (c.applyDate between :applyDateFrom and :applyDateTo)" +
-            " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo or c.graduationYear is null )" +
+            " and (c.apply_position_id = :applyPosition or :applyPosition = -1)" +
+            " and (c.cv_source_id = :resource or :resource = -1)" +
+            " and (c.apply_date between :applyDateFrom and :applyDateTo)" +
+            " and (c.graduation_year >= :graduationFrom and c.graduation_year <= :graduationTo or c.graduation_year is null )" +
             " and (c.gender = :gender or :gender = -1)" +
-            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or (:ageLess < c.birthDate))" +
+            " and (cast(:ageLess AS date) is null  or (:ageLess < c.birth_date))" +
             " and (c.experience = :experience or coalesce(:experience,'#') ='#')" +
-            " and (c.educationLevel in :educationLevel or -1L in (:educationLevel))" +
-            " and (c.language in :language or -1L in (:language))" +
+            " and (c.education_level in :educationLevel or -1 in (:educationLevel))" +
+            " and (c.language in :language or -1 in (:language))" +
             " and (c.state in :states or '#' in (:states))" +
-            " and ((concat(lower(coalesce(c.fullName,'')),lower(coalesce(c.code,'')),lower(coalesce(c.wardCode,'')), lower(coalesce(c.phone,'')), lower(coalesce(c.email,'') )))" +
-            " like lower(concat('%',:search,'%')) or coalesce(:search, '#') = '#' )" +
-            " order by c.id DESC "
+            " and (regexp_replace(regexp_replace(regexp_replace(regexp_replace(regexp_replace(lower(concat(coalesce(c.full_name,''),coalesce(c.code,''),coalesce(c.ward_code,''),coalesce(c.phone,''),coalesce(c.email,''))), '[ớôốơợộồỗờợỡởổ]', 'o'), '[áàạảãăẳằặẵắầẩẫậấâ]', 'a'),'[ểệềếê]','e'),'[ứửựừư]','u'),'[ỉịìĩí]','i') like lower(concat('%',:search\\:\\:varchar ,'%')) or coalesce(:search, '#') = '#' )" +
+            " order by c.id DESC ", nativeQuery = true
 
     )
         // or coalesce(:search, '#') = '#'
