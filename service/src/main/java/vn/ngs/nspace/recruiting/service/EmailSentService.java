@@ -98,17 +98,23 @@ public class EmailSentService {
             String emailArray[] = emails.split(",");
             //System.out.println("===>"+emailArray);
             // gủi mail cho ứng viên
+
+            //String email=mail.replace("[","").replace("]","");
+            String mailsend =MapUtils.getString(setting.getConfigs(), "email", "");
+            String pwd =MapUtils.getString(setting.getConfigs(), "password", "");
+            Set<String> listMail= new HashSet<>();
             Arrays.stream(emailArray).distinct().forEach(mail->{
-               // System.out.println("mail===>"+mail);
                 String email=mail.replace("[","").replace("]","");
-                String mailsend =MapUtils.getString(setting.getConfigs(), "email", "");
-                String pwd =MapUtils.getString(setting.getConfigs(), "password", "");
-               // System.out.println("mail to===>"+email+"| mail from "+mailsend+":"+pwd);
+                listMail.add(email);
+            });
+            System.out.println(" mail from "+mailsend+":"+pwd+" | "+listMail);
+            //Arrays.stream(emailArray).distinct().forEach(mail->{
+               // System.out.println("mail===>"+mail);
                 _noticeService.publishEmail(es.getUid(), es.getCompanyId(), mailsend
                         , pwd
                         , es.getSubject()
-                        , es.getContent(), Collections.singleton(es.getUid()), Collections.singleton(email));
-            });
+                        , es.getContent(), Collections.singleton(es.getUid()), listMail);
+            //});
             // thông báo hội đồng
             sendNotify(cid,es.getUid(),es.getCouncil(),setting,es.getSubject(),es.getContent());
             //cập nhập trạng thái
@@ -399,14 +405,15 @@ public class EmailSentService {
         List<String> mails = convertListString((List) payload.getOrDefault("mails", new ArrayList()));
         if(candidateId.size()>0){
             List<Candidate> _candidate = _candidateRepo.findByArrayId(cid, candidateId);
+            Set<String> emailTos=  new HashSet<>();
             _candidate.stream().forEach(e -> {
                 String emailTo = e.getEmail();
-                _noticeService.publishEmail(uid, cid, mailSendUser
-                        , mailSendPwd
-                        , title
-                        , content, Collections.singleton(uid), Collections.singleton(emailTo));
-
+                emailTos.add(emailTo);
             });
+            _noticeService.publishEmail(uid, cid, mailSendUser
+                    , mailSendPwd
+                    , title
+                    , content, Collections.singleton(uid),emailTos);
         }
         //gửi mail hội đồng
         sendNotify(cid,uid,councilSelect,setting,title,content);
