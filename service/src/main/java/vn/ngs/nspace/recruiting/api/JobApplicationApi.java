@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,6 +16,7 @@ import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.CompareUtil;
+import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.model.Candidate;
@@ -192,6 +192,7 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
 
     }
 
+
     @PostMapping("/old")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Create single JobApplication"
@@ -227,6 +228,29 @@ public class JobApplicationApi extends TaskApi<JobApplication, JobApplicationSer
             , @RequestBody JobApplicationDTO dto){
         try {
            return ResponseUtils.handlerSuccess(_service.update(cid, uid, id,dto));
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    //update states Onboard
+    @PutMapping("/update-state-onboard")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Update JobApplication by Id"
+            , description = "Update JobApplication by Id"
+            , tags = { "JobApplication" }
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    public ResponseEntity updateStateOnboard(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestBody Map<String,Object> payload){
+        try {
+            Long id = MapUtils.getLong(payload, "id", -1l);
+            _service.updateStateOnbroad(cid, uid,id);
+
+            return ResponseUtils.handlerSuccess("");
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }
