@@ -16,7 +16,6 @@ import vn.ngs.nspace.hcm.share.dto.response.OrgResp;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 
-import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.lib.utils.StaticContextAccessor;
@@ -25,7 +24,6 @@ import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.request.JobApplicationRequest;
-import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
@@ -203,6 +201,14 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         curr = _repo.save(curr);
 
         return toDTOWithObj(cid,uid,curr);
+    }
+    //update states Onboard
+    @Transactional
+    public boolean updateStateOnbroad(Long cid, String uid, Long id) {
+        JobApplication curr = _repo.findByCompanyIdAndId(cid,id).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, id));
+        _repo.updateStateById(id);
+        return true;
+
     }
 
     public EmployeeDTO createEmployee(Long cid, String uid, Long jobAppId, EmployeeRecruitingReq createEmp){

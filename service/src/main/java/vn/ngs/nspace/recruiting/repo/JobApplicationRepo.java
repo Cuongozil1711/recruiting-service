@@ -2,8 +2,10 @@ package vn.ngs.nspace.recruiting.repo;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;
@@ -16,6 +18,11 @@ import java.util.Optional;
 
 public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<JobApplication,Long> {
     Optional<JobApplication> findByCompanyIdAndId(Long cid, Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update JobApplication set state = 'ONBOARD' where id = :id")
+    void updateStateById(@Param("id")Long id);
 
     Optional<JobApplication> findByCompanyIdAndCandidateIdAndStatus(long cid, long candidateId, int status);
 
