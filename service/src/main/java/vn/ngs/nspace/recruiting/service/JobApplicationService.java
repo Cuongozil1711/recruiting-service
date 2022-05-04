@@ -342,6 +342,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
             List<Candidate> candi = _candidateRepo.findByCompanyIdAndIdAndStatus(cid,i.getCandidateId(),Constants.ENTITY_ACTIVE);
             List<CandidateDTO> objs = _candidateService.toDTOs(cid,uid,candi);
             objs.forEach(a->{
+
                 i.setCandidateObj(a);
             });
 
