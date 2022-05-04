@@ -24,6 +24,7 @@ import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.request.JobApplicationRequest;
+import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.EmployeeRecruitingReq;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
@@ -48,17 +49,19 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
     private final RecruitmentPlanService _planService;
     private final OnboardOrderService _onboardService;
     private final CandidateRepo _candidateRepo;
+    private final CandidateService _candidateService;
     private final ExecuteHcmService _hcmService;
     private final ExecuteConfigService _configService;
     private final ConfigApi configApi;
     private final RequestApi requestApi;
 
-    public JobApplicationService(JobApplicationRepo repo, RecruitmentPlanService plandService, OnboardOrderService onboardService, CandidateRepo candidateRepo, ExecuteHcmService hcmService, ExecuteConfigService configService, ConfigApi configApi, RequestApi requestApi) {
+    public JobApplicationService(JobApplicationRepo repo, RecruitmentPlanService plandService, OnboardOrderService onboardService, CandidateRepo candidateRepo, CandidateService candidateService, ExecuteHcmService hcmService, ExecuteConfigService configService, ConfigApi configApi, RequestApi requestApi) {
         super(repo);
         _repo = repo;
         _planService = plandService;
         _onboardService = onboardService;
         _candidateRepo = candidateRepo;
+        _candidateService = candidateService;
         _hcmService = hcmService;
         _configService = configService;
         this.configApi = configApi;
@@ -335,6 +338,15 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
 
         Page<JobApplication> page = _repo.search(cid,pageable);
         List<JobApplicationDTO> dtos = toDTOs(cid, uid, page.getContent());
+        dtos.forEach(i->{
+            List<Candidate> candi = _candidateRepo.findByCompanyIdAndIdAndStatus(cid,i.getCandidateId(),Constants.ENTITY_ACTIVE);
+            List<CandidateDTO> objs = _candidateService.toDTOs(cid,uid,candi);
+            objs.forEach(a->{
+                i.setCandidateObj(a);
+            });
+
+        });
+
         return new PageImpl(dtos, page.getPageable(), page.getTotalElements());
     }
 
