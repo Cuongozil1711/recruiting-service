@@ -18,6 +18,7 @@ import java.util.Optional;
 public interface CandidateRepo extends BaseRepo<Candidate, Long> {
 
     Optional<Candidate> findByCompanyIdAndId(long cid, Long id);
+    List<Candidate> findByCompanyIdAndIdAndStatus(long cid, Long id,int status);
     Optional<Candidate> findByCompanyIdAndPhoneAndStatus(long cid, String phone, int status);
     @Query(value = "select c " +
             " from Candidate c" +
@@ -58,22 +59,23 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
 //            ,@Param("email") String email
             , Pageable pageable);
 
-    @Query(value = "select *" +
-            " from recruiting_service.candidate c" +
-            " where (c.company_id = :companyId)" +
+    @Query(value = "select c " +
+            " from Candidate c" +
+            " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
-            " and (c.apply_position_id = :applyPosition or :applyPosition = -1)" +
-            " and (c.cv_source_id = :resource or :resource = -1)" +
-            " and (c.apply_date between :applyDateFrom and :applyDateTo)" +
-            " and (c.graduation_year >= :graduationFrom and c.graduation_year <= :graduationTo or c.graduation_year is null )" +
+            " and (c.applyPositionId = :applyPosition or :applyPosition = -1)" +
+            " and (c.cvSourceId = :resource or :resource = -1)" +
+            " and (c.applyDate between :applyDateFrom and :applyDateTo)" +
+            " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo or c.graduationYear is null )" +
             " and (c.gender = :gender or :gender = -1)" +
-            " and (cast(:ageLess AS date) is null  or (:ageLess < c.birth_date))" +
+            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or (:ageLess < c.birthDate))" +
             " and (c.experience = :experience or coalesce(:experience,'#') ='#')" +
-            " and (c.education_level in :educationLevel or -1 in (:educationLevel))" +
-            " and (c.language in :language or -1 in (:language))" +
+            " and (c.educationLevel in :educationLevel or -1L in (:educationLevel))" +
+            " and (c.language in :language or -1L in (:language))" +
             " and (c.state in :states or '#' in (:states))" +
-            " and (lower(concat(coalesce(c.full_name,''),coalesce(c.code,''),coalesce(c.ward_code,''),coalesce(c.phone,''),coalesce(c.email,''))) like lower(concat('%',:search\\:\\:varchar ,'%')) or coalesce(:search, '#') = '#' )" +
-            " order by c.id DESC ", nativeQuery = true
+            " and ((concat(lower(coalesce(c.fullName,'')),lower(coalesce(c.code,'')),lower(coalesce(c.wardCode,'')), lower(coalesce(c.phone,'')), lower(coalesce(c.email,'') )))" +
+            " like lower(concat('%',:search,'%')) or coalesce(:search, '#') = '#' )" +
+            " order by c.id DESC "
 
     )
         // or coalesce(:search, '#') = '#'
