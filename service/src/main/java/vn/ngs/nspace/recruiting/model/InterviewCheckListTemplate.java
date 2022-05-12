@@ -22,6 +22,8 @@ public class InterviewCheckListTemplate extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
+    private String name; // tên mẫu đánh giá
+    private String code; // mã mẫu đánh giá
     private Long orgId;
     private Long positionId;
     private Long titleId;
@@ -33,6 +35,8 @@ public class InterviewCheckListTemplate extends PersistableEntity<Long> {
                 .id(dto.getId())
                 .orgId(dto.getOrgId())
                 .positionId(dto.getPositionId())
+                .code(dto.getCode())
+                .name(dto.getName())
                 .startDate(dto.getStartDate())
                 .titleId(dto.getTitleId())
                 .endDate(dto.getEndDate())
