@@ -75,7 +75,7 @@ public class InterviewCheckListTemplateService {
     public InterviewCheckListTemplateDTO create(long cid, String uid, InterviewCheckListTemplateDTO dto) {
         valid(dto);
 //        try{
-//            InterviewCheckListTemplate exists = repo.searchExists(cid, dto.getPositionId(),  dto.getOrgId(), dto.getTitleId()).orElse(new InterviewCheckListTemplate());
+//            InterviewCheckListTemplateApi exists = repo.searchExists(cid, dto.getPositionId(),  dto.getOrgId(), dto.getTitleId()).orElse(new InterviewCheckListTemplateApi());
 //            if(!exists.isNew()){
 //                throw new BusinessException("duplicate-template-with-position-and-title-and-org");
 //            }

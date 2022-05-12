@@ -15,6 +15,8 @@ import java.util.Map;
 public class InterviewCheckListTemplateDTO {
     private Long id;
     private Long orgId;
+    private String name; // tên mẫu
+    private String code; // mã mẫu
     private Long positionId;
     private Long titleId;
     private Date startDate;
