@@ -51,14 +51,13 @@ public class ScheduleTypeService {
     }
 
     public ScheduleTypeDTO update(Long cid, String uid, Long id, ScheduleTypeDTO request) {
-        ScheduleType scheduleTypeInfo = _repo.findByCompanyIdAndId(cid,id).orElseThrow(()->new EntityNotFoundException(ScheduleType.class,id));
+        ScheduleType scheduleType = _repo.findByCompanyIdAndId(cid,id).orElseThrow(()->new EntityNotFoundException(ScheduleType.class,id));
         valid(request);
 
-        scheduleTypeInfo.setCode(request.getCode());
-        scheduleTypeInfo.setName(request.getName());
-        scheduleTypeInfo.setDescription(request.getDescription());
+        request.setId(scheduleType.getId());
+        scheduleType = _repo.save(ScheduleType.of(cid, uid, request));
 
-        return toDTO(_repo.save(scheduleTypeInfo));
+        return toDTO(scheduleType);
     }
 
     public void delete(Long cid, String uid, List<Long> ids) {
@@ -72,10 +71,6 @@ public class ScheduleTypeService {
                     _repo.save(e);
                 }
         );
-    }
-
-    public ScheduleType toEntity(ScheduleTypeDTO scheduleTypeDTO) {
-        return MapperUtils.map(scheduleTypeDTO,ScheduleType.class);
     }
 
     public ScheduleTypeDTO toDTO(ScheduleType scheduleType) {
