@@ -19,6 +19,5 @@ public interface ScheduleTypeRepo extends BaseRepo<ScheduleType, Long> {
             , Pageable pageable
     );
 
-    @Override
     Optional<ScheduleType> findByCompanyIdAndId(Long cid, Long id);
 }
