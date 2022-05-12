@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.ScheduleType;
 
+import java.util.Optional;
+
 @Repository
 public interface ScheduleTypeRepo extends BaseRepo<ScheduleType, Long> {
 
@@ -16,4 +18,7 @@ public interface ScheduleTypeRepo extends BaseRepo<ScheduleType, Long> {
             @Param("search") String search
             , Pageable pageable
     );
+
+    @Override
+    Optional<ScheduleType> findByCompanyIdAndId(Long cid, Long id);
 }

@@ -44,6 +44,42 @@ public class ScheduleTypeApi {
         }
     }
 
+    @GetMapping("{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getListSchedule(
+            @RequestHeader("cid") long cid
+            , @PathVariable("id") Long id
+    ) {
+        try {
+            ScheduleTypeDTO scheduleTypeDTO = _service.getById(cid, id);
+
+            return ResponseUtils.handlerSuccess(scheduleTypeDTO);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PutMapping("{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    protected ResponseEntity getListSchedule(
+            @RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable("id") Long id
+            , @RequestBody ScheduleTypeDTO request
+    ) {
+        try {
+            ScheduleTypeDTO scheduleTypeDTO = _service.update(cid, uid,id, request);
+
+            return ResponseUtils.handlerSuccess(scheduleTypeDTO);
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
+
     @PostMapping("")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Create list ScheduleType"
