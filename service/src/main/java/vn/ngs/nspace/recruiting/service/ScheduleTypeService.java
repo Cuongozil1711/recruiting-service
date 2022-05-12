@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
+import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.ScheduleType;
 import vn.ngs.nspace.recruiting.repo.ScheduleTypeRepo;
@@ -43,9 +44,18 @@ public class ScheduleTypeService {
         return toDTO(scheduleType);
     }
 
+    public ScheduleTypeDTO getById(Long cid, Long id) {
+        ScheduleType scheduleType = _repo.findByCompanyIdAndId(cid,id).orElseThrow(()->new EntityNotFoundException(ScheduleType.class,id));
+
+        return toDTO(scheduleType);
+    }
+
     public ScheduleTypeDTO update(Long cid, String uid, Long id, ScheduleTypeDTO request) {
+        ScheduleType scheduleType = _repo.findByCompanyIdAndId(cid,id).orElseThrow(()->new EntityNotFoundException(ScheduleType.class,id));
         valid(request);
-        ScheduleType scheduleType = _repo.save(ScheduleType.of(cid, uid, request));
+
+        request.setId(scheduleType.getId());
+        scheduleType = _repo.save(ScheduleType.of(cid, uid, request));
 
         return toDTO(scheduleType);
     }
