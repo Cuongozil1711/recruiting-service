@@ -19,7 +19,7 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
     @Query(value = " select p.* " +
             " from recruiting_service.Interview_Involve p " +
             " where (p.company_Id = :companyId)" +
-            " and (p.interview_Id = :interviewId or :interviewId = -1) " +
+            " and (p.interviewer_last_Id = :interviewerLastId or :interviewerLastId = -1) " +
             " and (p.org_Id = :orgId or :orgId = -1) " +
             " and (p.position_Id = :positionId or :positionId = -1) " +
             " and (p.title_Id = :titleId or :titleId = -1)" +
@@ -32,7 +32,7 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             " like (concat('%',:search\\:\\:varchar ,'%')) or coalesce(:search\\:\\:varchar, '#') = '#' )"+
             " and (p.status = 1 )", nativeQuery = true)
     Page<InterviewInvolve> search(@Param("companyId") Long cid
-            , @Param("interviewId") Long interviewId
+            , @Param("interviewerLastId") Long interviewerLastId
             , @Param("orgId") Long orgId
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId
@@ -47,16 +47,16 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
     @Query(value = " select p " +
             " from InterviewInvolve p " +
             " where (p.companyId = :companyId)" +
-            " and (p.interviewId = :interviewId or coalesce(p.interviewId, 0)  = 0) " +
+            " and (p.interviewerLastId = :interviewerLastId or coalesce(p.interviewerLastId, 0)  = 0) " +
             " and (p.orgId = :orgId or coalesce(p.orgId, 0)  = 0) " +
             " and (p.positionId = :positionId or coalesce(p.positionId, 0)  = 0)" +
             " and (p.titleId = :titleId or coalesce (p.titleId, 0) = 0)" +
-            " order by  coalesce(p.interviewId, 0) desc " +
+            " order by  coalesce(p.interviewerLastId, 0) desc " +
             "           , coalesce(p.positionId, 0) desc " +
             "           , coalesce(p.orgId, 0) desc " +
             "           , coalesce(p.titleId, 0) desc ")
     List<InterviewInvolve> readConfig(@Param("companyId") Long cid
-            , @Param("interviewId") Long interviewId
+            , @Param("interviewerLastId") Long interviewerLastId
             , @Param("orgId") Long orgId
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId);
@@ -64,7 +64,7 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
     @Query(value = " select p.* " +
             " from recruiting_service.Interview_Involve p " +
             " where (p.company_Id = :companyId)" +
-            " and (p.interview_Id = :interviewId or :interviewId = -1) " +
+            " and (p.interviewer_last_Id = :interviewerLastId or :interviewerLastId = -1) " +
             " and (p.org_Id = :orgId or :orgId = -1) " +
             " and (p.position_Id = :positionId or :positionId = -1) " +
             " and (p.title_Id = :titleId or :titleId = -1)" +
@@ -72,7 +72,7 @@ public interface InterviewInvolveRepo extends BaseRepo<InterviewInvolve,Long> {
             " and (p.supporter_Id = :supporterId or :supporterId = -1) " +
             " and (p.status = 1 ) LIMIT 1 ", nativeQuery = true)
     Optional<InterviewInvolve> find(@Param("companyId") Long cid
-            , @Param("interviewId") Long interviewId
+            , @Param("interviewerLastId") Long interviewerLastId
             , @Param("orgId") Long orgId
             , @Param("positionId") Long positionId
             , @Param("titleId") Long titleId

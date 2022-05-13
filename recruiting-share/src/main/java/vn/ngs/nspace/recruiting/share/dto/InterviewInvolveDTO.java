@@ -17,7 +17,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class InterviewInvolveDTO {
     private Long id;
-    private Long interviewId;
+    private Long interviewerLastId;
     private Long orgId;
     private Long positionId;
     private Long titleId;
