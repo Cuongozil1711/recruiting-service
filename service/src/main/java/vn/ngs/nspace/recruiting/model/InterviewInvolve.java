@@ -30,7 +30,7 @@ public class InterviewInvolve extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long interviewId;
+    private Long interviewerLastId;
     private String code;
     private String name;
     private Long orgId;
@@ -50,7 +50,7 @@ public class InterviewInvolve extends PersistableEntity<Long> {
     public static InterviewInvolve of(Long cid, String uid, InterviewInvolveDTO dto){
         InterviewInvolve involve = InterviewInvolve.builder()
                 .id(dto.getId())
-                .interviewId(dto.getInterviewId())
+                .interviewerLastId(dto.getInterviewerLastId())
                 .orgId(dto.getOrgId())
                 .positionId(dto.getPositionId())
                 .titleId(dto.getTitleId())
