@@ -13,7 +13,10 @@ import java.util.Optional;
 @Repository
 public interface ScheduleTypeRepo extends BaseRepo<ScheduleType, Long> {
 
-    @Query("select s from ScheduleType as s where lower(concat(s.name,s.code)) like lower(concat('%',coalesce(:search,''),'%')) ")
+    @Query("select s from ScheduleType as s" +
+            " where lower(concat(s.name,s.code)) like lower(concat('%',coalesce(:search,''),'%'))" +
+            " and s.status = 1"
+    )
     Page<ScheduleType> getPageScheduleType(
             @Param("search") String search
             , Pageable pageable

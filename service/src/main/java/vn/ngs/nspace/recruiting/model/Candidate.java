@@ -89,6 +89,8 @@ public class Candidate extends PersistableEntity<Long> {
     List<String> tags;
     private String createBy;
 
+    private Integer isBlacklist; // check is blacklist ?
+
     private Long employeeId;
     private String state;
 
@@ -142,6 +144,7 @@ public class Candidate extends PersistableEntity<Long> {
                 .offerSalary(dto.getOfferSalary())
                 .titleId(dto.getTitleId())
                 .involveId(dto.getInvolveId())
+                .isBlacklist(dto.getIsBlacklist())
                 .build();
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);
