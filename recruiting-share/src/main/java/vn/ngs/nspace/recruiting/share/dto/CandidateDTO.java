@@ -74,6 +74,9 @@ public class CandidateDTO {
     private String state;
     private Long involveId;
 
+    // đánh dấu blacklist
+    private Integer isBlacklist;
+
     private EmployeeDTO employeeObj;
     private Map<String, Object> genderObj;
     private Map<String, Object> wardCodeObj;

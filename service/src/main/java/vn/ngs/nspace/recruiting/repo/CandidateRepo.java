@@ -53,11 +53,6 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
     Page<Candidate> search(
             @Param("companyId") Long cid
             , @Param("search") String search
-//            ,@Param("fullname") String fullname
-//            ,@Param("gender") Long gender
-//            ,@Param("wardCode") String wardCode
-//            ,@Param("phone") String phone
-//            ,@Param("email") String email
             , Pageable pageable);
 
     @Query(value = "select c " +
@@ -69,6 +64,7 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
             " and (c.applyDate between :applyDateFrom and :applyDateTo)" +
             " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo or c.graduationYear is null )" +
             " and (c.gender = :gender or :gender = -1)" +
+            " and (c.isBlacklist = :isBlacklist or :isBlacklist = -1)" +
             " and (cast(:ageLess AS java.time.LocalDateTime) is null  or (:ageLess < c.birthDate))" +
             " and (c.experience = :experience or coalesce(:experience,'#') ='#')" +
             " and (c.educationLevel in :educationLevel or -1L in (:educationLevel))" +
@@ -89,6 +85,7 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
             , @Param("applyDateFrom") Date applyDateFrom
             , @Param("applyDateTo") Date applyDateTo
             , @Param("graduationFrom") Integer graduationFrom
+            , @Param("isBlacklist") Integer isBlacklist
             , @Param("graduationTo") Integer graduationTo
             , @Param("gender") Long gender
             , @Param("applyPosition") Long applyPosition

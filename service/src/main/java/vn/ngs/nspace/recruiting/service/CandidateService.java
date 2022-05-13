@@ -286,6 +286,7 @@ public class CandidateService {
         Integer graduationTo = MapUtils.getIntValue(payload,"graduationTo",9999);
         String experience = MapUtils.getString(payload, "experience","#");
         Long gender = MapUtils.getLong(payload,"gender", -1L);
+        Integer isBlacklist= MapUtils.getInteger(payload,"isBlacklist", -1);
         Long applyPosition = MapUtils.getLong(payload,"applyPosition", -1L);
         Long resource = MapUtils.getLong(payload,"resource", -1L);
         String search = MapUtils.getString(payload, "search","#").toLowerCase();
@@ -293,7 +294,7 @@ public class CandidateService {
         Integer ageLess = MapUtils.getInteger(payload,"ageLess", 1000);
         Date yearLess = null;
             yearLess = DateUtil.addDate(new Date(), "year",-ageLess);
-        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,graduationTo,gender,applyPosition,resource,experience,yearLess,pageable);
+        Page<Candidate> CandidateStates = repo.fillterStates(cid,search,states,educationLevel,language,applyDateFrom,applyDateTo,graduationFrom,isBlacklist, graduationTo,gender,applyPosition,resource,experience,yearLess,pageable);
         List<CandidateDTO> data = toDTOs(cid, uid, CandidateStates.getContent());
         return new PageImpl(data, CandidateStates.getPageable(), CandidateStates.getTotalElements());
     }
