@@ -308,7 +308,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
      */
     public Candidate updateCandidate(Long cid, String uid, Long id) throws BusinessException {
         Candidate curr = _candidateRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(Candidate.class, id));
-        curr.setState(Constants.HCM_RECRUITMENT.RECRUITED.name());
+        curr.setState(Constants.HCM_RECRUITMENT.APPLIED.name());
         curr.setUpdateBy(uid);
         curr = _candidateRepo.save(curr);
         return curr;
