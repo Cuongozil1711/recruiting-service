@@ -219,7 +219,7 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
 
     @Query(value = "select\n" +
             "    COUNT(CASE WHEN ca.state = 'INIT' THEN 0 END) as INIT,\n" +
-            "    COUNT(CASE WHEN ca.state = 'RECRUITED' THEN 0 END) as RECRUITED,\n" +
+            "    COUNT(CASE WHEN ca.state = 'APPLIED' THEN 0 END) as APPLIED,\n" +
             "    COUNT(CASE WHEN ca.state = 'APPROVING' THEN 0 END) as APPROVING,\n" +
             "    COUNT(CASE WHEN ca.state = 'APPROVED' THEN 0 END) as APPROVED,\n" +
             "    COUNT(CASE WHEN ca.state = 'INTERVIEW_INVITED' THEN 0 END) as INTERVIEW_INVITED,\n" +
