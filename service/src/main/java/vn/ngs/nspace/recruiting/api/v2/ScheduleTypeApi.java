@@ -109,7 +109,7 @@ public class ScheduleTypeApi {
     private ResponseEntity deteleList(
             @Parameter(description = "ID of company")
             @RequestHeader Long cid
-            ,@Parameter(description = "ID of userID")
+            , @Parameter(description = "ID of userID")
             @RequestHeader String uid
             , @RequestBody List<Long> ids){
         try {
