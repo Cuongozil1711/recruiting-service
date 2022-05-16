@@ -76,12 +76,16 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
         DELETE, UPDATE
     }
     public  enum HCM_RECRUITMENT{
-        INIT,
-        RECRUITED,
-        APPROVED,
-        APPOINTMENT,
-        INTERVIEWED,
-        ONBOARD,
+        INIT, //mới
+        RECRUITED, //đã ứng tuyển
+        APPROVING, // đang duyệt
+        APPROVED, //đã duyệt
+        INTERVIEW_INVITED, // chờ phỏng vấn
+        INTERVIEWED, //đã phỏng vấn
+        PASSED,
+        OL_SENT,
+        OL_ACCEPTED,
+        ONBOARDED,
         STAFF,
         DENIED,
     }

@@ -7,8 +7,6 @@ import org.springframework.data.repository.query.Param;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;
-import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
-
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +16,9 @@ import java.util.Optional;
 public interface CandidateRepo extends BaseRepo<Candidate, Long> {
 
     Optional<Candidate> findByCompanyIdAndId(long cid, Long id);
-    List<Candidate> findByCompanyIdAndIdAndStatus(long cid, Long id,int status);
+
+    List<Candidate> findByCompanyIdAndIdAndStatus(long cid, Long id, int status);
+
     Optional<Candidate> findByCompanyIdAndPhoneAndStatus(long cid, String phone, int status);
 
     @Query(value = "select c " +
@@ -154,7 +154,7 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
             " and (concat(coalesce(cd.fullName,''), coalesce(cd.fullName,'')) like lower(concat('%',:name,'%')) or coalesce(:name, '#') = '#')" +
             " and cd.gender = :gender or cd.gender = -1" +
             " and cd.orgRecrutingId = :orgRecruitingId or cd.orgRecrutingId = -1" +
-            " and cd.code = :code or coalesce(:code, '#') = '#'"+
+            " and cd.code = :code or coalesce(:code, '#') = '#'" +
             " and o.state = :state or coalesce(:state, '#') = '#'"
     )
     Page<Candidate> filterCandidateOnboard(@Param("code") String code
@@ -165,7 +165,7 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
             , @Param("stateCandidate") String stateCandidate
             , Pageable pageable
     );
-    
+
     @Query(value = "select c " +
             " from JobApplication c" +
             " where (c.companyId = :companyId)" +
@@ -175,7 +175,62 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
     )
     Optional<JobApplication> findState(
             @Param("companyId") Long cid
-            ,@Param("id") Long id
-            ,@Param("state") String state);
+            , @Param("id") Long id
+            , @Param("state") String state);
+
+
+    // new
+    @Query(value = "select c " +
+            " from Candidate c" +
+            " where (c.companyId = :companyId)" +
+            " and (c.status = 1)" +
+            " and (c.applyPositionId = :applyPosition or :applyPosition = -1)" +
+            " and (c.cvSourceId = :resource or :resource = -1)" +
+            " and (c.applyDate between :applyDateFrom and :applyDateTo)" +
+            " and (c.graduationYear >= :graduationFrom and c.graduationYear <= :graduationTo or c.graduationYear is null )" +
+            " and (c.gender = :gender or :gender = -1)" +
+            " and (c.isBlacklist = :isBlacklist or :isBlacklist = -1)" +
+            " and (cast(:ageLess AS java.time.LocalDateTime) is null  or (:ageLess < c.birthDate))" +
+            " and (c.experience = :experience or coalesce(:experience,'#') ='#')" +
+            " and (c.educationLevel in :educationLevel or -1L in (:educationLevel))" +
+            " and (c.language in :language or -1L in (:language))" +
+            " and (c.state in :states or '#' in (:states))" +
+            " and ((concat(lower(coalesce(c.fullName,'')),lower(coalesce(c.code,'')),lower(coalesce(c.wardCode,'')), lower(coalesce(c.phone,'')), lower(coalesce(c.email,'') )))" +
+            " like lower(concat('%',:search,'%')) or coalesce(:search, '#') = '#' )" +
+            " order by c.id DESC "
+    )
+    Page<Candidate> getPage(
+            @Param("companyId") Long cid
+            , @Param("search") String search
+            , @Param("states") List<String> states
+            , @Param("educationLevel") List<Long> educationLevel
+            , @Param("language") List<Long> language
+            , @Param("applyDateFrom") Date applyDateFrom
+            , @Param("applyDateTo") Date applyDateTo
+            , @Param("graduationFrom") Integer graduationFrom
+            , @Param("isBlacklist") Integer isBlacklist
+            , @Param("graduationTo") Integer graduationTo
+            , @Param("gender") Long gender
+            , @Param("applyPosition") Long applyPosition
+            , @Param("resource") Long resource
+            , @Param("experience") String experience
+            , @Param("ageLess") Date ageLess
+            , Pageable pageable);
+
+    @Query(value = "select\n" +
+            "    COUNT(CASE WHEN ca.state = 'INIT' THEN 0 END) as INIT,\n" +
+            "    COUNT(CASE WHEN ca.state = 'RECRUITED' THEN 0 END) as RECRUITED,\n" +
+            "    COUNT(CASE WHEN ca.state = 'APPROVING' THEN 0 END) as APPROVING,\n" +
+            "    COUNT(CASE WHEN ca.state = 'APPROVED' THEN 0 END) as APPROVED,\n" +
+            "    COUNT(CASE WHEN ca.state = 'INTERVIEW_INVITED' THEN 0 END) as INTERVIEW_INVITED,\n" +
+            "    COUNT(CASE WHEN ca.state = 'INTERVIEWED' THEN 0 END) as INTERVIEWED,\n" +
+            "    COUNT(CASE WHEN ca.state = 'PASSED' THEN 0 END) as PASSED,\n" +
+            "    COUNT(CASE WHEN ca.state = 'OL_SENT' THEN 0 END) as OL_SENT,\n" +
+            "    COUNT(CASE WHEN ca.state = 'OL_ACCEPTED' THEN 0 END) as OL_ACCEPTED,\n" +
+            "    COUNT(CASE WHEN ca.state = 'ONBOARDED' THEN 0 END) as ONBOARDED,\n" +
+            "    COUNT(CASE WHEN ca.state = 'STAFF' THEN 0 END) as STAFF,\n" +
+            "    COUNT(CASE WHEN ca.state = 'DENIED' THEN 0 END) as DENIED\n" +
+            "from recruiting_service.candidate ca where ca.status = 1", nativeQuery = true)
+    Map<String, Object> countAll(@Param("companyId") Long companyId);
 }
 

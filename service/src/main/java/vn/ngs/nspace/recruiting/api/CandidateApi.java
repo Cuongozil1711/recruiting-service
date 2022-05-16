@@ -60,7 +60,7 @@ public class CandidateApi {
 //        String wardCode = MapUtils.getString(condition, "wardCode", "all");
 //        String phone = MapUtils.getString(condition, "phone", "all");
 //        String email = MapUtils.getString(condition, "email", "all");
-      //      Logger logger = LoggerFactory.getLogger(CandidateApi.class);
+      //      Logger logger = LoggerFactory.getLogger(CandidateV2Api.class);
     //        logger.trace("A TRACE Message {cid}="+cid);
         Page<Candidate> page = _repo.search(cid, search, pageable);
         List<CandidateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
@@ -377,7 +377,7 @@ public class CandidateApi {
             ,@Parameter(description = "ID of userID")   @RequestHeader String uid,
             @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id){
         try {
-            CandidateDTO obj=  _service.updateStatus(cid, uid , id,Constants.HCM_RECRUITMENT.ONBOARD.name());
+            CandidateDTO obj=  _service.updateStatus(cid, uid , id,Constants.HCM_RECRUITMENT.ONBOARDED.name());
             return ResponseUtils.handlerSuccess(obj);
         } catch (Exception e){
             return ResponseUtils.handlerException(e);
