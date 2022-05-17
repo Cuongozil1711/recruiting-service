@@ -58,9 +58,9 @@ public class CandidateV2Service {
         return new PageImpl<CandidateDTO>(candidateDTOS, page.getPageable(), page.getTotalElements());
     }
 
-    public Map<String,Object> getCount(Long cid) {
+    public Map<String, Object> getCount(Long cid) {
         Map<String, Object> countAll = candidateRepo.countAll(cid);
-        
+
         return countAll;
     }
 
@@ -128,7 +128,7 @@ public class CandidateV2Service {
      * @throws Exception
      */
 
-    public void validate(CandidateDTO dto) throws Exception {
+    private void validate(CandidateDTO dto) throws Exception {
         if (dto.getCode().isEmpty() || dto.getCode() == null) {
             throw new Exception("");
         }
@@ -137,17 +137,28 @@ public class CandidateV2Service {
     public CandidateDTO create(Long cid, String uid, CandidateDTO dto) throws Exception {
         validate(dto);
         Candidate exists = candidateRepo.findByCompanyIdAndPhoneAndStatus(cid, dto.getPhone(), Constants.ENTITY_ACTIVE).orElse(new Candidate());
-        if(!exists.isNew()){
-            throw new BusinessException("duplicate-data-with-this-phone"+":"+dto.getPhone());
+        if (!exists.isNew()) {
+            throw new BusinessException("duplicate-data-with-this-phone" + ":" + dto.getPhone());
         }
         Candidate candidate = Candidate.of(cid, uid, dto);
         candidate.setStatus(Constants.ENTITY_ACTIVE);
         candidate.setCreateBy(uid);
         candidate.setUpdateBy(uid);
+        candidate.setIsBlacklist(Constants.IS_NOT_BLACK_LIST);
         candidate.setCompanyId(cid);
+
         candidate = candidateRepo.save(candidate);
 
-        return toDTO(uid,cid, candidate);
+        return toDTO(uid, cid, candidate);
+    }
+
+    public List<CandidateDTO> create(Long cid, String uid, List<CandidateDTO> candidateDTOS) throws Exception {
+        List<CandidateDTO> data = new ArrayList<>();
+        for (CandidateDTO dto : candidateDTOS) {
+            data.add(create(cid, uid, dto));
+        }
+
+        return data;
     }
 
     /**
@@ -157,7 +168,7 @@ public class CandidateV2Service {
      * @return
      */
 
-    public CandidateDTO toDTO(String uid, Long cid, Candidate candidate) {
+    private CandidateDTO toDTO(String uid, Long cid, Candidate candidate) {
         CandidateDTO dto = MapperUtils.map(candidate, CandidateDTO.class);
 
         dto.setApplyPositionIdObj(getCategory(cid, uid, candidate.getApplyPositionId()));
