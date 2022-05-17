@@ -1,0 +1,100 @@
+package vn.ngs.nspace.recruiting.service.v2;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
+import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
+import vn.ngs.nspace.lib.utils.Constants;
+import vn.ngs.nspace.lib.utils.DateUtil;
+import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.JobApplication;
+import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
+import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
+import vn.ngs.nspace.recruiting.share.request.JobApplicationFilterRequest;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+;
+
+@Service
+@Transactional
+public class JobApplicationV2Service {
+
+    private final JobApplicationRepo jobApplicationRepo;
+    private final CandidateV2Service candidateService;
+
+    public JobApplicationV2Service(JobApplicationRepo jobApplicationRepo, CandidateV2Service candidateService) {
+        this.jobApplicationRepo = jobApplicationRepo;
+        this.candidateService = candidateService;
+    }
+
+    public Page<JobApplicationDTO> getPage(String uid, Long cid, JobApplicationFilterRequest request, Pageable pageable) throws Exception {
+        Date ageLess = DateUtil.addDate(new Date(), "year", -request.getAgeLess());
+        Date applyDateFrom = request.getApplyDateFrom() != null ? request.getApplyDateFrom() : DateUtil.toDate("1000-01-01T00:00:00+0700", "yyyy-MM-dd'T'HH:mm:ssZ");
+        Date applyDateTo = request.getApplyDateTo() != null ? request.getApplyDateTo() : DateUtil.toDate("5000-01-01T00:00:00+0700", "yyyy-MM-dd'T'HH:mm:ssZ");
+
+        Page<JobApplication> page = jobApplicationRepo.getPage(cid, request.getSearch(), request.getStates(), request.getEducationLevel(), request.getLanguage(), applyDateFrom, applyDateTo, request.getGraduationFrom(), request.getGraduationTo(), request.getGender(), request.getApplyPosition(), request.getResource(), request.getExperience(), ageLess, pageable);
+
+        List<JobApplicationDTO> jobApplicationDTOS = toDTOs(uid, cid, page.getContent());
+        return new PageImpl<>(jobApplicationDTOS, page.getPageable(), page.getTotalElements());
+    }
+
+    private JobApplicationDTO create(String uid, Long cid, JobApplicationDTO jobApplicationDTO) {
+        JobApplication exists = jobApplicationRepo.findByCandidateIdAndPlanningIdAndCompanyIdAndStatus(
+                        jobApplicationDTO.getCandidateId(), jobApplicationDTO.getPlanningId(), cid, jobApplicationDTO.getStatus())
+                .orElseThrow(() -> new EntityNotFoundException(JobApplication.class, jobApplicationDTO.getId()));
+
+        if (!exists.isNew()) {
+            throw new BusinessException("duplicate-data-with-this-id" + ":" + exists.getCandidateId());
+        }
+
+        JobApplication jobApplication = JobApplication.of(cid, uid, jobApplicationDTO);
+        jobApplication.setCreateBy(uid);
+        jobApplication.setUpdateBy(uid);
+        jobApplication.setStatus(Constants.ENTITY_ACTIVE);
+        jobApplication.setCompanyId(cid);
+
+        jobApplicationRepo.save(jobApplication);
+
+        return toDTO(uid, cid, jobApplication);
+    }
+
+    public JobApplicationDTO getById(String uid, Long cid, Long id) {
+        JobApplication jobApplication = jobApplicationRepo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(JobApplication.class, id));
+
+        return toDTO(uid, cid, jobApplication);
+    }
+
+    private JobApplicationDTO update(String uid, Long cid, JobApplicationDTO jobApplicationDTO) {
+        return null;
+    }
+
+    private JobApplicationDTO toDTO(String uid, Long cid, JobApplication jobApplication) {
+        JobApplicationDTO jobApplicationDTO = MapperUtils.map(jobApplication, JobApplicationDTO.class);
+        CandidateDTO candidateDTO = candidateService.getById(uid, cid, jobApplicationDTO.getCandidateId());
+        jobApplicationDTO.setCandidateObj(candidateDTO);
+
+        return jobApplicationDTO;
+    }
+
+    private List<JobApplicationDTO> toDTOs(String uid, Long cid, List<JobApplication> jobApplications) {
+        List<JobApplicationDTO> jobApplicationDTOS = new ArrayList<>();
+        jobApplications.forEach(
+                e -> {
+                    jobApplicationDTOS.add(toDTO(uid, cid, e));
+                }
+        );
+
+        return jobApplicationDTOS;
+    }
+
+    private void validate(JobApplicationDTO dto) {
+
+    }
+}
