@@ -123,7 +123,7 @@ public class CandidateV2Api {
         }
     }
 
-    @PostMapping("/creates")
+    @PostMapping("/create-list")
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Create list Candidate"
             , description = "Create list Candidate"
