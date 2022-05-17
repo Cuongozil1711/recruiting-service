@@ -137,22 +137,6 @@ public class CandidateV2Service {
     public CandidateDTO create(Long cid, String uid, CandidateDTO dto) throws Exception {
         validate(dto);
         Candidate exists = candidateRepo.findByCompanyIdAndPhoneAndStatus(cid, dto.getPhone(), Constants.ENTITY_ACTIVE).orElse(new Candidate());
-        if(!exists.isNew()){
-            throw new BusinessException("duplicate-data-with-this-phone"+":"+dto.getPhone());
-        }
-        Candidate candidate = Candidate.of(cid, uid, dto);
-        candidate.setStatus(Constants.ENTITY_ACTIVE);
-        candidate.setCreateBy(uid);
-        candidate.setUpdateBy(uid);
-        candidate.setCompanyId(cid);
-        candidate = candidateRepo.save(candidate);
-
-        return toDTO(uid,cid, candidate);
-    }
-
-    public CandidateDTO create(Long cid, String uid, CandidateDTO dto) throws Exception {
-        validate(dto);
-        Candidate exists = candidateRepo.findByCompanyIdAndPhoneAndStatus(cid, dto.getPhone(), Constants.ENTITY_ACTIVE).orElse(new Candidate());
         if (!exists.isNew()) {
             throw new BusinessException("duplicate-data-with-this-phone" + ":" + dto.getPhone());
         }
