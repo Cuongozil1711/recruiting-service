@@ -1,22 +1,21 @@
 package vn.ngs.nspace.recruiting.share.dto.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class Constants extends vn.ngs.nspace.lib.utils.Constants {
 
     public static final Long DEFAULT_PARENT_GROUP_ID = 0L;
-    public static final String GROUP_NAME_RECRUITING = "GroupRCID" ;
-    public static final String GROUP_DESCRIPTION_RECRUITING = "auto-generate-by-uploadFile" ;
+    public static final String GROUP_NAME_RECRUITING = "GroupRCID";
+    public static final String GROUP_DESCRIPTION_RECRUITING = "auto-generate-by-uploadFile";
     public static final String REFERENCE_GROUP_SERVICE_APPLICATION = "ticket-service";
     public static final String REFERENCE_RC_FILE_UPLOAD = "rc-file-upload";
     public static final String EMAIL_TYPE_INVITED_INTERVIEW = "invited_interview";
     public static final String NOITY_TYPE_INVITED_INTERVIEW = "change_deadline";
     public static final String EMAIL_TYPE_INVITED_ONBOARDING = "invited_onboarding";
     public final static String RECRUITING_EMAIL = "email";
-    public final static String HCM_SERVICE_RECRUITING="recruiting-service";
+    public final static String HCM_SERVICE_RECRUITING = "recruiting-service";
+
     public static enum JOB_APPLICATION_TYPE {
         job
     }
@@ -75,7 +74,8 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     public enum CMD_TABLE_ACTION {
         DELETE, UPDATE
     }
-    public  enum HCM_RECRUITMENT{
+
+    public enum HCM_RECRUITMENT {
         INIT, //mới
         APPLIED, //đã ứng tuyển
         APPROVING, // đang duyệt
@@ -89,10 +89,14 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
         STAFF,
         DENIED,
     }
-    public  enum HCM_RECRUITMENT_ONBOARD{
+
+    public enum HCM_RECRUITMENT_ONBOARD {
         INIT,
         ONBOARDING,
         APPROVED,
         DENIED,
     }
+
+    public static final Integer IS_BLACK_LIST = 1;
+    public static final Integer IS_NOT_BLACK_LIST = 0;
 }
