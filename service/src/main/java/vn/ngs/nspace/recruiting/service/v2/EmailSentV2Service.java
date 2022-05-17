@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapUtils;
+import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.EmailSent;
 import vn.ngs.nspace.recruiting.model.EmailSetting;
 import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
@@ -12,14 +13,12 @@ import vn.ngs.nspace.recruiting.schedule.ScheduleRequest;
 import vn.ngs.nspace.recruiting.schedule.ScheduleTaskCommand;
 import vn.ngs.nspace.recruiting.service.EventFactory;
 import vn.ngs.nspace.recruiting.service.ExecuteNoticeService;
+import vn.ngs.nspace.recruiting.share.dto.EmailSentDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.recruiting.share.request.EmailSentRequest;
 
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,27 +61,33 @@ public class EmailSentV2Service {
 
         EmailSetting setting = emailSettingRepo.findByCompanyIdAndId(cid, request.getEmailSettingId()).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, request.getEmailSettingId()));
 
+        String refIds = "";
         if (request.getCandidateIds() != null && !request.getCandidateIds().isEmpty()) {
-            String refIds = request.getCandidateIds().stream().map(Objects::toString).collect(Collectors.joining(","));
+            refIds = request.getCandidateIds().stream().map(Objects::toString).collect(Collectors.joining(","));
             emailSent.setRefType(Constants.EMAIL_SENT_REF.CANDIDATE.name());
             emailSent.setRefId(refIds);
         }
 
         String username = "";
         String password = "";
-        String subject = request.getTitle() != null ? request.getTitle() :  "";
-        String content = request.getContent() != null ? request.getContent() :  "";
+        String subject = request.getTitle() != null ? request.getTitle() : "";
+        String content = request.getContent() != null ? request.getContent() : "";
 
         if (setting.getConfigs() != null) {
             username = MapUtils.getString(setting.getConfigs(), "email", "");
             password = MapUtils.getString(setting.getConfigs(), "password", "");
         }
         noticeService.publishEmail(uid, cid, username,
-                password, subject,content, Set.of(uid), new HashSet<>(request.getMails()));
+                password, subject, content, Set.of(uid), new HashSet<>(request.getMails()));
 
-        emailSent.setToEmail(username);
+        emailSent.setToEmail(String.join(",", request.getMails()));
         emailSent.setTemplateId(request.getTemplateId());
         emailSent.setSubject(subject);
+        emailSent.setContent(request.getContent());
+        emailSent.setDate(request.getDate() != null ? request.getDate() : new Date());
+        emailSent.setCompanyId(cid);
+        emailSent.setFromEmail(username);
+        emailSent.setRefId(refIds);
         emailSent.setUid(uid);
         emailSent.setUpdateBy(uid);
         emailSent.setEmailSettingId(request.getEmailSettingId());
@@ -90,4 +95,23 @@ public class EmailSentV2Service {
         emailSentRepo.save(emailSent);
     }
 
+    public List<EmailSentDTO> getList(Long cid, Long id) {
+        List<EmailSent> emailSents = emailSentRepo.getListEmailSent(cid,id.toString());
+
+        return toDTOs(emailSents);
+    }
+
+    public EmailSentDTO toDTO(EmailSent emailSent) {
+        return MapperUtils.map(emailSent, EmailSentDTO.class);
+    }
+
+    public List<EmailSentDTO> toDTOs(List<EmailSent> emailSents) {
+        List<EmailSentDTO> emailSentDTOS = new ArrayList<>();
+
+        emailSents.forEach(emailSentDTO -> {
+            emailSentDTOS.add(toDTO(emailSentDTO));
+        });
+
+        return emailSentDTOS;
+    }
 }
