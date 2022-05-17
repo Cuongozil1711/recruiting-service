@@ -129,9 +129,9 @@ public class CandidateV2Service {
      */
 
     private void validate(CandidateDTO dto) throws Exception {
-        if (dto.getCode().isEmpty() || dto.getCode() == null) {
-            throw new Exception("");
-        }
+//        if (dto.getCode().isEmpty() || dto.getCode() == null) {
+//            throw new Exception("");
+//        }
     }
 
     public CandidateDTO create(Long cid, String uid, CandidateDTO dto) throws Exception {
