@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/**
+ * Đối tượng trao đổi trong các sự kiên
+ */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

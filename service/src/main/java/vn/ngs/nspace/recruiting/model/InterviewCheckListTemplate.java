@@ -10,13 +10,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
 
+/**
+ * entity thông tin mẫu đánh giá ứng viên
+ */
+
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-//Thông tin đánh giá ứng viên
+//Thông tin mẫu đánh giá ứng viên
 public class InterviewCheckListTemplate extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
@@ -24,11 +28,11 @@ public class InterviewCheckListTemplate extends PersistableEntity<Long> {
     private Long id;
     private String name; // tên mẫu đánh giá
     private String code; // mã mẫu đánh giá
-    private Long orgId;
-    private Long positionId;
-    private Long titleId;
-    private Date startDate;
-    private Date endDate;
+    private Long orgId;  // tổ chức
+    private Long positionId; // vị trí
+    private Long titleId; // chức danh
+    private Date startDate; // ngày bắt đầu
+    private Date endDate; // ngày kết thúc
 
     public static InterviewCheckListTemplate of(Long cid, String uid, InterviewCheckListTemplateDTO dto){
         InterviewCheckListTemplate obj = InterviewCheckListTemplate.builder()

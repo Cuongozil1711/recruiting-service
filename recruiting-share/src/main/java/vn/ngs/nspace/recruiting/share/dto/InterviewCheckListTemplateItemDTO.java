@@ -21,7 +21,6 @@ public class InterviewCheckListTemplateItemDTO {
     private List<String> optionValues; //enable when optionType = select
     private Integer evaluate;
     private Integer status;
-    private String description;
     private String priority;
 
     private Map<String, Object> checkListObj;

@@ -34,7 +34,6 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
     @Type(type = "list-array")
     @Column(columnDefinition = "text[]", length = 4000)
     List<String> optionValues;
-    private String description;
     private String priority;
 
     public static InterviewCheckListTemplateItem of(Long cid, String uid, InterviewCheckListTemplateItemDTO dto){
@@ -47,7 +46,6 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
                 .maxRating(dto.getMaxRating())
                 .optionValues(dto.getOptionValues())
                 .priority(dto.getPriority())
-                .description(dto.getDescription())
                 .name(dto.getName())
                 .evaluate(dto.getEvaluate())
                 .build();
