@@ -92,21 +92,21 @@ public class EmailSentService {
             EmailSent es = repo.findByCompanyIdAndId(cid,emailSentId).orElse(new EmailSent());
             Long emailSettingId = es.getEmailSettingId();
             EmailSetting setting = _emailSettingRepo.findByCompanyIdAndId(cid, emailSettingId).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class,emailSettingId));
-            String emailStr = es.getMails();
-            String emails = emailStr.replace("[","").replace("]","");
-            //somewhere in your code
-            String emailArray[] = emails.split(",");
-            //System.out.println("===>"+emailArray);
-            // gủi mail cho ứng viên
-
-            //String email=mail.replace("[","").replace("]","");
+            //            String emailStr = es.getMails();
+//            String emails =  .replace("[","").replace("]","");
+//            //somewhere in your code
+//            String emailArray[] = emails.split(",");
+//            //System.out.println("===>"+emailArray);
+//            // gủi mail cho ứng viên
+//
+//            //String email=mail.replace("[","").replace("]","");
             String mailsend =MapUtils.getString(setting.getConfigs(), "email", "");
             String pwd =MapUtils.getString(setting.getConfigs(), "password", "");
             Set<String> listMail= new HashSet<>();
-            Arrays.stream(emailArray).distinct().forEach(mail->{
-                String email=mail.replace("[","").replace("]","");
-                listMail.add(email);
-            });
+//            Arrays.stream(emailArray).distinct().forEach(mail->{
+//                String email=mail.replace("[","").replace("]","");
+//                listMail.add(email);
+//            });
             System.out.println(" mail from "+mailsend+":"+pwd+" | "+listMail);
             //Arrays.stream(emailArray).distinct().forEach(mail->{
                // System.out.println("mail===>"+mail);

@@ -8,6 +8,10 @@ import vn.ngs.nspace.kafka.dto.EventRequest;
 
 import java.util.Date;
 
+/**
+ * Kế thừa lớp sự kiện
+ */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

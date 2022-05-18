@@ -39,23 +39,6 @@ public class EmailSentV2Service {
         this.noticeService = noticeService;
     }
 
-    /**
-     * create email schedule
-     *
-     * @param scheduleAction
-     */
-
-    public void createEmailSchedule(ScheduleTaskCommand scheduleAction) {
-        ScheduleRequest taskReq = new ScheduleRequest();
-        taskReq.setCmd(vn.ngs.nspace.workflow.utils.Constants.CMD_CREATE);
-        taskReq.setExecuteTime(scheduleAction.getExecuteTime());
-        taskReq.setChannel(scheduleTopic);
-        taskReq.setEvent(scheduleAction.getAction());
-        taskReq.setId(scheduleAction.getTaskId() + "_" + scheduleAction.getEvent() + "_" + scheduleAction.getAction());
-        taskReq.setPayload(scheduleAction);
-        eventFactory.publishSchedule(taskReq);
-    }
-
     public void SentEmail(Long cid, String uid, EmailSentRequest request) {
         EmailSent emailSent = new EmailSent();
 
