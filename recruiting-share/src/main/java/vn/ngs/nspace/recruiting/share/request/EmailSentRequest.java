@@ -11,7 +11,7 @@ import java.util.List;
 public class EmailSentRequest {
     private Long templateId; // mẫu mail
     private Long emailSettingId; // mẫu config setting
-    private List<Long> candidateIds; // mẫu config setting
+    private List<Long> candidateIds; // danh sách ứng viên
     private List<String> mails; // danh dách mail người nhận
     private String content;
     private String title;

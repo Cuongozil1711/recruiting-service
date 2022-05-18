@@ -17,7 +17,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 public class ScheduleTaskCommand {
     private Long companyId;
-    private Long taskId;
+    private Long taskId; // emailSentId
     private String event;
     private String action;
     private Long actionId;
