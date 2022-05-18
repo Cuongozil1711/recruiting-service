@@ -16,6 +16,7 @@ import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.schedule.ScheduleTaskCommand;
 import vn.ngs.nspace.recruiting.service.ExecuteNoticeService;
 import vn.ngs.nspace.recruiting.service.v2.ScheduleEmailSentService;
+import vn.ngs.nspace.recruiting.share.request.ScheduleEmailSentRequest;
 
 import java.util.Date;
 import java.util.Map;
@@ -56,6 +57,26 @@ public class ScheduleEmailSentV2Api {
             return ResponseUtils.handlerSuccess(schedule_date);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PostMapping("/schedule-sent-email")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get Email Sent by ID"
+            , description = "Get Email Sent by ID"
+            , tags = {"Email"}
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    public ResponseEntity ScheduleSentMail(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestBody ScheduleEmailSentRequest request) {
+        try {
+            service.SentEmailSchedule(uid,cid,request);
+            return ResponseUtils.handlerSuccess();
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
         }
     }
 }
