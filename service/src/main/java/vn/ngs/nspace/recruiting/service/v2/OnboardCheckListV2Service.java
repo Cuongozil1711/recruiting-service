@@ -25,8 +25,8 @@ public class OnboardCheckListV2Service {
         this.checkListRepo = checkListRepo;
     }
 
-    public Page<OnboardOrderCheckListDTO> getPage(Long cid, String uid, String search, Pageable pageable) {
-        Page<OnboardOrderCheckList> onboardOrderCheckLists = checkListRepo.getPageOnboard(cid, search, pageable);
+    public Page<OnboardOrderCheckListDTO> getPage(Long cid, String uid,Pageable pageable) {
+        Page<OnboardOrderCheckList> onboardOrderCheckLists = checkListRepo.getPageOnboard(cid, pageable);
         List<OnboardOrderCheckListDTO> onboardOrderCheckListDTOS = toDTOs(onboardOrderCheckLists.getContent());
 
         return new PageImpl<>(onboardOrderCheckListDTOS, onboardOrderCheckLists.getPageable(), onboardOrderCheckLists.getTotalElements());

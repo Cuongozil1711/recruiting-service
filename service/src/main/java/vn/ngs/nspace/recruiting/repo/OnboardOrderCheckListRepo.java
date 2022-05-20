@@ -27,11 +27,9 @@ public interface OnboardOrderCheckListRepo extends BaseRepo<OnboardOrderCheckLis
     @Query("select o " +
             "from OnboardOrderCheckList o " +
             "where o.status = 1 " +
-            "and o.companyId = :companyId " +
-            "and (lower(concat(o.name,o.code)) like lower(concat('%',:search,'%')) or :search is null)")
+            "and o.companyId = :companyId")
     Page<OnboardOrderCheckList> getPageOnboard(
             @Param("companyId") Long companyId
-            , @Param("search") String search
             , Pageable pageable
     );
 
