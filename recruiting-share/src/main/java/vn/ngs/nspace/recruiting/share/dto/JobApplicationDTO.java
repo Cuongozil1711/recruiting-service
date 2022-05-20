@@ -47,5 +47,7 @@ public class JobApplicationDTO {
     private OrgResp org;
     private String onboardState;
 
+    private List<Long> interviewerIds;
+
     private Integer status;
 }

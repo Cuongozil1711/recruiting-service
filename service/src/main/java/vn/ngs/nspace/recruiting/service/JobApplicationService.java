@@ -47,7 +47,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
 
     private final JobApplicationRepo _repo;
     private final RecruitmentPlanService _planService;
-    private final OnboardOrderService _onboardService;
+//    private final OnboardOrderService _onboardService;
     private final CandidateRepo _candidateRepo;
     private final CandidateService _candidateService;
     private final ExecuteHcmService _hcmService;
@@ -55,11 +55,11 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
     private final ConfigApi configApi;
     private final RequestApi requestApi;
 
-    public JobApplicationService(JobApplicationRepo repo, RecruitmentPlanService plandService, OnboardOrderService onboardService, CandidateRepo candidateRepo, CandidateService candidateService, ExecuteHcmService hcmService, ExecuteConfigService configService, ConfigApi configApi, RequestApi requestApi) {
+    public JobApplicationService(JobApplicationRepo repo, RecruitmentPlanService plandService, CandidateRepo candidateRepo, CandidateService candidateService, ExecuteHcmService hcmService, ExecuteConfigService configService, ConfigApi configApi, RequestApi requestApi) {
         super(repo);
         _repo = repo;
         _planService = plandService;
-        _onboardService = onboardService;
+//        _onboardService = onboardService;
         _candidateRepo = candidateRepo;
         _candidateService = candidateService;
         _hcmService = hcmService;
@@ -234,9 +234,9 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         _repo.save(jobApplication);
 
         OnboardOrderDTO onboardOrder = new OnboardOrderDTO();
-        onboardOrder.setEmployeeId(empResp.getEmployee().getId());
+//        onboardOrder.setEmployeeId(empResp.getEmployee().getId());
         onboardOrder.setJobApplicationId(jobAppId);
-        _onboardService.create(cid, uid, onboardOrder);
+//        _onboardService.create(cid, uid, onboardOrder);
 
         return empResp.getEmployee();
     }
@@ -260,10 +260,10 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
         _repo.save(jobApplication);
 
         OnboardOrderDTO onboardOrder = new OnboardOrderDTO();
-        onboardOrder.setEmployeeId(empResp.getEmployee().getId());
+      //  onboardOrder.setEmployeeId(empResp.getEmployee().getId());
         onboardOrder.setJobApplicationId(jobAppId);
         long id  = createEmp.getEmployee().getId();
-        _onboardService.update(cid, uid,id, onboardOrder);
+//        _onboardService.update(cid, uid,id, onboardOrder);
 
         return empResp.getEmployee();
     }

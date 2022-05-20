@@ -15,11 +15,27 @@ import java.util.Set;
 
 public interface OnboardOrderCheckListRepo extends BaseRepo<OnboardOrderCheckList,Long> {
 
-    Optional<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdAndId(Long cid, Long onboardOrderId, Long id);
+//    Optional<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdAndId(Long cid, Long onboardOrderId, Long id);
     Optional<OnboardOrderCheckList> findByCompanyIdAndId(Long cid, Long id);
-    List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdAndCodeIn(Long cid, Long orderId, List<String> codes);
-    Optional<OnboardOrderCheckList> findByCompanyIdAndIdAndEmployeeId(Long cid, Long id, Long employeeId);
-    List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderId (Long cid, Long onboardOrderId);
-    List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdIn (Long cid, Set<Long> orderIds);
+//  //  List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdAndCodeIn(Long cid, Long orderId, List<String> codes);
+//    Optional<OnboardOrderCheckList> findByCompanyIdAndIdAndEmployeeId(Long cid, Long id, Long employeeId);
+//    List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderId (Long cid, Long onboardOrderId);
+//    List<OnboardOrderCheckList> findByCompanyIdAndOnboardOrderIdIn (Long cid, Set<Long> orderIds);
+
+    // new
+
+    @Query("select o " +
+            "from OnboardOrderCheckList o " +
+            "where o.status = 1 " +
+            "and o.companyId = :companyId " +
+            "and (lower(concat(o.name,o.code)) like lower(concat('%',:search,'%')) or :search is null)")
+    Page<OnboardOrderCheckList> getPageOnboard(
+            @Param("companyId") Long companyId
+            , @Param("search") String search
+            , Pageable pageable
+    );
+
+    @Query("select o from OnboardOrderCheckList o where o.companyId= :cid and o.id in :ids and o.status =1")
+    List<OnboardOrderCheckList> getAllByListId(Long cid, List<Long> ids);
 }
 

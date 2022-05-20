@@ -28,7 +28,7 @@ public class NotificationHandler implements Handler {
         try {
             ScheduleTaskCommand scheduleDTO = Json.decodeValue(new JsonObject(data).toBuffer(), ScheduleTaskCommand.class);
 
-            noticeService.sentEmailAuto(scheduleDTO.getCompanyId(), scheduleDTO.getTaskId());
+            noticeService.sentEmailAuto(scheduleDTO.getCandidates(), scheduleDTO.getCompanyId(), scheduleDTO.getTaskId());
         } catch (Exception e) {
             e.printStackTrace();
         }

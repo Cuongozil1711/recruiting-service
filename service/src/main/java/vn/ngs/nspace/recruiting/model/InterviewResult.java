@@ -23,16 +23,18 @@ public class InterviewResult extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long candidateId;
-    private Date interviewDate;
-    private String content;
-    private Long interviewerId;
+    private Long candidateId; // ứng viên
+    private Date interviewDate; // ngày phỏng vấn
+    private String content; // bỏ
+    private Long interviewerId; // người đánh giá
     private String finalResult;
-    private Integer evaluate;
+
+    private Long templateCheckListId; // mẫu đánh giá
+    private Integer evaluate; //bỏ
     private String state ;
     @Convert(converter = ListHashMapConverter.class)
     @Column(columnDefinition = "text")
-    private List<Map<String,Object>> items;
+    private List<Map<String,Object>> items;// bỏ
 
 
 

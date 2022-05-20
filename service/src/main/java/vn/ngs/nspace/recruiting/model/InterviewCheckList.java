@@ -23,11 +23,11 @@ public class InterviewCheckList extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long interviewResultId;
-    private Long checkListId; // tu interview check list
-    private Long interviewerId;
+    private Long checkListId; // tu interview check list template
+    private Long interviewerId; // người đánh giá
     private Double rating;
     private String result;
-    private Date interviewDate;
+    private Date interviewDate; // ngày phỏng vấn
     private Double average;
     private String description;
     private Long itemId;

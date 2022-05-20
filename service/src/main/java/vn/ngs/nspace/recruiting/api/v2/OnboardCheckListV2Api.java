@@ -1,6 +1,5 @@
 package vn.ngs.nspace.recruiting.api.v2;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -14,88 +13,109 @@ import org.springframework.web.bind.annotation.*;
 import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
-import vn.ngs.nspace.recruiting.service.ScheduleTypeService;
-import vn.ngs.nspace.recruiting.share.dto.ScheduleTypeDTO;
+import vn.ngs.nspace.recruiting.service.v2.OnboardCheckListV2Service;
+import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
 
-import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * api liên quan đến phần thủ tục onboard
+ */
+
+
 @RestController
-@RequestMapping("schedule-type")
+@RequestMapping("v2/onboard")
 @RequiredArgsConstructor
-@Tag(name = "Schedule Type", description = "Schedule API")
-public class ScheduleTypeApi {
-    private final ScheduleTypeService _service;
+@Tag(name = "Interview Check List", description = "Interview Check List API")
+public class OnboardCheckListV2Api {
 
-    @GetMapping("/list")
+    private final OnboardCheckListV2Service checkListV2Service;
+
+    @GetMapping("list")
     @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Search all Onboard Setting"
+            , description = "Search by condition : name, code"
+            , tags = {"Onboard"}
+    )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    protected ResponseEntity getListSchedule(
+
+    public ResponseEntity getPage(
             @RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
-            , @RequestParam(value = "search", defaultValue = "") String search
-            , Pageable page
+            , @RequestParam("search") String search
+            , Pageable pageable
     ) {
         try {
-            Page<ScheduleTypeDTO> datas = _service.getPageSchedule(search, page);
-            return ResponseUtils.handlerSuccess(datas);
-        } catch (Exception ex) {
-            return ResponseUtils.handlerException(ex);
-        }
-    }
-
-    @GetMapping("{id}")
-    @ActionMapping(action = Permission.VIEW)
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-            , schema = @Schema(implementation = String.class))
-    protected ResponseEntity getListSchedule(
-            @RequestHeader("cid") long cid
-            , @PathVariable("id") Long id
-    ) {
-        try {
-            ScheduleTypeDTO scheduleTypeDTO = _service.getById(cid, id);
-
-            return ResponseUtils.handlerSuccess(scheduleTypeDTO);
-        } catch (Exception ex) {
-            return ResponseUtils.handlerException(ex);
-        }
-    }
-
-    @PutMapping("{id}")
-    @ActionMapping(action = Permission.VIEW)
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-            , schema = @Schema(implementation = String.class))
-    protected ResponseEntity getListSchedule(
-            @RequestHeader("cid") long cid
-            , @RequestHeader("uid") String uid
-            , @PathVariable("id") Long id
-            , @RequestBody ScheduleTypeDTO request
-    ) {
-        try {
-            ScheduleTypeDTO scheduleTypeDTO = _service.update(cid, uid,id, request);
-
-            return ResponseUtils.handlerSuccess(scheduleTypeDTO);
-        } catch (Exception ex) {
-            return ResponseUtils.handlerException(ex);
+            Page<OnboardOrderCheckListDTO> checkListDTOS = checkListV2Service.getPage(cid, uid, search, pageable);
+            return ResponseUtils.handlerSuccess(checkListDTOS);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
         }
     }
 
     @PostMapping("")
     @ActionMapping(action = Permission.VIEW)
-    @Operation(summary = "Create list ScheduleType"
-            , description = "Create list ScheduleType"
-            , tags = {"ScheduleType"}
+    @Operation(summary = "create Onboard Setting"
+            , description = "create onboard setting"
+            , tags = {"Onboard"}
     )
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
-    private ResponseEntity createScheduleType(
+
+    public ResponseEntity create(
             @RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
-            , @RequestBody @Valid ScheduleTypeDTO scheduleTypeDTO
+            , @RequestBody OnboardOrderCheckListDTO request
     ) {
         try {
-            return ResponseUtils.handlerSuccess(_service.create(cid, uid, scheduleTypeDTO));
+            OnboardOrderCheckListDTO checkListDTO = checkListV2Service.create(cid, uid, request);
+            return ResponseUtils.handlerSuccess(checkListDTO);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PutMapping("{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "update Onboard Setting"
+            , description = "update onboard setting"
+            , tags = {"Onboard"}
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+
+    public ResponseEntity update(
+            @RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable("id") Long id
+            , @RequestBody OnboardOrderCheckListDTO request
+    ) {
+        try {
+            OnboardOrderCheckListDTO checkListDTO = checkListV2Service.update(cid,id, uid, request);
+            return ResponseUtils.handlerSuccess(checkListDTO);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @GetMapping("{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get Onboard Setting by id"
+            , description = "Get onboard setting id"
+            , tags = {"Onboard"}
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+
+    public ResponseEntity getById(
+            @RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable("id") Long id
+    ) {
+        try {
+            OnboardOrderCheckListDTO checkListDTO = checkListV2Service.getById(cid,id, uid);
+            return ResponseUtils.handlerSuccess(checkListDTO);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }
@@ -103,7 +123,7 @@ public class ScheduleTypeApi {
 
     @PutMapping("/delete")
     @ActionMapping(action = Permission.UPDATE)
-    @Operation(summary = "delete list Schedule type",
+    @Operation(summary = "delete onboard type",
             description = "API for delete list Schedule type")
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
@@ -114,10 +134,11 @@ public class ScheduleTypeApi {
             @RequestHeader String uid
             , @RequestBody List<Long> ids){
         try {
-            _service.delete(cid, uid , ids);
+            checkListV2Service.delete(cid, uid , ids);
             return ResponseUtils.handlerSuccess();
         } catch (Exception e){
             return ResponseUtils.handlerException(e);
         }
     }
+
 }

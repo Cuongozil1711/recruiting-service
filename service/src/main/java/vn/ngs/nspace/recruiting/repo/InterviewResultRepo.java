@@ -8,6 +8,7 @@ import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.InterviewCheckList;
 import vn.ngs.nspace.recruiting.model.InterviewResult;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface InterviewResultRepo extends BaseRepo<InterviewResult, Long> {
@@ -31,5 +32,7 @@ public interface InterviewResultRepo extends BaseRepo<InterviewResult, Long> {
             ,@Param("candidateId") Long candidateId
             , Pageable pageable);
 
-
+    // new
+    List<InterviewResult> findAllByCandidateIdAndCompanyIdAndStatus(Long candidateId, Long companyId, Integer status);
+    Optional<InterviewResult> findByCandidateIdAndCompanyIdAndTemplateCheckListIdAndStatus(Long candidateId, Long cid, Long templateId, Integer status);
 }

@@ -8,6 +8,7 @@ import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 @Data
@@ -21,19 +22,17 @@ public class OnboardOrder extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long employeeId; // nhan vien he thong
-    private Long buddy; // nguoi tiep nhan ho tro chuyen mon
     private Long jobApplicationId; // id cua ho so xin viec
-    private Long mentorId;
-    private String state;
+    private Long onboardOrderId; // id cua thu tuc onboard
+    private Long responsibleId; // id nhan vien chiu trach nhiem
+    private Date deadline; // hạn hoàn thành
+    private Date endDate; // ngày đóng việc
+    private String state; // trạng thái
 
     public static OnboardOrder of (Long cid, String uid, OnboardOrderDTO dto){
         OnboardOrder order = OnboardOrder.builder()
                 .id(dto.getId())
-                .employeeId(dto.getEmployeeId())
-                .buddy(dto.getBuddy())
                 .jobApplicationId(dto.getJobApplicationId())
-                .mentorId(dto.getMentorId())
                 .state(dto.getState())
                 .build();
         return order;
