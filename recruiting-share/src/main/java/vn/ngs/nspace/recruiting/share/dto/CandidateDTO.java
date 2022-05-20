@@ -91,4 +91,5 @@ public class CandidateDTO {
     private List<Map<String, Object>> CountPositionApply;
     // new
     private InterviewResultDTO interviewResultDTO;
+    private Long interviewResultId; // kết quả đánh giá
 }

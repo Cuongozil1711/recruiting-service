@@ -84,7 +84,7 @@ eventuatelocal:
       string: ${DOCKER_HOST_IP:172.16.101.22}:2181
 
 nspace:
-  scheduleTopic: recruiting-schedule
+  scheduleTopic: recruiting-schedule-local
   rootContext: http://api.ngs.vn/nspace/
   policy: false
   cache:
