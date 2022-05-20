@@ -165,6 +165,7 @@ public class ScheduleEmailSentService {
                 InterviewResult interviewResult = createInterviewResult(cid, uid, candidateId, request.getInterviewDate(), interviewerId, request.getTemplateCheckList());
                 if (interviewerId.equals(request.getInterviewerLastId())) {
                     candidate.setInterviewResultId(interviewResult.getId());
+                    candidateRepo.save(candidate);
                 }
             }
         }
