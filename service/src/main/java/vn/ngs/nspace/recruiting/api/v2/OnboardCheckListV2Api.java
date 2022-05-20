@@ -43,11 +43,10 @@ public class OnboardCheckListV2Api {
     public ResponseEntity getPage(
             @RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
-            , @RequestParam("search") String search
             , Pageable pageable
     ) {
         try {
-            Page<OnboardOrderCheckListDTO> checkListDTOS = checkListV2Service.getPage(cid, uid, search, pageable);
+            Page<OnboardOrderCheckListDTO> checkListDTOS = checkListV2Service.getPage(cid, uid, pageable);
             return ResponseUtils.handlerSuccess(checkListDTOS);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
