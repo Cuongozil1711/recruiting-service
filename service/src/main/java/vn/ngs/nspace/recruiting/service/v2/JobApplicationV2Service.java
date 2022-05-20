@@ -28,10 +28,12 @@ public class JobApplicationV2Service {
 
     private final JobApplicationRepo jobApplicationRepo;
     private final CandidateV2Service candidateService;
+    private final InterviewResultV2Service resultV2Service;
 
-    public JobApplicationV2Service(JobApplicationRepo jobApplicationRepo, CandidateV2Service candidateService) {
+    public JobApplicationV2Service(JobApplicationRepo jobApplicationRepo, CandidateV2Service candidateService, InterviewResultV2Service resultV2Service) {
         this.jobApplicationRepo = jobApplicationRepo;
         this.candidateService = candidateService;
+        this.resultV2Service = resultV2Service;
     }
 
     public Page<JobApplicationDTO> getPage(String uid, Long cid, JobApplicationFilterRequest request, Pageable pageable) throws Exception {
@@ -79,6 +81,8 @@ public class JobApplicationV2Service {
         JobApplicationDTO jobApplicationDTO = MapperUtils.map(jobApplication, JobApplicationDTO.class);
         CandidateDTO candidateDTO = candidateService.getById(uid, cid, jobApplicationDTO.getCandidateId());
         jobApplicationDTO.setCandidateObj(candidateDTO);
+        List<Long> interviewerIds = resultV2Service.getAllInterviewer(cid, uid, jobApplicationDTO.getCandidateId());
+        jobApplicationDTO.setInterviewerIds(interviewerIds);
 
         return jobApplicationDTO;
     }

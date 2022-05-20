@@ -45,14 +45,14 @@ public class ScheduleEmailSentV2Api {
             , @Parameter(description = "Payload of record") @RequestBody Map<String, Object> payload) {
         try {
             Date schedule_date = MapUtils.getDate(payload, "date");
-            ScheduleTaskCommand scheduleAction = new ScheduleTaskCommand();
-            scheduleAction.setCompanyId(cid);
-            scheduleAction.setEvent("schedule_mail");
-            scheduleAction.setAction("schedule_mail");
-            scheduleAction.setExecuteTime(schedule_date);
-            scheduleAction.setTaskId(182L);
-            scheduleAction.setActionId(1791866326582272L);
-            service.createEmailSchedule(scheduleAction);
+//            ScheduleTaskCommand scheduleAction = new ScheduleTaskCommand();
+//            scheduleAction.setCompanyId(cid);
+//            scheduleAction.setEvent("schedule_mail");
+//            scheduleAction.setAction("schedule_mail");
+//            scheduleAction.setExecuteTime(schedule_date);
+//            scheduleAction.setTaskId(182L);
+//            scheduleAction.setActionId(1791866326582272L);
+//            service.createEmailSchedule(scheduleAction);
 
             return ResponseUtils.handlerSuccess(schedule_date);
         } catch (Exception ex) {

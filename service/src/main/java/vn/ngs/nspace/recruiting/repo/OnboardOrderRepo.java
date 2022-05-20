@@ -19,38 +19,38 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
 
     Optional<OnboardOrder> findByCompanyIdAndId(long cid, Long Id);
 
-    @Query(value = " select p " +
-            " from OnboardOrder p " +
-            " left join JobApplication ja on ja.id = p.jobApplicationId " +
-            " where (p.companyId = :companyId)" +
-            " and (p.buddy = :buddy or :buddy = -1) " +
-            " and (ja.positionId = :positionId or :positionId = -1) " +
-            " and (ja.titleId = :titleId or :titleId = -1) " +
-            " and (ja.orgId = :orgId or :orgId = -1) " +
-            " and (p.employeeId in (:empIds))"+
-            " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1)" +
-            " and (p.status = 1)")
-    Page<OnboardOrder> search(@Param("companyId") Long cid
-            , @Param("buddy") Long buddy
-            , @Param("positionId") Long positionId
-            , @Param("titleId") Long titleId
-            , @Param("orgId") Long orgId
-            , @Param("jobApplicationId") Long jobApplicationId
-            , @Param("empIds") List<Long> empIds
-            , Pageable pageable);
-
-    @Query(value = " select p " +
-            " from OnboardOrder p " +
-            " where (p.companyId = :companyId)" +
-            " and (p.buddy = :buddy or :buddy = -1) " +
-            " and (p.employeeId = :employeeId or :employeeId = -1) " +
-            " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1) " +
-            " and (p.status = 1)")
-    Page<OnboardOrder> searchAll(@Param("companyId") Long cid
-            , @Param("buddy") Long buddy
-            , @Param("employeeId") Long employeeId
-            , @Param("jobApplicationId") Long jobApplicationId
-            , Pageable pageable);
+//    @Query(value = " select p " +
+//            " from OnboardOrder p " +
+//            " left join JobApplication ja on ja.id = p.jobApplicationId " +
+//            " where (p.companyId = :companyId)" +
+//            " and (p.buddy = :buddy or :buddy = -1) " +
+//            " and (ja.positionId = :positionId or :positionId = -1) " +
+//            " and (ja.titleId = :titleId or :titleId = -1) " +
+//            " and (ja.orgId = :orgId or :orgId = -1) " +
+//            " and (p.employeeId in (:empIds))"+
+//            " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1)" +
+//            " and (p.status = 1)")
+//    Page<OnboardOrder> search(@Param("companyId") Long cid
+//            , @Param("buddy") Long buddy
+//            , @Param("positionId") Long positionId
+//            , @Param("titleId") Long titleId
+//            , @Param("orgId") Long orgId
+//            , @Param("jobApplicationId") Long jobApplicationId
+//            , @Param("empIds") List<Long> empIds
+//            , Pageable pageable);
+//
+//    @Query(value = " select p " +
+//            " from OnboardOrder p " +
+//            " where (p.companyId = :companyId)" +
+//            " and (p.buddy = :buddy or :buddy = -1) " +
+//            " and (p.employeeId = :employeeId or :employeeId = -1) " +
+//            " and (p.jobApplicationId = :jobApplicationId or :jobApplicationId = -1) " +
+//            " and (p.status = 1)")
+//    Page<OnboardOrder> searchAll(@Param("companyId") Long cid
+//            , @Param("buddy") Long buddy
+//            , @Param("employeeId") Long employeeId
+//            , @Param("jobApplicationId") Long jobApplicationId
+//            , Pageable pageable);
 
 
     @Query(value = " select ja " +

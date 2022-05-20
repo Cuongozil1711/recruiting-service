@@ -29,9 +29,9 @@ public class CandidateDTO {
     private String districtCode;
     private String provinceCode;
     private String countryCode;
-    private String codeRecruting;
-    private Long orgRecrutingId;
-    private Long roomRecrutingId;
+    private String codeRecruting;// bỏ
+    private Long orgRecrutingId; // bỏ
+    private Long roomRecrutingId; // bỏ
     private Integer graduationYear;
     private Long educationLevel; // danh muc dung chung
     private String educateLocation;
@@ -89,5 +89,6 @@ public class CandidateDTO {
     private Map<String, Object> cvSourceObj;
     private Map<String, Object> titleObj;
     private List<Map<String, Object>> CountPositionApply;
-    private List<String> listInvolveId;
+    // new
+    private InterviewResultDTO interviewResultDTO;
 }

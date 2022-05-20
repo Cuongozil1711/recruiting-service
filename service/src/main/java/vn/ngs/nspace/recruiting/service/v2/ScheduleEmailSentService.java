@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapUtils;
+import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.EmailSent;
 import vn.ngs.nspace.recruiting.model.EmailSetting;
+import vn.ngs.nspace.recruiting.model.InterviewResult;
+import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
+import vn.ngs.nspace.recruiting.repo.InterviewResultRepo;
 import vn.ngs.nspace.recruiting.schedule.EventV2Factory;
 import vn.ngs.nspace.recruiting.schedule.ScheduleRequest;
 import vn.ngs.nspace.recruiting.schedule.ScheduleTaskCommand;
@@ -30,33 +34,47 @@ public class ScheduleEmailSentService {
     private final EmailSentRepo emailSentRepo;
     private final EmailSettingRepo emailSettingRepo;
     private final ExecuteNoticeService noticeService;
+    private final InterviewResultRepo resultRepo;
+    private final CandidateRepo candidateRepo;
 
 
-    public ScheduleEmailSentService(EventV2Factory eventV2Factory, EmailSentRepo emailSentRepo, EmailSettingRepo emailSettingRepo, ExecuteNoticeService noticeService) {
+    public ScheduleEmailSentService(EventV2Factory eventV2Factory, EmailSentRepo emailSentRepo, EmailSettingRepo emailSettingRepo, ExecuteNoticeService noticeService, InterviewResultRepo resultRepo, CandidateRepo candidateRepo) {
         this.eventV2Factory = eventV2Factory;
         this.emailSentRepo = emailSentRepo;
         this.emailSettingRepo = emailSettingRepo;
         this.noticeService = noticeService;
+        this.resultRepo = resultRepo;
+        this.candidateRepo = candidateRepo;
     }
 
     /**
-     * create email schedule
-     *
-     * @param scheduleAction
+     * @param cid
+     * @param dateSchedule
+     * @param emailSentId
      */
 
-    public void createEmailSchedule(ScheduleTaskCommand scheduleAction) {
+    public void createEmailSchedule(String uid, Long cid, Date dateSchedule, Long emailSentId) {
+        ScheduleTaskCommand scheduleInvolve = new ScheduleTaskCommand();
+
+        scheduleInvolve.setCompanyId(cid);
+        scheduleInvolve.setEvent("schedule_mail");
+        scheduleInvolve.setAction("schedule_mail");
+        scheduleInvolve.setExecuteTime(dateSchedule);
+        scheduleInvolve.setTaskId(emailSentId);
+        scheduleInvolve.setActionId(emailSentId);
+        scheduleInvolve.setCandidates(uid);
+
         ScheduleRequest taskReq = new ScheduleRequest();
         taskReq.setCmd(vn.ngs.nspace.workflow.utils.Constants.CMD_CREATE);
-        taskReq.setExecuteTime(scheduleAction.getExecuteTime());
+        taskReq.setExecuteTime(dateSchedule);
         taskReq.setChannel(scheduleTopic);
-        taskReq.setEvent(scheduleAction.getAction());
-        taskReq.setId(scheduleAction.getTaskId() + "_" + scheduleAction.getEvent() + "_" + scheduleAction.getAction());
-        taskReq.setPayload(scheduleAction);
+        taskReq.setEvent(scheduleInvolve.getAction());
+        taskReq.setId(scheduleInvolve.getTaskId() + "_" + scheduleInvolve.getEvent() + "_" + scheduleInvolve.getAction());
+        taskReq.setPayload(scheduleInvolve);
         eventV2Factory.publishSchedule(taskReq);
     }
 
-    public void sentEmailAuto(Long cid, Long emailSentId) {
+    public void sentEmailAuto(String uid, Long cid, Long emailSentId) {
         EmailSent emailSent = emailSentRepo.findByCompanyIdAndId(cid, emailSentId).orElseThrow(() -> new EntityNotFoundException(EmailSent.class, emailSentId));
 
         Long emailSettingId = emailSent.getEmailSettingId();
@@ -66,7 +84,7 @@ public class ScheduleEmailSentService {
         String password = "";
         String username = "";
         if (setting.getConfigs() != null) {
-            emails = Arrays.asList(setting.getConfigs().get("toEmail").toString().split(","));
+            emails = Arrays.asList(emailSent.getToEmail().split(","));
             username = MapUtils.getString(setting.getConfigs(), "email", "");
             password = MapUtils.getString(setting.getConfigs(), "password", "");
         }
@@ -93,80 +111,96 @@ public class ScheduleEmailSentService {
         }
 
         String refIds = "";
+        Date schedule = request.getScheduleDate() != null ? request.getScheduleDate() : new Date();
         // nếu chọn gửi cho ứng viên
         if (request.isSentCandidate()) {
             if (request.getCandidateIds() != null && !request.getCandidateIds().isEmpty()) {
                 refIds = request.getCandidateIds().stream().map(Objects::toString).collect(Collectors.joining(","));
-                emailSentCandidate.setRefType(Constants.EMAIL_SENT_REF.CANDIDATE.name());
-                emailSentCandidate.setRefId(refIds);
             }
 
-            emailSentCandidate.setToEmail(String.join(",", request.getCandidateMails()));
-            emailSentCandidate.setTemplateId(request.getTemplateId());
-            emailSentCandidate.setSubject(subject);
-            emailSentCandidate.setContent(request.getContent());
-            emailSentCandidate.setDate(request.getScheduleDate() != null ? request.getScheduleDate() : new Date());
-            emailSentCandidate.setCompanyId(cid);
-            emailSentCandidate.setFromEmail(username);
-            emailSentCandidate.setRefId(refIds);
-            emailSentCandidate.setUid(uid);
-            emailSentCandidate.setUpdateBy(uid);
-            emailSentCandidate.setEmailSettingId(request.getEmailSettingId());
+            String toEmails = String.join(",", request.getCandidateMails());
+            emailSentCandidate = saveEmailSent(toEmails, request.getTemplateId(),
+                    subject, content, schedule,
+                    cid, username, refIds, uid,
+                    request.getEmailSettingId(),
+                    Constants.EMAIL_SENT_REF.CANDIDATE.name());
 
-            emailSentRepo.save(emailSentCandidate);
+            // nếu đặt lịch thì gửi yêu cầu lên service đặt lịch
+            if (request.getInterviewDate() != null) {
+                createEmailSchedule(uid, cid, request.getScheduleDate(), emailSentCandidate.getId());
+            } else {
+                noticeService.publishEmail(uid, cid, username,
+                        password, subject, content, Set.of(uid), new HashSet<>(request.getCandidateMails()));
+            }
         }
 
         //nếu chọn hội đồng
         if (request.isSentInvolve()) {
-            if (request.getInterviewInvolveId() != null) {
-                refIds = request.getInterviewInvolveId().toString();
-                emailSentInvolve.setRefType(Constants.EMAIL_SENT_REF.INVOLVE.name());
-                emailSentInvolve.setRefId(refIds);
+            if (request.getInterviewerIds() != null && !request.getInterviewerIds().isEmpty()) {
+                refIds = request.getInterviewerIds().stream().map(Objects::toString).collect(Collectors.joining(","));
             }
+            String toEmails = String.join(",", request.getInvolveMails());
+            emailSentInvolve = saveEmailSent(toEmails, request.getTemplateId(),
+                    subject, content, schedule,
+                    cid, username, refIds, uid,
+                    request.getEmailSettingId(),
+                    Constants.EMAIL_SENT_REF.INVOLVE.name());
 
-            emailSentInvolve.setToEmail(String.join(",", request.getInvolveMails()));
-            emailSentInvolve.setTemplateId(request.getTemplateId());
-            emailSentInvolve.setSubject(subject);
-            emailSentInvolve.setContent(request.getContent());
-            emailSentInvolve.setDate(request.getScheduleDate() != null ? request.getScheduleDate() : new Date());
-            emailSentInvolve.setCompanyId(cid);
-            emailSentInvolve.setFromEmail(username);
-            emailSentInvolve.setRefId(refIds);
-            emailSentInvolve.setUid(uid);
-            emailSentInvolve.setUpdateBy(uid);
-            emailSentInvolve.setEmailSettingId(request.getEmailSettingId());
-
-            emailSentInvolve = emailSentRepo.save(emailSentInvolve);
+            // kiểm tra gửi ngay hay lên lịch
+            if (request.getInterviewDate() != null) {
+                createEmailSchedule(uid,cid, request.getScheduleDate(), emailSentInvolve.getId());
+            } else {
+                noticeService.publishEmail(uid, cid, username,
+                        password, subject, content, Set.of(uid), new HashSet<>(request.getInvolveMails()));
+            }
         }
 
-        // gộp danh sách email cần gửi
-        Set<String> emailSent = new HashSet<>();
-        emailSent.addAll(request.getCandidateMails());
-        emailSent.addAll(request.getInvolveMails());
+        List<Long> candidateIds = request.getCandidateIds();
+        List<Long> interviewerIds = request.getInterviewerIds();
 
-        // kiểm tra gửi ngay hay lên lịch
-
-        if (request.getInterviewDate() != null) {
-            ScheduleTaskCommand scheduleInvolve = new ScheduleTaskCommand();
-            scheduleInvolve.setCompanyId(cid);
-            scheduleInvolve.setEvent("schedule_mail");
-            scheduleInvolve.setAction("schedule_mail");
-            scheduleInvolve.setExecuteTime(request.getScheduleDate());
-            scheduleInvolve.setTaskId(emailSentInvolve.getId());
-            scheduleInvolve.setActionId(1791866326582272L);
-            createEmailSchedule(scheduleInvolve);
-
-            ScheduleTaskCommand scheduleCandidate = new ScheduleTaskCommand();
-            scheduleCandidate.setCompanyId(cid);
-            scheduleCandidate.setEvent("schedule_mail");
-            scheduleCandidate.setAction("schedule_mail");
-            scheduleCandidate.setExecuteTime(request.getScheduleDate());
-            scheduleCandidate.setTaskId(emailSentCandidate.getId());
-            scheduleCandidate.setActionId(1791866326582272L);
-            createEmailSchedule(scheduleInvolve);
-        } else {
-            noticeService.publishEmail(uid, cid, username,
-                    password, subject, content, Set.of(uid), emailSent);
+        // Lưu lại các bản ghi đánh giá với ứng viên và người phỏng vấn
+        for (Long candidateId : candidateIds) {
+            Candidate candidate = candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
+            for (Long interviewerId : interviewerIds) {
+                InterviewResult interviewResult = createInterviewResult(cid, uid, candidateId, request.getInterviewDate(), interviewerId, request.getTemplateCheckList());
+                if (interviewerId.equals(request.getInterviewerLastId())) {
+                    candidate.setInterviewResultId(interviewResult.getId());
+                }
+            }
         }
+    }
+
+    // tạo bản ghi lưu thông tin kết quả của vòng
+    public InterviewResult createInterviewResult(Long cid, String uid, Long candidateId, Date interviewDate, Long interviewerId, Long templateCheckListId) {
+        InterviewResult interviewResult = new InterviewResult();
+        interviewResult.setCompanyId(cid);
+        interviewResult.setUpdateBy(uid);
+        interviewResult.setCandidateId(candidateId);
+        interviewResult.setInterviewDate(interviewDate);
+        interviewResult.setInterviewerId(interviewerId);
+        interviewResult.setUpdateBy(uid);
+        interviewResult.setTemplateCheckListId(templateCheckListId);
+
+        return resultRepo.save(interviewResult);
+    }
+
+    // lưu thông tin lịch sử gửi mail
+    public EmailSent saveEmailSent(String toEmail, Long templateId, String subject, String content, Date scheduleDate, Long cid, String username, String refIds, String uid, Long emailSettingId, String refTypes) {
+        EmailSent emailSent = new EmailSent();
+        emailSent.setToEmail(toEmail);
+        emailSent.setTemplateId(templateId);
+        emailSent.setSubject(subject);
+        emailSent.setContent(content);
+        emailSent.setRefId(refIds);
+        emailSent.setRefType(refTypes);
+        emailSent.setDate(scheduleDate);
+        emailSent.setCompanyId(cid);
+        emailSent.setFromEmail(username);
+        emailSent.setRefId(refIds);
+        emailSent.setUid(uid);
+        emailSent.setUpdateBy(uid);
+        emailSent.setEmailSettingId(emailSettingId);
+
+        return emailSentRepo.save(emailSent);
     }
 }

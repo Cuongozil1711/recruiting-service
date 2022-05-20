@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.kafka.KafkaDisruptor;
-import vn.ngs.nspace.recruiting.service.EmailSentService;
-import vn.ngs.nspace.recruiting.service.ExecuteNoticeService;
 import vn.ngs.nspace.recruiting.service.v2.ScheduleEmailSentService;
 
 import javax.annotation.PostConstruct;

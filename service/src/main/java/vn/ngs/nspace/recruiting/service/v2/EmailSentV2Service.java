@@ -9,8 +9,6 @@ import vn.ngs.nspace.recruiting.model.EmailSent;
 import vn.ngs.nspace.recruiting.model.EmailSetting;
 import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
-import vn.ngs.nspace.recruiting.schedule.ScheduleRequest;
-import vn.ngs.nspace.recruiting.schedule.ScheduleTaskCommand;
 import vn.ngs.nspace.recruiting.service.EventFactory;
 import vn.ngs.nspace.recruiting.service.ExecuteNoticeService;
 import vn.ngs.nspace.recruiting.share.dto.EmailSentDTO;
@@ -29,14 +27,16 @@ public class EmailSentV2Service {
     private final EventFactory eventFactory;
     private final EmailSettingRepo emailSettingRepo;
     private final ExecuteNoticeService noticeService;
+    private final ScheduleEmailSentService scheduleEmailSentService;
     @Value("${nspace.scheduleTopic:recruiting-schedule}")
     public String scheduleTopic;
 
-    public EmailSentV2Service(EmailSentRepo emailSentRepo, EventFactory eventFactory, EmailSettingRepo emailSettingRepo, ExecuteNoticeService noticeService) {
+    public EmailSentV2Service(EmailSentRepo emailSentRepo, EventFactory eventFactory, EmailSettingRepo emailSettingRepo, ExecuteNoticeService noticeService, ScheduleEmailSentService scheduleEmailSentService) {
         this.emailSentRepo = emailSentRepo;
         this.eventFactory = eventFactory;
         this.emailSettingRepo = emailSettingRepo;
         this.noticeService = noticeService;
+        this.scheduleEmailSentService = scheduleEmailSentService;
     }
 
     public void SentEmail(Long cid, String uid, EmailSentRequest request) {
@@ -60,8 +60,6 @@ public class EmailSentV2Service {
             username = MapUtils.getString(setting.getConfigs(), "email", "");
             password = MapUtils.getString(setting.getConfigs(), "password", "");
         }
-        noticeService.publishEmail(uid, cid, username,
-                password, subject, content, Set.of(uid), new HashSet<>(request.getMails()));
 
         emailSent.setToEmail(String.join(",", request.getMails()));
         emailSent.setTemplateId(request.getTemplateId());
@@ -75,11 +73,18 @@ public class EmailSentV2Service {
         emailSent.setUpdateBy(uid);
         emailSent.setEmailSettingId(request.getEmailSettingId());
 
-        emailSentRepo.save(emailSent);
+        emailSent = emailSentRepo.save(emailSent);
+
+        if (request.getDate() == null) {
+            noticeService.publishEmail(uid, cid, username,
+                    password, subject, content, Set.of(uid), new HashSet<>(request.getMails()));
+        } else {
+            scheduleEmailSentService.createEmailSchedule(uid,cid,request.getDate(),emailSent.getId());
+        }
     }
 
     public List<EmailSentDTO> getList(Long cid, Long id) {
-        List<EmailSent> emailSents = emailSentRepo.getListEmailSent(cid,id.toString());
+        List<EmailSent> emailSents = emailSentRepo.getListEmailSent(cid, id.toString());
 
         return toDTOs(emailSents);
     }

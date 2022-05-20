@@ -18,7 +18,7 @@ public class InterviewResultDTO {
     private Long id;
     private Long candidateId;
     private Date interviewDate;
-    private String content;
+    private String content; // bỏ
     private Long interviewerId;
     private Long templateId;
     private Long templateItemId;
@@ -31,6 +31,7 @@ public class InterviewResultDTO {
 
     private Map<String, Object> createByObj;
     private EmployeeDTO interviewerIdObj;
-    private List<InterviewCheckListDTO> checkLists;
+    private List<InterviewCheckListDTO> checkLists; // ?
+    private InterviewCheckListTemplateDTO templateDTO;
 
 }

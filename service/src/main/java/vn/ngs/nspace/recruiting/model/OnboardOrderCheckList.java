@@ -11,39 +11,36 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
 
+/**
+ * lưu danh sách thủ tục onboard
+ * vid dụ :
+ */
+
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-//Quy trình yêu cầu thủ tục onboard cho nhân viên
 public class OnboardOrderCheckList extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long employeeId; // nhan vien he thong
     private String code; // ma thu tuc
-    private Long onboardOrderId; // id cua thu tuc onboard
-    private Long responsibleId; // id nhan vien chiu trach nhiem
-    private Long participantId; // id nhan vien lien quan
-    private Date deadline;
-    private Date startDate;
-    private String state;
-    private String description;
+    private String name; // tên thủ tục
+    private String description; // mô tả
 
     public static OnboardOrderCheckList of (Long cid, String uid, OnboardOrderCheckListDTO dto){
         OnboardOrderCheckList order = OnboardOrderCheckList.builder()
                 .id(dto.getId())
-                .employeeId(dto.getEmployeeId())
-                .onboardOrderId(dto.getOnboardOrderId())
-                .responsibleId(dto.getResponsibleId())
-                .participantId(dto.getParticipantId())
-                .startDate(dto.getStartDate())
-                .state(dto.getState())
+                .name(dto.getName())
+                .code(dto.getCode())
                 .description(dto.getDescription())
                 .build();
+
+        order.setCompanyId(cid);
+        order.setUpdateBy(uid);
         return order;
     }
 }

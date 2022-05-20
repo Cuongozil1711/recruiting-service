@@ -14,6 +14,7 @@ import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteStorateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.recruiting.share.request.CandidateFilterRequest;
 
@@ -28,6 +29,7 @@ public class CandidateV2Service {
     private final NoticeEvent noticeEvent;
     private final ExecuteConfigService configService;
     private final ExecuteStorateService storageService;
+//    private final InterviewResultV2Service resultV2Service;
 
 
     public CandidateV2Service(CandidateRepo candidateRepo, NoticeEvent noticeEvent, ExecuteConfigService configService, ExecuteStorateService storageService) {
@@ -35,6 +37,7 @@ public class CandidateV2Service {
         this.noticeEvent = noticeEvent;
         this.configService = configService;
         this.storageService = storageService;
+//        this.resultV2Service = resultV2Service;
     }
 
     /**
@@ -170,6 +173,11 @@ public class CandidateV2Service {
 
     private CandidateDTO toDTO(String uid, Long cid, Candidate candidate) {
         CandidateDTO dto = MapperUtils.map(candidate, CandidateDTO.class);
+
+        if (candidate.getInterviewResultId() != null) {
+//            InterviewResultDTO interviewResultDTO = resultV2Service.getByInterviewResultId(cid, uid, candidate.getInterviewResultId());
+//            dto.setInterviewResultDTO(interviewResultDTO);
+        }
 
         dto.setApplyPositionIdObj(getCategory(cid, uid, candidate.getApplyPositionId()));
         return dto;

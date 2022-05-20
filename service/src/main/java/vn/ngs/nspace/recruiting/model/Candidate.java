@@ -50,6 +50,8 @@ public class Candidate extends PersistableEntity<Long> {
     private String educateLocation;
     private String industry;
 
+    private Long interviewResultId; // kết quả đánh giá
+
     private Long language;
     private String languageLevel;
     private String codeRecruting;
