@@ -29,18 +29,16 @@ public class CandidateDTO {
     private String districtCode;
     private String provinceCode;
     private String countryCode;
-    private String codeRecruting;// bỏ
+    private String codeRecruting;
     private Long orgRecrutingId; // bỏ
     private Long roomRecrutingId; // bỏ
     private Integer graduationYear;
     private Long educationLevel; // danh muc dung chung
     private String educateLocation;
     private String industry;
-
     private Long language;
     private String languageLevel;
     private String code;
-
     private String experience;
     private String experienceUnit; // months, years
 
@@ -58,25 +56,11 @@ public class CandidateDTO {
     private Long offerSalary;
     private Long titleId;
     private String createBy;
-    // count all states
-//    private Long countInit;
-//    private Long countRecruited;
-//    private Long countArchive;
-//    private Long countInterviewed;
-//    private Long countApproved;
-//    private Long countAppointment;
-//    private Long countOnboard;
-//    private Long countStaff;
-//    private Long countDenied;
-    //
     private List<String> tags;
     private Long employeeId;
     private Integer status;
     private String state;
-//    private Long involveId;
-
-    // đánh dấu blacklist
-    private Integer isBlacklist;
+    private Integer isBlacklist; // đánh dấu blacklist
 
     private EmployeeDTO employeeObj;
     private Map<String, Object> genderObj;
@@ -89,7 +73,6 @@ public class CandidateDTO {
     private Map<String, Object> cvSourceObj;
     private Map<String, Object> titleObj;
     private List<Map<String, Object>> CountPositionApply;
-    // new
     private InterviewResultDTO interviewResultDTO;
     private Long interviewResultId; // kết quả đánh giá
 }

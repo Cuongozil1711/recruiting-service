@@ -93,27 +93,27 @@ public class InterviewCheckListTemplateApi {
     }
 
 
-    @PutMapping("/{id}")
-    @ActionMapping(action = Permission.UPDATE)
-    @Operation(summary = "Update interview template"
-            , description = "API for update interview template"
-            , tags = { "InterviewTemplate" }
-    )
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-            , schema = @Schema(implementation = String.class))
-    protected ResponseEntity update(
-            @Parameter(description="ID of company")
-            @RequestHeader("cid") long cid
-            , @Parameter(description="ID of company")
-            @RequestHeader("uid") String uid
-            , @Parameter(description="param in path")  @PathVariable(value = "id") Long id
-            , @RequestBody InterviewCheckListTemplateDTO dto) {
-        try {
-            return ResponseUtils.handlerSuccess(_service.update(cid, uid, id, dto));
-        } catch (Exception ex) {
-            return ResponseUtils.handlerException(ex);
-        }
-    }
+//    @PutMapping("/{id}")
+//    @ActionMapping(action = Permission.UPDATE)
+//    @Operation(summary = "Update interview template"
+//            , description = "API for update interview template"
+//            , tags = { "InterviewTemplate" }
+//    )
+//    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+//            , schema = @Schema(implementation = String.class))
+//    protected ResponseEntity update(
+//            @Parameter(description="ID of company")
+//            @RequestHeader("cid") long cid
+//            , @Parameter(description="ID of company")
+//            @RequestHeader("uid") String uid
+//            , @Parameter(description="param in path")  @PathVariable(value = "id") Long id
+//            , @RequestBody InterviewCheckListTemplateDTO dto) {
+//        try {
+//            return ResponseUtils.handlerSuccess(_service.update(cid, uid, id, dto));
+//        } catch (Exception ex) {
+//            return ResponseUtils.handlerException(ex);
+//        }
+//    }
 
     @GetMapping("{id}")
     @ActionMapping(action = Permission.VIEW)

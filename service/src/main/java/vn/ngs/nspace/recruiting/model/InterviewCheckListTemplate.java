@@ -20,7 +20,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-//Thông tin mẫu đánh giá ứng viên
 public class InterviewCheckListTemplate extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
