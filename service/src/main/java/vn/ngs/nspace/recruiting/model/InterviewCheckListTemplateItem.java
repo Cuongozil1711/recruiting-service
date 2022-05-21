@@ -40,7 +40,7 @@ public class InterviewCheckListTemplateItem extends PersistableEntity<Long> {
         InterviewCheckListTemplateItem obj = InterviewCheckListTemplateItem.builder()
                 .id(dto.getId())
                 .templateId(dto.getTemplateId())
-                .checkListId(dto.getCheckListId())
+                .checkListId(dto.getTemplateId())
                 .optionType(dto.getOptionType())
                 .minRating(dto.getMinRating())
                 .maxRating(dto.getMaxRating())
