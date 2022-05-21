@@ -40,8 +40,7 @@ public class InterviewResultV2Service {
     public InterviewResultDTO getByInterviewResultIdAndCandidateId(Long cid, String uid, Long interviewResultId, Long candidateId) {
         InterviewResult interviewResult = resultRepo.findByCompanyIdAndId(cid, interviewResultId).orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, interviewResultId));
 
-        InterviewResult result = resultRepo.findByCandidateIdAndCompanyIdAndTemplateCheckListIdAndStatus(candidateId, cid, interviewResult.getTemplateCheckListId(), 1)
-                .orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, candidateId));
+        InterviewResult result = resultRepo.getByCandidateIdAndComAndCompanyId(cid, candidateId, interviewResult.getTemplateCheckListId());
         InterviewCheckListTemplateDTO interviewCheckListTemplateDTO = templateV2Service.getByInterviewResult(cid, uid, interviewResultId);
         InterviewResultDTO interviewResultDTO = toDTO(result);
         interviewResultDTO.setTemplateDTO(interviewCheckListTemplateDTO);
