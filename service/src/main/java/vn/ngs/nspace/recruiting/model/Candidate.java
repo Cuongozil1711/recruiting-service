@@ -17,6 +17,10 @@ import javax.persistence.Id;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Lưu thông tin cv cảu ứng viên
+ */
+
 @Entity
 @Data
 @Builder
@@ -33,25 +37,21 @@ public class Candidate extends PersistableEntity<Long> {
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private String fullName;
-    private String avatar;
-    private Date birthDate;
-    private Long gender;
-    private String phone;
-    private String email;
-
-    private String address;
-    private String wardCode;
-    private String districtCode;
-    private String provinceCode;
-    private String countryCode;
-
-    private Long educationLevel; // danh muc dung chung
+    private String fullName; // họ tên
+    private String avatar; // ảnh
+    private Date birthDate; // sinh nhật
+    private Long gender; // giới tính
+    private String phone; //số điện thoại
+    private String email; // email
+    private String address; // địa chỉ
+    private String wardCode; // mã phường xã
+    private String districtCode; // mã quận huyện
+    private String provinceCode; // mã tỉnh thành phố
+    private String countryCode; // mã quốc gia
+    private Long educationLevel; // cấp bậc giáo dục
     private String educateLocation;
     private String industry;
-
     private Long interviewResultId; // kết quả đánh giá
-
     private Long language;
     private String languageLevel;
     private String codeRecruting;
@@ -60,15 +60,15 @@ public class Candidate extends PersistableEntity<Long> {
 
     private String experience;
     private String experienceUnit; // months, years
-    private Long countInit;
-    private Long countRecruited;
-    private Long countArchive;
-    private Long countInterviewed;
-    private Long countApproved;
-    private Long countAppointment;
-    private Long countOnboard;
-    private Long countStaff;
-    private Long countDenied;
+//    private Long countInit;
+//    private Long countRecruited;
+//    private Long countArchive;
+//    private Long countInterviewed;
+//    private Long countApproved;
+//    private Long countAppointment;
+//    private Long countOnboard;
+//    private Long countStaff;
+//    private Long countDenied;
 
     private String lastCompanyName;
     private String lastPosition;
@@ -76,7 +76,7 @@ public class Candidate extends PersistableEntity<Long> {
     private Date lastCompanyDateTo;
     private Integer graduationYear;
     private String salaryUnit;
-    private Date onboardDate;
+//    private Date onboardDate;
     private Long offerSalary;
     private Long titleId;
     private String code;
@@ -93,7 +93,7 @@ public class Candidate extends PersistableEntity<Long> {
 
     private Integer isBlacklist; // check is blacklist ?
 
-    private Long employeeId;
+//    private Long employeeId;
     private String state;
 
     public static Candidate of(long cid, String uid, CandidateDTO dto){
@@ -131,91 +131,15 @@ public class Candidate extends PersistableEntity<Long> {
                 .roomRecrutingId(dto.getRoomRecrutingId())
                 .graduationYear(dto.getGraduationYear())
                 .code(dto.getCode())
-                .countInit(dto.getCountInit())
-                .countAppointment(dto.getCountAppointment())
-                .countApproved(dto.getCountApproved())
-                .countArchive(dto.getCountArchive())
-                .countInterviewed(dto.getCountInterviewed())
-                .countOnboard(dto.getCountOnboard())
-                .countRecruited(dto.getCountRecruited())
-                .countStaff(dto.getCountStaff())
-                .countDenied(dto.getCountDenied())
                 .introduceBy(dto.getIntroduceBy())
                 .salaryUnit(dto.getSalaryUnit())
-                .onboardDate(dto.getOnboardDate())
                 .offerSalary(dto.getOfferSalary())
                 .titleId(dto.getTitleId())
-                .involveId(dto.getInvolveId())
                 .isBlacklist(dto.getIsBlacklist())
                 .build();
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);
+
         return candidate;
-    }
-    public CandidateDTO toDTOS(){
-        return CandidateDTO.builder()
-                .id(this.getId())
-                .fullName(this.getFullName())
-                .avatar(this.getAvatar())
-                .birthDate(this.getBirthDate())
-                .gender(this.getGender())
-                .phone(this.getPhone())
-                .email(this.getEmail())
-                .address(this.getAddress())
-                .wardCode(this.getWardCode())
-                .districtCode(this.getDistrictCode())
-                .provinceCode(this.getProvinceCode())
-                .countryCode(this.getCountryCode())
-                .educationLevel(this.getEducationLevel()) // danh muc dung chung
-                .educateLocation(this.getEducateLocation())
-                .industry(this.getIndustry())
-                .language(this.getLanguage())
-                .languageLevel(this.getLanguageLevel())
-                .experience(this.getExperience())
-                .experienceUnit(this.getExperienceUnit()) // months, years
-                .lastCompanyName(this.getLastCompanyName())
-                .lastPosition(this.getLastPosition())
-                .lastCompanyDateFrom(this.getLastCompanyDateFrom())
-                .lastCompanyDateTo(this.getLastCompanyDateTo())
-                .applyPositionId(this.getApplyPositionId())
-                .applyDate(this.getApplyDate())
-                .cvSourceId(this.getCvSourceId())
-                .tags(this.getTags())
-                .state(this.getState())
-                .codeRecruting(this.getCodeRecruting())
-                .orgRecrutingId(this.getOrgRecrutingId())
-                .roomRecrutingId(this.getRoomRecrutingId())
-                .graduationYear(this.getGraduationYear())
-                .code(this.getCode())
-                .countInit(this.getCountInit())
-                .countAppointment(this.getCountAppointment())
-                .countApproved(this.getCountApproved())
-                .countArchive(this.getCountArchive())
-                .countInterviewed(this.getCountInterviewed())
-                .countOnboard(this.getCountOnboard())
-                .countRecruited(this.getCountRecruited())
-                .countStaff(this.getCountStaff())
-                .countDenied(this.getCountDenied())
-                .introduceBy(this.getIntroduceBy())
-                .salaryUnit(this.getSalaryUnit())
-                .onboardDate(this.getOnboardDate())
-                .offerSalary(this.getOfferSalary())
-                .titleId(this.getTitleId())
-                .build();
-
-    }
-
-    public static CandidateDTO countAllStates(Candidate obj) {
-        return CandidateDTO.builder()
-                .countInit(obj.getCountInit())
-                .countAppointment(obj.getCountAppointment())
-                .countApproved(obj.getCountApproved())
-                .countArchive(obj.getCountArchive())
-                .countInterviewed(obj.getCountInterviewed())
-                .countOnboard(obj.getCountOnboard())
-                .countRecruited(obj.getCountRecruited())
-                .countStaff(obj.getCountStaff())
-                .countDenied(obj.getCountDenied())
-                .build();
     }
 }

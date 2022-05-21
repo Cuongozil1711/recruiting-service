@@ -224,7 +224,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
 
         candidate.setState(Constants.CANDIDATE_STATE.HIRED.toString());
         candidate.setUpdateBy(uid);
-        candidate.setEmployeeId(empResp.getEmployee().getId());
+//        candidate.setEmployeeId(empResp.getEmployee().getId());
 //        candidate.setApplyDate(createEmp.getCandicate().getApplyDate());
 
         jobApplication.setEmployeeId(empResp.getEmployee().getId());
@@ -250,7 +250,7 @@ public class JobApplicationService extends TaskService<JobApplication, JobApplic
 
         candidate.setState(Constants.CANDIDATE_STATE.HIRED.toString());
         candidate.setUpdateBy(uid);
-        candidate.setEmployeeId(empResp.getEmployee().getId());
+     //   candidate.setEmployeeId(empResp.getEmployee().getId());
 //        candidate.setApplyDate(createEmp.getCandicate().getApplyDate());
 
         jobApplication.setEmployeeId(empResp.getEmployee().getId());

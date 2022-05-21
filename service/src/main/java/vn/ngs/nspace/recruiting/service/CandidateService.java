@@ -85,18 +85,19 @@ public class CandidateService {
     public CandidateDTO countAllStatesAndStatus(Long cid ) {
         Map<String, Object> countAllStatesAndStatus = repo.countAllStates(cid);
 
-        Candidate countAll = new Candidate();
-        countAll.setCountInit(countAllStatesAndStatus.get("init") != null ? Long.parseLong(countAllStatesAndStatus.get("init").toString()) : 0L);
-        countAll.setCountRecruited(countAllStatesAndStatus.get("recruited") != null ? Long.parseLong(countAllStatesAndStatus.get("recruited").toString()) : 0L);
-        countAll.setCountArchive(countAllStatesAndStatus.get("archive") != null ? Long.parseLong(countAllStatesAndStatus.get("archive").toString()) : 0L);
-        countAll.setCountInterviewed(countAllStatesAndStatus.get("interviewed") != null ? Long.parseLong(countAllStatesAndStatus.get("interviewed").toString()) : 0L);
-        countAll.setCountApproved(countAllStatesAndStatus.get("approved") != null ? Long.parseLong(countAllStatesAndStatus.get("approved").toString()) : 0L);
-        countAll.setCountOnboard(countAllStatesAndStatus.get("appointment") != null ? Long.parseLong(countAllStatesAndStatus.get("appointment").toString()) : 0L);
-        countAll.setCountAppointment(countAllStatesAndStatus.get("onboard") != null ? Long.parseLong(countAllStatesAndStatus.get("onboard").toString()) : 0L);
-        countAll.setCountStaff(countAllStatesAndStatus.get("staff") != null ? Long.parseLong(countAllStatesAndStatus.get("staff").toString()) : 0L);
-        countAll.setCountDenied(countAllStatesAndStatus.get("denied") != null ? Long.parseLong(countAllStatesAndStatus.get("denied").toString()) : 0L);
-
-        return Candidate.countAllStates(countAll);
+//        Candidate countAll = new Candidate();
+//        countAll.setCountInit(countAllStatesAndStatus.get("init") != null ? Long.parseLong(countAllStatesAndStatus.get("init").toString()) : 0L);
+//        countAll.setCountRecruited(countAllStatesAndStatus.get("recruited") != null ? Long.parseLong(countAllStatesAndStatus.get("recruited").toString()) : 0L);
+//        countAll.setCountArchive(countAllStatesAndStatus.get("archive") != null ? Long.parseLong(countAllStatesAndStatus.get("archive").toString()) : 0L);
+//        countAll.setCountInterviewed(countAllStatesAndStatus.get("interviewed") != null ? Long.parseLong(countAllStatesAndStatus.get("interviewed").toString()) : 0L);
+//        countAll.setCountApproved(countAllStatesAndStatus.get("approved") != null ? Long.parseLong(countAllStatesAndStatus.get("approved").toString()) : 0L);
+//        countAll.setCountOnboard(countAllStatesAndStatus.get("appointment") != null ? Long.parseLong(countAllStatesAndStatus.get("appointment").toString()) : 0L);
+//        countAll.setCountAppointment(countAllStatesAndStatus.get("onboard") != null ? Long.parseLong(countAllStatesAndStatus.get("onboard").toString()) : 0L);
+//        countAll.setCountStaff(countAllStatesAndStatus.get("staff") != null ? Long.parseLong(countAllStatesAndStatus.get("staff").toString()) : 0L);
+//        countAll.setCountDenied(countAllStatesAndStatus.get("denied") != null ? Long.parseLong(countAllStatesAndStatus.get("denied").toString()) : 0L);
+//
+//        return Candidate.countAllStates(countAll);
+         return  null;
     }
     public void uploadFile(String requestUserId, long companyId, MultipartFile file) throws IllegalStateException, IOException{
         _storageService.uploadFile(requestUserId,companyId,file);

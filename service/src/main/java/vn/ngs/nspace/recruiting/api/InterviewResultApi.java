@@ -110,8 +110,8 @@ public class InterviewResultApi {
             ,@Parameter(description="ID of user") @RequestHeader String uid
             , @PathVariable(value = "id") Long id){
         try{
-            InterviewResult interviewResult = repo.findByCompanyIdAndId(cid,id).orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, id));
-            return ResponseUtils.handlerSuccess(interviewResult);
+//            InterviewResult interviewResult = repo.findByCompanyIdAndId(cid,id).orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, id));
+            return ResponseUtils.handlerSuccess();
         } catch (Exception e){
             return ResponseUtils.handlerException(e);
         }

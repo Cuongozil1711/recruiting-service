@@ -131,21 +131,21 @@ public class InterviewResultService {
 
 
     public InterviewResultDTO update(Long cid, String uid, Long id, InterviewResultDTO dto) {
-        valid(dto);
-        InterviewResult curr = _repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, id));
-        MapperUtils.copyWithoutAudit(dto, curr);
-        curr.setUpdateBy(uid);
-        curr.setStatus(Constants.ENTITY_ACTIVE);
-        curr = _repo.save(curr);
-
-        if(dto.getCheckLists() != null){
-            for (InterviewCheckListDTO checkListDTO: dto.getCheckLists()) {
-                checkListDTO.setInterviewResultId(dto.getId());
-                updateCheckList(cid, uid, checkListDTO.getId(), checkListDTO);
-            }
-        }
-        return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
-
+//        valid(dto);
+//        InterviewResult curr = _repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, id));
+//        MapperUtils.copyWithoutAudit(dto, curr);
+//        curr.setUpdateBy(uid);
+//        curr.setStatus(Constants.ENTITY_ACTIVE);
+//        curr = _repo.save(curr);
+//
+//        if(dto.getCheckLists() != null){
+//            for (InterviewCheckListDTO checkListDTO: dto.getCheckLists()) {
+//                checkListDTO.setInterviewResultId(dto.getId());
+//                updateCheckList(cid, uid, checkListDTO.getId(), checkListDTO);
+//            }
+//        }
+//        return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
+        return null;
     }
 
     public void updateCheckList(Long cid, String uid, Long id, InterviewCheckListDTO request) throws BusinessException{
@@ -241,16 +241,16 @@ public class InterviewResultService {
         }
 
         public void delete (Long cid, String uid, List < Long > ids){
-            ids.stream().forEach(i -> {
-                InterviewResult interviewResult = _repo.findByCompanyIdAndId(cid, i).orElse(new InterviewResult());
-                if (!interviewResult.isNew()) {
-                    interviewResult.setStatus(vn.ngs.nspace.recruiting.share.dto.utils.Constants.ENTITY_INACTIVE);
-                    interviewResult.setUpdateBy(uid);
-                    interviewResult.setModifiedDate(new Date());
-
-                    _repo.save(interviewResult);
-                }
-            });
+//            ids.stream().forEach(i -> {
+//                InterviewResult interviewResult = _repo.findByCompanyIdAndId(cid, i).orElse(new InterviewResult());
+//                if (!interviewResult.isNew()) {
+//                    interviewResult.setStatus(vn.ngs.nspace.recruiting.share.dto.utils.Constants.ENTITY_INACTIVE);
+//                    interviewResult.setUpdateBy(uid);
+//                    interviewResult.setModifiedDate(new Date());
+//
+//                    _repo.save(interviewResult);
+//                }
+//            });
         }
 
 
