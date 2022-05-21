@@ -59,21 +59,21 @@ public class CandidateDTO {
     private Long titleId;
     private String createBy;
     // count all states
-    private Long countInit;
-    private Long countRecruited;
-    private Long countArchive;
-    private Long countInterviewed;
-    private Long countApproved;
-    private Long countAppointment;
-    private Long countOnboard;
-    private Long countStaff;
-    private Long countDenied;
+//    private Long countInit;
+//    private Long countRecruited;
+//    private Long countArchive;
+//    private Long countInterviewed;
+//    private Long countApproved;
+//    private Long countAppointment;
+//    private Long countOnboard;
+//    private Long countStaff;
+//    private Long countDenied;
     //
     private List<String> tags;
     private Long employeeId;
     private Integer status;
     private String state;
-    private Long involveId;
+//    private Long involveId;
 
     // đánh dấu blacklist
     private Integer isBlacklist;
