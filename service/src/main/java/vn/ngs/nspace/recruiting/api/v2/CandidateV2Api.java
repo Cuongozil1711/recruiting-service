@@ -184,9 +184,10 @@ public class CandidateV2Api {
             @Parameter(description = "Id of Company") @RequestHeader Long cid
             , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Id of record") @PathVariable(value = "id") Long id
+            , @RequestBody JobApplicationOnboardDTO request
     ) {
         try {
-            JobApplicationOnboardDTO dto = candidateService.getJobApplicationOnboard(cid, uid, id);
+            JobApplicationOnboardDTO dto = candidateService.updateJobApplicationOnboard(cid, uid, request);
 
             return ResponseUtils.handlerSuccess(dto);
         } catch (Exception e) {
