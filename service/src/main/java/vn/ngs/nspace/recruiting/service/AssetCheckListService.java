@@ -137,8 +137,6 @@ public class AssetCheckListService {
     /**
      * @AssetCheckList
      * @param cid
-     * @param emp_id
-     * @param id
      * @return
      */
     public AssetCheckList changeStateAssetCheckList(
@@ -148,7 +146,7 @@ public class AssetCheckListService {
             ,Long senderId
     ) {
         AssetCheckList assetCheckList = repo.findState(cid,empId,assetId,senderId).orElseThrow(() -> new EntityNotFoundException(AssetCheckList.class, senderId));
-        assetCheckList.setState(  Constants.ONBOARD_ORDER_CHECK_LIST_STATE.complete.name());
+        assetCheckList.setState(  Constants.HCM_RECRUITMENT_ONBOARD.COMPLETE.name());
         assetCheckList = repo.save(assetCheckList);
         return assetCheckList;
     }

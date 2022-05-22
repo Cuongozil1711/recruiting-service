@@ -50,4 +50,6 @@ public class JobApplicationDTO {
     private List<Long> interviewerIds;
 
     private Integer status;
+
+    private Integer sumStateOnboardComplete = 0;
 }

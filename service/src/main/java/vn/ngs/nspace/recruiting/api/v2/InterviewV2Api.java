@@ -14,6 +14,11 @@ import vn.ngs.nspace.recruiting.service.v2.InterviewResultV2Service;
 import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
 import vn.ngs.nspace.recruiting.share.request.ReviewRequest;
 
+/**
+ * api liên quan đến đánh giá
+ * @author toile
+ */
+
 @RestController
 @RequestMapping("interview-check-list")
 @RequiredArgsConstructor

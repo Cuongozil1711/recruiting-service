@@ -15,6 +15,7 @@ import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.service.v2.CandidateV2Service;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.JobApplicationOnboardDTO;
 import vn.ngs.nspace.recruiting.share.request.CandidateFilterRequest;
 
 import java.util.List;
@@ -139,6 +140,57 @@ public class CandidateV2Api {
             return ResponseUtils.handlerSuccess(candidateService.create(cid, uid, dtos));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    /**
+     * danh sách thủ tục theo ứng viên
+     */
+    @GetMapping("onboard/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Get list onboard with JobApplication by Id"
+            , description = "Get list onboard with JobApplication by Id"
+            , tags = {"JobApplication"}
+    )
+    public ResponseEntity onboard(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Id of record") @PathVariable(value = "id") Long id
+    ) {
+        try {
+            JobApplicationOnboardDTO dto = candidateService.getJobApplicationOnboard(cid, uid, id);
+
+            return ResponseUtils.handlerSuccess(dto);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    /**
+     * cập nhật thủ tục onboard theo ứng viên
+     * @param cid
+     * @param uid
+     * @param id
+     * @return
+     */
+
+    @PutMapping("onboard/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "update state list onboard with JobApplication by Id"
+            , description = "update state list onboard with JobApplication by Id"
+            , tags = {"JobApplication"}
+    )
+    public ResponseEntity updateOnboard(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @Parameter(description = "Id of record") @PathVariable(value = "id") Long id
+    ) {
+        try {
+            JobApplicationOnboardDTO dto = candidateService.getJobApplicationOnboard(cid, uid, id);
+
+            return ResponseUtils.handlerSuccess(dto);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
         }
     }
 }

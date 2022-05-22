@@ -62,7 +62,13 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
     Optional<JobApplication> getInfoOnboard(@Param("companyId") Long cid
             , @Param("id") Long id);
 
+// new
 
+    @Query(value = "select count(o) from OnboardOrder o where o.status = 1 and o.state = :state and o.jobApplicationId = :jobApplicationId")
+    Integer getSumStateComplete(String state, Long jobApplicationId);
+
+    @Query(value = "select o from OnboardOrder o where o.status = 1 and o.companyId = :cid and o.jobApplicationId = :jobApplicationId")
+    List<OnboardOrder> getALlByJobApplication(Long cid, Long jobApplicationId);
 
 }
 

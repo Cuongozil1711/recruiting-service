@@ -10,9 +10,13 @@ import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.JobApplication;
+import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
+import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
+import vn.ngs.nspace.recruiting.share.dto.JobApplicationOnboardDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.request.JobApplicationFilterRequest;
 
 import javax.transaction.Transactional;
@@ -29,11 +33,13 @@ public class JobApplicationV2Service {
     private final JobApplicationRepo jobApplicationRepo;
     private final CandidateV2Service candidateService;
     private final InterviewResultV2Service resultV2Service;
+    private final OnboardOrderRepo onboardOrderRepo;
 
-    public JobApplicationV2Service(JobApplicationRepo jobApplicationRepo, CandidateV2Service candidateService, InterviewResultV2Service resultV2Service) {
+    public JobApplicationV2Service(JobApplicationRepo jobApplicationRepo, CandidateV2Service candidateService, InterviewResultV2Service resultV2Service, OnboardOrderRepo onboardOrderRepo) {
         this.jobApplicationRepo = jobApplicationRepo;
         this.candidateService = candidateService;
         this.resultV2Service = resultV2Service;
+        this.onboardOrderRepo = onboardOrderRepo;
     }
 
     public Page<JobApplicationDTO> getPage(String uid, Long cid, JobApplicationFilterRequest request, Pageable pageable) throws Exception {
@@ -83,7 +89,8 @@ public class JobApplicationV2Service {
         jobApplicationDTO.setCandidateObj(candidateDTO);
         List<Long> interviewerIds = resultV2Service.getAllInterviewer(cid, uid, jobApplicationDTO.getCandidateId());
         jobApplicationDTO.setInterviewerIds(interviewerIds);
-
+        Integer sumStateOnboardComplete = onboardOrderRepo.getSumStateComplete(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT_ONBOARD.COMPLETE.name(), jobApplication.getId());
+        jobApplicationDTO.setSumStateOnboardComplete(sumStateOnboardComplete);
         return jobApplicationDTO;
     }
 

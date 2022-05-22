@@ -114,5 +114,9 @@ public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<J
             , @Param("ageLess") Date ageLess
             , Pageable pageable
     );
+
+    // new
+    @Query("select jb from JobApplication jb where jb.status =1 and jb.candidateId= :candidateId and jb.companyId = :companyId")
+    JobApplication findByStatusCompanyIdCandidateId(Long candidateId, Long companyId);
 }
 

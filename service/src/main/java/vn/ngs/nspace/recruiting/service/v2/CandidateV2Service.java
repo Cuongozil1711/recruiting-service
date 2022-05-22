@@ -10,11 +10,17 @@ import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.handler.NoticeEvent;
 import vn.ngs.nspace.recruiting.model.Candidate;
+import vn.ngs.nspace.recruiting.model.JobApplication;
+import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
+import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
+import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteStorateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
-import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
+import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
+import vn.ngs.nspace.recruiting.share.dto.JobApplicationOnboardDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.recruiting.share.request.CandidateFilterRequest;
 
@@ -29,15 +35,22 @@ public class CandidateV2Service {
     private final NoticeEvent noticeEvent;
     private final ExecuteConfigService configService;
     private final ExecuteStorateService storageService;
+    private final OnboardOrderV2Service onboardOrderV2Service;
+    private final JobApplicationRepo jobApplicationRepo;
+    private final OnboardOrderRepo onboardOrderRepo;
+
 //    private final InterviewResultV2Service resultV2Service;
 
 
-    public CandidateV2Service(CandidateRepo candidateRepo, NoticeEvent noticeEvent, ExecuteConfigService configService, ExecuteStorateService storageService) {
+    public CandidateV2Service(CandidateRepo candidateRepo, NoticeEvent noticeEvent, ExecuteConfigService configService, ExecuteStorateService storageService, OnboardOrderV2Service onboardOrderV2Service, JobApplicationRepo jobApplicationRepo, OnboardOrderRepo onboardOrderRepo) {
         this.candidateRepo = candidateRepo;
         this.noticeEvent = noticeEvent;
         this.configService = configService;
         this.storageService = storageService;
 //        this.resultV2Service = resultV2Service;
+        this.onboardOrderV2Service = onboardOrderV2Service;
+        this.jobApplicationRepo = jobApplicationRepo;
+        this.onboardOrderRepo = onboardOrderRepo;
     }
 
     /**
@@ -101,6 +114,11 @@ public class CandidateV2Service {
         current.setUpdateBy(uid);
 
         candidateRepo.save(current);
+
+        if (dto.getState().equalsIgnoreCase(Constants.HCM_RECRUITMENT.ONBOARDED.name())) {
+            onboardOrderV2Service.creates(cid, uid, current.getId());
+
+        }
 
         return toDTO(uid, cid, current);
     }
@@ -206,6 +224,41 @@ public class CandidateV2Service {
         );
 
         return candidateDTOS;
+    }
+
+    public JobApplicationOnboardDTO getJobApplicationOnboard(Long cid, String uid, Long candidateId) {
+        JobApplication jobApplication = jobApplicationRepo.findByStatusCompanyIdCandidateId(candidateId, cid);
+        if (jobApplication == null) return null;
+        JobApplicationDTO jobApplicationDTO = toDTO(uid, cid, jobApplication);
+
+        List<OnboardOrder> checkLists = onboardOrderRepo.getALlByJobApplication(cid, jobApplication.getId());
+
+        List<OnboardOrderDTO> orderDTOS = new ArrayList<>();
+        checkLists.forEach(
+                e -> {
+                    orderDTOS.add(MapperUtils.map(e, OnboardOrderDTO.class));
+                }
+        );
+
+        return new JobApplicationOnboardDTO(jobApplicationDTO, orderDTOS);
+    }
+
+//    public JobApplicationOnboardDTO updateJobApplicationOnboard() {
+//
+//    }
+
+    /**
+     *  convert JobApplication to JobApplicationDTO
+     * @param uid
+     * @param cid
+     * @param jobApplication
+     * @return
+     */
+    private JobApplicationDTO toDTO(String uid, Long cid, JobApplication jobApplication) {
+        JobApplicationDTO jobApplicationDTO = MapperUtils.map(jobApplication, JobApplicationDTO.class);
+        CandidateDTO candidateDTO = getById(uid, cid, jobApplicationDTO.getCandidateId());
+        jobApplicationDTO.setCandidateObj(candidateDTO);
+        return jobApplicationDTO;
     }
 
 }

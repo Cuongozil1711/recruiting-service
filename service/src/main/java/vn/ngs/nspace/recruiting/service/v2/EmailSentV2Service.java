@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapUtils;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.EmailSent;
 import vn.ngs.nspace.recruiting.model.EmailSetting;
+import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
 import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
 import vn.ngs.nspace.recruiting.service.EventFactory;
@@ -25,15 +27,17 @@ public class EmailSentV2Service {
 
     private final EmailSentRepo emailSentRepo;
     private final EventFactory eventFactory;
+    private final CandidateRepo candidateRepo;
     private final EmailSettingRepo emailSettingRepo;
     private final ExecuteNoticeService noticeService;
     private final ScheduleEmailSentService scheduleEmailSentService;
     @Value("${nspace.scheduleTopic:recruiting-schedule}")
     public String scheduleTopic;
 
-    public EmailSentV2Service(EmailSentRepo emailSentRepo, EventFactory eventFactory, EmailSettingRepo emailSettingRepo, ExecuteNoticeService noticeService, ScheduleEmailSentService scheduleEmailSentService) {
+    public EmailSentV2Service(EmailSentRepo emailSentRepo, EventFactory eventFactory, CandidateRepo candidateRepo, EmailSettingRepo emailSettingRepo, ExecuteNoticeService noticeService, ScheduleEmailSentService scheduleEmailSentService) {
         this.emailSentRepo = emailSentRepo;
         this.eventFactory = eventFactory;
+        this.candidateRepo = candidateRepo;
         this.emailSettingRepo = emailSettingRepo;
         this.noticeService = noticeService;
         this.scheduleEmailSentService = scheduleEmailSentService;
@@ -49,6 +53,14 @@ public class EmailSentV2Service {
             refIds = request.getCandidateIds().stream().map(Objects::toString).collect(Collectors.joining(","));
             emailSent.setRefType(Constants.EMAIL_SENT_REF.CANDIDATE.name());
             emailSent.setRefId(refIds);
+
+            // cập nhật trang thái ứng viên
+            Candidate candidate = candidateRepo.getOne(Long.valueOf(refIds));
+            if (candidate.getState().equalsIgnoreCase(Constants.HCM_RECRUITMENT.PASSED.name())) {
+                candidate.setState(Constants.HCM_RECRUITMENT.OL_SENT.name());
+
+                candidateRepo.save(candidate);
+            }
         }
 
         String username = "";

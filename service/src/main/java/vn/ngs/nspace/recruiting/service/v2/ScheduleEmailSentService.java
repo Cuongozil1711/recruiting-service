@@ -116,6 +116,13 @@ public class ScheduleEmailSentService {
         if (request.isSentCandidate()) {
             if (request.getCandidateIds() != null && !request.getCandidateIds().isEmpty()) {
                 refIds = request.getCandidateIds().stream().map(Objects::toString).collect(Collectors.joining(","));
+
+                Candidate candidate = candidateRepo.getOne(Long.valueOf(refIds));
+                if (candidate.getState().equalsIgnoreCase(Constants.HCM_RECRUITMENT.APPROVED.name())) {
+                    candidate.setState(Constants.HCM_RECRUITMENT.INTERVIEW_INVITED.name());
+
+                    candidateRepo.save(candidate);
+                }
             }
 
             String toEmails = String.join(",", request.getCandidateMails());
@@ -126,7 +133,7 @@ public class ScheduleEmailSentService {
                     Constants.EMAIL_SENT_REF.CANDIDATE.name());
 
             // nếu đặt lịch thì gửi yêu cầu lên service đặt lịch
-            if (request.getInterviewDate() != null) {
+            if (request.getScheduleDate() != null) {
                 createEmailSchedule(uid, cid, request.getScheduleDate(), emailSentCandidate.getId());
             } else {
                 noticeService.publishEmail(uid, cid, username,

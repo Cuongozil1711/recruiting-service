@@ -36,6 +36,6 @@ public interface InterviewResultRepo extends BaseRepo<InterviewResult, Long> {
     List<InterviewResult> findAllByCandidateIdAndCompanyIdAndStatus(Long candidateId, Long companyId, Integer status);
 
     @Query("select ir from InterviewResult ir where ir.companyId = :cid and ir.candidateId = :candidateId and ir.templateCheckListId = :templateId")
-    InterviewResult getByCandidateIdAndComAndCompanyId(Long cid, Long candidateId, Long templateId);
+    InterviewResult getByCandidateAndComAndCompanyId(Long cid, Long candidateId, Long templateId);
     Optional<InterviewResult> findByCandidateIdAndCompanyIdAndTemplateCheckListIdAndStatus(Long candidateId, Long cid, Long templateId, Integer status);
 }
