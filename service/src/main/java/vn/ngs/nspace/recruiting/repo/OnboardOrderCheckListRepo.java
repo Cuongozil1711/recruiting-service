@@ -33,6 +33,9 @@ public interface OnboardOrderCheckListRepo extends BaseRepo<OnboardOrderCheckLis
             , Pageable pageable
     );
 
+    @Query("select o from OnboardOrderCheckList o where o.status = 1")
+    List<OnboardOrderCheckList> getAllCheckList();
+
     @Query("select o from OnboardOrderCheckList o where o.companyId= :cid and o.id in :ids and o.status =1")
     List<OnboardOrderCheckList> getAllByListId(Long cid, List<Long> ids);
 }

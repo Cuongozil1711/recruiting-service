@@ -33,11 +33,6 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
             "training",
             "coaching");
 
-    public enum ONBOARD_ORDER_CHECK_LIST_STATE {
-        notcomplete, complete
-
-    }
-
     public enum INTERVIEW_RESULT_STATE {
         PENDING, REVIEWED
 
@@ -82,19 +77,19 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
         APPROVED, //đã duyệt
         INTERVIEW_INVITED, // chờ phỏng vấn
         INTERVIEWED, //đã phỏng vấn
-        PASSED,
-        OL_SENT,
-        OL_ACCEPTED,
-        ONBOARDED,
-        STAFF,
-        DENIED,
+        PASSED, // đã đạt
+        OL_SENT, // gửi ofer
+        OL_ACCEPTED,// chấp nhận offer
+        ONBOARDED, // đã onboard
+        STAFF, // nhân viên
+        DENIED, // đã từ chối
     }
 
     public enum HCM_RECRUITMENT_ONBOARD {
-        INIT,
-        ONBOARDING,
-        APPROVED,
-        DENIED,
+        PENDING // chờ xử lý
+        ,PROCESSING // đang xử lý
+        ,COMPLETE // hoàn thành
+        ,CANCEL // huỷ bỏ
     }
 
     public enum HCM_RECRUITMENT_REVIEW {

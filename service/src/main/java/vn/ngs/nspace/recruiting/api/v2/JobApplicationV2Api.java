@@ -15,6 +15,7 @@ import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.service.v2.JobApplicationV2Service;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
+import vn.ngs.nspace.recruiting.share.dto.JobApplicationOnboardDTO;
 import vn.ngs.nspace.recruiting.share.request.JobApplicationFilterRequest;
 
 @RestController

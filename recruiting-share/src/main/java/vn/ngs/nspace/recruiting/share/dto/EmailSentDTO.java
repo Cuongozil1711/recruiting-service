@@ -21,7 +21,7 @@ public class EmailSentDTO {
     private String fromEmail;
     private String toEmail;
     private String typeOnboard;
-    private Long templateId;
+    private Long templateId; // tên mẫu email đã gửi
     private Long emailSettingId;
     private String uid;
     private String type;
