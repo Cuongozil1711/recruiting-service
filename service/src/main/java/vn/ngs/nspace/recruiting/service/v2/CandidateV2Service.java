@@ -12,20 +12,21 @@ import vn.ngs.nspace.recruiting.handler.NoticeEvent;
 import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
+import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
 import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
+import vn.ngs.nspace.recruiting.repo.OnboardOrderCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteStorateService;
-import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
-import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
-import vn.ngs.nspace.recruiting.share.dto.JobApplicationOnboardDTO;
-import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
+import vn.ngs.nspace.recruiting.share.dto.*;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.recruiting.share.request.CandidateFilterRequest;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -38,11 +39,12 @@ public class CandidateV2Service {
     private final OnboardOrderV2Service onboardOrderV2Service;
     private final JobApplicationRepo jobApplicationRepo;
     private final OnboardOrderRepo onboardOrderRepo;
+    private final OnboardOrderCheckListRepo checkListRepo;
 
 //    private final InterviewResultV2Service resultV2Service;
 
 
-    public CandidateV2Service(CandidateRepo candidateRepo, NoticeEvent noticeEvent, ExecuteConfigService configService, ExecuteStorateService storageService, OnboardOrderV2Service onboardOrderV2Service, JobApplicationRepo jobApplicationRepo, OnboardOrderRepo onboardOrderRepo) {
+    public CandidateV2Service(CandidateRepo candidateRepo, NoticeEvent noticeEvent, ExecuteConfigService configService, ExecuteStorateService storageService, OnboardOrderV2Service onboardOrderV2Service, JobApplicationRepo jobApplicationRepo, OnboardOrderRepo onboardOrderRepo, OnboardOrderCheckListRepo checkListRepo) {
         this.candidateRepo = candidateRepo;
         this.noticeEvent = noticeEvent;
         this.configService = configService;
@@ -51,6 +53,7 @@ public class CandidateV2Service {
         this.onboardOrderV2Service = onboardOrderV2Service;
         this.jobApplicationRepo = jobApplicationRepo;
         this.onboardOrderRepo = onboardOrderRepo;
+        this.checkListRepo = checkListRepo;
     }
 
     /**
@@ -236,16 +239,42 @@ public class CandidateV2Service {
         List<OnboardOrderDTO> orderDTOS = new ArrayList<>();
         checkLists.forEach(
                 e -> {
-                    orderDTOS.add(MapperUtils.map(e, OnboardOrderDTO.class));
+                    orderDTOS.add(toOnboardOrderDTO(cid,e));
                 }
         );
 
         return new JobApplicationOnboardDTO(jobApplicationDTO, orderDTOS);
     }
 
-//    public JobApplicationOnboardDTO updateJobApplicationOnboard() {
-//
-//    }
+    public OnboardOrderDTO toOnboardOrderDTO(Long cid, OnboardOrder onboardOrder) {
+        OnboardOrderDTO onboardOrderDTO = MapperUtils.map(onboardOrder, OnboardOrderDTO.class);
+
+        OnboardOrderCheckList checkList = checkListRepo.findByCompanyIdAndId(cid, onboardOrderDTO.getOnboardOrderId())
+                .orElseThrow(()->new EntityNotFoundException(OnboardOrderCheckList.class,onboardOrderDTO.getOnboardOrderId()));
+
+        OnboardOrderCheckListDTO checkListDTO = MapperUtils.map(checkList, OnboardOrderCheckListDTO.class);
+        onboardOrderDTO.setOnboardOrderCheckListDTO(checkListDTO);
+
+        return onboardOrderDTO;
+    }
+
+    public JobApplicationOnboardDTO updateJobApplicationOnboard(Long cid, String uid, JobApplicationOnboardDTO dto) {
+        List<OnboardOrderCheckListDTO> checkListDTOList = dto.getOnboardOrderDTOS().stream().map(OnboardOrderDTO::getOnboardOrderCheckListDTO).collect(Collectors.toList());
+
+        checkListDTOList.forEach(
+                e->{
+                    OnboardOrderCheckList orderCheckList = checkListRepo.findByCompanyIdAndId(cid, e.getId())
+                            .orElseThrow(() -> new EntityNotFoundException(OnboardOrderCheckList.class, e.getId()));
+
+                    MapperUtils.copyWithoutAudit(e, orderCheckList);
+                    orderCheckList.setUpdateBy(uid);
+
+                    checkListRepo.save(orderCheckList);
+                }
+        );
+
+        return getJobApplicationOnboard(cid, uid, dto.getJobApplicationDTO().getCandidateId());
+    };
 
     /**
      *  convert JobApplication to JobApplicationDTO

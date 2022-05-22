@@ -64,4 +64,23 @@ public class InterviewV2Api {
         }
     }
 
+    @GetMapping("/{candidateId}")
+    @ActionMapping(action = Permission.VIEW)
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    public ResponseEntity historyInterview(
+            @RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable("interviewResultId") Long interviewResultId
+            , @PathVariable("candidateId") Long candidateId
+    ) {
+        try {
+            InterviewResultDTO resultDTO = resultV2Service.getByInterviewResultIdAndCandidateId(cid, uid, interviewResultId, candidateId);
+
+            return ResponseUtils.handlerSuccess(resultDTO);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
 }

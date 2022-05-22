@@ -48,6 +48,13 @@ public class InterviewResultV2Service {
         return interviewResultDTO;
     }
 
+    // danh sách lịch sử đánh giá
+    public List<InterviewResultDTO> getByCandidateId(Long cid, String uid, Long candidateId) {
+        List<InterviewResult> interviewResults = resultRepo.findAllByCandidateIdAndCompanyIdAndStatus(candidateId, cid, 1);
+
+        return toDTOs(interviewResults);
+    }
+
     public InterviewResultDTO updateResult(Long cid, String uid, ReviewRequest request) {
         InterviewResult interviewResult = resultRepo.findByCandidateIdAndCompanyIdAndTemplateCheckListIdAndStatus(request.getCandidateId(), cid, request.getTemplateId(), 1)
                 .orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, request.getCandidateId()));
