@@ -70,5 +70,8 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
     @Query(value = "select o from OnboardOrder o where o.status = 1 and o.companyId = :cid and o.jobApplicationId = :jobApplicationId")
     List<OnboardOrder> getALlByJobApplication(Long cid, Long jobApplicationId);
 
+    @Query(value = "select count(o) from OnboardOrder o where o.status = 1 and o.state = :state and o.companyId =:companyId and o.onboardOrderId = :onboardChekListId")
+    Integer countByCompany(String state, Long companyId, Long onboardChekListId);
+    
 }
 
