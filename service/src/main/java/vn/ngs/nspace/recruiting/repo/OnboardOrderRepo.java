@@ -72,6 +72,12 @@ public interface OnboardOrderRepo extends BaseRepo<OnboardOrder,Long> {
 
     @Query(value = "select count(o) from OnboardOrder o where o.status = 1 and o.state = :state and o.companyId =:companyId and o.onboardOrderId = :onboardChekListId")
     Integer countByCompany(String state, Long companyId, Long onboardChekListId);
-    
+
+    @Query(value = "select o from OnboardOrder o where o.status = 1 and o.onboardOrderId = :checkListId and o.companyId = :companyId")
+    Page<OnboardOrder> getPage(
+            @Param("companyId") Long cid
+            ,@Param("checkListId") Long checkListId
+            , Pageable pageable
+    );
 }
 
