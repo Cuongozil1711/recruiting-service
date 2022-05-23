@@ -16,6 +16,7 @@ import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.service.v2.OnboardOrderV2Service;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
+import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardWithStateDTO;
 import vn.ngs.nspace.recruiting.share.request.CandidateFilterRequest;
 import vn.ngs.nspace.recruiting.share.request.OnboardCandidateFilter;
@@ -55,7 +56,7 @@ public class OnboardOrderV2Api {
         }
     }
 
-    @GetMapping("{id}")
+    @PostMapping("{id}")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Search all onboard Order"
             , description = "Search by "
@@ -68,9 +69,11 @@ public class OnboardOrderV2Api {
             , @RequestHeader("uid") String uid
             , @PathVariable(value = "id") Long id
             , @RequestBody OnboardCandidateFilter filter
+            ,Pageable pageable
             ) {
         try {
-            return ResponseUtils.handlerSuccess();
+            Page<OnboardOrderDTO> onboardOrderDTOS = orderV2Service.getJobApplicationOnboardPage(cid, uid,filter,id, pageable);
+            return ResponseUtils.handlerSuccess(onboardOrderDTOS);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }

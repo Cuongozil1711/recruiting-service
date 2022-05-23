@@ -6,16 +6,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.JobApplication;
 import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.model.OnboardOrderCheckList;
+import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderCheckListRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
-import vn.ngs.nspace.recruiting.share.dto.JobApplicationOnboardDTO;
-import vn.ngs.nspace.recruiting.share.dto.OnboardOrderCheckListDTO;
-import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
-import vn.ngs.nspace.recruiting.share.dto.OnboardWithStateDTO;
+import vn.ngs.nspace.recruiting.share.dto.*;
+import vn.ngs.nspace.recruiting.share.request.OnboardCandidateFilter;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -29,11 +29,13 @@ public class OnboardOrderV2Service {
     private final OnboardOrderRepo onboardOrderRepo;
     private final JobApplicationRepo jobApplicationRepo;
     private final OnboardOrderCheckListRepo checkListRepo;
+    private final CandidateRepo candidateRepo;
 
-    public OnboardOrderV2Service(OnboardOrderRepo onboardOrderRepo, JobApplicationRepo jobApplicationRepo, OnboardOrderCheckListRepo checkListRepo) {
+    public OnboardOrderV2Service(OnboardOrderRepo onboardOrderRepo, JobApplicationRepo jobApplicationRepo, OnboardOrderCheckListRepo checkListRepo, CandidateRepo candidateRepo) {
         this.onboardOrderRepo = onboardOrderRepo;
         this.jobApplicationRepo = jobApplicationRepo;
         this.checkListRepo = checkListRepo;
+        this.candidateRepo = candidateRepo;
     }
 
     protected OnboardOrderDTO create(Long cid, String uid, OnboardOrderDTO request) {
@@ -76,16 +78,16 @@ public class OnboardOrderV2Service {
     }
 
 
-    public Page<OnboardWithStateDTO> getPageOnboard(Long cid, String uid,String search, Pageable pageable) {
-        Page<OnboardOrderCheckList> checkLists = checkListRepo.getPageOnboard(cid,pageable);
+    public Page<OnboardWithStateDTO> getPageOnboard(Long cid, String uid, String search, Pageable pageable) {
+        Page<OnboardOrderCheckList> checkLists = checkListRepo.getPageOnboard(cid, pageable);
 
         List<OnboardWithStateDTO> onboardWithStateDTOS = new ArrayList<>();
         checkLists.getContent().forEach(
-                e->{
-                    Integer pending = onboardOrderRepo.countByCompany(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT_ONBOARD.PENDING.name(), cid,e.getId());
-                    Integer process = onboardOrderRepo.countByCompany(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT_ONBOARD.PROCESSING.name(), cid,e.getId());
-                    Integer complete = onboardOrderRepo.countByCompany(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT_ONBOARD.COMPLETE.name(), cid,e.getId());
-                    Integer cancel = onboardOrderRepo.countByCompany(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT_ONBOARD.CANCEL.name(), cid,e.getId());
+                e -> {
+                    Integer pending = onboardOrderRepo.countByCompany(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT_ONBOARD.PENDING.name(), cid, e.getId());
+                    Integer process = onboardOrderRepo.countByCompany(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT_ONBOARD.PROCESSING.name(), cid, e.getId());
+                    Integer complete = onboardOrderRepo.countByCompany(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT_ONBOARD.COMPLETE.name(), cid, e.getId());
+                    Integer cancel = onboardOrderRepo.countByCompany(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT_ONBOARD.CANCEL.name(), cid, e.getId());
 
                     OnboardWithStateDTO onboardWithStateDTO = new OnboardWithStateDTO();
                     onboardWithStateDTO.setCheckListDTO(toDTO(e));
@@ -98,11 +100,34 @@ public class OnboardOrderV2Service {
                 }
         );
 
-        return new PageImpl<>(onboardWithStateDTOS,checkLists.getPageable(),checkLists.getTotalElements());
+        return new PageImpl<>(onboardWithStateDTOS, checkLists.getPageable(), checkLists.getTotalElements());
+    }
+
+    public Page<OnboardOrderDTO> getJobApplicationOnboardPage(Long cid, String uid, OnboardCandidateFilter filter, Long checkListId, Pageable pageable) {
+        Page<OnboardOrder> onboardOrders = onboardOrderRepo.getPage(cid, checkListId, pageable);
+
+        List<OnboardOrderDTO> onboardOrderDTOS = toDTOs(onboardOrders.getContent());
+
+        return new PageImpl<>(onboardOrderDTOS, onboardOrders.getPageable(), onboardOrders.getTotalElements());
     }
 
     private OnboardOrderDTO toDTO(OnboardOrder order) {
-        return MapperUtils.map(order, OnboardOrderDTO.class);
+        JobApplication jobApplication = jobApplicationRepo.getOne(order.getJobApplicationId());
+        JobApplicationDTO jobApplicationDTO = MapperUtils.map(jobApplication,JobApplicationDTO.class);
+
+        Candidate candidate = candidateRepo.getOne(jobApplication.getCandidateId());
+        CandidateDTO candidateDTO = MapperUtils.map(candidate,CandidateDTO.class);
+
+        jobApplicationDTO.setCandidateObj(candidateDTO);
+
+        OnboardOrderCheckList checkList = checkListRepo.getOne(order.getOnboardOrderId());
+        OnboardOrderCheckListDTO checkListDTO = MapperUtils.map(checkList,OnboardOrderCheckListDTO.class);
+
+        OnboardOrderDTO dto = MapperUtils.map(order, OnboardOrderDTO.class);
+        dto.setOnboardOrderCheckListDTO(checkListDTO);
+        dto.setJobApplicationDTO(jobApplicationDTO);
+
+        return dto;
     }
 
     private List<OnboardOrderDTO> toDTOs(List<OnboardOrder> orders) {
