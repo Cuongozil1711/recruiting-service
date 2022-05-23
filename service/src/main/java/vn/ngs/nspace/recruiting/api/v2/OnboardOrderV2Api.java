@@ -70,9 +70,7 @@ public class OnboardOrderV2Api {
             , @RequestBody OnboardCandidateFilter filter
             ) {
         try {
-            Page<OnboardWithStateDTO> onboardWithStateDTOS = orderV2Service.getPageOnboard(cid, uid, search, page);
-
-            return ResponseUtils.handlerSuccess(onboardWithStateDTOS);
+            return ResponseUtils.handlerSuccess();
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }
