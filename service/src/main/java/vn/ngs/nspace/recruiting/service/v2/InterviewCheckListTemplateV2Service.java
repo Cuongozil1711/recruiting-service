@@ -112,6 +112,7 @@ public class InterviewCheckListTemplateV2Service {
     private void createItem(long cid, String uid, InterviewCheckListTemplateItemDTO itemDTO, Long templateId) {
         InterviewCheckListTemplateItem item = InterviewCheckListTemplateItem.of(cid, uid, itemDTO);
         item.setCheckListId(templateId);
+        item.setTemplateId(templateId);
         item.setCompanyId(cid);
         item.setCreateBy(uid);
         item.setUpdateBy(uid);

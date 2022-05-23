@@ -2,13 +2,15 @@ package vn.ngs.nspace.recruiting.share.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
+
+import java.util.List;
 
 @Getter
 @Setter
 public class ReviewRequest {
-    private String overall; // điểm tổng trung bình
-    private String result; // đạt hay không đạt
-    private String content; // nội dung đánh giá
+    private List<InterviewResultDTO> interviewResultDTOS;
     private Long candidateId;
-    private Long templateId;
+    private String content;
+    private String finalResult;
 }

@@ -259,17 +259,17 @@ public class CandidateV2Service {
     }
 
     public JobApplicationOnboardDTO updateJobApplicationOnboard(Long cid, String uid, JobApplicationOnboardDTO dto) {
-        List<OnboardOrderCheckListDTO> checkListDTOList = dto.getOnboardOrderDTOS().stream().map(OnboardOrderDTO::getOnboardOrderCheckListDTO).collect(Collectors.toList());
+        List<OnboardOrderDTO> onboardOrderDTOS = dto.getOnboardOrderDTOS();
 
-        checkListDTOList.forEach(
+        onboardOrderDTOS.forEach(
                 e->{
-                    OnboardOrderCheckList orderCheckList = checkListRepo.findByCompanyIdAndId(cid, e.getId())
-                            .orElseThrow(() -> new EntityNotFoundException(OnboardOrderCheckList.class, e.getId()));
+                    OnboardOrder order = onboardOrderRepo.findByCompanyIdAndId(cid, e.getId())
+                            .orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, e.getId()));
 
-                    MapperUtils.copyWithoutAudit(e, orderCheckList);
-                    orderCheckList.setUpdateBy(uid);
+                    MapperUtils.copyWithoutAudit(e, order);
+                    order.setUpdateBy(uid);
 
-                    checkListRepo.save(orderCheckList);
+                    onboardOrderRepo.save(order);
                 }
         );
 
