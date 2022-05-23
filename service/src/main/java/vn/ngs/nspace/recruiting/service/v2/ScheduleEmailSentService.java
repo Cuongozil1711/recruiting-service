@@ -2,16 +2,11 @@ package vn.ngs.nspace.recruiting.service.v2;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapUtils;
-import vn.ngs.nspace.recruiting.model.Candidate;
-import vn.ngs.nspace.recruiting.model.EmailSent;
-import vn.ngs.nspace.recruiting.model.EmailSetting;
-import vn.ngs.nspace.recruiting.model.InterviewResult;
-import vn.ngs.nspace.recruiting.repo.CandidateRepo;
-import vn.ngs.nspace.recruiting.repo.EmailSentRepo;
-import vn.ngs.nspace.recruiting.repo.EmailSettingRepo;
-import vn.ngs.nspace.recruiting.repo.InterviewResultRepo;
+import vn.ngs.nspace.recruiting.model.*;
+import vn.ngs.nspace.recruiting.repo.*;
 import vn.ngs.nspace.recruiting.schedule.EventV2Factory;
 import vn.ngs.nspace.recruiting.schedule.ScheduleRequest;
 import vn.ngs.nspace.recruiting.schedule.ScheduleTaskCommand;
@@ -36,15 +31,17 @@ public class ScheduleEmailSentService {
     private final ExecuteNoticeService noticeService;
     private final InterviewResultRepo resultRepo;
     private final CandidateRepo candidateRepo;
+    private final InterviewCheckListTemplateItemRepo templateItemRepo;
 
 
-    public ScheduleEmailSentService(EventV2Factory eventV2Factory, EmailSentRepo emailSentRepo, EmailSettingRepo emailSettingRepo, ExecuteNoticeService noticeService, InterviewResultRepo resultRepo, CandidateRepo candidateRepo) {
+    public ScheduleEmailSentService(EventV2Factory eventV2Factory, EmailSentRepo emailSentRepo, EmailSettingRepo emailSettingRepo, ExecuteNoticeService noticeService, InterviewResultRepo resultRepo, CandidateRepo candidateRepo, InterviewCheckListTemplateItemRepo templateItemRepo) {
         this.eventV2Factory = eventV2Factory;
         this.emailSentRepo = emailSentRepo;
         this.emailSettingRepo = emailSettingRepo;
         this.noticeService = noticeService;
         this.resultRepo = resultRepo;
         this.candidateRepo = candidateRepo;
+        this.templateItemRepo = templateItemRepo;
     }
 
     /**
@@ -169,18 +166,27 @@ public class ScheduleEmailSentService {
         for (Long candidateId : candidateIds) {
             Candidate candidate = candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
             for (Long interviewerId : interviewerIds) {
-                InterviewResult interviewResult = createInterviewResult(cid, uid, candidateId, request.getInterviewDate(), interviewerId, request.getTemplateCheckList());
-                if (interviewerId.equals(request.getInterviewerLastId())) {
-                    candidate.setInterviewResultId(interviewResult.getId());
-                    candidateRepo.save(candidate);
-                }
+                List<InterviewCheckListTemplateItem> templateItems = templateItemRepo.findByCompanyIdAndTemplateId(cid,request.getTemplateId());
+                templateItems.forEach(
+                        e->{
+                            InterviewResult interviewResult = createInterviewResult(cid, uid, candidateId, request.getInterviewDate(), interviewerId, request.getTemplateCheckList());
+                            if (interviewerId.equals(request.getInterviewerLastId())) {
+                                candidate.setInterviewResultId(interviewResult.getId());
+                                candidateRepo.save(candidate);
+                            }
+                        }
+                );
+
             }
         }
     }
 
     // tạo bản ghi lưu thông tin kết quả của vòng
     public InterviewResult createInterviewResult(Long cid, String uid, Long candidateId, Date interviewDate, Long interviewerId, Long templateCheckListId) {
-        InterviewResult interviewResult = new InterviewResult();
+        InterviewResult interviewResult = resultRepo.getByCandidateAndCompanyId(cid,candidateId,templateCheckListId);
+
+        if (interviewResult != null) throw new BusinessException();
+        interviewResult = new InterviewResult();
         interviewResult.setCompanyId(cid);
         interviewResult.setUpdateBy(uid);
         interviewResult.setCandidateId(candidateId);

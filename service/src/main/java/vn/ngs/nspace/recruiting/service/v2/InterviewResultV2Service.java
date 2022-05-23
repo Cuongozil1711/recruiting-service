@@ -56,17 +56,25 @@ public class InterviewResultV2Service {
     }
 
     public InterviewResultDTO updateResult(Long cid, String uid, ReviewRequest request) {
-        InterviewResult interviewResult = resultRepo.findByCandidateIdAndCompanyIdAndTemplateCheckListIdAndStatus(request.getCandidateId(), cid, request.getTemplateId(), 1)
-                .orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, request.getCandidateId()));
+        List<InterviewResultDTO> resultDTOS = request.getInterviewResultDTOS();
 
-        interviewResult.setUpdateBy(uid);
-        interviewResult.setFinalResult(request.getOverall());
-        interviewResult.setState(request.getResult());
-        interviewResult.setContent(request.getContent());
+        resultDTOS.forEach(
+                e -> {
+                    InterviewResult result = resultRepo.getByCandidateAndCompanyId(cid, request.getCandidateId(), e.getTemplateId());
+                            if(result == null) throw  new EntityNotFoundException(InterviewResult.class, e.getId());
 
-        resultRepo.save(interviewResult);
+                    MapperUtils.copyWithoutAudit(request, result);
 
-        return toDTO(interviewResult);
+                    result.setUpdateBy(uid);
+                    result.setContent(request.getContent());
+                    if (request.getFinalResult() != null) {
+                        result.setFinalResult(request.getFinalResult());
+                    }
+
+                    resultRepo.save((result));
+                }
+        );
+        return null;
     }
 
     // lấy danh sách người đánh giá ứng viên

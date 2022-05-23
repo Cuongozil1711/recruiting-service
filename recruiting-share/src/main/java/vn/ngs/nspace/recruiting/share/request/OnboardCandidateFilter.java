@@ -10,7 +10,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OnboardCandidateFilter {
-    private Long orgId;
-    private Long positionId;
-    private Long titleId;
+    private Long orgId; // tổ chức
+    private Long positionId; // vị trí
+    private Long titleId; // chức vụ
+    private String stateCandidate; // trạng thái ứng viên
+    private String stateOnboard; // trạng thái công việc
+
 }

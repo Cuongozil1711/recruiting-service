@@ -14,6 +14,8 @@ import vn.ngs.nspace.recruiting.service.v2.InterviewResultV2Service;
 import vn.ngs.nspace.recruiting.share.dto.InterviewResultDTO;
 import vn.ngs.nspace.recruiting.share.request.ReviewRequest;
 
+import java.util.List;
+
 /**
  * api liên quan đến đánh giá
  * @author toile
@@ -71,13 +73,12 @@ public class InterviewV2Api {
     public ResponseEntity historyInterview(
             @RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
-            , @PathVariable("interviewResultId") Long interviewResultId
             , @PathVariable("candidateId") Long candidateId
     ) {
         try {
-            InterviewResultDTO resultDTO = resultV2Service.getByInterviewResultIdAndCandidateId(cid, uid, interviewResultId, candidateId);
+            List<InterviewResultDTO> resultDTOs = resultV2Service.getByCandidateId(cid, uid,  candidateId);
 
-            return ResponseUtils.handlerSuccess(resultDTO);
+            return ResponseUtils.handlerSuccess(resultDTOs);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }
