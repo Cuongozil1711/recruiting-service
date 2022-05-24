@@ -18,8 +18,10 @@ import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationOnboardDTO;
 import vn.ngs.nspace.recruiting.share.request.JobApplicationFilterRequest;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("v2/job-application")
+    @RequestMapping("v2/job-application")
 @RequiredArgsConstructor
 @Tag(name = "Candidate", description = "Candidate API")
 public class JobApplicationV2Api {
@@ -66,6 +68,26 @@ public class JobApplicationV2Api {
             return ResponseUtils.handlerSuccess(jobApplicationDTO);
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
+        }
+    }
+
+    @PostMapping("/remove-candidate")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "Remove JobApplication by Id"
+            , description = "Remove JobApplication by Id"
+            , tags = {"JobApplication"}
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    public ResponseEntity removeCandidate(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestBody List<Long> jobApplicationIds) {
+        try {
+            service.remove(cid,uid,jobApplicationIds);
+            return ResponseUtils.handlerSuccess();
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
         }
     }
 }

@@ -83,6 +83,10 @@ public class JobApplicationV2Service {
         return null;
     }
 
+    public void remove(Long cid, String uid, List<Long> jobApplicationIds) {
+       jobApplicationRepo.removeAllBy(cid, uid,jobApplicationIds);
+    }
+
     private JobApplicationDTO toDTO(String uid, Long cid, JobApplication jobApplication) {
         JobApplicationDTO jobApplicationDTO = MapperUtils.map(jobApplication, JobApplicationDTO.class);
         CandidateDTO candidateDTO = candidateService.getById(uid, cid, jobApplicationDTO.getCandidateId());
