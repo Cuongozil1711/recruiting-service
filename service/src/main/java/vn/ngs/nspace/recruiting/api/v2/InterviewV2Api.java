@@ -29,6 +29,14 @@ public class InterviewV2Api {
 
     private final InterviewResultV2Service resultV2Service;
 
+    /**
+     * hiển thị đánh giá ứng viên
+     * @param cid
+     * @param uid
+     * @param interviewResultId
+     * @param candidateId
+     * @return
+     */
     @GetMapping("{interviewResultId}/{candidateId}")
     @ActionMapping(action = Permission.VIEW)
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
@@ -48,6 +56,14 @@ public class InterviewV2Api {
         }
     }
 
+    /**
+     * đánh giá ứng viên
+     * @param cid
+     * @param uid
+     * @param request
+     * @return
+     */
+
     @PostMapping("")
     @ActionMapping(action = Permission.VIEW)
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
@@ -65,6 +81,14 @@ public class InterviewV2Api {
             return ResponseUtils.handlerException(e);
         }
     }
+
+    /**
+     * lịch sử đánh giá ứng viên
+     * @param cid
+     * @param uid
+     * @param candidateId
+     * @return
+     */
 
     @GetMapping("/{candidateId}")
     @ActionMapping(action = Permission.VIEW)
