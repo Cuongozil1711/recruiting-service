@@ -72,11 +72,11 @@ public class InterviewResultV2Service {
     }
 
     public InterviewResultDTO updateResult(Long cid, String uid, ReviewRequest request) {
-        List<InterviewResultDTO> resultDTOS = request.getInterviewResultDTOS();
+        List<ReviewRequest.ResultItem> resultDTOS = request.getResultItems();
 
         resultDTOS.forEach(
                 e -> {
-                    InterviewResult result = resultRepo.getByCandidateAndCompanyId(cid, request.getCandidateId(), e.getTemplateId(),e.getInterviewerId());
+                    InterviewResult result = resultRepo.getByCandidateAndTemplate(cid, request.getCandidateId(), e.getId());
                             if(result == null) throw  new EntityNotFoundException(InterviewResult.class, e.getId());
 
                     MapperUtils.copyWithoutAudit(request, result);
@@ -84,8 +84,9 @@ public class InterviewResultV2Service {
                     result.setUpdateBy(uid);
                     result.setContent(request.getContent());
                     if (request.getFinalResult() != null) {
-                        result.setFinalResult(request.getFinalResult());
+                        result.setState(request.getFinalResult());
                     }
+                    result.setFinalResult(e.getResult().toString());
 
                     resultRepo.save((result));
                 }

@@ -9,8 +9,16 @@ import java.util.List;
 @Getter
 @Setter
 public class ReviewRequest {
-    private List<InterviewResultDTO> interviewResultDTOS;
     private Long candidateId;
     private String content;
     private String finalResult;
+    private List<ResultItem> resultItems;
+
+    @Setter
+    @Getter
+    public static class ResultItem {
+        private Long id;
+        private Long checkListId;
+        private Integer result;
+    }
 }
