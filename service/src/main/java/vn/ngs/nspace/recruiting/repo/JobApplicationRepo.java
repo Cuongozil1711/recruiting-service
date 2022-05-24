@@ -84,6 +84,7 @@ public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<J
             " from JobApplication ja inner join Candidate c on c.id = ja.candidateId" +
             " where (c.companyId = :companyId)" +
             " and (c.status = 1)" +
+            " and ja.status = 1" +
             " and (c.applyPositionId = :applyPosition or :applyPosition = -1)" +
             " and (c.cvSourceId = :resource or :resource = -1)" +
             " and (c.applyDate between :applyDateFrom and :applyDateTo)" +
@@ -118,5 +119,9 @@ public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<J
     // new
     @Query("select jb from JobApplication jb where jb.status =1 and jb.candidateId= :candidateId and jb.companyId = :companyId")
     JobApplication findByStatusCompanyIdCandidateId(Long candidateId, Long companyId);
+
+    @Modifying
+    @Query(value = "update JobApplication j set j.status = 0, j.updateBy = :uid where j.companyId = :cid and j.id in :ids")
+    void removeAllBy(Long cid, String uid, List<Long> ids);
 }
 

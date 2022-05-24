@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Candidate;
@@ -45,6 +46,17 @@ public class OnboardOrderV2Service {
         onboardOrder.setStatus(Constants.ENTITY_ACTIVE);
 
         return toDTO(onboardOrderRepo.save(onboardOrder));
+    }
+
+    private OnboardOrderDTO update(Long cid, String uid, OnboardOrderDTO dto) {
+        OnboardOrder onboardOrder = onboardOrderRepo.findByCompanyIdAndId(cid, dto.getId())
+                .orElseThrow(() -> new EntityNotFoundException(OnboardOrder.class, dto.getId()));
+
+        MapperUtils.copyWithoutAudit(dto, onboardOrder);
+        onboardOrder.setUpdateBy(uid);
+        onboardOrder = onboardOrderRepo.save(onboardOrder);
+
+        return toDTO(onboardOrder);
     }
 
     public List<OnboardOrderDTO> creates(Long cid, String uid, Long candidateId) {
@@ -111,17 +123,26 @@ public class OnboardOrderV2Service {
         return new PageImpl<>(onboardOrderDTOS, onboardOrders.getPageable(), onboardOrders.getTotalElements());
     }
 
+    // cập nhật trạng thái công việc theo đầu mục
+    public void updateStates(Long cid, String uid, List<OnboardOrderDTO> onboardOrderDTOs) {
+        onboardOrderDTOs.forEach(
+                e -> {
+                    update(cid, uid, e);
+                }
+        );
+    }
+
     private OnboardOrderDTO toDTO(OnboardOrder order) {
         JobApplication jobApplication = jobApplicationRepo.getOne(order.getJobApplicationId());
-        JobApplicationDTO jobApplicationDTO = MapperUtils.map(jobApplication,JobApplicationDTO.class);
+        JobApplicationDTO jobApplicationDTO = MapperUtils.map(jobApplication, JobApplicationDTO.class);
 
         Candidate candidate = candidateRepo.getOne(jobApplication.getCandidateId());
-        CandidateDTO candidateDTO = MapperUtils.map(candidate,CandidateDTO.class);
+        CandidateDTO candidateDTO = MapperUtils.map(candidate, CandidateDTO.class);
 
         jobApplicationDTO.setCandidateObj(candidateDTO);
 
         OnboardOrderCheckList checkList = checkListRepo.getOne(order.getOnboardOrderId());
-        OnboardOrderCheckListDTO checkListDTO = MapperUtils.map(checkList,OnboardOrderCheckListDTO.class);
+        OnboardOrderCheckListDTO checkListDTO = MapperUtils.map(checkList, OnboardOrderCheckListDTO.class);
 
         OnboardOrderDTO dto = MapperUtils.map(order, OnboardOrderDTO.class);
         dto.setOnboardOrderCheckListDTO(checkListDTO);

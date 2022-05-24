@@ -21,6 +21,8 @@ import vn.ngs.nspace.recruiting.share.dto.OnboardWithStateDTO;
 import vn.ngs.nspace.recruiting.share.request.CandidateFilterRequest;
 import vn.ngs.nspace.recruiting.share.request.OnboardCandidateFilter;
 
+import java.util.List;
+
 /**
  * api thủ tục onboard
  */
@@ -74,6 +76,28 @@ public class OnboardOrderV2Api {
         try {
             Page<OnboardOrderDTO> onboardOrderDTOS = orderV2Service.getJobApplicationOnboardPage(cid, uid,filter,id, pageable);
             return ResponseUtils.handlerSuccess(onboardOrderDTOS);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PutMapping("{id}")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "update all onboard Order"
+            , description = "Search by "
+            , tags = {"Onboard"}
+    )
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
+            , schema = @Schema(implementation = String.class))
+    public ResponseEntity updateStateOnboard(
+            @RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable(value = "id") String checkListId
+            , @RequestBody List<OnboardOrderDTO> onboardOrderDTOs
+    ) {
+        try {
+            orderV2Service.updateStates(cid,uid,onboardOrderDTOs);
+            return ResponseUtils.handlerSuccess();
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }

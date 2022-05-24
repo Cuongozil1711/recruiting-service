@@ -140,6 +140,25 @@ public class ScheduleEmailSentService {
 
         //nếu chọn hội đồng
         if (request.isSentInvolve()) {
+            List<Long> candidateIds = request.getCandidateIds();
+            List<Long> interviewerIds = request.getInterviewerIds();
+
+            // Lưu lại các bản ghi đánh giá với ứng viên và người phỏng vấn
+            List<InterviewCheckListTemplateItem> templateItems = templateItemRepo.findByCompanyIdAndTemplateId(cid,request.getTemplateCheckList());
+            for (Long candidateId : candidateIds) {
+                Candidate candidate = candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
+                for (Long interviewerId : interviewerIds) {
+                    for (InterviewCheckListTemplateItem item : templateItems) {
+                        InterviewResult interviewResult = createInterviewResult(cid, uid, candidateId, request.getInterviewDate(), interviewerId, item.getId());
+                        if (interviewerId.equals(request.getInterviewerLastId())) {
+                            candidate.setInterviewResultId(interviewResult.getId());
+                            candidateRepo.save(candidate);
+                        }
+                    }
+
+                }
+            }
+            
             if (request.getInterviewerIds() != null && !request.getInterviewerIds().isEmpty()) {
                 refIds = request.getInterviewerIds().stream().map(Objects::toString).collect(Collectors.joining(","));
             }
@@ -157,35 +176,16 @@ public class ScheduleEmailSentService {
                 noticeService.publishEmail(uid, cid, username,
                         password, subject, content, Set.of(uid), new HashSet<>(request.getInvolveMails()));
             }
-        }
 
-        List<Long> candidateIds = request.getCandidateIds();
-        List<Long> interviewerIds = request.getInterviewerIds();
 
-        // Lưu lại các bản ghi đánh giá với ứng viên và người phỏng vấn
-        for (Long candidateId : candidateIds) {
-            Candidate candidate = candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
-            for (Long interviewerId : interviewerIds) {
-                List<InterviewCheckListTemplateItem> templateItems = templateItemRepo.findByCompanyIdAndTemplateId(cid,request.getTemplateId());
-                templateItems.forEach(
-                        e->{
-                            InterviewResult interviewResult = createInterviewResult(cid, uid, candidateId, request.getInterviewDate(), interviewerId, request.getTemplateCheckList());
-                            if (interviewerId.equals(request.getInterviewerLastId())) {
-                                candidate.setInterviewResultId(interviewResult.getId());
-                                candidateRepo.save(candidate);
-                            }
-                        }
-                );
-
-            }
         }
     }
 
     // tạo bản ghi lưu thông tin kết quả của vòng
     public InterviewResult createInterviewResult(Long cid, String uid, Long candidateId, Date interviewDate, Long interviewerId, Long templateCheckListId) {
-        InterviewResult interviewResult = resultRepo.getByCandidateAndCompanyId(cid,candidateId,templateCheckListId);
+        InterviewResult interviewResult = resultRepo.getByCandidateAndCompanyId(cid,candidateId,templateCheckListId, interviewerId);
 
-        if (interviewResult != null) throw new BusinessException();
+        if (interviewResult != null) throw new BusinessException("invalid-title");
         interviewResult = new InterviewResult();
         interviewResult.setCompanyId(cid);
         interviewResult.setUpdateBy(uid);
