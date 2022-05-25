@@ -89,7 +89,7 @@ public class InterviewResultV2Service {
 
         resultDTOS.forEach(
                 e -> {
-                    InterviewResult result = resultRepo.getByCandidateAndTemplate(cid, request.getCandidateId(), e.getId());
+                    InterviewResult result = resultRepo.getByCandidateAndCompanyId(cid, request.getCandidateId(), e.getId(),request.getInterviewerId());
                             if(result == null) throw  new EntityNotFoundException(InterviewResult.class, e.getId());
 
                     MapperUtils.copyWithoutAudit(request, result);
