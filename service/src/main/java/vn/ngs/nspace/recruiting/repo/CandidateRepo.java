@@ -230,7 +230,7 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
             "    COUNT(CASE WHEN ca.state = 'ONBOARDED' THEN 0 END) as ONBOARDED,\n" +
             "    COUNT(CASE WHEN ca.state = 'STAFF' THEN 0 END) as STAFF,\n" +
             "    COUNT(CASE WHEN ca.state = 'DENIED' THEN 0 END) as DENIED\n" +
-            "from recruiting_service.candidate ca where ca.status = 1", nativeQuery = true)
+            "from recruiting_service.candidate ca where ca.status = 1 and ca.company_id = :companyId", nativeQuery = true)
     Map<String, Object> countAll(@Param("companyId") Long companyId);
 }
 
