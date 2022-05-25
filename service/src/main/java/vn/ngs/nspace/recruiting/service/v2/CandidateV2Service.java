@@ -85,7 +85,6 @@ public class CandidateV2Service {
 
     /**
      * find by id and companyId
-     *
      * @param cid
      * @param id
      * @return

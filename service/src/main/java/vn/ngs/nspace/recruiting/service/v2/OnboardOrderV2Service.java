@@ -60,7 +60,7 @@ public class OnboardOrderV2Service {
     }
 
     public List<OnboardOrderDTO> creates(Long cid, String uid, Long candidateId) {
-        JobApplication jobApplication = jobApplicationRepo.findByStatusCompanyIdCandidateId(cid, cid);
+        JobApplication jobApplication = jobApplicationRepo.findByStatusCompanyIdCandidateId(candidateId, cid);
 
         if (jobApplication == null) return new ArrayList<>();
 

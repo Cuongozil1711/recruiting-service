@@ -85,6 +85,15 @@ public class CandidateV2Api {
         }
     }
 
+    /**
+     * cập nhật cv
+     * @param cid
+     * @param uid
+     * @param id
+     * @param dto
+     * @return
+     */
+
     @PutMapping("{id}")
     @ActionMapping(action = Permission.UPDATE)
     @Operation(summary = "Update Candidate by Id"
@@ -105,6 +114,14 @@ public class CandidateV2Api {
         }
     }
 
+    /**
+     * tạo mới cv
+     * @param cid
+     * @param uid
+     * @param dto
+     * @return
+     */
+
     @PostMapping()
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Create single Candidate"
@@ -123,6 +140,14 @@ public class CandidateV2Api {
             return ResponseUtils.handlerException(ex);
         }
     }
+
+    /**
+     * import danh sách ứng viên
+     * @param cid
+     * @param uid
+     * @param dtos
+     * @return
+     */
 
     @PostMapping("/create-list")
     @ActionMapping(action = Permission.CREATE)
