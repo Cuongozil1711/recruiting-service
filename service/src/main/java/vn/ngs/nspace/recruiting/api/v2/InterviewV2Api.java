@@ -108,4 +108,19 @@ public class InterviewV2Api {
         }
     }
 
+    @GetMapping("detail-interview/{candidateId}")
+    public ResponseEntity getDetailInterview(
+            @RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable("candidateId") Long candidateId
+    ) {
+        try {
+            InterviewResultDTO dto = resultV2Service.getDetail(cid, uid,candidateId);
+
+            return ResponseUtils.handlerSuccess(dto);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
 }

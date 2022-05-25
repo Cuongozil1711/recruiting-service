@@ -18,7 +18,7 @@ public interface InterviewCheckListTemplateRepo extends BaseRepo<InterviewCheckL
     @Query(value = " select i " +
             " from InterviewCheckListTemplate i " +
             " where (i.companyId = :companyId)" +
-            " and (i.positionId = :positionId or :positionId = -1) " +
+            " and (i.positionId = :positionId or :positionId = -1 or i.positionId is null) " +
             " and (i.titleId = :titleId or :titleId = -1) " +
             " and (i.orgId = :orgId or :orgId = -1)" +
             " and (i.status = 1) ")

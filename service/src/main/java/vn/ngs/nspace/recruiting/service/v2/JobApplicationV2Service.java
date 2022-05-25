@@ -10,13 +10,10 @@ import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.DateUtil;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.JobApplication;
-import vn.ngs.nspace.recruiting.model.OnboardOrder;
 import vn.ngs.nspace.recruiting.repo.JobApplicationRepo;
 import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.JobApplicationDTO;
-import vn.ngs.nspace.recruiting.share.dto.JobApplicationOnboardDTO;
-import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.request.JobApplicationFilterRequest;
 
 import javax.transaction.Transactional;
@@ -85,6 +82,18 @@ public class JobApplicationV2Service {
 
     public void remove(Long cid, String uid, List<Long> jobApplicationIds) {
        jobApplicationRepo.removeAllBy(cid, uid,jobApplicationIds);
+       jobApplicationIds.forEach(
+               e->{
+                    JobApplication jobApplication = jobApplicationRepo.getOne(e);
+                    CandidateDTO candidateDTO = candidateService.getById(uid,cid,jobApplication.getCandidateId());
+                    candidateDTO.setState(vn.ngs.nspace.recruiting.share.dto.utils.Constants.HCM_RECRUITMENT.DENIED.name());
+                   try {
+                       candidateService.update(cid, uid, candidateDTO.getId(),candidateDTO);
+                   } catch (Exception ex) {
+                       ex.printStackTrace();
+                   }
+               }
+       );
     }
 
     private JobApplicationDTO toDTO(String uid, Long cid, JobApplication jobApplication) {
