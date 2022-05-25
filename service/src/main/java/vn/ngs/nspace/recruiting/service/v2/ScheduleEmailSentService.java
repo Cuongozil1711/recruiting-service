@@ -144,11 +144,11 @@ public class ScheduleEmailSentService {
             List<Long> interviewerIds = request.getInterviewerIds();
 
             // Lưu lại các bản ghi đánh giá với ứng viên và người phỏng vấn
-            List<InterviewCheckListTemplateItem> templateItems = templateItemRepo.findByCompanyIdAndTemplateId(cid,request.getTemplateCheckList());
+            List<InterviewCheckListTemplateItem> templateItems = templateItemRepo.findByCompanyIdAndTemplateId(cid, request.getTemplateCheckList());
             for (Long candidateId : candidateIds) {
-                Candidate candidate = candidateRepo.findByCompanyIdAndId(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
-                for (Long interviewerId : interviewerIds) {
-                    for (InterviewCheckListTemplateItem item : templateItems) {
+                Candidate candidate = candidateRepo.findById(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
+                for (InterviewCheckListTemplateItem item : templateItems) {
+                    for (Long interviewerId : interviewerIds) {
                         InterviewResult interviewResult = createInterviewResult(cid, uid, candidateId, request.getInterviewDate(), interviewerId, item.getId());
                         if (interviewerId.equals(request.getInterviewerLastId())) {
                             candidate.setInterviewResultId(interviewResult.getId());
@@ -171,7 +171,7 @@ public class ScheduleEmailSentService {
 
             // kiểm tra gửi ngay hay lên lịch
             if (request.getInterviewDate() != null) {
-                createEmailSchedule(uid,cid, request.getScheduleDate(), emailSentInvolve.getId());
+                createEmailSchedule(uid, cid, request.getScheduleDate(), emailSentInvolve.getId());
             } else {
                 noticeService.publishEmail(uid, cid, username,
                         password, subject, content, Set.of(uid), new HashSet<>(request.getInvolveMails()));
@@ -183,7 +183,7 @@ public class ScheduleEmailSentService {
 
     // tạo bản ghi lưu thông tin kết quả của vòng
     public InterviewResult createInterviewResult(Long cid, String uid, Long candidateId, Date interviewDate, Long interviewerId, Long templateCheckListId) {
-        InterviewResult interviewResult = resultRepo.getByCandidateAndTemplate(cid,candidateId,templateCheckListId);
+        InterviewResult interviewResult = resultRepo.getByCandidateAndCompanyId(cid, candidateId, templateCheckListId, interviewerId);
 
         if (interviewResult != null) throw new BusinessException("template-checklist-exist-candidate");
         interviewResult = new InterviewResult();
