@@ -8,6 +8,7 @@ import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplate;
 import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplateItem;
 import vn.ngs.nspace.recruiting.model.InterviewResult;
+import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.InterviewCheckListTemplateItemRepo;
 import vn.ngs.nspace.recruiting.repo.InterviewCheckListTemplateRepo;
 import vn.ngs.nspace.recruiting.repo.InterviewResultRepo;
@@ -19,7 +20,6 @@ import vn.ngs.nspace.recruiting.share.request.ReviewRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,11 +30,13 @@ public class InterviewResultV2Service {
     private final InterviewResultRepo resultRepo;
     private final InterviewCheckListTemplateItemRepo itemRepo;
     private final InterviewCheckListTemplateRepo templateRepo;
+    private final CandidateRepo candidateRepo;
 
-    public InterviewResultV2Service(@Lazy InterviewResultRepo resultRepo, InterviewCheckListTemplateItemRepo itemRepo, InterviewCheckListTemplateRepo templateRepo) {
+    public InterviewResultV2Service(@Lazy InterviewResultRepo resultRepo, InterviewCheckListTemplateItemRepo itemRepo, InterviewCheckListTemplateRepo templateRepo, CandidateRepo candidateRepo) {
         this.resultRepo = resultRepo;
         this.itemRepo = itemRepo;
         this.templateRepo = templateRepo;
+        this.candidateRepo = candidateRepo;
     }
 
     public InterviewResultDTO getByInterviewResultIdAndCandidateId(Long cid, String uid, Long interviewResultId, Long candidateId) {
@@ -74,6 +76,12 @@ public class InterviewResultV2Service {
         );
 
         return dtos;
+    }
+
+    // xem chi tiết 1 thủ tục
+    public InterviewResultDTO getDetail(Long cid, String uid,Long candidateId) {
+        Candidate candidate = candidateRepo.getOne(candidateId);
+        return getByInterviewResultIdAndCandidateId(cid,uid,candidate.getInterviewResultId(),candidateId);
     }
 
     public InterviewResultDTO updateResult(Long cid, String uid, ReviewRequest request) {

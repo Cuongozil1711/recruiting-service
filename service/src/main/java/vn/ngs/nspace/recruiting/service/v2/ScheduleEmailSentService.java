@@ -185,7 +185,7 @@ public class ScheduleEmailSentService {
     public InterviewResult createInterviewResult(Long cid, String uid, Long candidateId, Date interviewDate, Long interviewerId, Long templateCheckListId) {
         InterviewResult interviewResult = resultRepo.getByCandidateAndTemplate(cid,candidateId,templateCheckListId);
 
-        if (interviewResult != null) throw new BusinessException("invalid-title");
+        if (interviewResult != null) throw new BusinessException("template-checklist-exist-candidate");
         interviewResult = new InterviewResult();
         interviewResult.setCompanyId(cid);
         interviewResult.setUpdateBy(uid);

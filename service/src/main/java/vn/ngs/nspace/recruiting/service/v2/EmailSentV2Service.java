@@ -54,7 +54,7 @@ public class EmailSentV2Service {
             emailSent.setRefType(Constants.EMAIL_SENT_REF.CANDIDATE.name());
             emailSent.setRefId(refIds);
 
-            // cập nhật trang thái ứng viên
+            // cập nhật trang thái ứng viên khi đạt phỏng vấn sáng đã gửi offer
             Candidate candidate = candidateRepo.getOne(Long.valueOf(refIds));
             if (candidate.getState().equalsIgnoreCase(Constants.HCM_RECRUITMENT.PASSED.name())) {
                 candidate.setState(Constants.HCM_RECRUITMENT.OL_SENT.name());
