@@ -30,7 +30,7 @@ public class InterviewResult extends PersistableEntity<Long> {
     private String finalResult;
 
     private Long templateCheckListId; // mẫu đánh giá
-    private Integer evaluate; //bỏ
+    private String evaluate; // điẻm chung
     private String state ;
     @Convert(converter = ListHashMapConverter.class)
     @Column(columnDefinition = "text")

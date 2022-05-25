@@ -83,6 +83,7 @@ public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<J
     @Query("select ja " +
             " from JobApplication ja inner join Candidate c on c.id = ja.candidateId" +
             " where (c.companyId = :companyId)" +
+            " and (ja.companyId = :companyId)" +
             " and (c.status = 1)" +
             " and ja.status = 1" +
             " and (c.applyPositionId = :applyPosition or :applyPosition = -1)" +
