@@ -158,7 +158,7 @@ public class ScheduleEmailSentService {
 
                 }
             }
-            
+
             if (request.getInterviewerIds() != null && !request.getInterviewerIds().isEmpty()) {
                 refIds = request.getInterviewerIds().stream().map(Objects::toString).collect(Collectors.joining(","));
             }
@@ -183,7 +183,7 @@ public class ScheduleEmailSentService {
 
     // tạo bản ghi lưu thông tin kết quả của vòng
     public InterviewResult createInterviewResult(Long cid, String uid, Long candidateId, Date interviewDate, Long interviewerId, Long templateCheckListId) {
-        InterviewResult interviewResult = resultRepo.getByCandidateAndCompanyId(cid,candidateId,templateCheckListId, interviewerId);
+        InterviewResult interviewResult = resultRepo.getByCandidateAndTemplate(cid,candidateId,templateCheckListId);
 
         if (interviewResult != null) throw new BusinessException("invalid-title");
         interviewResult = new InterviewResult();

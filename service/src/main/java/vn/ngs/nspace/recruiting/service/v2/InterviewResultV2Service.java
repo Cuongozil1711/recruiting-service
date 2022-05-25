@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplate;
 import vn.ngs.nspace.recruiting.model.InterviewCheckListTemplateItem;
 import vn.ngs.nspace.recruiting.model.InterviewResult;
@@ -17,6 +18,8 @@ import vn.ngs.nspace.recruiting.share.request.ReviewRequest;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,16 +36,6 @@ public class InterviewResultV2Service {
         this.itemRepo = itemRepo;
         this.templateRepo = templateRepo;
     }
-
-//    public InterviewResultDTO getByInterviewResultId(Long cid, String uid, Long interviewResultId) {
-//        InterviewResult interviewResult = resultRepo.findByCompanyIdAndId(cid, interviewResultId).orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, interviewResultId));
-//
-//        InterviewCheckListTemplateDTO interviewCheckListTemplateDTO = templateV2Service.getById(cid, uid, interviewResult.getTemplateCheckListId());
-//        InterviewResultDTO interviewResultDTO = toDTO(interviewResult);
-//        interviewResultDTO.setTemplateDTO(interviewCheckListTemplateDTO);
-//
-//        return interviewResultDTO;
-//    }
 
     public InterviewResultDTO getByInterviewResultIdAndCandidateId(Long cid, String uid, Long interviewResultId, Long candidateId) {
         InterviewResult interviewResult = resultRepo.findByCompanyIdAndId(cid, interviewResultId).orElseThrow(() -> new EntityNotFoundException(InterviewResult.class, interviewResultId));
@@ -68,7 +61,19 @@ public class InterviewResultV2Service {
     public List<InterviewResultDTO> getByCandidateId(Long cid, String uid, Long candidateId) {
         List<InterviewResult> interviewResults = resultRepo.findAllByCandidateIdAndCompanyIdAndStatus(candidateId, cid, 1);
 
-        return toDTOs(interviewResults);
+        List<InterviewResultDTO> dtos = new ArrayList<>();
+        interviewResults.forEach(
+                e->{
+                     InterviewCheckListTemplateItem item = itemRepo.findById(e.getTemplateCheckListId())
+                            .orElseThrow(() -> new EntityNotFoundException(InterviewCheckListTemplate.class, e.getTemplateCheckListId()));
+                     InterviewCheckListTemplate template = templateRepo.getOne(item.getTemplateId());
+                    InterviewResultDTO dto = MapperUtils.map(e,InterviewResultDTO.class);
+                    dto.setTemplateDTO(MapperUtils.map(template,InterviewCheckListTemplateDTO.class));
+                    dtos.add(dto);
+                }
+        );
+
+        return dtos;
     }
 
     public InterviewResultDTO updateResult(Long cid, String uid, ReviewRequest request) {
@@ -83,6 +88,7 @@ public class InterviewResultV2Service {
 
                     result.setUpdateBy(uid);
                     result.setContent(request.getContent());
+                    result.setInterviewDate(new Date());
                     if (request.getFinalResult() != null) {
                         result.setState(request.getFinalResult());
                     }

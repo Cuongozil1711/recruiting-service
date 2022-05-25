@@ -46,7 +46,6 @@ public class InterviewResult extends PersistableEntity<Long> {
                 .interviewDate(dto.getInterviewDate())
                 .content(dto.getContent())
                 .state(dto.getState())
-                .items(dto.getItems())
                 .finalResult(dto.getFinalResult())
                 .evaluate(dto.getEvaluate())
                 .build();
