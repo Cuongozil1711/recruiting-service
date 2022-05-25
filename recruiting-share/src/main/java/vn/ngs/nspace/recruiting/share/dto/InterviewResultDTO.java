@@ -21,13 +21,12 @@ public class InterviewResultDTO {
     private String content; // bỏ
     private Long interviewerId;
     private Long templateId;
-    private Long templateItemId;
     private String state ;
     private String createBy;
     private Integer status;
     private String finalResult;
     private Integer evaluate;
-    private List<Map<String,Object>> items; // luu diem danh gia
+//    private List<Map<String,Object>> items; // luu diem danh gia
 
     private Map<String, Object> createByObj;
     private EmployeeDTO interviewerIdObj;
