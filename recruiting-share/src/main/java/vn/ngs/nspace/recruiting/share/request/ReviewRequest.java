@@ -12,6 +12,7 @@ public class ReviewRequest {
     private Long candidateId;
     private String content;
     private String finalResult;
+    private String evaluate;
     private List<ResultItem> resultItems;
 
     @Setter

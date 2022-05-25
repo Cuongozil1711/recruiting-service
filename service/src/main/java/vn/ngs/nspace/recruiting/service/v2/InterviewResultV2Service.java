@@ -92,6 +92,7 @@ public class InterviewResultV2Service {
                     if (request.getFinalResult() != null) {
                         result.setState(request.getFinalResult());
                     }
+                    result.setEvaluate(request.getEvaluate());
                     result.setFinalResult(e.getResult().toString());
 
                     resultRepo.save((result));
