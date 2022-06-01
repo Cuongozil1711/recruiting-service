@@ -146,7 +146,7 @@ public class ScheduleEmailSentService {
             // Lưu lại các bản ghi đánh giá với ứng viên và người phỏng vấn
             List<InterviewCheckListTemplateItem> templateItems = templateItemRepo.findByCompanyIdAndTemplateId(cid, request.getTemplateCheckList());
             for (Long candidateId : candidateIds) {
-                Candidate candidate = candidateRepo.findById(cid, candidateId).orElseThrow(() -> new EntityNotFoundException(Candidate.class, candidateId));
+                Candidate candidate = candidateRepo.findById( candidateId).orElseThrow(()->new EntityNotFoundException());
                 for (InterviewCheckListTemplateItem item : templateItems) {
                     for (Long interviewerId : interviewerIds) {
                         InterviewResult interviewResult = createInterviewResult(cid, uid, candidateId, request.getInterviewDate(), interviewerId, item.getId());

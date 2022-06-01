@@ -45,147 +45,74 @@ public class CostV2Service {
 
     public void valid(CostDTO dto) {
 
-        if (dto.getOrgId() == null || dto.getOrgId() == 0L) {
-            throw new BusinessException("invalid-org");
-        }
-        if (dto.getStartDate() == null) {
-            throw new BusinessException("invalid-start-date");
-        }
-        if (dto.getEndDate() == null) {
-            throw new BusinessException("invalid-end-date");
-        }
-
-        if (dto.getTotalAmount() == null || dto.getTotalAmount() <= 0D) {
-            throw new BusinessException("invalid-total-amount");
-        }
-    }
-
-    public void validDetail(CostDetailDTO dto) {
-        if (dto.getPaymentDate() == null) {
-            throw new BusinessException("invalid-payment-date");
-        }
-        if (dto.getTotalAmount() == null || dto.getTotalAmount() <= 0D) {
-            throw new BusinessException("invalid-payment-amount");
-        }
     }
 
     public CostDTO create(long cid, String uid, CostDTO dto) {
         valid(dto);
-        Cost exist = repo.findByCompanyIdAndCostTypeIdAndOrgIdAndYearAndStartDateAndEndDateAndStatus(cid, dto.getCostTypeId(), dto.getOrgId(), dto.getYear(), dto.getStartDate(), dto.getEndDate(), Constants.ENTITY_ACTIVE).orElse(new Cost());
-        if (!exist.isNew()) {
-            throw new BusinessException("duplicate-cost-with-startDate-and-endDate");
-        }
         // create template
-        Cost obj = Cost.of(cid, uid, dto);
-        obj.setCompanyId(cid);
-        obj.setCreateBy(uid);
-        obj.setUpdateBy(uid);
-        obj.setStatus(Constants.ENTITY_ACTIVE);
+        Cost cost = Cost.of(cid, uid, dto);
+        cost.setCompanyId(cid);
+        cost.setCreateBy(uid);
+        cost.setUpdateBy(uid);
+        cost.setStatus(Constants.ENTITY_ACTIVE);
 
-        obj = repo.save(obj);
-        //create detail
-        if (dto.getCostDetails() != null && !dto.getCostDetails().isEmpty()) {
-            for (CostDetailDTO detailDTO : dto.getCostDetails()) {
-                detailDTO.setCostId(obj.getId());
-                createItem(cid, uid, detailDTO);
-            }
-        }
+        cost = repo.save(cost);
 
-        return toDTOs(cid, uid, Collections.singletonList(obj)).get(0);
-    }
-
-    private void createItem(long cid, String uid, CostDetailDTO itemDTO) {
-        validDetail(itemDTO);
-        // create template
-        CostDetail detail = CostDetail.of(cid, uid, itemDTO);
-        detail.setCompanyId(cid);
-        detail.setCreateBy(uid);
-        detail.setUpdateBy(uid);
-        detail.setStatus(Constants.ENTITY_ACTIVE);
-
-        detailRepo.save(detail);
+        return toDTO(cost);
     }
 
     public CostDTO update(long cid, String uid, Long costId, CostDTO dto) {
         valid(dto);
-        Cost curr = repo.findByCompanyIdAndId(cid, costId).orElseThrow(() -> new EntityNotFoundException(Cost.class, costId));
+        Cost curr = repo.findById( costId).orElseThrow(() -> new EntityNotFoundException(Cost.class, costId));
         MapperUtils.copyWithoutAudit(dto, curr);
         curr.setUpdateBy(uid);
 
-        if (dto.getCostDetails() != null && !dto.getCostDetails().isEmpty()) {
-            for (CostDetailDTO itemDTO : dto.getCostDetails()) {
-                if (CompareUtil.compare(dto.getStatus(), Constants.ENTITY_INACTIVE)) {
-                    itemDTO.setStatus(Constants.ENTITY_INACTIVE);
-                }
-                itemDTO.setCostId(dto.getId());
-                updateItem(cid, uid, itemDTO.getId(), itemDTO);
-            }
-        }
-
         curr = repo.save(curr);
-        try {
-            repo.findByCompanyIdAndCostTypeIdAndOrgIdAndYearAndStartDateAndEndDateAndStatus(cid, dto.getCostTypeId(), dto.getOrgId(), dto.getYear(), dto.getStartDate(), dto.getEndDate(), Constants.ENTITY_ACTIVE).orElse(new Cost());
-        } catch (IncorrectResultSizeDataAccessException ex) {
-            throw new BusinessException("duplicate-cost-with-startDate-and-endDate");
-        }
-        return toDTOs(cid, uid, Collections.singletonList(curr)).get(0);
+
+        return toDTO(curr);
     }
 
-    private void updateItem(long cid, String uid, Long detailId, CostDetailDTO detailDTO) {
-        validDetail(detailDTO);
-        if (detailDTO.getId() != null && 0L != detailDTO.getId()) {
-            CostDetail curr = detailRepo.findByCompanyIdAndId(cid, detailId).orElseThrow(() -> new EntityNotFoundException(CostDetail.class, detailId));
-
-            MapperUtils.copyWithoutAudit(detailDTO, curr);
-            curr.setUpdateBy(uid);
-
-            detailRepo.save(curr);
-        } else {
-            createItem(cid, uid, detailDTO);
-        }
-    }
-
-    public Map<String, Object> splitAmountTo12Months(Long cid, String uid, CostDTO cost) throws Exception {
-        Date currentYear = DateUtil.SHORT_DATE_FORMAT.parse(cost.getYear() + "/01/01");
-        Date startMonth = DateUtil.startOfCycle(cost.getStartDate());
-        Date endMonth = DateUtil.startOfCycle(cost.getEndDate());
-        long monthsBetween = ChronoUnit.MONTHS.between(
-                new Timestamp(startMonth.getTime()).toLocalDateTime().withDayOfMonth(1),
-                new Timestamp(endMonth.getTime()).toLocalDateTime().withDayOfMonth(1));
-        Double amountBetween = cost.getTotalAmount() / monthsBetween;
-        Map<String, Object> returnData = new ConcurrentHashMap<>();
-        for (int i = 0; i <= 11; i++) {
-            Map<String, Object> splitData = new HashMap<>();
-            Date checkDate = DateUtil.addDate(currentYear, "month", i);
-            splitData.put("month", checkDate);
-            splitData.put("request_amount", 0D);
-            splitData.put("usage_amount", 0D);
-            splitData.put("remain_amount", 0D);
-            if (checkDate.compareTo(startMonth) >= 0 && checkDate.compareTo(DateUtil.endOfCycle(cost.getEndDate())) <= 0) {
-                splitData.put("request_amount", amountBetween);
-                Double usageAmount = 0d;
-                if (cost.getCostDetails() != null && !cost.getCostDetails().isEmpty()) {
-                    List<CostDetailDTO> detailInMonths = cost.getCostDetails()
-                            .stream()
-                            .filter(
-                                    d -> (d.getPaymentDate().compareTo(checkDate) >= 0
-                                            && d.getPaymentDate().compareTo(DateUtil.endOfCycle(checkDate)) <= 0
-                                    )
-                            )
-                            .collect(Collectors.toList());
-
-                    for (CostDetailDTO dto : detailInMonths) {
-                        usageAmount += dto.getTotalAmount();
-                    }
-                }
-                splitData.put("usage_amount", usageAmount);
-                splitData.put("remain_amount", (amountBetween - usageAmount));
-            }
-            returnData.put("T." + i, splitData);
-        }
-
-        return returnData;
-    }
+//    public Map<String, Object> splitAmountTo12Months(Long cid, String uid, CostDTO cost) throws Exception {
+//        Date currentYear = DateUtil.SHORT_DATE_FORMAT.parse(cost.getYear() + "/01/01");
+//        Date startMonth = DateUtil.startOfCycle(cost.getStartDate());
+//        Date endMonth = DateUtil.startOfCycle(cost.getEndDate());
+//        long monthsBetween = ChronoUnit.MONTHS.between(
+//                new Timestamp(startMonth.getTime()).toLocalDateTime().withDayOfMonth(1),
+//                new Timestamp(endMonth.getTime()).toLocalDateTime().withDayOfMonth(1));
+//        Double amountBetween = cost.getTotalAmount() / monthsBetween;
+//        Map<String, Object> returnData = new ConcurrentHashMap<>();
+//        for (int i = 0; i <= 11; i++) {
+//            Map<String, Object> splitData = new HashMap<>();
+//            Date checkDate = DateUtil.addDate(currentYear, "month", i);
+//            splitData.put("month", checkDate);
+//            splitData.put("request_amount", 0D);
+//            splitData.put("usage_amount", 0D);
+//            splitData.put("remain_amount", 0D);
+//            if (checkDate.compareTo(startMonth) >= 0 && checkDate.compareTo(DateUtil.endOfCycle(cost.getEndDate())) <= 0) {
+//                splitData.put("request_amount", amountBetween);
+//                Double usageAmount = 0d;
+//                if (cost.getCostDetails() != null && !cost.getCostDetails().isEmpty()) {
+//                    List<CostDetailDTO> detailInMonths = cost.getCostDetails()
+//                            .stream()
+//                            .filter(
+//                                    d -> (d.getPaymentDate().compareTo(checkDate) >= 0
+//                                            && d.getPaymentDate().compareTo(DateUtil.endOfCycle(checkDate)) <= 0
+//                                    )
+//                            )
+//                            .collect(Collectors.toList());
+//
+//                    for (CostDetailDTO dto : detailInMonths) {
+//                        usageAmount += dto.getTotalAmount();
+//                    }
+//                }
+//                splitData.put("usage_amount", usageAmount);
+//                splitData.put("remain_amount", (amountBetween - usageAmount));
+//            }
+//            returnData.put("T." + i, splitData);
+//        }
+//
+//        return returnData;
+//    }
 
 
     public List<CostDTO> toDTOs(long cid, String uid, List<Cost> objs) {
@@ -195,48 +122,12 @@ public class CostV2Service {
         Set<Long> orgIds = new HashSet<>();
         Set<String> userIds = new HashSet<>();
 
-        objs.forEach(o -> {
-            if (o.getCostTypeId() != null) {
-                categoryIds.add(o.getCostTypeId());
-            }
-            if (o.getOrgId() != null && o.getOrgId() != 0) {
-                orgIds.add(o.getOrgId());
-            }
-            if (!StringUtils.isEmpty(o.getCreateBy())) {
-                userIds.add(o.getCreateBy());
-            }
-
-            costIds.add(o.getId());
-        });
-
-
         List<CostDetail> details = detailRepo.findByCompanyIdAndCostIdInAndStatus(cid, costIds, Constants.ENTITY_ACTIVE);
 
         Map<Long, OrgResp> mapOrg = _hcmService.getMapOrgs(uid, cid, orgIds);
         Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
         Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
 
-        for (Cost obj : objs) {
-            CostDTO o = toDTO(obj);
-
-            if (o.getCostTypeId() != null && o.getCostTypeId() != 0l) {
-                o.setCostTypeObj(mapCategory.get(o.getCostTypeId()));
-            }
-            if (o.getOrgId() != null) {
-                o.setOrg(mapOrg.get(o.getOrgId()));
-            }
-            if (!StringUtils.isEmpty(o.getCreateBy())) {
-                o.setCreateByObj((Map<String, Object>) mapperUser.get(o.getCreateBy()));
-            }
-            List<CostDetailDTO> detailDTOS = new ArrayList<>();
-            details.stream().filter(i -> CompareUtil.compare(i.getCostId(), obj.getId()))
-                    .collect(Collectors.toList()).forEach(i -> {
-                        detailDTOS.add(MapperUtils.map(i, CostDetailDTO.class));
-                    });
-
-            o.setCostDetails(detailDTOS);
-            dtos.add(o);
-        }
         return dtos;
     }
 

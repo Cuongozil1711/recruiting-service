@@ -11,42 +11,37 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
 
+/**
+ * chi phí tuyển dụng theo tin
+ */
+
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-//Thông tin đánh giá ứng viên
 public class Cost extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long orgId;
-    private Long costTypeId;
-    private Long quantity;
+    private String name;
+    private Double expectedCost; // chi phí dự kiến
+    private Double cost; // chi phí thực tế
     private String unit;
-    private Double price;
-    private Double totalAmount;
-    private Date startDate;
-    private Date endDate;
-    private Long year;
+    private Long newsId; // tin tuyển dụng
 
     public static Cost of(Long cid, String uid, CostDTO dto){
-        Cost obj = Cost.builder()
+        Cost cost = Cost.builder()
                 .id(dto.getId())
-                .orgId(dto.getOrgId())
-                .costTypeId(dto.getCostTypeId())
-                .quantity(dto.getQuantity())
                 .unit(dto.getUnit())
-                .price(dto.getPrice())
-                .year(dto.getYear())
-                .totalAmount(dto.getTotalAmount())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
+                .name(dto.getName())
+                .expectedCost(dto.getExpectedCost())
+                .cost(dto.getCost())
+                .newsId(dto.getNewsId())
                 .build();
-        return obj;
+        return cost;
     }
 }
 

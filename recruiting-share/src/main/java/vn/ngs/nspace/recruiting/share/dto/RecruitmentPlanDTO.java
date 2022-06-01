@@ -15,22 +15,13 @@ import java.util.Map;
 public class RecruitmentPlanDTO {
     private Long id;
     private String code;
-    private String name; //in-plan , out-plan
+    private String name;
     private Date startDate;
     private Date endDate;
     private String state;
     private Integer status;
     private String createBy;
     private Date create_date;
-    private Long sumQuanity;
-    private Long sumRecruting;
-    private Long sumRecrutingAll;
-    private Long totalRecruted;
-    private Long totalSumQuanity;
-    private Long totalSumRecrutingAll;
-    private String recruited;
     private Object creatByObj;
-
-    private List<RecruitmentPlanOrderDTO> recruitmentPlanDetails;
 
 }

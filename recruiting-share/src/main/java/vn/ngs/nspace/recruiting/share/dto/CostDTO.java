@@ -16,22 +16,12 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class CostDTO {
     private Long id;
+    private String name;
+    private Double expectedCost; // chi phí dự kiến
+    private Double cost;
+    private Long newsId;
     private String createBy;
     private Date createDate;
-    private Long orgId;
-    private Long costTypeId;
-    private Long quantity;
     private String unit;
-    private Double price;
-    private Double totalAmount;
-    private Long year;
-    private Date startDate;
-    private Date endDate;
     private Integer status;
-
-
-    private Map<String, Object> createByObj;
-    private Map<String, Object> costTypeObj;
-    private List<CostDetailDTO> costDetails;
-    private OrgResp org;
 }

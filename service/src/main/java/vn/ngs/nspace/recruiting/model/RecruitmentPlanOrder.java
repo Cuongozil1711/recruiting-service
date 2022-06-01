@@ -11,20 +11,21 @@ import javax.persistence.Id;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * Kế hoạch tuyển dụng ứng với các mã yêu cầu
+ */
+
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-
-//Kế hoạch tuyển dụng
 public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     @Id
     @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
     @GeneratedValue(generator = "id")
     private Long id;
-    private Long planId;
     private String fromCode;
     private Date timeFrom;
     private Date timeTo;
@@ -42,8 +43,6 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     private String businessAddition;
     private Date startDate;
     private Date deadline;
-    private Long countRecruting;
-    private Long countAllRecruting;
     private Date escalateDate;
     private Long reasonId;
     private String description;
@@ -62,7 +61,6 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
                 .orgId(dto.getOrgId())
                 .titleId(dto.getTitleId())
                 .levelId(dto.getLevelId())
-                .planId(dto.getPlanId())
                 .positionId(dto.getPositionId())
                 .pic(dto.getPic())
                 .supporterId(dto.getSupporterId())
@@ -74,8 +72,6 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
                 .reasonId(dto.getReasonId())
                 .description(dto.getDescription())
                 .state(dto.getState())
-                .countRecruting(dto.getCountRecruting())
-                .countAllRecruting(dto.getCountAllRecruting())
                 .build();
 
         build.setCompanyId(cid);
@@ -96,7 +92,6 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
                 .orgId(this.getOrgId())
                 .titleId(this.getTitleId())
                 .levelId(this.getLevelId())
-                .planId(this.getPlanId())
                 .positionId(this.getPositionId())
                 .pic(this.getPic())
                 .supporterId(this.getSupporterId())
@@ -108,7 +103,6 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
                 .reasonId(this.getReasonId())
                 .description(this.getDescription())
                 .state(this.getState())
-                .countRecruting((this.getCountRecruting()))
                 .build();
     }
 }
