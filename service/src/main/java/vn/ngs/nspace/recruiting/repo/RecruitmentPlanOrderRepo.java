@@ -13,7 +13,7 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
    Optional<RecruitmentPlanOrder>  findByCompanyIdAndId(Long cid, Long id);
 //   List<RecruitmentPlanOrder> findByCompanyIdAndStatus(Long cid, Integer Status);
    Optional<RecruitmentPlanOrder> findByCompanyIdAndFromCodeAndStatus(Long cid, String fromCode, Integer status);
-   List<RecruitmentPlanOrder> findByCompanyIdAndPlanIdInAndStatus(Long cid, Set<Long> planID, Integer status);
+//   List<RecruitmentPlanOrder> findByCompanyIdAndPlanIdInAndStatus(Long cid, Set<Long> planID, Integer status);
 
    @Query(value = " select p " +
            " from RecruitmentPlanOrder p " +
@@ -175,5 +175,20 @@ public interface RecruitmentPlanOrderRepo extends BaseRepo<RecruitmentPlanOrder,
             ,@Param("solutionSuggestType") String solutionSuggestType
             ,@Param("type") String type
             , Pageable pageable);
+
+   //new
+
+//    @Query(value = "select rpl " +
+//            "from RecruitmentPlanOrder rpl where rpl.status = 1" +
+//            " and ( rpl.companyId = :companyId )" +
+//            " and ( rpl.type = :type )" +
+//            " and ( rpl.state in :state or :state is null ) ")
+//    Page<RecruitmentPlanOrder> getPage(
+//            @Param("companyId") Long cid
+//            , @Param("type") String type
+//            , @Param("timeFrom") Date timeFrom
+//            , @Param("timeTo") Date timeTo
+//            , @Param("state") List<String> state
+//    );
 
 }

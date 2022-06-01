@@ -9,6 +9,10 @@ import vn.ngs.nspace.recruiting.share.dto.RecruitmentChannelDTO;
 import javax.persistence.*;
 import java.util.Map;
 
+/**
+ * kênh tuyển dụng
+ */
+
 @Entity
 @Data
 @Builder

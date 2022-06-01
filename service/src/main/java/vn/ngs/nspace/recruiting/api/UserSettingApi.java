@@ -22,7 +22,6 @@ import vn.ngs.nspace.recruiting.model.Cost;
 import vn.ngs.nspace.recruiting.model.UserSetting;
 import vn.ngs.nspace.recruiting.repo.CostRepo;
 import vn.ngs.nspace.recruiting.repo.UserSettingRepo;
-import vn.ngs.nspace.recruiting.service.CostService;
 import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
 import vn.ngs.nspace.recruiting.share.dto.CostDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
