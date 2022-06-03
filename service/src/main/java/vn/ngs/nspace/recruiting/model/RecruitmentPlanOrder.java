@@ -48,6 +48,10 @@ public class RecruitmentPlanOrder extends PersistableEntity<Long> {
     private String description;
     private String state;
 
+    //todo: new
+    private Long recruitmentRequestId;
+    private Long recruitmentPlanId;
+
     public static RecruitmentPlanOrder of(Long cid, String uid, RecruitmentPlanOrderDTO dto){
         RecruitmentPlanOrder build = RecruitmentPlanOrder.builder()
                 .id(dto.getId())
