@@ -21,6 +21,7 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     public static final Long RANGED_SALARY = 1L;
     public static final Long AGREE_SALARY = 2L;
     public static final Long UP_TO_SALARY = 3L;
+    public static final Integer GET_ALL = 1;
 
     public static enum JOB_APPLICATION_TYPE {
         job

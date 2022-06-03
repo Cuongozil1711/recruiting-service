@@ -23,9 +23,9 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private Long orgId;
-    private Long titleId;
-    private Long positionId;
-    private Long levelId;
+    private Long titleId;  //category
+    private Long positionId;  //category
+    private Long levelId;  //category
     private Long pic; // employeeId
     private String type; //trong kế hoạch ngoài kế hoạch
 //    private String typeRequest; //loại yêu cầu
@@ -41,12 +41,12 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
     private Date endDate;
     private String workType;
     private String workArea;
-    private Long salaryType;
+    private Long salaryType; //category
     private Long fromSalary;
     private Long toSalary;
     private Long currencyUnit;
-    private Long gender;
-    private Long degree;
+    private Long gender; //category
+    private Long degree; //category (trình độ bằng cấp)
     private Integer fromAge;
     private Integer toAge;
     private String otherRequirement;
