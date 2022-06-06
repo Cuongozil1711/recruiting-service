@@ -8,13 +8,17 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
+import vn.ngs.nspace.recruiting.model.RecruitmentPlanRequest;
 import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
+import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRequestRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
-import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
-import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.recruiting.share.request.RecruitmentRequestFilterRequest;
 
 import java.util.ArrayList;
@@ -22,17 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import vn.ngs.nspace.lib.exceptions.BusinessException;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlanRequest;
-import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
-import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRequestRepo;
-import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
-import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
-import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +35,7 @@ public class RecruitmentRequestService {
     private final RecruitmentPlanRequestRepo recruitmentPlanRequestRepo;
     private final ExecuteConfigService configService;
     private final ExecuteHcmService hcmService;
+
     @Transactional
     public RecruitmentRequestDTO createRecruitmentRequest(Long cid, String uid, RecruitmentRequestDTO dto) {
 
@@ -115,6 +109,15 @@ public class RecruitmentRequestService {
         recruitmentPlanRequestRepo.saveAll(recruitmentPlanRequests);
 
         return recruitmentRequest;
+    }
+
+    public RecruitmentRequestDTO detailRecruitmentRequest(Long cid, String uid, Long id) {
+        RecruitmentRequest recruitmentRequest = recruitmentRequestRepo.findByCompanyIdAndIdAndStatus(cid, id, Constants.ENTITY_ACTIVE)
+                .orElseThrow(() -> new BusinessException("recruitment-request-does-not-exists"));
+
+        List<RecruitmentRequestDTO> result = getAllInfor(cid, uid, List.of(recruitmentRequest));
+
+        return result.get(0);
     }
 
     public void validateInput(RecruitmentRequestDTO dto) {
@@ -192,8 +195,57 @@ public class RecruitmentRequestService {
         if (Constants.GET_ALL.equals(request.getGetAll())){
             page = PageRequest.of(0,Integer.MAX_VALUE,page.getSort());
         }
-        Page<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.filterAllByPage(cid, List.of(request.getOrgId()), request.getPositionIds(), request.getCreateByUIds(), request.getStatuses(),request.getSearch(), Integer.valueOf(request.getSearch()), request.getType(), request.getFromDate(),request.getToDate(),page);
+
+        List<Long> orgIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+        List<String> createdByUids = new ArrayList<>();
+        List<Integer> statuses = new ArrayList<>();
+        String search;
+        Integer quantity = 0;
+
+        if (request.getOrgId() == null) {
+            orgIds.add(-1L);
+        } else {
+            orgIds.add(request.getOrgId());
+        }
+
+        if (CollectionUtils.isEmpty(request.getPositionIds())) {
+            positionIds.add(-1L);
+        } else {
+            positionIds.addAll(request.getPositionIds());
+        }
+
+        if (CollectionUtils.isEmpty(request.getCreateByUIds())) {
+            createdByUids.add("-1");
+        } else {
+            createdByUids.addAll(request.getCreateByUIds());
+        }
+
+        if (CollectionUtils.isEmpty(request.getStatuses())) {
+            statuses.add(-1);
+        } else {
+            statuses.addAll(request.getStatuses());
+        }
+
+        if (StringUtils.isEmpty(request.getSearch())) {
+            search = "%%";
+        } else {
+            try {
+                quantity = Integer.parseInt(request.getSearch());
+            } catch (Exception e) {
+                quantity = 0;
+            }
+            search = "%" + request.getSearch() + "%";
+        }
+
+        Page<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.filterAllByPage(cid, orgIds, positionIds, createdByUids, statuses, search, quantity, request.getType(), request.getFromDate(), request.getToDate(), page);
         List<RecruitmentRequest> rsList = recruitmentRequests.getContent();
+        List<RecruitmentRequestDTO> rsDTOList = getAllInfor(cid, uid, rsList);
+
+        return new PageImpl<>(rsDTOList, page, recruitmentRequests.getTotalElements());
+    }
+
+    private List<RecruitmentRequestDTO> getAllInfor(Long cid, String uid, List<RecruitmentRequest> rsList) {
         List<RecruitmentRequestDTO> rsDTOList = rsList.stream().map(entity -> {
             RecruitmentRequestDTO dto = new RecruitmentRequestDTO();
             BeanUtils.copyProperties(entity, dto);
@@ -290,7 +342,7 @@ public class RecruitmentRequestService {
                 dto.setOrgDeptName(org != null ? org.getName() : "");
             }
         }
-        return new PageImpl<>(rsDTOList, page, recruitmentRequests.getTotalElements());
+        return rsDTOList;
     }
 
     private void validateDataSearch(RecruitmentRequestFilterRequest request) {

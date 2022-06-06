@@ -90,7 +90,8 @@ public class RecruitmentRequestApi {
             return ResponseUtils.handlerException(e);
         }
     }
-    @PostMapping("list")
+
+    @PostMapping("/list")
     @ActionMapping(action = Permission.VIEW)
     public ResponseEntity getPage(
             @RequestHeader("cid") long cid
@@ -101,6 +102,21 @@ public class RecruitmentRequestApi {
         try {
             Page<RecruitmentRequestDTO> recruitmentRequestDTOS = recruitmentRequestService.getPage(cid, uid, request, page);
             return ResponseUtils.handlerSuccess(recruitmentRequestDTOS);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @GetMapping("/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    public ResponseEntity detail(
+            @RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable(value = "id") long id
+    ) {
+        try {
+            RecruitmentRequestDTO recruitmentRequestDTO = recruitmentRequestService.detailRecruitmentRequest(cid, uid, id);
+            return ResponseUtils.handlerSuccess(recruitmentRequestDTO);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }
