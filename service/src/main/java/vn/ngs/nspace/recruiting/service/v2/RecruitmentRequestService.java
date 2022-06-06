@@ -2,17 +2,30 @@ package vn.ngs.nspace.recruiting.service.v2;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanRequest;
 import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRequestRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
+import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
+import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
+import vn.ngs.nspace.recruiting.share.request.RecruitmentRequestFilterRequest;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +33,8 @@ public class RecruitmentRequestService {
 
     private final RecruitmentRequestRepo recruitmentRequestRepo;
     private final RecruitmentPlanRequestRepo recruitmentPlanRequestRepo;
+    private final ExecuteConfigService configService;
+    private final ExecuteHcmService hcmService;
 
     @Transactional
     public RecruitmentRequestDTO createRecruitmentRequest(Long cid, String uid, RecruitmentRequestDTO dto) {
@@ -96,6 +111,15 @@ public class RecruitmentRequestService {
         return recruitmentRequest;
     }
 
+    public RecruitmentRequestDTO detailRecruitmentRequest(Long cid, String uid, Long id) {
+        RecruitmentRequest recruitmentRequest = recruitmentRequestRepo.findByCompanyIdAndIdAndStatus(cid, id, Constants.ENTITY_ACTIVE)
+                .orElseThrow(() -> new BusinessException("recruitment-request-does-not-exists"));
+
+        List<RecruitmentRequestDTO> result = getAllInfor(cid, uid, List.of(recruitmentRequest));
+
+        return result.get(0);
+    }
+
     public void validateInput(RecruitmentRequestDTO dto) {
         if (StringUtils.isEmpty(dto.getCode())) {
             throw new BusinessException("request-code-null");
@@ -164,6 +188,165 @@ public class RecruitmentRequestService {
         if (dto.getToAge() == null || dto.getToAge() >= 100) {
             throw new BusinessException("allow-only-number");
         }
+    }
+
+    public Page<RecruitmentRequestDTO> getPage(long cid, String uid, RecruitmentRequestFilterRequest request, Pageable page) {
+        validateDataSearch(request);
+        if (Constants.GET_ALL.equals(request.getGetAll())){
+            page = PageRequest.of(0,Integer.MAX_VALUE,page.getSort());
+        }
+
+        List<Long> orgIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+        List<String> createdByUids = new ArrayList<>();
+        List<Integer> statuses = new ArrayList<>();
+        String search;
+        Integer quantity = 0;
+
+        if (request.getOrgId() == null) {
+            orgIds.add(-1L);
+        } else {
+            orgIds.add(request.getOrgId());
+        }
+
+        if (CollectionUtils.isEmpty(request.getPositionIds())) {
+            positionIds.add(-1L);
+        } else {
+            positionIds.addAll(request.getPositionIds());
+        }
+
+        if (CollectionUtils.isEmpty(request.getCreateByUIds())) {
+            createdByUids.add("-1");
+        } else {
+            createdByUids.addAll(request.getCreateByUIds());
+        }
+
+        if (CollectionUtils.isEmpty(request.getStatuses())) {
+            statuses.add(-1);
+        } else {
+            statuses.addAll(request.getStatuses());
+        }
+
+        if (StringUtils.isEmpty(request.getSearch())) {
+            search = "%%";
+        } else {
+            try {
+                quantity = Integer.parseInt(request.getSearch());
+            } catch (Exception e) {
+                quantity = 0;
+            }
+            search = "%" + request.getSearch() + "%";
+        }
+
+        Page<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.filterAllByPage(cid, orgIds, positionIds, createdByUids, statuses, search, quantity, request.getType(), request.getFromDate(), request.getToDate(), page);
+        List<RecruitmentRequest> rsList = recruitmentRequests.getContent();
+        List<RecruitmentRequestDTO> rsDTOList = getAllInfor(cid, uid, rsList);
+
+        return new PageImpl<>(rsDTOList, page, recruitmentRequests.getTotalElements());
+    }
+
+    private List<RecruitmentRequestDTO> getAllInfor(Long cid, String uid, List<RecruitmentRequest> rsList) {
+        List<RecruitmentRequestDTO> rsDTOList = rsList.stream().map(entity -> {
+            RecruitmentRequestDTO dto = new RecruitmentRequestDTO();
+            BeanUtils.copyProperties(entity, dto);
+            return dto;
+        }).collect(Collectors.toList());
+
+        Set<Long> categoryIds = rsDTOList.stream().map(dto -> {
+            List<Long> subList = new ArrayList<>();
+            if (dto.getTitleId() != null) {
+                subList.add(dto.getTitleId());
+            }
+            if (dto.getPositionId() != null) {
+                subList.add(dto.getPositionId());
+            }
+            if (dto.getLevelId() != null) {
+                subList.add(dto.getLevelId());
+            }
+            if (dto.getGroupId() != null) {
+                subList.add(dto.getGroupId());
+            }
+            if (dto.getContractTypeId() != null) {
+                subList.add(dto.getContractTypeId());
+            }
+            if (dto.getSalaryType() != null) {
+                subList.add(dto.getSalaryType());
+            }
+            if (dto.getGender() != null) {
+                subList.add(dto.getGender());
+            }
+            if (dto.getDegree() != null) {
+                subList.add(dto.getDegree());
+            }
+            if (dto.getCurrencyUnit() != null) {
+                subList.add(dto.getCurrencyUnit());
+            }
+            return subList;
+        }).flatMap(List::stream).collect(Collectors.toSet());
+
+        Set<Long> orgIds = rsDTOList.stream().map(dto -> {
+            List<Long> subList = new ArrayList<>();
+            subList.add(dto.getOrgId());
+            if (dto.getOrgDeptId() != null) {
+                subList.add(dto.getOrgDeptId());
+            }
+
+            return subList;
+        }).flatMap(List::stream).collect(Collectors.toSet());
+
+        Map<Long, Map<String, Object>> mapCategory = configService.getCategoryByIds(uid, cid, categoryIds);
+        var mapOrg = hcmService.getMapOrgs(uid, cid, orgIds);
+        for (RecruitmentRequestDTO dto : rsDTOList) {
+            if (dto.getTitleId() != null) {
+                var category = mapCategory.get(dto.getTitleId());
+                dto.setTittleName(category != null ? "" + category.get("name") : "");
+            }
+            if (dto.getPositionId() != null) {
+                var category = mapCategory.get(dto.getPositionId());
+                dto.setPositionName(category != null ? "" + category.get("name") : "");
+            }
+            if (dto.getLevelId() != null) {
+                var category = mapCategory.get(dto.getLevelId());
+                dto.setLevelName(category != null ? "" + category.get("name") : "");
+            }
+            if (dto.getGroupId() != null) {
+                var category = mapCategory.get(dto.getGroupId());
+                dto.setGroupName(category != null ? "" + category.get("name") : "");
+            }
+            if (dto.getContractTypeId() != null) {
+                var category = mapCategory.get(dto.getContractTypeId());
+                dto.setContractTypeName(category != null ? "" + category.get("name") : "");
+            }
+            if (dto.getSalaryType() != null) {
+                var category = mapCategory.get(dto.getSalaryType());
+                dto.setSalaryTypeName(category != null ? "" + category.get("name") : "");
+            }
+            if (dto.getGender() != null) {
+                var category = mapCategory.get(dto.getGender());
+                dto.setGenderName(category != null ? "" + category.get("name") : "");
+            }
+            if (dto.getDegree() != null) {
+                var category = mapCategory.get(dto.getDegree());
+                dto.setDegreeName(category != null ? "" + category.get("name") : "");
+            }
+            if (dto.getCurrencyUnit() != null) {
+                var category = mapCategory.get(dto.getCurrencyUnit());
+                dto.setCurrencyUnitName(category != null ? "" + category.get("name") : "");
+            }
+            if (dto.getOrgId() != null) {
+                var org = mapOrg.get(dto.getOrgId());
+                dto.setOrgName(org != null ? org.getName() : "");
+            }
+            if (dto.getOrgDeptId() != null) {
+                var org = mapOrg.get(dto.getOrgDeptId());
+                dto.setOrgDeptName(org != null ? org.getName() : "");
+            }
+        }
+        return rsDTOList;
+    }
+
+    private void validateDataSearch(RecruitmentRequestFilterRequest request) {
+
     }
 
 }
