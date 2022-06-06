@@ -16,6 +16,12 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
     public final static String RECRUITING_EMAIL = "email";
     public final static String HCM_SERVICE_RECRUITING = "recruiting-service";
 
+    public final static String RECRUITMENT_REQUEST_CODE_REGEX = "^[a-zA-Z0-9]{1,15}$";
+
+    public static final Long RANGED_SALARY = 1L;
+    public static final Long AGREE_SALARY = 2L;
+    public static final Long UP_TO_SALARY = 3L;
+
     public static enum JOB_APPLICATION_TYPE {
         job
     }
