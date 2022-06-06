@@ -3,6 +3,7 @@ package vn.ngs.nspace.recruiting.service.v2;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanRequest;
 import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
@@ -11,6 +12,8 @@ import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RecruitmentRequestService {
@@ -18,6 +21,7 @@ public class RecruitmentRequestService {
     private final RecruitmentRequestRepo recruitmentRequestRepo;
     private final RecruitmentPlanRequestRepo recruitmentPlanRequestRepo;
 
+    @Transactional
     public RecruitmentRequestDTO createRecruitmentRequest(Long cid, String uid, RecruitmentRequestDTO dto) {
 
         validateInput(dto);
@@ -34,6 +38,62 @@ public class RecruitmentRequestService {
         recruitmentPlanRequestRepo.save(planRequest);
 
         return dto;
+    }
+
+    @Transactional
+    public RecruitmentRequestDTO updateRecruitmentRequest(Long cid, String uid, RecruitmentRequestDTO dto) {
+        validateInput(dto);
+        RecruitmentRequest recruitmentRequest = recruitmentRequestRepo.findByCompanyIdAndIdAndStatus(cid, dto.getId(), Constants.ENTITY_ACTIVE)
+                .orElseThrow(() -> new BusinessException("recruitment-request-does-not-exists"));
+        recruitmentRequest.setUpdateBy(uid);
+        recruitmentRequest.setCode(dto.getCode());
+        recruitmentRequest.setOrgId(dto.getOrgId());
+        recruitmentRequest.setOrgDeptId(dto.getOrgDeptId());
+        recruitmentRequest.setGroupId(dto.getGroupId());
+        recruitmentRequest.setPositionId(dto.getPositionId());
+        recruitmentRequest.setTitleId(dto.getTitleId());
+        recruitmentRequest.setLevelId(dto.getLevelId());
+        recruitmentRequest.setContractTypeId(dto.getContractTypeId());
+        recruitmentRequest.setQuantity(dto.getQuantity());
+        recruitmentRequest.setType(dto.getType());
+        recruitmentRequest.setStartDate(dto.getStartDate());
+        recruitmentRequest.setEndDate(dto.getEndDate());
+        recruitmentRequest.setWorkType(dto.getWorkType());
+        recruitmentRequest.setWorkArea(dto.getWorkArea());
+        recruitmentRequest.setSalaryType(dto.getSalaryType());
+        recruitmentRequest.setFromSalary(dto.getFromSalary());
+        recruitmentRequest.setToSalary(dto.getToSalary());
+        recruitmentRequest.setCurrencyUnit(dto.getCurrencyUnit());
+        recruitmentRequest.setGender(dto.getGender());
+        recruitmentRequest.setDegree(dto.getDegree());
+        recruitmentRequest.setFromAge(dto.getFromAge());
+        recruitmentRequest.setToAge(dto.getToAge());
+        recruitmentRequest.setOtherRequirement(dto.getOtherRequirement());
+        recruitmentRequestRepo.save(recruitmentRequest);
+
+        List<RecruitmentPlanRequest> recruitmentPlanRequests = recruitmentPlanRequestRepo.findByCompanyIdAndRecruitmentRequestIdAndStatus(cid, recruitmentRequest.getId(), Constants.ENTITY_ACTIVE);
+        recruitmentPlanRequests.forEach(recruitmentPlanRequest -> recruitmentPlanRequest.setRecruitmentPlanId(dto.getRecruitmentPlanId()));
+        recruitmentPlanRequestRepo.saveAll(recruitmentPlanRequests);
+
+        return dto;
+    }
+
+    @Transactional
+    public RecruitmentRequest deleteRecruitmentRequest(Long cid, String uid, Long id) {
+        RecruitmentRequest recruitmentRequest = recruitmentRequestRepo.findByCompanyIdAndIdAndStatus(cid, id, Constants.ENTITY_ACTIVE)
+                .orElseThrow(() -> new BusinessException("recruitment-request-does-not-exists"));
+        recruitmentRequest.setStatus(Constants.ENTITY_INACTIVE);
+        recruitmentRequest.setUpdateBy(uid);
+        recruitmentRequestRepo.save(recruitmentRequest);
+
+        List<RecruitmentPlanRequest> recruitmentPlanRequests = recruitmentPlanRequestRepo.findByCompanyIdAndRecruitmentRequestIdAndStatus(cid, recruitmentRequest.getId(), Constants.ENTITY_ACTIVE);
+        recruitmentPlanRequests.forEach(recruitmentPlanRequest -> {
+            recruitmentPlanRequest.setStatus(Constants.ENTITY_INACTIVE);
+            recruitmentPlanRequest.setUpdateBy(uid);
+        });
+        recruitmentPlanRequestRepo.saveAll(recruitmentPlanRequests);
+
+        return recruitmentRequest;
     }
 
     public void validateInput(RecruitmentRequestDTO dto) {

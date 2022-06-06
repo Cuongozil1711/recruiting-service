@@ -22,7 +22,7 @@ public class RecruitmentRequestApi {
 
     private final RecruitmentRequestService recruitmentRequestService;
 
-    @PostMapping("")
+    @PostMapping()
     @ActionMapping(action = Permission.CREATE)
     @Operation(summary = "Create recruitment request",
             description = "Create recruitment request",
@@ -36,6 +36,44 @@ public class RecruitmentRequestApi {
     ) {
         try {
             return ResponseUtils.handlerSuccess(recruitmentRequestService.createRecruitmentRequest(cid, uid, dto));
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PutMapping()
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Update recruitment request",
+            description = "Update recruitment request",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
+    public ResponseEntity update(
+            @RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @RequestBody RecruitmentRequestDTO dto
+    ) {
+        try {
+            return ResponseUtils.handlerSuccess(recruitmentRequestService.updateRecruitmentRequest(cid, uid, dto));
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PutMapping("/{id}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Update recruitment request",
+            description = "Update recruitment request",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
+    public ResponseEntity delete(
+            @RequestHeader("cid") long cid
+            , @RequestHeader("uid") String uid
+            , @PathVariable(value = "id") Long id
+    ) {
+        try {
+            return ResponseUtils.handlerSuccess(recruitmentRequestService.deleteRecruitmentRequest(cid, uid, id));
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }
