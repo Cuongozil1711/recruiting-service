@@ -1,31 +1,15 @@
-package vn.ngs.nspace.recruiting.model;
+package vn.ngs.nspace.recruiting.share.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-import vn.ngs.nspace.lib.models.PersistableEntity;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Date;
 
-/**
- * Tin tuyển dụng
- */
-
-@Entity
-@AllArgsConstructor
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class RecruitmentNews extends PersistableEntity<Long> {
-
-    @Id
-    @GenericGenerator(name = "id",strategy = "vn.ngs.nspace.lib.generator.SnowflakeId")
-    @GeneratedValue(generator = "id")
+public class RecruitmentNewsDTO {
     private Long id;
     private String code;
     private String name;
@@ -39,9 +23,24 @@ public class RecruitmentNews extends PersistableEntity<Long> {
     private String location; // địa điểm làm việc
     private String requirement; // yêu cầu công việc
     private Date deadlineSendCV; // hạn nộp hồ sơ
+    private String profit;
     private String fullName; // họ tên
     private String phone;
     private String email;
+    private Long positionId;
+    private Long titleId;
+    private Long levelId;
+
     private String state;
-    private String profit;
+    private String position;
+    private String title;
+    private String level;
+    private String groupName;
+    private Long quantity;
+    private String requestCode;
+    private String planCode;
+    private String orgName;
+    private String orgDeptName;
+    private String workType;
+    private String workArea;
 }

@@ -42,8 +42,8 @@ public class RecruitmentRequestApi {
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
             schema = @Schema(implementation = String.class))
     public ResponseEntity create(
-            @RequestHeader("cid") long cid
-            , @RequestHeader("uid") String uid
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
+            , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
             , @RequestBody RecruitmentRequestDTO dto
     ) {
         try {
@@ -61,8 +61,8 @@ public class RecruitmentRequestApi {
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
             schema = @Schema(implementation = String.class))
     public ResponseEntity update(
-            @RequestHeader("cid") long cid
-            , @RequestHeader("uid") String uid
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
+            , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
             , @RequestBody RecruitmentRequestDTO dto
     ) {
         try {
@@ -80,8 +80,8 @@ public class RecruitmentRequestApi {
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
             schema = @Schema(implementation = String.class))
     public ResponseEntity delete(
-            @RequestHeader("cid") long cid
-            , @RequestHeader("uid") String uid
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
+            , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
             , @PathVariable(value = "id") Long id
     ) {
         try {
@@ -93,9 +93,14 @@ public class RecruitmentRequestApi {
 
     @PostMapping("/list")
     @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Search recruitment request",
+            description = "Search recruitment request",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
     public ResponseEntity getPage(
-            @RequestHeader("cid") long cid
-            , @RequestHeader("uid") String uid
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
+            , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
             , @RequestBody RecruitmentRequestFilterRequest request
             , Pageable page
     ) {
@@ -109,9 +114,14 @@ public class RecruitmentRequestApi {
 
     @GetMapping("/{id}")
     @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Detail recruitment request",
+            description = "Detail recruitment request",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
     public ResponseEntity detail(
-            @RequestHeader("cid") long cid
-            , @RequestHeader("uid") String uid
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
+            , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
             , @PathVariable(value = "id") long id
     ) {
         try {
