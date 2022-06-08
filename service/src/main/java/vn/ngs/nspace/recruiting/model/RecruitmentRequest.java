@@ -62,6 +62,7 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
                 .positionId(dto.getPositionId())
                 .titleId(dto.getTitleId())
                 .levelId(dto.getLevelId())
+                .typeRequest(dto.getTypeRequest())
                 .contractTypeId(dto.getContractTypeId())
                 .quantity(dto.getQuantity())
                 .type(dto.getType())
