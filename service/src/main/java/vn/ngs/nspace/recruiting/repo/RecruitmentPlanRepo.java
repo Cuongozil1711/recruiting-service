@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface RecruitmentPlanRepo extends BaseRepo<RecruitmentPlan, Long> {
-    Optional<RecruitmentPlan> findByCompanyIdAndId(Long cid, Long id);
+    Optional<RecruitmentPlan> findByCompanyIdAndIdAndStatus(Long companyId, Long id, Integer status);
 
     List<RecruitmentPlan> findByCompanyIdAndStatus(Long cid, Integer status);
 

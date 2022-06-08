@@ -41,6 +41,7 @@ public class RecruitmentRequestService {
 
         validateInput(dto);
         RecruitmentRequest recruitmentRequest = RecruitmentRequest.of(cid, uid, dto);
+        recruitmentRequest.setState(Constants.HCM_RECRUITMENT.INIT.toString());
         recruitmentRequestRepo.save(recruitmentRequest);
 
         RecruitmentPlanRequest planRequest = RecruitmentPlanRequest.builder()
@@ -115,7 +116,7 @@ public class RecruitmentRequestService {
         RecruitmentRequest recruitmentRequest = recruitmentRequestRepo.findByCompanyIdAndIdAndStatus(cid, id, Constants.ENTITY_ACTIVE)
                 .orElseThrow(() -> new BusinessException("recruitment-request-does-not-exists"));
 
-        List<RecruitmentRequestDTO> result = getAllInfor(cid, uid, List.of(recruitmentRequest));
+        List<RecruitmentRequestDTO> result = getAllInfo(cid, uid, List.of(recruitmentRequest));
 
         return result.get(0);
     }
@@ -240,12 +241,12 @@ public class RecruitmentRequestService {
 
         Page<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.filterAllByPage(cid, orgIds, positionIds, createdByUids, statuses, search, quantity, request.getType(), request.getFromDate(), request.getToDate(), page);
         List<RecruitmentRequest> rsList = recruitmentRequests.getContent();
-        List<RecruitmentRequestDTO> rsDTOList = getAllInfor(cid, uid, rsList);
+        List<RecruitmentRequestDTO> rsDTOList = getAllInfo(cid, uid, rsList);
 
         return new PageImpl<>(rsDTOList, page, recruitmentRequests.getTotalElements());
     }
 
-    private List<RecruitmentRequestDTO> getAllInfor(Long cid, String uid, List<RecruitmentRequest> rsList) {
+    private List<RecruitmentRequestDTO> getAllInfo(Long cid, String uid, List<RecruitmentRequest> rsList) {
         List<RecruitmentRequestDTO> rsDTOList = rsList.stream().map(entity -> {
             RecruitmentRequestDTO dto = new RecruitmentRequestDTO();
             BeanUtils.copyProperties(entity, dto);
