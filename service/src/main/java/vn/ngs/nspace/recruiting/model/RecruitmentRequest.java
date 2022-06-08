@@ -28,7 +28,7 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
     private Long levelId;  //category
     private Long pic; // employeeId
     private String type; //trong kế hoạch ngoài kế hoạch
-//    private String typeRequest; //loại yêu cầu
+    private String typeRequest; //loại yêu cầu
     private Integer quantity;
 
     //// TODO: new
