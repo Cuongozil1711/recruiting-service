@@ -50,4 +50,6 @@ public class RecruitmentRequestDTO {
     private Integer fromAge;
     private Integer toAge;
     private String otherRequirement;
+    private String createBy;
+    private String state;
 }

@@ -50,11 +50,13 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
     private Integer fromAge;
     private Integer toAge;
     private String otherRequirement;
+    private String state;
 
     public static RecruitmentRequest of (Long cid, String uid, RecruitmentRequestDTO dto) {
         RecruitmentRequest recruitmentRequest = RecruitmentRequest.builder()
                 .code(dto.getCode())
                 .orgId(dto.getOrgId())
+                .state(dto.getState())
                 .orgDeptId(dto.getOrgDeptId())
                 .groupId(dto.getGroupId())
                 .positionId(dto.getPositionId())
