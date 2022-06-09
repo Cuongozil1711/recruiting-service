@@ -22,9 +22,12 @@ public interface RecruitmentRequestRepo extends BaseRepo<RecruitmentRequest, Lon
             " and ( lower( r.code ) like :search or r.quantity = :quantity )" +
             " and ( cast(:type as text ) is null or r.type = cast(:type as text )) "+
             " and r.start_Date > :fromDate and r.end_Date <:toDate", nativeQuery = true)
-    Page<RecruitmentRequest>    filterAllByPage(@Param("cid") long cid, @Param("orgIds") List<Long> orgIds, @Param("positionIds") List<Long> positionIds,
+    Page<RecruitmentRequest> filterAllByPage(@Param("cid") long cid, @Param("orgIds") List<Long> orgIds, @Param("positionIds") List<Long> positionIds,
                                              @Param("createByUIds") List<String> createByUIds, @Param("statuses")   List<String> statuses,
                                              @Param("search")  String search, @Param("quantity") Integer quantity,
                                              @Param("type")  String type, @Param("fromDate") Date fromDate,
                                              @Param("toDate") Date toDate, Pageable page);
+
+    @Query("select re from RecruitmentRequest re where  re.companyId = :cid and re.status = :status and ids in :ids")
+    List<RecruitmentRequest> getIdIn(Long cid, List<Long> ids, Integer status);
 }

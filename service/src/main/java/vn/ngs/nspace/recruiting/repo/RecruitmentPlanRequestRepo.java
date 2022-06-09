@@ -8,4 +8,5 @@ import java.util.*;
 public interface RecruitmentPlanRequestRepo extends BaseRepo<RecruitmentPlanRequest, Long> {
 
     List<RecruitmentPlanRequest> findByCompanyIdAndRecruitmentRequestIdAndStatus(Long companyId, Long recruitmentRequestId, Integer status);
+    List<RecruitmentPlanRequest> findByCompanyIdAndRecruitmentPlanIdAndStatus(Long cid, Long planId, Integer status);
 }
