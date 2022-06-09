@@ -217,7 +217,7 @@ public class RecruitmentRequestService {
         }
 
         if (CollectionUtils.isEmpty(request.getCreateByUIds())) {
-            createdByUids.add("-1");
+            createdByUids.add(StringUtils.EMPTY);
         } else {
             createdByUids.addAll(request.getCreateByUIds());
         }

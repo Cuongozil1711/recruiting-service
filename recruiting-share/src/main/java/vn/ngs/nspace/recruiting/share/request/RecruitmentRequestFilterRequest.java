@@ -16,8 +16,8 @@ public class RecruitmentRequestFilterRequest {
     private List<Long> positionIds; // các vị trí
     private String search = StringUtils.EMPTY; // tìm kiếm
     private Integer getAll;
-    private List<String> createByUIds; // danh sách id người tạo
-    private List<String> statuses; // trạng thái
+    private List<String> createByUIds = List.of(StringUtils.EMPTY); // danh sách id người tạo
+    private List<String> statuses = List.of(StringUtils.EMPTY); // trạng thái
     private String type; // loại
     private Date fromDate = DateUtils.minDate(); // từ ngày
     private Date toDate = DateUtils.maxDate(); // đến ngày

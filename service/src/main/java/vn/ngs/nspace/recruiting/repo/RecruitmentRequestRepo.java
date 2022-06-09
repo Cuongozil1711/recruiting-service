@@ -18,7 +18,7 @@ public interface RecruitmentRequestRepo extends BaseRepo<RecruitmentRequest, Lon
             " and (r.org_Id in (:orgIds) or '-1' in (:orgIds) ) " +
             " and (r.position_Id in  (:positionIds) or '-1' in (:positionIds) ) " +
             " and ( r.create_By in (:createByUIds) or '-1' in (:createByUIds) ) " +
-            " and ( r.status in (:statuses) or ( '' in (:statuses)) )" +
+            " and ( r.state in (:statuses) or ( '' in (:statuses)) )" +
             " and ( lower( r.code ) like :search or r.quantity = :quantity )" +
             " and ( cast(:type as text ) is null or r.type = cast(:type as text )) "+
             " and r.start_Date > :fromDate and r.end_Date <:toDate", nativeQuery = true)
