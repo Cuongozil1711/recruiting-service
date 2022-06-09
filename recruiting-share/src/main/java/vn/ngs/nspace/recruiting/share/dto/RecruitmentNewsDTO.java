@@ -43,4 +43,5 @@ public class RecruitmentNewsDTO {
     private String orgDeptName;
     private String workType;
     private String workArea;
+    private String newState;
 }

@@ -19,6 +19,7 @@ public class RecruitmentNewsFilterRequest {
     private Long toQuantity;
     private Date fromDate = DateUtils.minDate();
     private Date toDate = DateUtils.maxDate();
+    private Long newsId;
     public RecruitmentNewsFilterRequest() throws Exception {
     }
 }
