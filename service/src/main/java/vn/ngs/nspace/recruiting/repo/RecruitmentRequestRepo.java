@@ -28,6 +28,6 @@ public interface RecruitmentRequestRepo extends BaseRepo<RecruitmentRequest, Lon
                                              @Param("type")  String type, @Param("fromDate") Date fromDate,
                                              @Param("toDate") Date toDate, Pageable page);
 
-    @Query("select re from RecruitmentRequest re where  re.companyId = :cid and re.status = :status and ids in :ids")
+    @Query("select re from RecruitmentRequest re where  re.companyId = :cid and re.status = :status and re.id in :ids")
     List<RecruitmentRequest> getIdIn(Long cid, List<Long> ids, Integer status);
 }
