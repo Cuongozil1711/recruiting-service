@@ -134,7 +134,7 @@ public class RecruitmentRequestService {
             throw new BusinessException("unit-null");
         }
 
-        if (dto.getGroupId() == null) {
+        if (dto.getPositionId() == null) {
             throw new BusinessException("position-null");
         }
 
@@ -239,7 +239,7 @@ public class RecruitmentRequestService {
             search = "%" + request.getSearch() + "%";
         }
 
-        Page<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.filterAllByPage(cid, orgIds, positionIds, createdByUids, statuses, search, quantity, request.getType(), request.getFromDate(), request.getToDate(), page);
+            Page<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.filterAllByPage(cid, orgIds, positionIds, createdByUids, statuses, search, quantity, request.getType(), request.getFromDate(), request.getToDate(), page);
         List<RecruitmentRequest> rsList = recruitmentRequests.getContent();
         List<RecruitmentRequestDTO> rsDTOList = getAllInfo(cid, uid, rsList);
 
