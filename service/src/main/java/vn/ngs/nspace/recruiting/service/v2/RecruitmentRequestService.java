@@ -200,7 +200,7 @@ public class RecruitmentRequestService {
         List<Long> orgIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
         List<String> createdByUids = new ArrayList<>();
-        List<Integer> statuses = new ArrayList<>();
+        List<String> statuses = new ArrayList<>();
         String search;
         Integer quantity = 0;
 
@@ -223,7 +223,7 @@ public class RecruitmentRequestService {
         }
 
         if (CollectionUtils.isEmpty(request.getStatuses())) {
-            statuses.add(-1);
+            statuses.add(StringUtils.EMPTY);
         } else {
             statuses.addAll(request.getStatuses());
         }
