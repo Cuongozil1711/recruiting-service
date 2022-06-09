@@ -23,5 +23,6 @@ public class RecruitmentPlanDTO {
     private String createBy;
     private Date create_date;
     private Object creatByObj;
+    private List<RecruitmentPlanRequestDTO> requestDTOS;
 
 }
