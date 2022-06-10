@@ -29,7 +29,6 @@ public class RecruitmentPlanRequest extends PersistableEntity<Long> {
 
     public static RecruitmentPlanRequest of(String uid, Long cid, RecruitmentPlanRequestDTO dto) {
         RecruitmentPlanRequest planRequest = RecruitmentPlanRequest.builder()
-                .id(dto.getId())
                 .recruitmentPlanId(dto.getRecruitmentPlanId())
                 .recruitmentRequestId(dto.getRequestId())
                 .deadline(dto.getDeadline())
