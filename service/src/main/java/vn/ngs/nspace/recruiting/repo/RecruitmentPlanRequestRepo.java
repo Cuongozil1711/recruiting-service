@@ -13,6 +13,9 @@ public interface RecruitmentPlanRequestRepo extends BaseRepo<RecruitmentPlanRequ
     List<RecruitmentPlanRequest> findByCompanyIdAndRecruitmentRequestIdAndStatus(Long companyId, Long recruitmentRequestId, Integer status);
     List<RecruitmentPlanRequest> findByCompanyIdAndRecruitmentPlanIdAndStatus(Long cid, Long planId, Integer status);
 
+    @Query("select rpr from RecruitmentPlanRequest rpr where rpr.status = 1 and rpr.companyId = :cid and rpr.recruitmentPlanId = :planId")
+    List<RecruitmentPlanRequest> getByPlanId (Long cid, Long planId);
+
     @Transactional
     @Modifying
     @Query("delete from RecruitmentPlanRequest rpr where rpr.recruitmentPlanId = :planId and rpr.companyId = :cid")
