@@ -49,10 +49,12 @@ public class RecruitmentPlanV2Service {
 
         List<RecruitmentPlanRequestDTO> recruitmentPlanRequests = dto.getRequestDTOS();
 
+        RecruitmentPlan finalRecruitmentPlan = recruitmentPlan;
         recruitmentPlanRequests.forEach(
                 e -> {
                     RecruitmentPlanRequest planRequest = new RecruitmentPlanRequest();
                     planRequest = RecruitmentPlanRequest.of(uid, cid, e);
+                    planRequest.setRecruitmentPlanId(finalRecruitmentPlan.getId());
                     planRequestRepo.save(planRequest);
                 }
         );
