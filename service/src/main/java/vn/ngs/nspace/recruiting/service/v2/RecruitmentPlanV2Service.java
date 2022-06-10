@@ -110,15 +110,17 @@ public class RecruitmentPlanV2Service {
 
     private RecruitmentPlanDTO toDTO(Long cid, RecruitmentPlan plan) {
         List<RecruitmentPlanRequest> recruitmentPlanRequests = planRequestRepo.findByCompanyIdAndRecruitmentPlanIdAndStatus(cid,plan.getId(),Constants.ENTITY_ACTIVE);
-        List<RecruitmentRequest> recruitmentRequests = requestRepo.getIdIn(cid,recruitmentPlanRequests.stream().map(RecruitmentPlanRequest::getRecruitmentRequestId).collect(Collectors.toList()), Constants.ENTITY_ACTIVE);
-
-        List<RecruitmentRequestDTO> requestDTOS = toListRequestDto(recruitmentRequests);
-        List<RecruitmentPlanRequestDTO> planRequestDTOS = requestDTOS.stream()
+        List<RecruitmentPlanRequestDTO> planRequestDTOS = recruitmentPlanRequests.stream()
                 .map(e -> {
-                    RecruitmentPlanRequestDTO requestDTO = new RecruitmentPlanRequestDTO();
-                    requestDTO.setRequestDTO(e);
+                    RecruitmentPlanRequestDTO planRequestDTO = new RecruitmentPlanRequestDTO();
+                    RecruitmentRequest recruitmentRequest = requestRepo.findById(e.getRecruitmentRequestId())
+                                    .orElseThrow(() ->  new EntityNotFoundException(RecruitmentRequest.class,e.getRecruitmentRequestId()));
+                    RecruitmentRequestDTO recruitmentRequestDTO = toRequestDto(recruitmentRequest);
+                    planRequestDTO.setRequestDTO(recruitmentRequestDTO);
+                    planRequestDTO.setDeadline(e.getDeadline());
+                    planRequestDTO.setPicId(e.getPicId());
 
-                    return requestDTO;
+                    return planRequestDTO;
                 }).collect(Collectors.toList());
         RecruitmentPlanDTO dto = MapperUtils.map(plan,RecruitmentPlanDTO.class);
         dto.setRequestDTOS(planRequestDTOS);
