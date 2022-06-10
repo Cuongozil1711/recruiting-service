@@ -92,7 +92,6 @@ public class RecruitmentPlanV2Service {
                     RecruitmentPlanRequest planRequest = new RecruitmentPlanRequest();
                     planRequest = RecruitmentPlanRequest.of(uid, cid, e);
                     planRequest.setRecruitmentPlanId(finalRecruitmentPlan.getId());
-                    planRequest.setId(null);
                     planRequestRepo.save(planRequest);
                 }
         );
