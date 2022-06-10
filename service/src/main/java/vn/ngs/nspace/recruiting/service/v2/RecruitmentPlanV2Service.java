@@ -87,14 +87,14 @@ public class RecruitmentPlanV2Service {
         List<RecruitmentPlanRequestDTO> recruitmentPlanRequests = dto.getRequestDTOS();
 
         RecruitmentPlan finalRecruitmentPlan = recruitmentPlan;
-        recruitmentPlanRequests.forEach(
-            e -> {
+        for (RecruitmentPlanRequestDTO planRequestDTO : recruitmentPlanRequests) {
                     RecruitmentPlanRequest planRequest = new RecruitmentPlanRequest();
-                    planRequest = RecruitmentPlanRequest.of(uid, cid, e);
+                    planRequest = RecruitmentPlanRequest.of(uid, cid, planRequestDTO);
                     planRequest.setRecruitmentPlanId(finalRecruitmentPlan.getId());
+                    planRequest.setRecruitmentRequestId(planRequestDTO.getRequestDTO().getId());
                     planRequestRepo.save(planRequest);
-                }
-        );
+        };
+
 
         return toDTO(cid,recruitmentPlan);
     }
@@ -108,7 +108,7 @@ public class RecruitmentPlanV2Service {
     }
 
     private RecruitmentPlanDTO toDTO(Long cid, RecruitmentPlan plan) {
-        List<RecruitmentPlanRequest> recruitmentPlanRequests = planRequestRepo.findByCompanyIdAndRecruitmentPlanIdAndStatus(cid,plan.getId(),Constants.ENTITY_ACTIVE);
+        List<RecruitmentPlanRequest> recruitmentPlanRequests = planRequestRepo.getByPlanId(cid,plan.getId());
         List<RecruitmentPlanRequestDTO> planRequestDTOS = recruitmentPlanRequests.stream()
                 .map(e -> {
                     RecruitmentPlanRequestDTO planRequestDTO = new RecruitmentPlanRequestDTO();
