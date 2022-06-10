@@ -32,6 +32,8 @@ public class RecruitmentPlanRequest extends PersistableEntity<Long> {
                 .id(dto.getId())
                 .recruitmentPlanId(dto.getRecruitmentPlanId())
                 .recruitmentRequestId(dto.getRequestId())
+                .deadline(dto.getDeadline())
+                .picId(dto.getPicId())
                 .build();
 
         planRequest.setUpdateBy(uid);

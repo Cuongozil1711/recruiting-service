@@ -80,7 +80,22 @@ public class RecruitmentPlanV2Service {
 
         MapperUtils.copyWithoutAudit(dto,recruitmentPlan);
         recruitmentPlan.setUpdateBy(uid);
-        planRepo.save(recruitmentPlan);
+        recruitmentPlan = planRepo.save(recruitmentPlan);
+
+        planRequestRepo.deleteByPlanId(cid,recruitmentPlan.getId());
+
+        List<RecruitmentPlanRequestDTO> recruitmentPlanRequests = dto.getRequestDTOS();
+
+        RecruitmentPlan finalRecruitmentPlan = recruitmentPlan;
+        recruitmentPlanRequests.forEach(
+            e -> {
+                    RecruitmentPlanRequest planRequest = new RecruitmentPlanRequest();
+                    planRequest = RecruitmentPlanRequest.of(uid, cid, e);
+                    planRequest.setRecruitmentPlanId(finalRecruitmentPlan.getId());
+                    planRequest.setId(null);
+                    planRequestRepo.save(planRequest);
+                }
+        );
 
         return toDTO(cid,recruitmentPlan);
     }
