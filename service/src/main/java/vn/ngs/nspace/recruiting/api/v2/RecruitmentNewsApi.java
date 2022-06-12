@@ -16,6 +16,8 @@ import vn.ngs.nspace.recruiting.service.v2.RecruitmentNewsService;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentNewsDTO;
 import vn.ngs.nspace.recruiting.share.request.RecruitmentNewsFilterRequest;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("recruitment-news")
 @RequiredArgsConstructor
@@ -76,6 +78,65 @@ public class RecruitmentNewsApi {
     ) {
         try {
             return ResponseUtils.handlerSuccess(recruitmentNewsService.delete(cid, uid, id ));
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PostMapping("")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "create recruitment news",
+            description = "create recruitment news",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
+    public ResponseEntity create(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid,
+            @Parameter(description = "Id of User") @RequestHeader("uid") String uid,
+            @RequestBody RecruitmentNewsDTO request
+    ) {
+        try {
+            return ResponseUtils.handlerSuccess(recruitmentNewsService.create(cid, uid, request));
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PutMapping("{id}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "create recruitment news",
+            description = "create recruitment news",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
+    public ResponseEntity update(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid,
+            @Parameter(description = "Id of User") @RequestHeader("uid") String uid,
+            @PathVariable("id") Long id,
+            @RequestBody RecruitmentNewsDTO request
+    ) {
+        try {
+            return ResponseUtils.handlerSuccess(recruitmentNewsService.update(cid, uid, request));
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @PutMapping("/delete")
+    @ActionMapping(action = Permission.CREATE)
+    @Operation(summary = "delete list recruitment news",
+            description = "delete list recruitment news",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
+    public ResponseEntity delete(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid,
+            @Parameter(description = "Id of User") @RequestHeader("uid") String uid,
+            @RequestBody List<Long> ids
+    ) {
+        try {
+            recruitmentNewsService.delete(cid, uid, ids);
+            return ResponseUtils.handlerSuccess();
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }

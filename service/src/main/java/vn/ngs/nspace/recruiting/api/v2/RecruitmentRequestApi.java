@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.container.impl.metadata.spi.JobExecutorXml;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,8 @@ import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.service.v2.RecruitmentRequestService;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("recruitment-request")
@@ -52,6 +55,8 @@ public class RecruitmentRequestApi {
             return ResponseUtils.handlerException(e);
         }
     }
+
+
 
     @PutMapping()
     @ActionMapping(action = Permission.UPDATE)
@@ -127,6 +132,21 @@ public class RecruitmentRequestApi {
         try {
             RecruitmentRequestDTO recruitmentRequestDTO = recruitmentRequestService.detailRecruitmentRequest(cid, uid, id);
             return ResponseUtils.handlerSuccess(recruitmentRequestDTO);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @GetMapping("list-new")
+    @ActionMapping(action = Permission.VIEW)
+    public ResponseEntity getList(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
+            , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
+    ) {
+        try {
+            List<RecruitmentRequestDTO> list = recruitmentRequestService.getAllByState(cid, uid);
+
+            return ResponseUtils.handlerSuccess(list);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }
