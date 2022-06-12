@@ -12,7 +12,6 @@ import java.util.Date;
 public class RecruitmentNewsDTO {
     private Long id;
     private String code;
-    private String name;
     private Long planId; // mã kế hoạch tuyển dụng
     private Long requestId; // mã yêu cầu
     private String salaryLevel; // mức lương
@@ -24,7 +23,7 @@ public class RecruitmentNewsDTO {
     private String requirement; // yêu cầu công việc
     private Date deadlineSendCV; // hạn nộp hồ sơ
     private String profit;
-    private String fullName; // họ tên
+    private Long employeeId; // họ tên
     private String phone;
     private String email;
     private Long positionId;

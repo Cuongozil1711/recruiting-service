@@ -27,7 +27,7 @@ public class RecruitmentNews extends PersistableEntity<Long> {
     @GeneratedValue(generator = "id")
     private Long id;
     private String code;
-    private String name;
+    private String title;
     private Long planId; // mã kế hoạch tuyển dụng
     private Long requestId; // mã yêu cầu
     private String salaryLevel; // mức lương
@@ -38,7 +38,7 @@ public class RecruitmentNews extends PersistableEntity<Long> {
     private String location; // địa điểm làm việc
     private String requirement; // yêu cầu công việc
     private Date deadlineSendCV; // hạn nộp hồ sơ
-    private String fullName; // họ tên
+    private Long emploeeId; // họ tên
     private String phone;
     private String email;
     private String state;
@@ -48,6 +48,7 @@ public class RecruitmentNews extends PersistableEntity<Long> {
     public static RecruitmentNews of(Long cid,String uid,RecruitmentNewsDTO dto) {
         RecruitmentNews news = RecruitmentNews.builder()
                 .code(dto.getCode())
+                .title(dto.getTitle())
                 .planId(dto.getPlanId())
                 .requestId(dto.getRequestId())
                 .salaryLevel(dto.getSalaryLevel())
@@ -58,7 +59,7 @@ public class RecruitmentNews extends PersistableEntity<Long> {
                 .location(dto.getLocation())
                 .requirement(dto.getRequirement())
                 .deadlineSendCV(dto.getDeadlineSendCV())
-                .fullName(dto.getFullName())
+                .emploeeId(dto.getEmployeeId())
                 .phone(dto.getPhone())
                 .email(dto.getEmail())
                 .state(dto.getState())
