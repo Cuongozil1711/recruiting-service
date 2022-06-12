@@ -25,7 +25,7 @@ public class RecruitmentPlanRequest extends PersistableEntity<Long> {
     private Long recruitmentPlanId;
     private Long recruitmentRequestId;
     private Date deadline; // hạn hoàn thành
-    private Long picId; // người chịu trách nhiệm
+    private Long picId;// người chịu trách nhiệm
 
     public static RecruitmentPlanRequest of(String uid, Long cid, RecruitmentPlanRequestDTO dto) {
         RecruitmentPlanRequest planRequest = RecruitmentPlanRequest.builder()

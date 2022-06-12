@@ -82,7 +82,6 @@ public class CostV2Service {
         return toDTO(cost);
     }
 
-<<<<<<< HEAD
     public List<CostDTO> creates(long cid, String uid, List<CostDTO> dtos) {
         List<CostDTO> costDTOS = new ArrayList<>();
         dtos.forEach(
@@ -97,7 +96,6 @@ public class CostV2Service {
     public CostDTO update(long cid, String uid, CostDTO dto) {
         valid(dto);
         Cost curr = repo.findById( dto.getId()).orElseThrow(() -> new EntityNotFoundException(Cost.class, dto.getId()));
-=======
     @Transactional
     public CostDTO update(long cid, String uid, Long costId, CostDTO dto) {
         valid(dto);
@@ -106,7 +104,6 @@ public class CostV2Service {
             recruitmentNewsRepo.findAllByCompanyIdAndStatusAndId(cid, Constants.STATE_ACTIVE, dto.getNewsId())
                     .orElseThrow(() -> new EntityNotFoundException(RecruitmentNews.class, dto.getNewsId()));
         }
->>>>>>> dev
         MapperUtils.copyWithoutAudit(dto, curr);
 
         curr.setUpdateBy(uid);

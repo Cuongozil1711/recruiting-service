@@ -2,12 +2,14 @@ package vn.ngs.nspace.recruiting.repo;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.ngs.nspace.lib.repo.BaseRepo;
 import vn.ngs.nspace.recruiting.model.RecruitmentNews;
 
+import javax.transaction.Transactional;
 import java.util.*;
 @Repository
 public interface RecruitmentNewsRepo extends BaseRepo<RecruitmentNews, Long> {
@@ -54,5 +56,10 @@ public interface RecruitmentNewsRepo extends BaseRepo<RecruitmentNews, Long> {
                                                     @Param(value = "startDate") Date startDate,
                                                     @Param(value = "endDate") Date endDate,
                                                     Pageable pageable);
+
+    @Transactional
+    @Modifying
+    @Query("update RecruitmentNews rn set rn.status = 0,rn.updateBy = :uid where rn.status = 1 and rn.companyId =:cid and rn.id in :ids")
+    List<RecruitmentNews> deleteRecruitmentNewsBy(Long cid, String uid, List<Long> ids);
 
 }
