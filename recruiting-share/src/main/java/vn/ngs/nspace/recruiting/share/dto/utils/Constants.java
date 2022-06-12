@@ -104,6 +104,13 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
         , NOTACHIEVED // không đạt
     }
 
+    public enum HCM_RECRUITMENT_REQUEST{
+        INIT,
+        APPROVED,
+        DENIED,
+        EXTEND  // gia han
+    }
+
     public static final Integer IS_BLACK_LIST = 1;
     public static final Integer IS_NOT_BLACK_LIST = 0;
 }
