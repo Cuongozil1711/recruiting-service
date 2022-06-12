@@ -15,10 +15,8 @@ import vn.ngs.nspace.lib.annotation.ActionMapping;
 import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.service.v2.OnboardOrderV2Service;
-import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardWithStateDTO;
-import vn.ngs.nspace.recruiting.share.request.CandidateFilterRequest;
 import vn.ngs.nspace.recruiting.share.request.OnboardCandidateFilter;
 
 import java.util.List;
@@ -71,10 +69,10 @@ public class OnboardOrderV2Api {
             , @RequestHeader("uid") String uid
             , @PathVariable(value = "id") Long id
             , @RequestBody OnboardCandidateFilter filter
-            ,Pageable pageable
-            ) {
+            , Pageable pageable
+    ) {
         try {
-            Page<OnboardOrderDTO> onboardOrderDTOS = orderV2Service.getJobApplicationOnboardPage(cid, uid,filter,id, pageable);
+            Page<OnboardOrderDTO> onboardOrderDTOS = orderV2Service.getJobApplicationOnboardPage(cid, uid, filter, id, pageable);
             return ResponseUtils.handlerSuccess(onboardOrderDTOS);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
@@ -96,7 +94,7 @@ public class OnboardOrderV2Api {
             , @RequestBody List<OnboardOrderDTO> onboardOrderDTOs
     ) {
         try {
-            orderV2Service.updateStates(cid,uid,onboardOrderDTOs);
+            orderV2Service.updateStates(cid, uid, onboardOrderDTOs);
             return ResponseUtils.handlerSuccess();
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);

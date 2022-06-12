@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.Cost;
 import vn.ngs.nspace.recruiting.model.RecruitmentNews;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
 import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
@@ -190,6 +191,40 @@ public class RecruitmentNewsService {
         }
 
         return rsDTOs;
+    }
+
+    public RecruitmentNewsDTO create(Long cid, String uid, RecruitmentNewsDTO dto) {
+        RecruitmentNews news = RecruitmentNews.of(cid, uid, dto);
+
+        news.setStatus(Constants.ENTITY_ACTIVE);
+
+        news = recruitmentNewsRepo.save(news);
+
+        return toDTO(news);
+    }
+
+    public RecruitmentNewsDTO update(Long cid, String uid, RecruitmentNewsDTO dto) {
+        RecruitmentNews news = RecruitmentNews.of(cid, uid, dto);
+
+        RecruitmentNews curr = recruitmentNewsRepo.findById( dto.getId()).orElseThrow(() -> new EntityNotFoundException(Cost.class, dto.getId()));
+        MapperUtils.copyWithoutAudit(dto, curr);
+        curr.setUpdateBy(uid);
+
+        news = recruitmentNewsRepo.save(news);
+
+        return toDTO(news);
+    }
+
+    public void delete(Long cid, String uid, List<Long> ids) {
+        List<RecruitmentNews> recruitmentNews = recruitmentNewsRepo.deleteRecruitmentNewsBy(cid,uid,ids);
+    }
+
+    private RecruitmentNewsDTO toDTO(RecruitmentNews news) {
+        return MapperUtils.map(news, RecruitmentNewsDTO.class);
+    }
+
+    private List<RecruitmentNewsDTO> toDTOs(List<RecruitmentNews> newsList) {
+        return newsList.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     private String getValue(Long id, Map<Long, Map<String, Object>> mapCategory) {

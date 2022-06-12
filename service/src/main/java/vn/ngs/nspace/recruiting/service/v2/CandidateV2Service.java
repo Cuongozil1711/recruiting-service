@@ -119,7 +119,6 @@ public class CandidateV2Service {
 
         if (dto.getState().equalsIgnoreCase(Constants.HCM_RECRUITMENT.ONBOARDED.name())) {
             onboardOrderV2Service.creates(cid, uid, current.getId());
-
         }
 
         return toDTO(uid, cid, current);
