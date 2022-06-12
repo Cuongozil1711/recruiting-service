@@ -7,7 +7,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.Cost;
@@ -230,4 +232,35 @@ public class RecruitmentNewsService {
         return category != null ? "" + category.get("name") : "";
     }
 
+    @Transactional
+    public RecruitmentNews updateStateRecruitmentNews(long cid, String uid, Long id, String newState) {
+        RecruitmentNews recruitmentNew = recruitmentNewsRepo.findAllByCompanyIdAndStatusAndId(cid, Constants.STATE_ACTIVE, id)
+                .orElseThrow(() -> new EntityNotFoundException(RecruitmentNews.class, id));
+
+        if (Constants.RECRUITMENT_NEWS_STATE.INIT.name().equals(recruitmentNew.getState())) {
+            if (!Constants.RECRUITMENT_NEWS_STATE.PROCESSING.name().equals(newState)) {
+                throw new BusinessException("recruitment-news-new-state-invalid");
+            }
+        }
+        if (Constants.RECRUITMENT_NEWS_STATE.PROCESSING.name().equals(recruitmentNew.getState())) {
+            if (!(Constants.RECRUITMENT_NEWS_STATE.DONE.name().equals(newState) || Constants.RECRUITMENT_NEWS_STATE.END.name().equals(newState)
+                    || Constants.RECRUITMENT_NEWS_STATE.EXTEND.name().equals(newState))) {
+                throw new BusinessException("recruitment-news-new-state-invalid");
+            }
+        }
+        recruitmentNew.setState(newState);
+        recruitmentNewsRepo.save(recruitmentNew);
+        return recruitmentNew;
+    }
+
+    public RecruitmentNews delete(long cid, String uid, Long id) {
+        RecruitmentNews recruitmentNew = recruitmentNewsRepo.findAllByCompanyIdAndStatusAndId(cid, Constants.STATE_ACTIVE, id)
+                .orElseThrow(() -> new EntityNotFoundException(RecruitmentNews.class, id));
+        if (!Constants.RECRUITMENT_NEWS_STATE.INIT.name().equals(recruitmentNew.getState())){
+            throw new BusinessException("recruitment-news-new-delete-invalid-state");
+        }
+        recruitmentNew.setStatus(Constants.STATE_INACTIVE);
+        recruitmentNewsRepo.save(recruitmentNew);
+        return recruitmentNew;
+    }
 }

@@ -45,6 +45,43 @@ public class RecruitmentNewsApi {
             return ResponseUtils.handlerException(e);
         }
     }
+    @PutMapping("/update-state/{id}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Update status state news",
+            description = "Update status state news",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
+    public ResponseEntity updateStateRecruitmentNews(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid,
+            @Parameter(description = "Id of User") @RequestHeader("uid") String uid,
+            @Parameter(description = "Id of User") @PathVariable("id") Long id,
+            @Parameter(description = "RequestBody") @RequestBody RecruitmentNewsDTO request
+    ) {
+        try {
+            return ResponseUtils.handlerSuccess(recruitmentNewsService.updateStateRecruitmentNews(cid, uid, id, request.getNewState() ));
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+    @PutMapping("/delete/{id}")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Update status state news",
+            description = "Update status state news",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
+    public ResponseEntity delete(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid,
+            @Parameter(description = "Id of User") @RequestHeader("uid") String uid,
+            @Parameter(description = "Id of User") @PathVariable("id") Long id
+    ) {
+        try {
+            return ResponseUtils.handlerSuccess(recruitmentNewsService.delete(cid, uid, id ));
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
 
     @PostMapping("")
     @ActionMapping(action = Permission.CREATE)

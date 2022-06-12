@@ -45,9 +45,15 @@ public interface CostRepo extends BaseRepo<Cost,Long> {
 
     // new
 
-
     @Transactional
     @Query("delete from Cost c where c.status = 1 and c.id in :ids and c.companyId = :cid")
     void deleteAllByCIdAndIdIn(Long cid, List<Long> ids);
+    Optional<Cost> findByCompanyIdAndStatusAndId(Long companyId, Integer status, Long id);
+    List<Cost> findAllByCompanyIdAndStatusAndNewsId(Long companyId, Integer status, Long newsId);
+    List<Cost> findAllByCompanyIdAndStatusAndIdIn(Long companyId, Integer status, List<Long> ids);
+
+    @Query(value = "select c from Cost c where c.status=1 and c.companyId=:cid and c.name like :search and (:newId is null or c.newsId =:newId)")
+    List<Cost> filterByNewId(@Param("cid") long cid,  @Param("newId") Long newId, @Param("search") String search, Pageable pageable);
+
 }
 

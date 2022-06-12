@@ -113,4 +113,13 @@ public class Constants extends vn.ngs.nspace.lib.utils.Constants {
 
     public static final Integer IS_BLACK_LIST = 1;
     public static final Integer IS_NOT_BLACK_LIST = 0;
+
+    public enum RECRUITMENT_NEWS_STATE {
+        DONE, //HOÀN THÀNH
+        CANCEL,
+        PROCESSING, // ĐANG THỰC HIỆN
+        INIT, //MỚI
+        END, //KẾT THÚC
+        EXTEND //GIA HẠN
+    }
 }
