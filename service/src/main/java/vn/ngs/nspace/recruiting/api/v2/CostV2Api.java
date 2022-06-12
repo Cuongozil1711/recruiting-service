@@ -71,29 +71,9 @@ public class CostV2Api {
             return ResponseUtils.handlerException(e);
         }
     }
-    @PostMapping("create-list")
-    @ActionMapping(action = Permission.CREATE)
-    @Operation(summary = "Create cost"
-            , description = "API for create interview template"
-            , tags = { "Cost" }
-    )
-    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
-            , schema = @Schema(implementation = String.class))
-    protected ResponseEntity createList(
-            @Parameter(description="ID of company")
-            @RequestHeader("cid") long cid
-            , @Parameter(description="ID of company")
-            @RequestHeader("uid") String uid
-            , @Parameter(description="Payload DTOs to create")  @RequestBody List<CostDTO> dtos) {
-        try {
-            return ResponseUtils.handlerSuccess(service.createList(cid, uid, dtos));
-        } catch (Exception ex) {
-            return ResponseUtils.handlerException(ex);
-        }
-    }
 
     @PutMapping("delete-list")
-    @ActionMapping(action = Permission.CREATE)
+    @ActionMapping(action = Permission.DELETE)
     @Operation(summary = "Update List cost"
             , description = "Update List cost"
             , tags = { "Cost" }
@@ -107,7 +87,7 @@ public class CostV2Api {
             @RequestHeader("uid") String uid
             , @Parameter(description="Payload DTOs to update")  @RequestBody List<Long> ids) {
         try {
-            return ResponseUtils.handlerSuccess(service.deleteListCost(cid, uid, ids));
+            return ResponseUtils.handlerSuccess(costV2Service.deleteListCost(cid, uid, ids));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

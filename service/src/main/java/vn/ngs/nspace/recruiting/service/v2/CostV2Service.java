@@ -93,13 +93,10 @@ public class CostV2Service {
         return costDTOS;
     }
 
+    @Transactional
     public CostDTO update(long cid, String uid, CostDTO dto) {
         valid(dto);
-        Cost curr = repo.findById( dto.getId()).orElseThrow(() -> new EntityNotFoundException(Cost.class, dto.getId()));
-    @Transactional
-    public CostDTO update(long cid, String uid, Long costId, CostDTO dto) {
-        valid(dto);
-        Cost curr = repo.findByCompanyIdAndStatusAndId(cid, Constants.STATE_ACTIVE, costId).orElseThrow(() -> new EntityNotFoundException(Cost.class, costId));
+        Cost curr = repo.findByCompanyIdAndStatusAndId(cid, Constants.STATE_ACTIVE, dto.getId()).orElseThrow(() -> new EntityNotFoundException(Cost.class, dto.getId()));
         if (dto.getNewsId() != null) {
             recruitmentNewsRepo.findAllByCompanyIdAndStatusAndId(cid, Constants.STATE_ACTIVE, dto.getNewsId())
                     .orElseThrow(() -> new EntityNotFoundException(RecruitmentNews.class, dto.getNewsId()));
@@ -132,6 +129,7 @@ public class CostV2Service {
 
         return costDTOS;
     }
+
 
     public CostDTO delete(Long cis, String uid, Long costId) {
         Cost curr = repo.findById( costId).orElseThrow(() -> new EntityNotFoundException(Cost.class, costId));
