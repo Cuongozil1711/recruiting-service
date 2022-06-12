@@ -125,7 +125,7 @@ public class RecruitmentNewsService {
 
         return RecruitmentNewsDTO.builder()
                 .code(recruitmentNews.getCode())
-                .name(recruitmentNews.getName())
+                .title(recruitmentNews.getTitle())
                 .requestCode(recruitmentRequest.getCode())
                 .planCode(recruitmentPlan.getCode())
                 .position(getValue(recruitmentRequest.getPositionId(), mapCategory))
@@ -143,7 +143,7 @@ public class RecruitmentNewsService {
                 .description(recruitmentNews.getDescription())
                 .requirement(recruitmentNews.getRequirement())
                 .profit(recruitmentNews.getProfit())
-                .fullName(recruitmentNews.getFullName())
+                .employeeId(recruitmentNews.getEmploeeId())
                 .phone(recruitmentNews.getPhone())
                 .email(recruitmentNews.getEmail())
                 .deadlineSendCV(recruitmentNews.getDeadlineSendCV())
@@ -155,7 +155,7 @@ public class RecruitmentNewsService {
         List<RecruitmentNewsDTO> rsDTOs = recruitmentNewList.stream().map(entity -> {
             RecruitmentNewsDTO dto = new RecruitmentNewsDTO();
             dto.setCode(String.valueOf(entity.get("newsCode")));
-            dto.setName(String.valueOf(entity.get("newsName")));
+            dto.setTitle(String.valueOf(entity.get("newsName")));
             dto.setState(String.valueOf(entity.get("state")));
             dto.setPositionId(Long.parseLong(String.valueOf(entity.get("positionId"))));
             dto.setLevelId(Long.parseLong(String.valueOf(entity.get("levelId"))));
