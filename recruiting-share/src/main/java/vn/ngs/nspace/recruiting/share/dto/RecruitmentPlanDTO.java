@@ -1,11 +1,9 @@
 package vn.ngs.nspace.recruiting.share.dto;
 
 import lombok.*;
-import vn.ngs.nspace.hcm.share.dto.EmployeeDTO;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Builder

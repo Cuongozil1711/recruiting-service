@@ -25,14 +25,14 @@ public class RecruitmentPlanRequest extends PersistableEntity<Long> {
     private Long recruitmentPlanId;
     private Long recruitmentRequestId;
     private Date deadline; // hạn hoàn thành
-    private Long picId; // người chịu trách nhiệm
+    private Long picId;// người chịu trách nhiệm
 
     public static RecruitmentPlanRequest of(String uid, Long cid, RecruitmentPlanRequestDTO dto) {
         RecruitmentPlanRequest planRequest = RecruitmentPlanRequest.builder()
                 .recruitmentPlanId(dto.getRecruitmentPlanId())
                 .recruitmentRequestId(dto.getRequestId())
                 .deadline(dto.getDeadline())
-                .picId(dto.getPic())
+                .picId(dto.getPicId())
                 .build();
 
         planRequest.setUpdateBy(uid);

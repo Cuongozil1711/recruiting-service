@@ -10,6 +10,7 @@ import vn.ngs.nspace.lib.utils.ResponseUtils;
 import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.service.v2.RecruitmentPlanV2Service;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
+import vn.ngs.nspace.recruiting.share.request.PlantRequestFilter;
 import vn.ngs.nspace.recruiting.share.request.RecruitmentFilterRequest;
 
 import java.util.List;
@@ -52,15 +53,16 @@ public class RecruitmentPlanV2Api {
         }
     }
 
-    @GetMapping("{id}")
+    @PostMapping("{id}")
     @ActionMapping(action = Permission.VIEW)
     public ResponseEntity getById(
             @RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
             , @PathVariable("id") Long id
-    ) {
+            , @RequestBody PlantRequestFilter filter
+            ) {
         try {
-            RecruitmentPlanDTO recruitmentPlanDTO = planV2Service.getById(cid, uid, id);
+            RecruitmentPlanDTO recruitmentPlanDTO = planV2Service.getById(cid, uid, id, filter);
             return ResponseUtils.handlerSuccess(recruitmentPlanDTO);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);

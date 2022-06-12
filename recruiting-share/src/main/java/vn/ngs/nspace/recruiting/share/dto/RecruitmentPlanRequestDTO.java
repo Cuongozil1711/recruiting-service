@@ -14,5 +14,5 @@ public class RecruitmentPlanRequestDTO {
     private Long requestId;
     private RecruitmentRequestDTO requestDTO;
     private Date deadline;
-    private Long pic;
+    private Long picId;
 }
