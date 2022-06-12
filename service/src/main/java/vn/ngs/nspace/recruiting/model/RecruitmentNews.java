@@ -1,11 +1,9 @@
 package vn.ngs.nspace.recruiting.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import vn.ngs.nspace.lib.models.PersistableEntity;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentNewsDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,6 +17,7 @@ import java.util.Date;
 @Entity
 @AllArgsConstructor
 @Data
+@Builder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class RecruitmentNews extends PersistableEntity<Long> {
@@ -44,4 +43,32 @@ public class RecruitmentNews extends PersistableEntity<Long> {
     private String email;
     private String state;
     private String profit;
+
+
+    public static RecruitmentNews of(Long cid,String uid,RecruitmentNewsDTO dto) {
+        RecruitmentNews news = RecruitmentNews.builder()
+                .code(dto.getCode())
+                .planId(dto.getPlanId())
+                .requestId(dto.getRequestId())
+                .salaryLevel(dto.getSalaryLevel())
+                .salaryFrom(dto.getSalaryFrom())
+                .salaryTo(dto.getSalaryTo())
+                .unit(dto.getUnit())
+                .description(dto.getDescription())
+                .location(dto.getLocation())
+                .requirement(dto.getRequirement())
+                .deadlineSendCV(dto.getDeadlineSendCV())
+                .fullName(dto.getFullName())
+                .phone(dto.getPhone())
+                .email(dto.getEmail())
+                .state(dto.getState())
+                .profit(dto.getProfit())
+                .build();
+
+        news.setCreateBy(uid);
+        news.setCompanyId(cid);
+        news.setUpdateBy(uid);
+
+        return news;
+    }
 }
