@@ -257,6 +257,12 @@ public class RecruitmentRequestService {
         return toDTOs(recruitmentRequests);
     }
 
+    public List<RecruitmentRequestDTO> getAllByPlan(Long cid, String uid, Long planId) {
+        List<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.getALlByPlanId(cid,planId);
+
+        return toDTOs(recruitmentRequests);
+    }
+
     private List<RecruitmentRequestDTO> getAllInfo(Long cid, String uid, List<RecruitmentRequest> rsList) {
         List<RecruitmentRequestDTO> rsDTOList = rsList.stream().map(entity -> {
             RecruitmentRequestDTO dto = new RecruitmentRequestDTO();
