@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
+import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanRequest;
 import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRequestRepo;
@@ -69,6 +70,7 @@ public class RecruitmentRequestService {
         recruitmentRequest.setPositionId(dto.getPositionId());
         recruitmentRequest.setTitleId(dto.getTitleId());
         recruitmentRequest.setLevelId(dto.getLevelId());
+        recruitmentRequest.setState(dto.getState());
         recruitmentRequest.setContractTypeId(dto.getContractTypeId());
         recruitmentRequest.setQuantity(dto.getQuantity());
         recruitmentRequest.setType(dto.getType());
@@ -85,6 +87,7 @@ public class RecruitmentRequestService {
         recruitmentRequest.setFromAge(dto.getFromAge());
         recruitmentRequest.setToAge(dto.getToAge());
         recruitmentRequest.setOtherRequirement(dto.getOtherRequirement());
+        recruitmentRequest.setCreateBy(uid);
         recruitmentRequestRepo.save(recruitmentRequest);
 
         List<RecruitmentPlanRequest> recruitmentPlanRequests = recruitmentPlanRequestRepo.findByCompanyIdAndRecruitmentRequestIdAndStatus(cid, recruitmentRequest.getId(), Constants.ENTITY_ACTIVE);
@@ -246,6 +249,14 @@ public class RecruitmentRequestService {
         return new PageImpl<>(rsDTOList, page, recruitmentRequests.getTotalElements());
     }
 
+    public List<RecruitmentRequestDTO> getAllByState(Long cid, String uid) {
+        List<String> states = List.of(Constants.HCM_RECRUITMENT_REQUEST.EXTEND.toString()
+                ,Constants.HCM_RECRUITMENT_REQUEST.INIT.toString());
+        List<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.getAllByStateAndNews(cid,states);
+
+        return toDTOs(recruitmentRequests);
+    }
+
     private List<RecruitmentRequestDTO> getAllInfo(Long cid, String uid, List<RecruitmentRequest> rsList) {
         List<RecruitmentRequestDTO> rsDTOList = rsList.stream().map(entity -> {
             RecruitmentRequestDTO dto = new RecruitmentRequestDTO();
@@ -348,6 +359,14 @@ public class RecruitmentRequestService {
 
     private void validateDataSearch(RecruitmentRequestFilterRequest request) {
 
+    }
+
+    private RecruitmentRequestDTO toDTO(RecruitmentRequest recruitmentRequest) {
+        return MapperUtils.map(recruitmentRequest, RecruitmentRequestDTO.class);
+    }
+
+    private List<RecruitmentRequestDTO> toDTOs(List<RecruitmentRequest> recruitmentRequests) {
+        return recruitmentRequests.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
 }

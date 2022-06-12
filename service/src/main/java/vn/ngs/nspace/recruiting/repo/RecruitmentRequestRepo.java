@@ -36,4 +36,7 @@ public interface RecruitmentRequestRepo extends BaseRepo<RecruitmentRequest, Lon
             " inner join RecruitmentPlan rp on rp.id = rpl.recruitmentPlanId" +
             " where rpl.status = 1 and rpl.companyId = :cid and rp.id = :planId and rpl.status = 1 and re.status = 1")
     List<RecruitmentRequest> getALlByPlanId(Long cid, Long planId);
+
+    @Query("select rr from RecruitmentRequest rr inner join RecruitmentPlanRequest  rpr on rpr.recruitmentRequestId = rr.id where rr.state in :state")
+    List<RecruitmentRequest> getAllByStateAndNews(Long cid, List<String> state);
 }
