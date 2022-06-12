@@ -9,6 +9,7 @@ import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.Cost;
 import vn.ngs.nspace.recruiting.model.EmailSent;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 public interface CostRepo extends BaseRepo<Cost,Long> {
@@ -43,5 +44,10 @@ public interface CostRepo extends BaseRepo<Cost,Long> {
                                                     , Pageable pageable);
 
     // new
+
+
+    @Transactional
+    @Query("delete from Cost c where c.status = 1 and c.id in :ids and c.companyId = :cid")
+    void deleteAllByCIdAndIdIn(Long cid, List<Long> ids);
 }
 

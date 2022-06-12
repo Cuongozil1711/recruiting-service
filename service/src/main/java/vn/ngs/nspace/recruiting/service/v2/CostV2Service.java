@@ -61,11 +61,53 @@ public class CostV2Service {
         return toDTO(cost);
     }
 
-    public CostDTO update(long cid, String uid, Long costId, CostDTO dto) {
+    public List<CostDTO> creates(long cid, String uid, List<CostDTO> dtos) {
+        List<CostDTO> costDTOS = new ArrayList<>();
+        dtos.forEach(
+                e-> {
+                    costDTOS.add(create(cid,uid,e));
+                }
+        );
+
+        return costDTOS;
+    }
+
+    public CostDTO update(long cid, String uid, CostDTO dto) {
         valid(dto);
-        Cost curr = repo.findById( costId).orElseThrow(() -> new EntityNotFoundException(Cost.class, costId));
+        Cost curr = repo.findById( dto.getId()).orElseThrow(() -> new EntityNotFoundException(Cost.class, dto.getId()));
         MapperUtils.copyWithoutAudit(dto, curr);
         curr.setUpdateBy(uid);
+
+        curr = repo.save(curr);
+
+        return toDTO(curr);
+    }
+
+    public List<CostDTO> updates(long cid, String uid,List<CostDTO> dtos) {
+        List<CostDTO> costDTOS = new ArrayList<>();
+
+        List<Long> ids = dtos.stream().map(CostDTO::getId).collect(Collectors.toList());
+        repo.deleteAllByCIdAndIdIn(cid, ids);
+
+        dtos.forEach(
+                e-> {
+                    if (e.getId() == null) {
+                        costDTOS.add(create(cid,uid,e));
+                    }
+                    else {
+                        costDTOS.add(update(cid,uid,e));
+                    }
+                }
+        );
+
+        return costDTOS;
+    }
+
+    public CostDTO delete(Long cis, String uid, Long costId) {
+        Cost curr = repo.findById( costId).orElseThrow(() -> new EntityNotFoundException(Cost.class, costId));
+
+        curr.setUpdateBy(uid);
+        curr.setStatus(Constants.ENTITY_INACTIVE);
 
         curr = repo.save(curr);
 
@@ -115,20 +157,8 @@ public class CostV2Service {
 //    }
 
 
-    public List<CostDTO> toDTOs(long cid, String uid, List<Cost> objs) {
-        List<CostDTO> dtos = new ArrayList<>();
-        Set<Long> costIds = new HashSet<>();
-        Set<Long> categoryIds = new HashSet<>();
-        Set<Long> orgIds = new HashSet<>();
-        Set<String> userIds = new HashSet<>();
-
-        List<CostDetail> details = detailRepo.findByCompanyIdAndCostIdInAndStatus(cid, costIds, Constants.ENTITY_ACTIVE);
-
-        Map<Long, OrgResp> mapOrg = _hcmService.getMapOrgs(uid, cid, orgIds);
-        Map<Long, Map<String, Object>> mapCategory = _configService.getCategoryByIds(uid, cid, categoryIds);
-        Map<String, Object> mapperUser = StaticContextAccessor.getBean(UserData.class).getUsers(userIds);
-
-        return dtos;
+    public List<CostDTO> toDTOs(long cid, String uid, List<Cost> costs) {
+        return costs.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     public CostDTO toDTO(Cost obj) {
