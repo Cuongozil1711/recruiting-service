@@ -26,9 +26,12 @@ public interface RecruitmentPlanRequestRepo extends BaseRepo<RecruitmentPlanRequ
             " and (rr.type = :type or :type = '')" +
             " and (rr.typeRequest = :typeRequest or :typeRequest = '')" +
             " and (rpr.picId = :picId or :picId = 1L)" +
-            " and (rpr.sta in :state or '' in :state)" +
+            " and (rr.state in :state or '' in :state)" +
             " and rr.status = 1")
     List<RecruitmentPlanRequest> getByPlanIdAndFilter (Long cid, Long planId, String type, String typeRequest, String search, List<String> state, Long picId, Long positionId, Long orgId, Long levelId, Date deadlineFrom, Date deadlineTo);
+
+    @Query("select rec from RecruitmentPlanRequest rec where rec.status = 1 and rec.companyId =:cid and rec.recruitmentPlanId = :planId")
+    List<RecruitmentPlanRequest> getByPlanId(Long cid, Long planId);
 
     @Transactional
     @Modifying
