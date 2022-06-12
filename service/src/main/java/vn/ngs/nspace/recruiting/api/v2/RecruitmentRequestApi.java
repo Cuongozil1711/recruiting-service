@@ -151,4 +151,20 @@ public class RecruitmentRequestApi {
             return ResponseUtils.handlerException(e);
         }
     }
+
+    @GetMapping("get-by-plan/{id}")
+    @ActionMapping(action = Permission.VIEW)
+    public ResponseEntity getByPlan(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
+            , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
+            , @PathVariable("id") Long planId
+    ) {
+        try {
+            List<RecruitmentRequestDTO> list = recruitmentRequestService.getAllByPlan(cid, uid, planId);
+
+            return ResponseUtils.handlerSuccess(list);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
 }
