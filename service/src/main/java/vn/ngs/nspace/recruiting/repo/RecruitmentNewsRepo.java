@@ -67,9 +67,4 @@ public interface RecruitmentNewsRepo extends BaseRepo<RecruitmentNews, Long> {
     @Query(value = "update recruiting_service.recruitment_news rn set status = 0,update_by = :uid where rn.status = 1 and rn.company_id =:cid and rn.plan_id = :planId", nativeQuery = true)
     void deleteRecruitmentByPlanId(Long cid, String uid, Long planId);
 
-    @Modifying
-    @Transactional
-    @Query("update RecruitmentNews rn set rn.status = 0,rn.updateBy = :uid where rn.status = 1 and rn.companyId =:cid and rn.planId = :planId")
-    List<RecruitmentNews> deleteRecruitmentByPlanId(Long cid, String uid, Long planId);
-
 }
