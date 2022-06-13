@@ -62,4 +62,9 @@ public interface RecruitmentNewsRepo extends BaseRepo<RecruitmentNews, Long> {
     @Query("update RecruitmentNews rn set rn.status = 0,rn.updateBy = :uid where rn.status = 1 and rn.companyId =:cid and rn.id in :ids")
     List<RecruitmentNews> deleteRecruitmentNewsBy(Long cid, String uid, List<Long> ids);
 
+    @Modifying
+    @Transactional
+    @Query("update RecruitmentNews rn set rn.status = 0,rn.updateBy = :uid where rn.status = 1 and rn.companyId =:cid and rn.planId = :planId")
+    List<RecruitmentNews> deleteRecruitmentByPlanId(Long cid, String uid, Long planId);
+
 }

@@ -38,7 +38,7 @@ public class RecruitmentNews extends PersistableEntity<Long> {
     private String location; // địa điểm làm việc
     private String requirement; // yêu cầu công việc
     private Date deadlineSendCV; // hạn nộp hồ sơ
-    private Long emploeeId; // họ tên
+    private Long employeeId; // họ tên
     private String phone;
     private String email;
     private String state;
@@ -59,7 +59,7 @@ public class RecruitmentNews extends PersistableEntity<Long> {
                 .location(dto.getLocation())
                 .requirement(dto.getRequirement())
                 .deadlineSendCV(dto.getDeadlineSendCV())
-                .emploeeId(dto.getEmployeeId())
+                .employeeId(dto.getEmployeeId())
                 .phone(dto.getPhone())
                 .email(dto.getEmail())
                 .state(dto.getState())

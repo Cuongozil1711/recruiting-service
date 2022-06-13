@@ -8,9 +8,11 @@ import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.RecruitmentNews;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanRequest;
 import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
+import vn.ngs.nspace.recruiting.repo.RecruitmentNewsRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRequestRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
@@ -30,11 +32,13 @@ public class RecruitmentPlanV2Service {
 
     private final RecruitmentPlanRepo planRepo;
     private final RecruitmentPlanRequestRepo planRequestRepo;
+    private final RecruitmentNewsRepo newsRepo;
     private final RecruitmentRequestRepo requestRepo;
 
-    public RecruitmentPlanV2Service(RecruitmentPlanRepo planRepo, RecruitmentPlanRequestRepo planRequestRepo, RecruitmentRequestRepo requestRepo) {
+    public RecruitmentPlanV2Service(RecruitmentPlanRepo planRepo, RecruitmentPlanRequestRepo planRequestRepo, RecruitmentNewsRepo newsRepo, RecruitmentRequestRepo requestRepo) {
         this.planRepo = planRepo;
         this.planRequestRepo = planRequestRepo;
+        this.newsRepo = newsRepo;
         this.requestRepo = requestRepo;
     }
 
@@ -57,6 +61,17 @@ public class RecruitmentPlanV2Service {
                     planRequest = RecruitmentPlanRequest.of(uid, cid, e);
                     planRequest.setRecruitmentPlanId(finalRecruitmentPlan.getId());
                     planRequestRepo.save(planRequest);
+
+                    RecruitmentNews news = new RecruitmentNews();
+                    news.setCreateBy(uid);
+                    news.setUpdateBy(uid);
+                    news.setCompanyId(cid);
+                    news.setRequestId(e.getId());
+                    news.setPlanId(finalRecruitmentPlan.getId());
+                    news.setDeadlineSendCV(e.getDeadline());
+                    news.setEmployeeId(e.getPicId());
+
+                    newsRepo.save(news);
                 }
         );
         return toDTO(cid,recruitmentPlan);
@@ -84,6 +99,7 @@ public class RecruitmentPlanV2Service {
         recruitmentPlan = planRepo.save(recruitmentPlan);
 
         planRequestRepo.deleteByPlanId(cid,recruitmentPlan.getId());
+        newsRepo.deleteRecruitmentByPlanId(cid,uid,id);
 
         List<RecruitmentPlanRequestDTO> recruitmentPlanRequests = dto.getRequestDTOS();
 
@@ -94,6 +110,16 @@ public class RecruitmentPlanV2Service {
             planRequest.setRecruitmentPlanId(finalRecruitmentPlan.getId());
             planRequest.setRecruitmentRequestId(planRequestDTO.getRequestDTO().getId());
             planRequestRepo.save(planRequest);
+
+            RecruitmentNews news = new RecruitmentNews();
+            news.setCreateBy(uid);
+            news.setUpdateBy(uid);
+            news.setCompanyId(cid);
+            news.setRequestId(planRequestDTO.getId());
+            news.setPlanId(finalRecruitmentPlan.getId());
+            news.setDeadlineSendCV(planRequestDTO.getDeadline());
+            news.setEmployeeId(planRequestDTO.getPicId());
+            newsRepo.save(news);
         };
 
 
