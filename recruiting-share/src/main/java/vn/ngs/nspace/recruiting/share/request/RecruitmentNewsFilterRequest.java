@@ -14,7 +14,7 @@ public class RecruitmentNewsFilterRequest {
     private Long levelId;
     private String search = StringUtils.EMPTY;
     private Integer getAll;
-    private List<String> states;
+    private List<String> states = List.of(StringUtils.EMPTY);
     private Long fromQuantity;
     private Long toQuantity;
     private Date fromDate = DateUtils.minDate();
