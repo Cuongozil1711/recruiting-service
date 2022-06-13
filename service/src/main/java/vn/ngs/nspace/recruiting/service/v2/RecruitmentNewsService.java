@@ -100,6 +100,13 @@ public class RecruitmentNewsService {
         return new PageImpl<>(result, page, recruitmentNews.getTotalElements());
     }
 
+    public RecruitmentNewsDTO detail(Long cid, String uid, Long id) {
+        RecruitmentNews recruitmentNews = recruitmentNewsRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(RecruitmentNews.class, id));
+
+        return toDTO(recruitmentNews);
+    }
+
     public RecruitmentNewsDTO detailRecruitmentNews(Long cid, String uid, long id) {
         RecruitmentNews recruitmentNews = recruitmentNewsRepo.findByCompanyIdAndIdAndStatus(cid, id, Constants.ENTITY_ACTIVE)
                 .orElseThrow(() -> new EntityNotFoundException(RecruitmentNews.class, id));
@@ -246,7 +253,7 @@ public class RecruitmentNewsService {
     }
 
     public void delete(Long cid, String uid, List<Long> ids) {
-        List<RecruitmentNews> recruitmentNews = recruitmentNewsRepo.deleteRecruitmentNewsBy(cid,uid,ids);
+        recruitmentNewsRepo.deleteRecruitmentNewsBy(cid,uid,ids);
     }
 
     private RecruitmentNewsDTO toDTO(RecruitmentNews news) {

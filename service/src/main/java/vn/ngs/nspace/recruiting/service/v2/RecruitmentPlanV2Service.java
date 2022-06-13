@@ -2,6 +2,7 @@ package vn.ngs.nspace.recruiting.service.v2;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
@@ -19,6 +20,7 @@ import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanRequestDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
+import vn.ngs.nspace.recruiting.share.dto.utils.CustomPage;
 import vn.ngs.nspace.recruiting.share.request.PlantRequestFilter;
 import vn.ngs.nspace.recruiting.share.request.RecruitmentFilterRequest;
 
@@ -52,7 +54,7 @@ public class RecruitmentPlanV2Service {
         recruitmentPlan.setStatus(Constants.ENTITY_ACTIVE);
         recruitmentPlan = planRepo.save(recruitmentPlan);
 
-        List<RecruitmentPlanRequestDTO> recruitmentPlanRequests = dto.getRequestDTOS();
+        List<RecruitmentPlanRequestDTO> recruitmentPlanRequests = dto.getRequestDTOList();
 
         RecruitmentPlan finalRecruitmentPlan = recruitmentPlan;
         recruitmentPlanRequests.forEach(
@@ -87,7 +89,8 @@ public class RecruitmentPlanV2Service {
     public RecruitmentPlanDTO getById(Long cid, String uid, Long id, PlantRequestFilter filter) {
         RecruitmentPlan recruitmentPlan = planRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(RecruitmentPlan.class,id));
-        return toDTO(cid,recruitmentPlan);
+
+        return toDTO(cid,recruitmentPlan,filter);
     }
 
     public RecruitmentPlanDTO update(Long cid, String uid, Long id, RecruitmentPlanDTO dto) {
@@ -101,26 +104,28 @@ public class RecruitmentPlanV2Service {
         planRequestRepo.deleteByPlanId(cid,recruitmentPlan.getId());
         newsRepo.deleteRecruitmentByPlanId(cid,uid,id);
 
-        List<RecruitmentPlanRequestDTO> recruitmentPlanRequests = dto.getRequestDTOS();
+        List<RecruitmentPlanRequestDTO> recruitmentPlanRequests = dto.getRequestDTOList();
 
-        RecruitmentPlan finalRecruitmentPlan = recruitmentPlan;
-        for (RecruitmentPlanRequestDTO planRequestDTO : recruitmentPlanRequests) {
-            RecruitmentPlanRequest planRequest = new RecruitmentPlanRequest();
-            planRequest = RecruitmentPlanRequest.of(uid, cid, planRequestDTO);
-            planRequest.setRecruitmentPlanId(finalRecruitmentPlan.getId());
-            planRequest.setRecruitmentRequestId(planRequestDTO.getRequestDTO().getId());
-            planRequestRepo.save(planRequest);
+        if (recruitmentPlanRequests != null) {
+            for (RecruitmentPlanRequestDTO planRequestDTO : recruitmentPlanRequests) {
+                RecruitmentPlanRequest planRequest = new RecruitmentPlanRequest();
+                planRequest = RecruitmentPlanRequest.of(uid, cid, planRequestDTO);
+                planRequest.setRecruitmentPlanId(recruitmentPlan.getId());
+                planRequest.setRecruitmentRequestId(planRequestDTO.getRequestDTO().getId());
+                planRequestRepo.save(planRequest);
 
-            RecruitmentNews news = new RecruitmentNews();
-            news.setCreateBy(uid);
-            news.setUpdateBy(uid);
-            news.setCompanyId(cid);
-            news.setRequestId(planRequestDTO.getId());
-            news.setPlanId(finalRecruitmentPlan.getId());
-            news.setDeadlineSendCV(planRequestDTO.getDeadline());
-            news.setEmployeeId(planRequestDTO.getPicId());
-            newsRepo.save(news);
-        };
+                RecruitmentNews news = new RecruitmentNews();
+                news.setCreateBy(uid);
+                news.setUpdateBy(uid);
+                news.setCompanyId(cid);
+                news.setRequestId(planRequestDTO.getId());
+                news.setPlanId(recruitmentPlan.getId());
+                news.setDeadlineSendCV(planRequestDTO.getDeadline());
+                news.setEmployeeId(planRequestDTO.getPicId());
+                newsRepo.save(news);
+            }
+            ;
+        }
 
 
         return toDTO(cid,recruitmentPlan);
@@ -150,7 +155,8 @@ public class RecruitmentPlanV2Service {
                     return planRequestDTO;
                 }).collect(Collectors.toList());
         RecruitmentPlanDTO dto = MapperUtils.map(plan,RecruitmentPlanDTO.class);
-        dto.setRequestDTOS(planRequestDTOS);
+
+//        dto.setRequestDTOS(planRequestDTOS);
 
         return  dto;
     }
@@ -159,19 +165,21 @@ public class RecruitmentPlanV2Service {
         List<RecruitmentPlanRequest> recruitmentPlanRequests =
                 planRequestRepo.getByPlanIdAndFilter(cid,plan.getId(), filter.getType(), filter.getTypeRequest(),filter.getSearch(),filter.getState(),filter.getPicId(),filter.getPositionId(),filter.getOrgId(),filter.getLevelId(),filter.getDeadlineFrom(),filter.getDeadlineTo());
         List<RecruitmentPlanRequestDTO> planRequestDTOS = recruitmentPlanRequests.stream()
-                .map(e -> {
-                    RecruitmentPlanRequestDTO planRequestDTO = new RecruitmentPlanRequestDTO();
-                    RecruitmentRequest recruitmentRequest = requestRepo.findById(e.getRecruitmentRequestId())
-                            .orElseThrow(() ->  new EntityNotFoundException(RecruitmentRequest.class,e.getRecruitmentRequestId()));
-                    RecruitmentRequestDTO recruitmentRequestDTO = toRequestDto(recruitmentRequest);
-                    planRequestDTO.setRequestDTO(recruitmentRequestDTO);
-                    planRequestDTO.setDeadline(e.getDeadline());
-                    planRequestDTO.setPicId(e.getPicId());
+            .map(e -> {
+                RecruitmentPlanRequestDTO planRequestDTO = new RecruitmentPlanRequestDTO();
+                RecruitmentRequest recruitmentRequest = requestRepo.findById(e.getRecruitmentRequestId())
+                        .orElseThrow(() ->  new EntityNotFoundException(RecruitmentRequest.class,e.getRecruitmentRequestId()));
+                RecruitmentRequestDTO recruitmentRequestDTO = toRequestDto(recruitmentRequest);
+                planRequestDTO.setRequestDTO(recruitmentRequestDTO);
+                planRequestDTO.setDeadline(e.getDeadline());
+                planRequestDTO.setPicId(e.getPicId());
 
-                    return planRequestDTO;
-                }).collect(Collectors.toList());
+                return planRequestDTO;
+            }).skip(filter.getSize()*filter.getPage()).limit(filter.getSize()).collect(Collectors.toList());
         RecruitmentPlanDTO dto = MapperUtils.map(plan,RecruitmentPlanDTO.class);
-        dto.setRequestDTOS(planRequestDTOS);
+
+        CustomPage<RecruitmentPlanRequestDTO> customPage = new CustomPage<RecruitmentPlanRequestDTO>(filter.getSize(), filter.getPage(), recruitmentPlanRequests.size(),planRequestDTOS);
+        dto.setRequestDTOCustomPage(customPage);
 
         return  dto;
     }
