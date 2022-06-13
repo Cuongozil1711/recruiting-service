@@ -12,12 +12,10 @@ import org.springframework.util.CollectionUtils;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.Cost;
-import vn.ngs.nspace.recruiting.model.RecruitmentNews;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
-import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
+import vn.ngs.nspace.recruiting.model.*;
 import vn.ngs.nspace.recruiting.repo.RecruitmentNewsRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRepo;
+import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRequestRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
 import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
@@ -36,6 +34,7 @@ public class RecruitmentNewsService {
     private final RecruitmentNewsRepo recruitmentNewsRepo;
     private final RecruitmentRequestRepo recruitmentRequestRepo;
     private final RecruitmentPlanRepo recruitmentPlanRepo;
+    private final RecruitmentPlanRequestRepo planRequestRepo;
     private final ExecuteConfigService configService;
     private final ExecuteHcmService hcmService;
 
@@ -143,7 +142,7 @@ public class RecruitmentNewsService {
                 .description(recruitmentNews.getDescription())
                 .requirement(recruitmentNews.getRequirement())
                 .profit(recruitmentNews.getProfit())
-                .employeeId(recruitmentNews.getEmploeeId())
+                .employeeId(recruitmentNews.getEmployeeId())
                 .phone(recruitmentNews.getPhone())
                 .email(recruitmentNews.getEmail())
                 .deadlineSendCV(recruitmentNews.getDeadlineSendCV())
@@ -154,6 +153,9 @@ public class RecruitmentNewsService {
 
         List<RecruitmentNewsDTO> rsDTOs = recruitmentNewList.stream().map(entity -> {
             RecruitmentNewsDTO dto = new RecruitmentNewsDTO();
+            if (entity.get("newsId") != null) {
+                dto.setId(Long.parseLong(String.valueOf(entity.get("newsId"))));
+            }
             if(entity.get("newsCode") != null) {
                 dto.setCode(String.valueOf(entity.get("newsCode")));
             }
@@ -216,6 +218,17 @@ public class RecruitmentNewsService {
         news.setStatus(Constants.ENTITY_ACTIVE);
 
         news = recruitmentNewsRepo.save(news);
+
+        RecruitmentPlanRequest planRequest = new RecruitmentPlanRequest();
+        planRequest.setRecruitmentRequestId(dto.getRequestId());
+        planRequest.setRecruitmentPlanId(dto.getPlanId());
+        planRequest.setCreateBy(uid);
+        planRequest.setCreateDate(new Date());
+        planRequest.setUpdateBy(uid);
+        planRequest.setDeadline(dto.getDeadlineSendCV());
+        planRequest.setPicId(dto.getEmployeeId());
+
+        planRequestRepo.save(planRequest);
 
         return toDTO(news);
     }
