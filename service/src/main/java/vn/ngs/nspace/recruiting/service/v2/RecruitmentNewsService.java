@@ -154,14 +154,31 @@ public class RecruitmentNewsService {
 
         List<RecruitmentNewsDTO> rsDTOs = recruitmentNewList.stream().map(entity -> {
             RecruitmentNewsDTO dto = new RecruitmentNewsDTO();
-            dto.setCode(String.valueOf(entity.get("newsCode")));
-            dto.setTitle(String.valueOf(entity.get("newsName")));
-            dto.setState(String.valueOf(entity.get("state")));
-            dto.setPositionId(Long.parseLong(String.valueOf(entity.get("positionId"))));
-            dto.setLevelId(Long.parseLong(String.valueOf(entity.get("levelId"))));
-            dto.setTitleId(Long.parseLong(String.valueOf(entity.get("titleId"))));
-            dto.setQuantity(Long.parseLong(String.valueOf(entity.get("quantity"))));
-            dto.setDeadlineSendCV(DateUtils.toDate(String.valueOf(entity.get("deadlineSendCV")), DateUtils.DB_DATE_PATTERN));
+            if(entity.get("newsCode") != null) {
+                dto.setCode(String.valueOf(entity.get("newsCode")));
+            }
+            if(entity.get("newsName") != null) {
+                dto.setTitle(String.valueOf(entity.get("newsName")));
+            }
+            if(entity.get("state") != null) {
+                dto.setState(String.valueOf(entity.get("state")));
+            }
+            if(entity.get("positionId") != null) {
+                dto.setPositionId(Long.parseLong(String.valueOf(entity.get("positionId"))));
+            }
+            if (entity.get("levelId") != null) {
+                dto.setLevelId(Long.parseLong(String.valueOf(entity.get("levelId"))));
+            }
+            if(entity.get("titleId") != null) {
+                dto.setTitleId(Long.parseLong(String.valueOf(entity.get("titleId"))));
+            }
+            if(entity.get("quantity") != null) {
+                dto.setQuantity(Long.parseLong(String.valueOf(entity.get("quantity"))));
+            }
+            if(entity.get("deadlineSendCV") != null) {
+                dto.setDeadlineSendCV(DateUtils.toDate(String.valueOf(entity.get("deadlineSendCV")), DateUtils.DB_DATE_PATTERN));
+            }
+
             return dto;
         }).collect(Collectors.toList());
 
