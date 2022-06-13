@@ -1,6 +1,7 @@
 package vn.ngs.nspace.recruiting.share.dto;
 
 import lombok.*;
+import vn.ngs.nspace.recruiting.share.dto.utils.CustomPage;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,7 @@ public class RecruitmentPlanDTO {
     private String createBy;
     private Date create_date;
     private Object creatByObj;
-    private List<RecruitmentPlanRequestDTO> requestDTOS;
+    private CustomPage<RecruitmentPlanRequestDTO> requestDTOCustomPage;
+    private List<RecruitmentPlanRequestDTO> requestDTOList;
 
 }

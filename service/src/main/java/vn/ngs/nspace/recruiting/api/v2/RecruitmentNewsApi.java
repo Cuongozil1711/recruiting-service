@@ -155,7 +155,7 @@ public class RecruitmentNewsApi {
             @PathVariable(value = "id") Long id
     ) {
         try {
-            return ResponseUtils.handlerSuccess(recruitmentNewsService.detailRecruitmentNews(cid, uid, id));
+            return ResponseUtils.handlerSuccess(recruitmentNewsService.detail(cid, uid, id));
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }
