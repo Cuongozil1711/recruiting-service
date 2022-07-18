@@ -20,7 +20,6 @@ public class EmailSettingService {
         this.repo = repo;
     }
 
-    /* create object */
     public EmailSettingDTO create(Long cid, String uid, EmailSettingDTO request){
         try {
             EmailSetting obj = EmailSetting.of(cid, uid, request);
@@ -37,7 +36,6 @@ public class EmailSettingService {
         }
     }
 
-    /* update by id object */
     public EmailSettingDTO update(Long cid, String uid, Long id, EmailSettingDTO request)  {
         try {
             EmailSetting curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, id));

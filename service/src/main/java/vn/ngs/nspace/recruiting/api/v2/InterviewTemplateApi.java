@@ -42,7 +42,6 @@ public class InterviewTemplateApi {
             @RequestHeader("cid") long cid
             , @Parameter(description = "ID of company")
             @RequestHeader("uid") String uid
-//            , @Parameter(description = "param in path") @PathVariable(value = "id") Long id
             , @RequestBody InterviewCheckListTemplateDTO dto) {
         try {
             return ResponseUtils.handlerSuccess(checkListTemplateV2Service.update(cid, uid, dto));
