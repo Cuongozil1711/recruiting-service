@@ -23,6 +23,7 @@ import vn.ngs.nspace.recruiting.repo.OnboardOrderRepo;
 import vn.ngs.nspace.recruiting.service.InterviewInvolveService;
 //import vn.ngs.nspace.recruiting.service.OnboardOrderService;
 import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveDTO;
+import vn.ngs.nspace.recruiting.share.dto.InterviewInvolveSearchDTO;
 import vn.ngs.nspace.recruiting.share.dto.OnboardOrderDTO;
 
 import java.util.List;
@@ -43,19 +44,19 @@ public class InterviewInvolveApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity search(@RequestHeader Long cid
             , @RequestHeader String uid
-            , @RequestBody Map<String, Object> condition
+            , @RequestBody InterviewInvolveSearchDTO interviewInvolveSearchDTO
             , Pageable pageable) {
         try{
-            Long interviewId = MapUtils.getLong(condition, "interviewId", -1l);
-            String interviewerId = MapUtils.getString(condition, "interviewerId", "#");
-            Long supporterId = MapUtils.getLong(condition, "supporterId", -1l);
-            Long orgId = MapUtils.getLong(condition, "orgId", -1l);
-            Long positionId = MapUtils.getLong(condition, "positionId", -1l);
-            Long titleId = MapUtils.getLong(condition,"titleId", -1l);
-            Long roomId = MapUtils.getLong(condition, "roomId", -1l);
-            Long levelId = MapUtils.getLong(condition,"levelId", -1l);
-            Long groupId = MapUtils.getLong(condition, "groupId", -1l);
-            String search = MapUtils.getString(condition, "search", "#");
+            Long interviewId = interviewInvolveSearchDTO.getInterviewId() != null ? interviewInvolveSearchDTO.getInterviewId() : -1l;
+            String interviewerId = interviewInvolveSearchDTO.getInterviewerId() != null ? interviewInvolveSearchDTO.getInterviewerId() : "#";
+            Long supporterId = interviewInvolveSearchDTO.getSupporterId() != null ? interviewInvolveSearchDTO.getSupporterId() : -1l;
+            Long orgId = interviewInvolveSearchDTO.getOrgId() != null ? interviewInvolveSearchDTO.getOrgId() : -1l;
+            Long positionId = interviewInvolveSearchDTO.getPositionId() != null ? interviewInvolveSearchDTO.getPositionId() : -1l;
+            Long titleId = interviewInvolveSearchDTO.getTitleId() != null ? interviewInvolveSearchDTO.getTitleId() : -1l;
+            Long roomId = interviewInvolveSearchDTO.getRoomId() != null ? interviewInvolveSearchDTO.getRoomId() : -1l;
+            Long levelId = interviewInvolveSearchDTO.getLevelId() != null ? interviewInvolveSearchDTO.getLevelId() : -1l;
+            Long groupId = interviewInvolveSearchDTO.getGroupId() != null ? interviewInvolveSearchDTO.getGroupId() : -1l;
+            String search = interviewInvolveSearchDTO.getSearch() != null ? interviewInvolveSearchDTO.getSearch() : "#";
             Page<InterviewInvolve> page = _repo.search(cid, interviewId, orgId, positionId, titleId,roomId,levelId,groupId, interviewerId, supporterId,search, pageable);
             List<InterviewInvolveDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
@@ -72,15 +73,15 @@ public class InterviewInvolveApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity find(@RequestHeader Long cid
             , @RequestHeader String uid
-            , @RequestBody Map<String, Object> condition
-            , Pageable pageable) {
+            , @RequestBody InterviewInvolveSearchDTO interviewInvolveSearchDTO
+            ) {
         try{
-            Long interviewId = MapUtils.getLong(condition, "interviewId", -1l);
-            String interviewerId = MapUtils.getString(condition, "interviewerId", "#");
-            Long supporterId = MapUtils.getLong(condition, "supporterId", -1l);
-            Long orgId = MapUtils.getLong(condition, "orgId", -1l);
-            Long positionId = MapUtils.getLong(condition, "positionId", -1l);
-            Long titleId = MapUtils.getLong(condition,"titleId", -1l);
+            Long interviewId = interviewInvolveSearchDTO.getInterviewId() != null ? interviewInvolveSearchDTO.getInterviewId() : -1l;
+            String interviewerId = interviewInvolveSearchDTO.getInterviewerId() != null ? interviewInvolveSearchDTO.getInterviewerId() : "#";
+            Long supporterId = interviewInvolveSearchDTO.getSupporterId() != null ? interviewInvolveSearchDTO.getSupporterId() : -1l;
+            Long orgId = interviewInvolveSearchDTO.getOrgId() != null ? interviewInvolveSearchDTO.getOrgId() : -1l;
+            Long positionId = interviewInvolveSearchDTO.getPositionId() != null ? interviewInvolveSearchDTO.getPositionId() : -1l;
+            Long titleId = interviewInvolveSearchDTO.getTitleId() != null ? interviewInvolveSearchDTO.getTitleId() : -1l;
             InterviewInvolve item = _repo.find(cid, interviewId, orgId, positionId, titleId, interviewerId, supporterId).orElse(new InterviewInvolve());
             return ResponseUtils.handlerSuccess(_service.toDTOWithObject(cid, uid, item));
         } catch (Exception ex) {
@@ -162,13 +163,12 @@ public class InterviewInvolveApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity readConfig(@RequestHeader Long cid
             , @RequestHeader String uid
-            , @RequestBody Map<String, Object> condition) {
+            , @RequestBody InterviewInvolveSearchDTO interviewInvolveSearchDTO) {
         try{
-            Long interviewId = MapUtils.getLong(condition, "interviewId", -1l);
-            Long orgId = MapUtils.getLong(condition, "orgId", -1l);
-            Long positionId = MapUtils.getLong(condition, "positionId", -1l);
-            Long titleId = MapUtils.getLong(condition, "titleId", -1l);
-
+            Long interviewId = interviewInvolveSearchDTO.getInterviewId() != null ? interviewInvolveSearchDTO.getInterviewId() : -1l;
+            Long orgId = interviewInvolveSearchDTO.getOrgId() != null ? interviewInvolveSearchDTO.getOrgId() : -1l;
+            Long positionId = interviewInvolveSearchDTO.getPositionId() != null ? interviewInvolveSearchDTO.getPositionId() : -1l;
+            Long titleId = interviewInvolveSearchDTO.getTitleId() != null ? interviewInvolveSearchDTO.getTitleId() : -1l;
             List<InterviewInvolve> data = _repo.readConfig(cid, interviewId, orgId, positionId, titleId);
             List<InterviewInvolveDTO> dtos = _service.toDTOs(cid, uid, data);
             return ResponseUtils.handlerSuccess(dtos);

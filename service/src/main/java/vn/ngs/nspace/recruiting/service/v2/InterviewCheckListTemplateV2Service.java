@@ -68,7 +68,7 @@ public class InterviewCheckListTemplateV2Service {
         return dto;
     }
 
-    public Page<InterviewCheckListTemplateDTO> getPage(Long cid, String uid, InterviewTemplateFilterRequest request, Pageable pageable) {
+    public Page<InterviewCheckListTemplateDTO> getPage(Long cid, InterviewTemplateFilterRequest request, Pageable pageable) {
         Page<InterviewCheckListTemplate> templates = templateRepo.search(cid, request.getPositionId(), request.getOrgId() ,request.getTitleId(),pageable);
 
         List<InterviewCheckListTemplateDTO> dtos = toDTOs(templates.getContent());

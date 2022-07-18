@@ -21,24 +21,34 @@ public class EmailSettingService {
     }
 
     /* create object */
-    public EmailSettingDTO create(Long cid, String uid, EmailSettingDTO request) throws BusinessException {
-        EmailSetting obj = EmailSetting.of(cid, uid, request);
-        obj.setStatus(Constants.ENTITY_ACTIVE);
-        obj.setCreateBy(uid);
-        obj.setUpdateBy(uid);
-        obj.setCompanyId(cid);
-        obj = repo.save(obj);
+    public EmailSettingDTO create(Long cid, String uid, EmailSettingDTO request){
+        try {
+            EmailSetting obj = EmailSetting.of(cid, uid, request);
+            obj.setStatus(Constants.ENTITY_ACTIVE);
+            obj.setCreateBy(uid);
+            obj.setUpdateBy(uid);
+            obj.setCompanyId(cid);
+            obj = repo.save(obj);
 
-        return MapperUtils.map(obj, EmailSettingDTO.class);
+            return MapperUtils.map(obj, EmailSettingDTO.class);
+        }
+        catch (Exception ex){
+            throw new BusinessException(ex.getMessage());
+        }
     }
 
     /* update by id object */
-    public EmailSettingDTO update(Long cid, String uid, Long id, EmailSettingDTO request) throws BusinessException {
-        EmailSetting curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, id));
-        MapperUtils.copyWithoutAudit(request, curr);
-        curr.setUpdateBy(uid);
-        curr = repo.save(curr);
+    public EmailSettingDTO update(Long cid, String uid, Long id, EmailSettingDTO request)  {
+        try {
+            EmailSetting curr = repo.findByCompanyIdAndId(cid, id).orElseThrow(() -> new EntityNotFoundException(EmailSetting.class, id));
+            MapperUtils.copyWithoutAudit(request, curr);
+            curr.setUpdateBy(uid);
+            curr = repo.save(curr);
 
-        return MapperUtils.map(curr, EmailSettingDTO.class);
+            return MapperUtils.map(curr, EmailSettingDTO.class);
+        }
+        catch (Exception ex){
+            throw new BusinessException(ex.getMessage());
+        }
     }
 }

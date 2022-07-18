@@ -34,6 +34,7 @@ import vn.ngs.nspace.recruiting.service.CandidateService;
 import vn.ngs.nspace.recruiting.service.ProfileCheckListTemplateService;
 import vn.ngs.nspace.recruiting.share.dto.CandidateDTO;
 import vn.ngs.nspace.recruiting.share.dto.ProfileCheckListTemplateDTO;
+import vn.ngs.nspace.recruiting.share.dto.ProfileCheckSearchTemplateDTO;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,12 +63,11 @@ public class ProfileCheckListTemplateApi {
             , @Parameter(description="ID of company")
                 @RequestHeader("uid") String uid
             , @Parameter(description="Payload to search with positionId, titleId, contractTypeId")
-                @RequestBody Map<String, Object> condition
+                @RequestBody ProfileCheckSearchTemplateDTO profileCheckSearchTemplateDTO
             , Pageable pageable) {
         try{
-            Long positionId = MapUtils.getLong(condition, "positionId", -1l);
-            Long titleId = MapUtils.getLong(condition, "titleId", -1l);
-            Long contractTypeId = MapUtils.getLong(condition, "contractTypeId", -1l);
+            Long positionId = profileCheckSearchTemplateDTO.getPositionId() != null ? profileCheckSearchTemplateDTO.getPositionId() :  -1l;
+            Long titleId = profileCheckSearchTemplateDTO.getTitleId() != null ? profileCheckSearchTemplateDTO.getTitleId() : -1l;
             Page<ProfileCheckListTemplate> page = _repo.search(cid, positionId, titleId, pageable);
             List<ProfileCheckListTemplateDTO> dtos = _service.toDTOs(cid, uid, page.getContent());
             return ResponseUtils.handlerSuccess(new PageImpl(dtos, pageable, page.getTotalElements()));
@@ -187,12 +187,12 @@ public class ProfileCheckListTemplateApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity getProfileCheckListTemplate(
             @Parameter(description = "ID of company") @RequestHeader Long cid
-            , @Parameter(description = "condition of param body")  @RequestBody Map<String, Object>condition
+            , @Parameter(description = "condition of param body")  @RequestBody ProfileCheckSearchTemplateDTO profileCheckSearchTemplateDTO
     ){
         try {
-            Long positionId = MapUtils.getLong(condition, "positionId", null);
-            Long titleId = MapUtils.getLong(condition, "titleId", null);
-            String contractType = MapUtils.getString(condition, "contractType",null );
+            Long positionId = profileCheckSearchTemplateDTO.getPositionId() != null ? profileCheckSearchTemplateDTO.getPositionId() :  -1l;
+            Long titleId = profileCheckSearchTemplateDTO.getTitleId() != null ? profileCheckSearchTemplateDTO.getTitleId() : -1l;
+            String contractType = profileCheckSearchTemplateDTO.getContractType();
             List<ProfileCheckListTemplate> results = _repo.findProfileCheckListTemplate(cid, positionId,titleId,contractType);//.orElse(new ProfileCheckListTemplate());
             return ResponseUtils.handlerSuccess(results);
             //return ResponseUtils.handlerSuccess();

@@ -37,8 +37,7 @@ public class EmailSettingApi {
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key"
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity search(
-            @Parameter(description = "Id of Company") @RequestHeader Long cid
-            , @Parameter(description = "Id of User") @RequestHeader String uid) {
+            @Parameter(description = "Id of Company") @RequestHeader Long cid) {
         try{
             return ResponseUtils.handlerSuccess(_repo.findByCompanyId(cid));
         } catch (Exception ex) {
@@ -56,7 +55,6 @@ public class EmailSettingApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity search(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
-            , @Parameter(description = "Id of User") @RequestHeader String uid
             , @Parameter(description = "Id of record")  @PathVariable(value = "id") Long id) {
         try{
             return ResponseUtils.handlerSuccess(_repo.findByCompanyIdAndId(cid, id));

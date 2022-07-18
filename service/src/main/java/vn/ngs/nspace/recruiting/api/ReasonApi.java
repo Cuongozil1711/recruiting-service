@@ -46,7 +46,6 @@ public class ReasonApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity search(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
-            , @Parameter(description = "Id of User") @RequestHeader String uid
             , @RequestParam(value = "type", defaultValue = "") String type
             , @RequestParam(value = "search", defaultValue = "#") String search
             , Pageable pageable) {
@@ -67,7 +66,6 @@ public class ReasonApi {
             , schema = @Schema(implementation = String.class))
     protected ResponseEntity searchAll(
             @Parameter(description = "Id of Company") @RequestHeader Long cid
-            , @Parameter(description = "Id of User") @RequestHeader String uid
             , Pageable pageable) {
         try{
             Page<Map<String, Object>> results = _repo.searchAll(cid,  pageable);

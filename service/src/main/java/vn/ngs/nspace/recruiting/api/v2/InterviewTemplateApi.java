@@ -42,7 +42,7 @@ public class InterviewTemplateApi {
             @RequestHeader("cid") long cid
             , @Parameter(description = "ID of company")
             @RequestHeader("uid") String uid
-            , @Parameter(description = "param in path") @PathVariable(value = "id") Long id
+//            , @Parameter(description = "param in path") @PathVariable(value = "id") Long id
             , @RequestBody InterviewCheckListTemplateDTO dto) {
         try {
             return ResponseUtils.handlerSuccess(checkListTemplateV2Service.update(cid, uid, dto));
@@ -62,12 +62,10 @@ public class InterviewTemplateApi {
     protected ResponseEntity search(
             @Parameter(description = "ID of company")
             @RequestHeader("cid") long cid
-            , @Parameter(description = "ID of company")
-            @RequestHeader("uid") String uid
             , @RequestBody InterviewTemplateFilterRequest request
             , Pageable pageable) {
         try {
-            Page<InterviewCheckListTemplateDTO> page = checkListTemplateV2Service.getPage(cid, uid, request, pageable);
+            Page<InterviewCheckListTemplateDTO> page = checkListTemplateV2Service.getPage(cid, request, pageable);
             return ResponseUtils.handlerSuccess(page);
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
