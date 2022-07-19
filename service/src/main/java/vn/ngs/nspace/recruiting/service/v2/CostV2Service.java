@@ -22,7 +22,6 @@ import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
 import vn.ngs.nspace.recruiting.share.dto.CostDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.recruiting.share.request.RecruitmentNewsFilterRequest;
-import vn.ngs.nspace.task.core.data.UserData;
 
 import javax.transaction.Transactional;
 import java.util.*;
