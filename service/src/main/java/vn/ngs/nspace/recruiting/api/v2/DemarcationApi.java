@@ -19,8 +19,11 @@ import vn.ngs.nspace.recruiting.repo.DemarcationRepo;
 import vn.ngs.nspace.recruiting.share.dto.DemarcationDTO;
 import vn.ngs.nspace.recruiting.share.dto.DemarcationSearchDTO;
 import vn.ngs.nspace.recruiting.service.DemarcationService;
+import vn.ngs.nspace.recruiting.share.dto.DemarcationSearchResponseDto;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("demarcation")
@@ -44,16 +47,8 @@ public class DemarcationApi {
             @RequestBody DemarcationSearchDTO demarcationSearchDTO
             , Pageable pageable) {
         try {
-            Page<Demarcation> page = repo.search(
-                    demarcationSearchDTO.getOrgId(),
-                    demarcationSearchDTO.getLevelId(),
-                    demarcationSearchDTO.getPositionId(),
-                    demarcationSearchDTO.getTitleId(),
-//                    demarcationSearchDTO.getDateFrom(),
-//                    demarcationSearchDTO.getDateTo(),
-                    pageable
-                    );
-            return ResponseUtils.handlerSuccess(new PageImpl(page.getContent(), pageable, page.getTotalElements()));
+            List<DemarcationSearchResponseDto> dtoList = service.search(demarcationSearchDTO, pageable);
+            return ResponseUtils.handlerSuccess(new PageImpl(dtoList, pageable, dtoList.size()));
         } catch (Exception ex) {
             return ResponseUtils.handlerException(ex);
         }

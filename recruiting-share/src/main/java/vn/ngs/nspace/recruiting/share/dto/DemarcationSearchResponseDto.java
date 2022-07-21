@@ -11,10 +11,13 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class DemarcationSearchDTO {
+public class DemarcationSearchResponseDto {
     private Long orgId;
     private Long levelId;
     private Long titleId;
     private Long positionId;
-    private Integer dateDemarcation;
+    private Integer[] sumDemarcationForMonth;
+    private Long[] demarcationId;
+    private Integer sumDemarcation;
+    private Integer dateDemarcationYear;
 }
