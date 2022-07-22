@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
+import vn.ngs.nspace.recruiting.model.Candidate;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanRequest;
 import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
+import vn.ngs.nspace.recruiting.repo.CandidateRepo;
 import vn.ngs.nspace.recruiting.repo.DemarcationRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRequestRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
@@ -45,6 +47,7 @@ public class RecruitmentRequestService {
     private final DemarcationRepo demarcationRepo;
     private final DemarcationService demarcationService;
     private final ExecuteHcmService executeHcmService;
+    private final CandidateRepo candidateRepo;
 
     @Transactional
     public RecruitmentRequestDTO createRecruitmentRequest(Long cid, String uid, RecruitmentRequestDTO dto) {
@@ -402,7 +405,7 @@ public class RecruitmentRequestService {
                 responseDto.setTitleId(Long.valueOf(itemData.get("titleID").toString()));
                 responseDto.setPositionId(Long.valueOf(itemData.get("postionId").toString()));
                 responseDto.setDateDemarcationYear(requestDemarcationDTO.getDateDemarcationYear());
-                responseDto.setSumDemarcationMissing(demarcationMissing(responseDto.getOrgId(), responseDto.getLevelId(), responseDto.getTitleId(), responseDto.getPositionId(), uId, cId, requestDemarcationDTO.getDateDemarcationMonth(), requestDemarcationDTO.getDateDemarcationYear()));
+                responseDto.setSumDemarcationMissing(demarcationMissing(responseDto.getOrgId(), responseDto.getLevelId(), responseDto.getTitleId(), responseDto.getPositionId(), uId, cId, requestDemarcationDTO.getDateDemarcationYear(), requestDemarcationDTO.getDateDemarcationMonth()));
                 responseDto.setId(demarcationService.findSumDemarcationForId(responseDto.getOrgId(), responseDto.getLevelId(), responseDto.getTitleId(), responseDto.getPositionId(), requestDemarcationDTO.getDateDemarcationMonth().intValue() - 1));
                 dtoList.add(responseDto);
             }
@@ -441,12 +444,23 @@ public class RecruitmentRequestService {
         }
         // So luong can tuyen YCTD trang thai moi, da duyet
         Integer sumRecruitment = 0;
-        List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, "INIT");
+        List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.INIT.name());
         for(RecruitmentRequest recruitmentRequest : recruitmentRequestListInit) sumRecruitment += recruitmentRequest.getQuantity();
-        List<RecruitmentRequest> recruitmentRequestListApproved = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, "APPROVED");
+        List<RecruitmentRequest> recruitmentRequestListApproved = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.DONE.name());
         for(RecruitmentRequest recruitmentRequest : recruitmentRequestListApproved) sumRecruitment += recruitmentRequest.getQuantity();
+        List<RecruitmentRequest> recruitmentRequestListProcess= recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.PROCESSING.name());
 
 
-        return sumDemarcation - employeeSize - sumRecruitment;
+        // So luong con thieu trong ke hoach tuyen dung
+        Integer totalMissing = 0;
+        for(RecruitmentRequest request : recruitmentRequestListProcess){
+            for(Candidate candidate : candidateRepo.findAllByRecruitmentRequestId(request.getId())){
+                if(candidate.getEmployeeId() != null){
+                    totalMissing++;
+                }
+            }
+        }
+
+        return sumDemarcation - employeeSize - sumRecruitment - totalMissing;
     }
 }

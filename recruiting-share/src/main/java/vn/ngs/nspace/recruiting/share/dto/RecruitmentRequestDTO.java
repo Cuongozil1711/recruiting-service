@@ -52,4 +52,5 @@ public class RecruitmentRequestDTO {
     private String otherRequirement;
     private String createBy;
     private String state;
+    private DemarcationSearchResponseDto demarcationSearchResponseDto;
 }

@@ -169,7 +169,7 @@ public class RecruitmentRequestApi {
         }
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Search Detail recruitment with Demarcation",
             description = "Search Detail recruitment with Demarcation",

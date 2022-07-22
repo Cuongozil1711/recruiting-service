@@ -93,8 +93,11 @@ public class Candidate extends PersistableEntity<Long> {
 
     private Integer isBlacklist; // check is blacklist ?
 
-//    private Long employeeId;
+    private Long employeeId;
     private String state;
+
+    private Long recruitmentRequestId;
+    private Long recruitmentPlanId;
 
     public static Candidate of(long cid, String uid, CandidateDTO dto){
         Candidate candidate = Candidate.builder()

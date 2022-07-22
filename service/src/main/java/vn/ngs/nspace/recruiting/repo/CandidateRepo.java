@@ -232,5 +232,7 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
             "    COUNT(CASE WHEN ca.state = 'DENIED' THEN 0 END) as DENIED\n" +
             "from recruiting_service.candidate ca where ca.status = 1 and ca.company_id = :companyId", nativeQuery = true)
     Map<String, Object> countAll(@Param("companyId") Long companyId);
+
+    List<Candidate> findAllByRecruitmentRequestId(Long recruimentRequestId);
 }
 
