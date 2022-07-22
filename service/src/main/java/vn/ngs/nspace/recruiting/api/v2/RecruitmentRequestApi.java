@@ -17,6 +17,7 @@ import vn.ngs.nspace.policy.utils.Permission;
 import vn.ngs.nspace.recruiting.service.v2.RecruitmentRequestService;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDemarcationDTO;
 import vn.ngs.nspace.recruiting.share.request.RecruitmentFilterRequest;
 import vn.ngs.nspace.recruiting.share.request.RecruitmentRequestFilterRequest;
 import org.springframework.http.ResponseEntity;
@@ -163,6 +164,25 @@ public class RecruitmentRequestApi {
             List<RecruitmentRequestDTO> list = recruitmentRequestService.getAllByPlan(cid, uid, planId);
 
             return ResponseUtils.handlerSuccess(list);
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+    @GetMapping("/search")
+    @ActionMapping(action = Permission.VIEW)
+    @Operation(summary = "Search Detail recruitment with Demarcation",
+            description = "Search Detail recruitment with Demarcation",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
+    public ResponseEntity search(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") Long cid
+            , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
+            , @RequestBody() RecruitmentRequestDemarcationDTO recruitmentRequestDemarcationDTO
+    ) {
+        try {
+            return ResponseUtils.handlerSuccess(recruitmentRequestService.search(uid, cid, recruitmentRequestDemarcationDTO));
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }

@@ -113,7 +113,7 @@ public class DemarcationService {
                 responseDto.setOrgId(Long.valueOf(itemData.get("orgId").toString()));
                 responseDto.setLevelId(Long.valueOf(itemData.get("levelId").toString()));
                 responseDto.setTitleId(Long.valueOf(itemData.get("titleID").toString()));
-                responseDto.setPositionId(Long.valueOf(itemData.get("postionId").toString()));
+                responseDto.setPositionId(Long.valueOf(itemData.get("positionId").toString()));
                 responseDto.setSumDemarcation(Integer.valueOf(itemData.get("sumDemarcation").toString()));
                 responseDto.setDateDemarcationYear(demarcationSearchDTO.getDateDemarcation());
                 Integer[] array = new Integer[12];
@@ -133,7 +133,7 @@ public class DemarcationService {
         }
     }
 
-    private Integer findSumDemarcationForMonth(Long orgId, Long levelId, Long titleId, Long positionId, int month) {
+    public Integer findSumDemarcationForMonth(Long orgId, Long levelId, Long titleId, Long positionId, int month) {
         try {
             List<Demarcation> demarcationList = demarcationRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStatus(orgId, levelId, titleId, positionId, 1);
             for(Demarcation demarcation : demarcationList){
@@ -148,7 +148,7 @@ public class DemarcationService {
         return 0;
     }
 
-    private Long findSumDemarcationForId(Long orgId, Long levelId, Long titleId, Long positionId, int month) {
+    public Long findSumDemarcationForId(Long orgId, Long levelId, Long titleId, Long positionId, int month) {
         try {
             List<Demarcation> demarcationList = demarcationRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStatus(orgId, levelId, titleId, positionId, 1);
             for(Demarcation demarcation : demarcationList){

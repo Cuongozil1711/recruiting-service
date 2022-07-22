@@ -14,11 +14,17 @@ import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.utils.MapperUtils;
 import vn.ngs.nspace.recruiting.model.RecruitmentPlanRequest;
 import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
+import vn.ngs.nspace.recruiting.repo.DemarcationRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRequestRepo;
 import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
+import vn.ngs.nspace.recruiting.request.OnboardEmployeeFilterRequest;
+import vn.ngs.nspace.recruiting.service.DemarcationService;
 import vn.ngs.nspace.recruiting.service.ExecuteConfigService;
 import vn.ngs.nspace.recruiting.service.ExecuteHcmService;
+import vn.ngs.nspace.recruiting.share.dto.DemarcationSearchResponseDto;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDemarcationDTO;
+import vn.ngs.nspace.recruiting.share.dto.RecruitmentResponseDemarcationDTO;
 import vn.ngs.nspace.recruiting.share.dto.utils.Constants;
 import vn.ngs.nspace.recruiting.share.request.RecruitmentRequestFilterRequest;
 
@@ -36,6 +42,9 @@ public class RecruitmentRequestService {
     private final RecruitmentPlanRequestRepo recruitmentPlanRequestRepo;
     private final ExecuteConfigService configService;
     private final ExecuteHcmService hcmService;
+    private final DemarcationRepo demarcationRepo;
+    private final DemarcationService demarcationService;
+    private final ExecuteHcmService executeHcmService;
 
     @Transactional
     public RecruitmentRequestDTO createRecruitmentRequest(Long cid, String uid, RecruitmentRequestDTO dto) {
@@ -375,4 +384,69 @@ public class RecruitmentRequestService {
         return recruitmentRequests.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    public List<RecruitmentResponseDemarcationDTO> search(String uId, Long cId, RecruitmentRequestDemarcationDTO requestDemarcationDTO){
+        try {
+            List<Map<String, Object>> dataSearch = demarcationRepo.search(
+                    requestDemarcationDTO.getOrgId(),
+                    requestDemarcationDTO.getLevelId(),
+                    requestDemarcationDTO.getPositionId(),
+                    requestDemarcationDTO.getTitleId(),
+                    requestDemarcationDTO.getDateDemarcationYear()
+            );
+            List<RecruitmentResponseDemarcationDTO> dtoList = new ArrayList<>();
+            for(int i = 0; i < dataSearch.size(); i++){
+                Map<String, Object> itemData = dataSearch.get(i);
+                RecruitmentResponseDemarcationDTO responseDto = new RecruitmentResponseDemarcationDTO();
+                responseDto.setOrgId(Long.valueOf(itemData.get("orgId").toString()));
+                responseDto.setLevelId(Long.valueOf(itemData.get("levelId").toString()));
+                responseDto.setTitleId(Long.valueOf(itemData.get("titleID").toString()));
+                responseDto.setPositionId(Long.valueOf(itemData.get("postionId").toString()));
+                responseDto.setDateDemarcationYear(requestDemarcationDTO.getDateDemarcationYear());
+                responseDto.setSumDemarcationMissing(demarcationMissing(responseDto.getOrgId(), responseDto.getLevelId(), responseDto.getTitleId(), responseDto.getPositionId(), uId, cId, requestDemarcationDTO.getDateDemarcationMonth(), requestDemarcationDTO.getDateDemarcationYear()));
+                responseDto.setId(demarcationService.findSumDemarcationForId(responseDto.getOrgId(), responseDto.getLevelId(), responseDto.getTitleId(), responseDto.getPositionId(), requestDemarcationDTO.getDateDemarcationMonth().intValue() - 1));
+                dtoList.add(responseDto);
+            }
+            return dtoList;
+        }
+        catch (Exception ex){
+            throw new BusinessException(ex.getMessage());
+        }
+    }
+
+    public Integer demarcationMissing(Long orgId, Long levelId, Long titleId, Long positionId,String uId, Long cId, Integer year, Integer month){
+        Integer sumDemarcation = demarcationService.findSumDemarcationForMonth(orgId, levelId, titleId, positionId, month.intValue() - 1);
+        OnboardEmployeeFilterRequest onboardEm = new OnboardEmployeeFilterRequest();
+        onboardEm.setOrgId(orgId);
+        onboardEm.setTitleId(titleId);
+        onboardEm.setPositionId(positionId);
+        List<String> states = new ArrayList<>();
+        states.add("official");
+        states.add("probation");
+        onboardEm.setStates(states);
+        // So luong nhan vien chinh thuc hoac thu viec theo orgId, levelId, titleId, positionId
+        Integer employeeSize = 0;
+        Map<String, Object> listEmployee = executeHcmService.filter(uId, cId, onboardEm).getData();
+        List<Map<String, Object>> content = (List<Map<String, Object>>) listEmployee.get("content");
+        if(levelId != null){
+            for(Map<String, Object> keySet : content){
+                if(keySet.get("level_Id") != null){
+                    if(Long.valueOf(keySet.get("level_Id").toString()) == levelId){
+                        employeeSize++;
+                    }
+                }
+            }
+        }
+        else{
+            employeeSize = listEmployee.size();
+        }
+        // So luong can tuyen YCTD trang thai moi, da duyet
+        Integer sumRecruitment = 0;
+        List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, "INIT");
+        for(RecruitmentRequest recruitmentRequest : recruitmentRequestListInit) sumRecruitment += recruitmentRequest.getQuantity();
+        List<RecruitmentRequest> recruitmentRequestListApproved = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, "APPROVED");
+        for(RecruitmentRequest recruitmentRequest : recruitmentRequestListApproved) sumRecruitment += recruitmentRequest.getQuantity();
+
+
+        return sumDemarcation - employeeSize - sumRecruitment;
+    }
 }
