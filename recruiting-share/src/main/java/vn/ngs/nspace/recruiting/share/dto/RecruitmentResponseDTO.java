@@ -1,16 +1,14 @@
 package vn.ngs.nspace.recruiting.share.dto;
-
 import lombok.*;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class RecruitmentRequestDTO {
+public class RecruitmentResponseDTO {
     private Long id;
     private Long orgId;
     private String orgName;
@@ -58,5 +56,5 @@ public class RecruitmentRequestDTO {
     private Integer dateRequestMonth;
     private Integer dateRequestYear;
     private Long demarcationId;
-    private List<RecruitmentResponseDemarcationDTO> recruitmentResponseDemarcationDTOS; // record định biên tương ứng với phiếu
+    private List<DemarcationSearchResponseDto> demarcationSearchResponseDto;
 }

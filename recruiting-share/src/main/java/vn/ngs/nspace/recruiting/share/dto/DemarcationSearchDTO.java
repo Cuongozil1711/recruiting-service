@@ -16,5 +16,5 @@ public class DemarcationSearchDTO {
     private Long levelId;
     private Long titleId;
     private Long positionId;
-    private Integer dateDemarcation;
+    private Integer dateDemarcation; // dinh dang la tim theo nam
 }

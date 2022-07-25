@@ -49,8 +49,13 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
     private Long degree; //category (trình độ bằng cấp)
     private Integer fromAge;
     private Integer toAge;
-    private String otherRequirement;
+    private String jobDescription; // mô tả công việc
+    private String otherRequirement; // yêu cầu
+    private String benefit; // quyền lợi
     private String state;
+    private Integer dateRequestMonth;
+    private Integer dateRequestYear;
+    private Long demarcationId;
 
     public static RecruitmentRequest of (Long cid, String uid, RecruitmentRequestDTO dto) {
         RecruitmentRequest recruitmentRequest = RecruitmentRequest.builder()
@@ -78,7 +83,10 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
                 .degree(dto.getDegree())
                 .fromAge(dto.getFromAge())
                 .toAge(dto.getToAge())
+                .jobDescription(dto.getJobDescription())
                 .otherRequirement(dto.getOtherRequirement())
+                .benefit(dto.getBenefit())
+                .demarcationId(dto.getDemarcationId())
                 .build();
         recruitmentRequest.setCompanyId(cid);
         recruitmentRequest.setCreateBy(uid);

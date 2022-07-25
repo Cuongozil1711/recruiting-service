@@ -48,7 +48,7 @@ public class RecruitmentRequestApi {
     public ResponseEntity create(
             @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
             , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
-            , @RequestBody RecruitmentRequestDTO dto
+            , @RequestBody List<RecruitmentRequestDTO> dto
     ) {
         try {
             return ResponseUtils.handlerSuccess(recruitmentRequestService.createRecruitmentRequest(cid, uid, dto));
@@ -79,7 +79,7 @@ public class RecruitmentRequestApi {
     }
 
     @PutMapping("/{id}")
-    @ActionMapping(action = Permission.UPDATE)
+    @ActionMapping(action = Permission.DELETE)
     @Operation(summary = "Update recruitment request",
             description = "Update recruitment request",
             tags = {"Recruitment request"})
@@ -172,7 +172,7 @@ public class RecruitmentRequestApi {
     @PostMapping("/search")
     @ActionMapping(action = Permission.VIEW)
     @Operation(summary = "Search Detail recruitment with Demarcation",
-            description = "Search Detail recruitment with Demarcation",
+            description = "Search Detail recruitment with Demarcation when new recruitements",
             tags = {"Recruitment request"})
     @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
             schema = @Schema(implementation = String.class))
