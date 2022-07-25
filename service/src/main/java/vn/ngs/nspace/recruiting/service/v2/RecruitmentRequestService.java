@@ -54,7 +54,12 @@ public class RecruitmentRequestService {
     public RecruitmentRequestDTO createRecruitmentRequest(Long cid, String uid, RecruitmentRequestDTO dtoList) {
         validateInput(dtoList);
         for(int i = 0;  i < dtoList.getRecruitmentResponseDemarcationDTOS().size(); i++){
-            RecruitmentRequest recruitmentRequest = RecruitmentRequest.of(cid, uid, dtoList);
+            RecruitmentRequestDTO dto = dtoList;
+            dto.setLevelId(dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getLevelId());
+            dto.setOrgId(dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getOrgId());
+            dto.setTitleId(dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getTitleId());
+            dto.setPositionId(dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getPositionId());
+            RecruitmentRequest recruitmentRequest = RecruitmentRequest.of(cid, uid, dto);
             recruitmentRequest.setDemarcationId(dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getId());
             if (dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getQuantity() == null) {
                 throw new BusinessException("quantity-recruit-null");
@@ -249,7 +254,7 @@ public class RecruitmentRequestService {
             search = "%" + request.getSearch() + "%";
         }
 
-            Page<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.filterAllByPage(cid, orgIds, positionIds, createdByUids, statuses, search, quantity, request.getType(), request.getFromDate(), request.getToDate(), page);
+            Page<RecruitmentRequest> recruitmentRequests = recruitmentRequestRepo.filterAllByPage(cid, orgIds, positionIds, createdByUids, statuses, search, quantity, request.getType(), request.getFromDate(), page);
         List<RecruitmentRequest> rsList = recruitmentRequests.getContent();
         List<RecruitmentRequestDTO> rsDTOList = getAllInfo(cid, uid, rsList);
 
