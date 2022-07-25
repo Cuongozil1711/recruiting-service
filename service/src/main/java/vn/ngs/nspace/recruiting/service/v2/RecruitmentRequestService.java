@@ -81,6 +81,14 @@ public class RecruitmentRequestService {
         validateInput(dto);
         RecruitmentRequest recruitmentRequest = recruitmentRequestRepo.findByCompanyIdAndIdAndStatus(cid, dto.getId(), Constants.ENTITY_ACTIVE)
                 .orElseThrow(() -> new BusinessException("recruitment-request-does-not-exists"));
+
+        if (dto.getRecruitmentResponseDemarcationDTOS().get(0).getId() == null) {
+            throw new BusinessException("demarcation-recruit-null");
+        }
+
+        if (dto.getRecruitmentResponseDemarcationDTOS().get(0).getQuantity() == null) {
+            throw new BusinessException("quantity-recruit-null");
+        }
         recruitmentRequest.setUpdateBy(uid);
         recruitmentRequest.setCode(dto.getCode());
         recruitmentRequest.setOrgId(dto.getOrgId());
@@ -188,56 +196,8 @@ public class RecruitmentRequestService {
             throw new BusinessException("unit-null");
         }
 
-        if (dto.getPositionId() == null) {
-            throw new BusinessException("position-null");
-        }
-
-        if (dto.getTitleId() == null) {
-            throw new BusinessException("title-null");
-        }
-
-        if (StringUtils.isEmpty(dto.getType())) {
-            throw new BusinessException("request-type-null");
-        }
-
         if (dto.getStartDate() == null) {
             throw new BusinessException("required-field-null");
-        }
-
-        if (StringUtils.isEmpty(dto.getWorkType())) {
-            throw new BusinessException("required-field-null");
-        }
-
-        if (StringUtils.isEmpty(dto.getWorkArea())) {
-            throw new BusinessException("required-field-null");
-        }
-
-        if (dto.getWorkArea().length() > 100) {
-            throw new BusinessException("max-lenght-allow");
-        }
-
-        if (Constants.RANGED_SALARY.equals(dto.getSalaryType())) {
-            if (dto.getFromSalary() == null || dto.getFromSalary() <= 0
-                    || dto.getFromSalary() >= 1_000_000_000_000_000L) {
-                throw new BusinessException("allow-only-number");
-            }
-        }
-
-        if (Constants.UP_TO_SALARY.equals(dto.getSalaryType())
-                || Constants.RANGED_SALARY.equals(dto.getSalaryType())) {
-
-            if (dto.getToSalary() == null || dto.getToSalary() <= 0
-                    || dto.getToSalary() >= 1_000_000_000_000_000L) {
-                throw new BusinessException("allow-only-number");
-            }
-        }
-
-        if (dto.getFromAge() == null || dto.getFromAge() >= 100) {
-            throw new BusinessException("allow-only-number");
-        }
-
-        if (dto.getToAge() == null || dto.getToAge() >= 100) {
-            throw new BusinessException("allow-only-number");
         }
     }
 
