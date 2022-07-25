@@ -179,7 +179,6 @@ public class RecruitmentRequestService {
         responseDemarcationDTO.setDateDemarcationMonth(Integer.valueOf(simpleDateFormat.format(demarcation.getDemarcationDate()).split("-")[0]));
         responseDemarcationDTO.setId(recruitmentRequest.getDemarcationId());
 
-
         RecruitmentRequestDTO recruitmentRequestDTO = result.get(0);
         // Tra ve dinh bien
         List<RecruitmentResponseDemarcationDTO> responseDemarcationDTOList = new ArrayList<>();

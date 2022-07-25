@@ -30,7 +30,7 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
     private String type; //trong kế hoạch ngoài kế hoạch
     private String typeRequest; //loại yêu cầu
     private Integer quantity;
-
+    private String name; // ten phieu
     //// TODO: new
     private String code;
     private Long orgDeptId;
@@ -67,6 +67,7 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
                 .positionId(dto.getPositionId())
                 .titleId(dto.getTitleId())
                 .levelId(dto.getLevelId())
+                .name(dto.getName())
                 .typeRequest(dto.getTypeRequest())
                 .contractTypeId(dto.getContractTypeId())
                 .type(dto.getType())
@@ -85,6 +86,8 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
                 .jobDescription(dto.getJobDescription())
                 .otherRequirement(dto.getOtherRequirement())
                 .benefit(dto.getBenefit())
+                .dateRequestMonth(dto.getDateRequestMonth())
+                .dateRequestYear(dto.getDateRequestYear())
                 .build();
         recruitmentRequest.setCompanyId(cid);
         recruitmentRequest.setCreateBy(uid);
