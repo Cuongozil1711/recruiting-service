@@ -52,7 +52,7 @@ public class RecruitmentRequestService {
 
     @Transactional
     public RecruitmentRequestDTO createRecruitmentRequest(Long cid, String uid, RecruitmentRequestDTO dtoList) {
-        //validateInput(dtoList);
+        validateInput(dtoList);
         for(int i = 0;  i < dtoList.getRecruitmentResponseDemarcationDTOS().size(); i++){
             RecruitmentRequest recruitmentRequest = RecruitmentRequest.of(cid, uid, dtoList);
             recruitmentRequest.setDemarcationId(dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getId());
