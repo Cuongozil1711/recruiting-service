@@ -48,7 +48,7 @@ public class RecruitmentRequestApi {
     public ResponseEntity create(
             @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
             , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
-            , @RequestBody List<RecruitmentRequestDTO> dto
+            , @RequestBody RecruitmentRequestDTO dto
     ) {
         try {
             return ResponseUtils.handlerSuccess(recruitmentRequestService.createRecruitmentRequest(cid, uid, dto));

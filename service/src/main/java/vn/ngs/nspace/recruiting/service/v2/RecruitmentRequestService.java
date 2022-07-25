@@ -51,16 +51,20 @@ public class RecruitmentRequestService {
     private final CandidateRepo candidateRepo;
 
     @Transactional
-    public List<RecruitmentRequestDTO> createRecruitmentRequest(Long cid, String uid, List<RecruitmentRequestDTO> dtoList) {
-
-        for(RecruitmentRequestDTO dto : dtoList){
-            validateInput(dto);
-            RecruitmentRequest recruitmentRequest = RecruitmentRequest.of(cid, uid, dto);
+    public RecruitmentRequestDTO createRecruitmentRequest(Long cid, String uid, RecruitmentRequestDTO dtoList) {
+        //validateInput(dtoList);
+        for(int i = 0;  i < dtoList.getRecruitmentResponseDemarcationDTOS().size(); i++){
+            RecruitmentRequest recruitmentRequest = RecruitmentRequest.of(cid, uid, dtoList);
+            recruitmentRequest.setDemarcationId(dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getId());
+            if (dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getQuantity() == null) {
+                throw new BusinessException("quantity-recruit-null");
+            }
+            recruitmentRequest.setQuantity(dtoList.getRecruitmentResponseDemarcationDTOS().get(i).getQuantity());
             recruitmentRequest.setState(Constants.HCM_RECRUITMENT.INIT.toString());
             recruitmentRequestRepo.save(recruitmentRequest);
 
             RecruitmentPlanRequest planRequest = RecruitmentPlanRequest.builder()
-                    .recruitmentPlanId(dto.getRecruitmentPlanId())
+                    .recruitmentPlanId(dtoList.getRecruitmentPlanId())
                     .recruitmentRequestId(recruitmentRequest.getId())
                     .build();
             planRequest.setCompanyId(cid);
@@ -87,7 +91,7 @@ public class RecruitmentRequestService {
         recruitmentRequest.setLevelId(dto.getLevelId());
         recruitmentRequest.setState(dto.getState());
         recruitmentRequest.setContractTypeId(dto.getContractTypeId());
-        recruitmentRequest.setQuantity(dto.getQuantity());
+        recruitmentRequest.setQuantity(dto.getRecruitmentResponseDemarcationDTOS().get(0).getQuantity());
         recruitmentRequest.setType(dto.getType());
         recruitmentRequest.setStartDate(dto.getStartDate());
         recruitmentRequest.setEndDate(dto.getEndDate());
@@ -104,7 +108,7 @@ public class RecruitmentRequestService {
         recruitmentRequest.setJobDescription(dto.getJobDescription());
         recruitmentRequest.setOtherRequirement(dto.getOtherRequirement());
         recruitmentRequest.setBenefit(dto.getBenefit());
-        recruitmentRequest.setDemarcationId(dto.getDemarcationId());
+        recruitmentRequest.setDemarcationId(dto.getRecruitmentResponseDemarcationDTOS().get(0).getId());
         recruitmentRequest.setCreateBy(uid);
         recruitmentRequestRepo.save(recruitmentRequest);
 
@@ -148,19 +152,19 @@ public class RecruitmentRequestService {
         demarcationDTO.setTitleId(result.get(0).getTitleId());
 
         // tim dinh bien trong phiếu yêu cầu detail
-        Demarcation demarcation =  demarcationRepo.findById(result.get(0).getDemarcationId()).orElseThrow(() -> new BusinessException("Can not find demarcation in recruitment"));
-        Integer sumDemarcationMissing = findRecruimentDemarcation(demarcation, uid, cid, result.get(0).getQuantity());
+        Demarcation demarcation =  demarcationRepo.findById(recruitmentRequest.getDemarcationId()).orElseThrow(() -> new BusinessException("Can not find demarcation in recruitment"));
+        Integer sumDemarcationMissing = findRecruimentDemarcation(demarcation, uid, cid, recruitmentRequest.getQuantity());
         RecruitmentResponseDemarcationDTO responseDemarcationDTO = new RecruitmentResponseDemarcationDTO(); // 1 tìm kiếm theo phiếu đang sửa
         responseDemarcationDTO.setOrgId(result.get(0).getOrgId());
         responseDemarcationDTO.setTitleId(result.get(0).getTitleId());
         responseDemarcationDTO.setLevelId(result.get(0).getLevelId());
         responseDemarcationDTO.setPositionId(result.get(0).getPositionId());
-        responseDemarcationDTO.setQuantity(result.get(0).getQuantity());
+        responseDemarcationDTO.setQuantity(recruitmentRequest.getQuantity());
         responseDemarcationDTO.setSumDemarcationMissing(sumDemarcationMissing);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM");
         responseDemarcationDTO.setDateDemarcationYear(Integer.valueOf(simpleDateFormat.format(demarcation.getDemarcationDate()).split("-")[1]));
         responseDemarcationDTO.setDateDemarcationMonth(Integer.valueOf(simpleDateFormat.format(demarcation.getDemarcationDate()).split("-")[0]));
-        responseDemarcationDTO.setId(result.get(0).getDemarcationId());
+        responseDemarcationDTO.setId(recruitmentRequest.getDemarcationId());
 
 
         RecruitmentRequestDTO recruitmentRequestDTO = result.get(0);
@@ -190,10 +194,6 @@ public class RecruitmentRequestService {
 
         if (dto.getTitleId() == null) {
             throw new BusinessException("title-null");
-        }
-
-        if (dto.getQuantity() == null) {
-            throw new BusinessException("quantity-recruit-null");
         }
 
         if (StringUtils.isEmpty(dto.getType())) {
@@ -429,20 +429,21 @@ public class RecruitmentRequestService {
                     requestDemarcationDTO.getLevelId(),
                     requestDemarcationDTO.getPositionId(),
                     requestDemarcationDTO.getTitleId(),
-                    requestDemarcationDTO.getDateDemarcationYear()
+                    requestDemarcationDTO.getDateDemarcationYear(),
+                    requestDemarcationDTO.getDateDemarcationMonth()
             );
             List<RecruitmentResponseDemarcationDTO> dtoList = new ArrayList<>();
             for(int i = 0; i < dataSearch.size(); i++){
                 Map<String, Object> itemData = dataSearch.get(i);
                 RecruitmentResponseDemarcationDTO responseDto = new RecruitmentResponseDemarcationDTO();
-                responseDto.setOrgId(Long.valueOf(itemData.get("orgId").toString()));
-                responseDto.setLevelId(Long.valueOf(itemData.get("levelId").toString()));
-                responseDto.setTitleId(Long.valueOf(itemData.get("titleID").toString()));
-                responseDto.setPositionId(Long.valueOf(itemData.get("postionId").toString()));
+                responseDto.setOrgId(Long.valueOf(itemData.get("orgid").toString()));
+                responseDto.setLevelId(Long.valueOf(itemData.get("levelid").toString()));
+                responseDto.setTitleId(Long.valueOf(itemData.get("titleids").toString()));
+                responseDto.setPositionId(Long.valueOf(itemData.get("positionid").toString()));
                 responseDto.setDateDemarcationYear(requestDemarcationDTO.getDateDemarcationYear());
                 responseDto.setDateDemarcationMonth(requestDemarcationDTO.getDateDemarcationMonth());
-                responseDto.setSumDemarcationMissing(demarcationMissing(responseDto.getOrgId(), responseDto.getLevelId(), responseDto.getTitleId(), responseDto.getPositionId(), uId, cId, requestDemarcationDTO.getDateDemarcationYear(), requestDemarcationDTO.getDateDemarcationMonth()));
-                responseDto.setId(demarcationService.findSumDemarcationForId(responseDto.getOrgId(), responseDto.getLevelId(), responseDto.getTitleId(), responseDto.getPositionId(), requestDemarcationDTO.getDateDemarcationMonth().intValue() - 1));
+                responseDto.setSumDemarcationMissing(demarcationMissing(Long.valueOf(itemData.get("id").toString()), responseDto.getOrgId(), responseDto.getLevelId(), responseDto.getTitleId(), responseDto.getPositionId(), uId, cId, requestDemarcationDTO.getDateDemarcationYear(), requestDemarcationDTO.getDateDemarcationMonth()));
+                responseDto.setId(Long.valueOf(itemData.get("id").toString()));
                 dtoList.add(responseDto);
             }
             return dtoList;
@@ -516,51 +517,56 @@ public class RecruitmentRequestService {
         }
     }
 
-    public Integer demarcationMissing(Long orgId, Long levelId, Long titleId, Long positionId,String uId, Long cId, Integer year, Integer month){
-        Integer sumDemarcation = demarcationService.findSumDemarcationForMonth(orgId, levelId, titleId, positionId, month.intValue() - 1);
-        OnboardEmployeeFilterRequest onboardEm = new OnboardEmployeeFilterRequest();
-        onboardEm.setOrgId(orgId);
-        onboardEm.setTitleId(titleId);
-        onboardEm.setPositionId(positionId);
-        List<String> states = new ArrayList<>();
-        states.add("official");
-        states.add("probation");
-        onboardEm.setStates(states);
-        // So luong nhan vien chinh thuc hoac thu viec theo orgId, levelId, titleId, positionId
-        Integer employeeSize = 0;
-        Map<String, Object> listEmployee = executeHcmService.filter(uId, cId, onboardEm).getData();
-        List<Map<String, Object>> content = (List<Map<String, Object>>) listEmployee.get("content");
-        if(levelId != null){
-            for(Map<String, Object> keySet : content){
-                if(keySet.get("level_Id") != null){
-                    if(Long.valueOf(keySet.get("level_Id").toString()) == levelId){
-                        employeeSize++;
+    public Integer demarcationMissing(Long id, Long orgId, Long levelId, Long titleId, Long positionId,String uId, Long cId, Integer year, Integer month){
+        try {
+            Integer sumDemarcation = demarcationRepo.findById(id).get().getSumDemarcation();
+            OnboardEmployeeFilterRequest onboardEm = new OnboardEmployeeFilterRequest();
+            onboardEm.setOrgId(orgId);
+            onboardEm.setTitleId(titleId);
+            onboardEm.setPositionId(positionId);
+            List<String> states = new ArrayList<>();
+            states.add("official");
+            states.add("probation");
+            onboardEm.setStates(states);
+            // So luong nhan vien chinh thuc hoac thu viec theo orgId, levelId, titleId, positionId
+            Integer employeeSize = 0;
+            Map<String, Object> listEmployee = executeHcmService.filter(uId, cId, onboardEm).getData();
+            List<Map<String, Object>> content = (List<Map<String, Object>>) listEmployee.get("content");
+            if(levelId != null){
+                for(Map<String, Object> keySet : content){
+                    if(keySet.get("level_Id") != null){
+                        if(Long.valueOf(keySet.get("level_Id").toString()) == levelId){
+                            employeeSize++;
+                        }
                     }
                 }
             }
-        }
-        else{
-            employeeSize = listEmployee.size();
-        }
-        // So luong can tuyen YCTD trang thai moi, da duyet
-        Integer sumRecruitment = 0;
-        List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.INIT.name());
-        for(RecruitmentRequest recruitmentRequest : recruitmentRequestListInit) sumRecruitment += recruitmentRequest.getQuantity();
-        List<RecruitmentRequest> recruitmentRequestListApproved = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.DONE.name());
-        for(RecruitmentRequest recruitmentRequest : recruitmentRequestListApproved) sumRecruitment += recruitmentRequest.getQuantity();
-        List<RecruitmentRequest> recruitmentRequestListProcess= recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.PROCESSING.name());
+            else{
+                employeeSize = listEmployee.size();
+            }
+            // So luong can tuyen YCTD trang thai moi, da duyet
+            Integer sumRecruitment = 0;
+            List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.INIT.name());
+            for(RecruitmentRequest recruitmentRequest : recruitmentRequestListInit) sumRecruitment += recruitmentRequest.getQuantity();
+            List<RecruitmentRequest> recruitmentRequestListApproved = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.DONE.name());
+            for(RecruitmentRequest recruitmentRequest : recruitmentRequestListApproved) sumRecruitment += recruitmentRequest.getQuantity();
+            List<RecruitmentRequest> recruitmentRequestListProcess= recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.PROCESSING.name());
 
 
-        // So luong con thieu trong ke hoach tuyen dung
-        Integer totalMissing = 0;
-        for(RecruitmentRequest request : recruitmentRequestListProcess){
-            for(Candidate candidate : candidateRepo.findAllByRecruitmentRequestId(request.getId())){
-                if(candidate.getEmployeeId() != null){
-                    totalMissing++;
+            // So luong con thieu trong ke hoach tuyen dung
+            Integer totalMissing = 0;
+            for(RecruitmentRequest request : recruitmentRequestListProcess){
+                for(Candidate candidate : candidateRepo.findAllByRecruitmentRequestId(request.getId())){
+                    if(candidate.getEmployeeId() != null){
+                        totalMissing++;
+                    }
                 }
             }
-        }
 
-        return sumDemarcation - employeeSize - sumRecruitment - totalMissing;
+            return sumDemarcation - employeeSize - sumRecruitment - totalMissing;
+        }
+        catch (Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 }

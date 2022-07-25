@@ -23,7 +23,7 @@ public class RecruitmentRequestDTO {
     private Long pic; // employeeId
     private String type; //trong kế hoạch ngoài kế hoạch
     private String typeRequest; //loại yêu cầu
-    private Integer quantity;
+//    private Integer quantity;
 
     //// TODO: new
     private String code;
@@ -57,6 +57,6 @@ public class RecruitmentRequestDTO {
     private String state;
     private Integer dateRequestMonth;
     private Integer dateRequestYear;
-    private Long demarcationId;
+//    private Long demarcationId;
     private List<RecruitmentResponseDemarcationDTO> recruitmentResponseDemarcationDTOS; // record định biên tương ứng với phiếu
 }

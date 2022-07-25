@@ -69,7 +69,6 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
                 .levelId(dto.getLevelId())
                 .typeRequest(dto.getTypeRequest())
                 .contractTypeId(dto.getContractTypeId())
-                .quantity(dto.getQuantity())
                 .type(dto.getType())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
@@ -86,7 +85,6 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
                 .jobDescription(dto.getJobDescription())
                 .otherRequirement(dto.getOtherRequirement())
                 .benefit(dto.getBenefit())
-                .demarcationId(dto.getDemarcationId())
                 .build();
         recruitmentRequest.setCompanyId(cid);
         recruitmentRequest.setCreateBy(uid);

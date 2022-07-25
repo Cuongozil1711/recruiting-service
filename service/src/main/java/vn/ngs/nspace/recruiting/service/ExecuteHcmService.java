@@ -310,7 +310,7 @@ public class ExecuteHcmService {
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
             List<Long> positionIds = new ArrayList<>();
-            if (filterRequest.getPositionId() != -1L)
+            if (filterRequest.getPositionId() != -1L && filterRequest.getPositionId() != 0)
                 positionIds.add(filterRequest.getPositionId());
 
             HttpHeaders headers = createHeader(requestUserId, companyId);
