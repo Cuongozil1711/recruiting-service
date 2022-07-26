@@ -336,7 +336,7 @@ public class ExecuteHcmService {
 
     public BaseResponse<Integer> sumEmployeeHcm(String requestUserId, Long companyId, OnboardEmployeeFilterRequest filterRequest) {
         try {
-            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/get-total-employe");
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/get-total-employee");
             HttpMethod method = HttpMethod.POST;
             RestTemplate restTemplate = new RestTemplate();
             List<Long> positionIds = new ArrayList<>();
