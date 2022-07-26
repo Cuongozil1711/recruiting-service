@@ -132,6 +132,23 @@ public class RecruitmentRequestService {
         return dto;
     }
 
+
+    @Transactional
+    public RecruitmentRequestDTO updateStateRecruitmentRequest(Long cid, RecruitmentRequestDTO dto) {
+        validateInput(dto);
+        RecruitmentRequest recruitmentRequest = recruitmentRequestRepo.findByCompanyIdAndIdAndStatus(cid, dto.getId(), Constants.ENTITY_ACTIVE)
+                .orElseThrow(() -> new BusinessException("recruitment-request-does-not-exists"));
+
+        recruitmentRequest.setState(dto.getState());
+        recruitmentRequestRepo.save(recruitmentRequest);
+
+        List<RecruitmentPlanRequest> recruitmentPlanRequests = recruitmentPlanRequestRepo.findByCompanyIdAndRecruitmentRequestIdAndStatus(cid, recruitmentRequest.getId(), Constants.ENTITY_ACTIVE);
+        recruitmentPlanRequests.forEach(recruitmentPlanRequest -> recruitmentPlanRequest.setRecruitmentPlanId(dto.getRecruitmentPlanId()));
+        recruitmentPlanRequestRepo.saveAll(recruitmentPlanRequests);
+
+        return dto;
+    }
+
     @Transactional
     public RecruitmentRequest deleteRecruitmentRequest(Long cid, String uid, Long id) {
         RecruitmentRequest recruitmentRequest = recruitmentRequestRepo.findByCompanyIdAndIdAndStatus(cid, id, Constants.ENTITY_ACTIVE)
@@ -423,6 +440,7 @@ public class RecruitmentRequestService {
             OnboardEmployeeFilterRequest onboardEm = new OnboardEmployeeFilterRequest();
             onboardEm.setOrgId(demarcation.getOrgId());
             onboardEm.setTitleId(demarcation.getTitleId());
+
             onboardEm.setPositionId(demarcation.getPositionId());
             List<String> states = new ArrayList<>();
             states.add("official");
@@ -433,21 +451,8 @@ public class RecruitmentRequestService {
             Long titleId = demarcation.getTitleId();
             Long positionId = demarcation.getPositionId();
             // So luong nhan vien chinh thuc hoac thu viec theo orgId, levelId, titleId, positionId
-            Integer employeeSize = 0;
-            Map<String, Object> listEmployee = executeHcmService.filter(uId, cId, onboardEm).getData();
-            List<Map<String, Object>> content = (List<Map<String, Object>>) listEmployee.get("content");
-            if(levelId != null){
-                for(Map<String, Object> keySet : content){
-                    if(keySet.get("level_Id") != null){
-                        if(Long.valueOf(keySet.get("level_Id").toString()) == levelId){
-                            employeeSize++;
-                        }
-                    }
-                }
-            }
-            else{
-                employeeSize = listEmployee.size();
-            }
+            Integer employeeSize = executeHcmService.sumEmployeeHcm(uId, cId, onboardEm).getData();
+
             // So luong can tuyen YCTD trang thai moi, da duyet
             Integer sumRecruitment = 0;
             List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStateAndStatus(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.INIT.name(), 1);
@@ -487,21 +492,8 @@ public class RecruitmentRequestService {
             states.add("probation");
             onboardEm.setStates(states);
             // So luong nhan vien chinh thuc hoac thu viec theo orgId, levelId, titleId, positionId
-            Integer employeeSize = 0;
-            Map<String, Object> listEmployee = executeHcmService.filter(uId, cId, onboardEm).getData();
-            List<Map<String, Object>> content = (List<Map<String, Object>>) listEmployee.get("content");
-            if(levelId != null){
-                for(Map<String, Object> keySet : content){
-                    if(keySet.get("level_Id") != null){
-                        if(Long.valueOf(keySet.get("level_Id").toString()) == levelId){
-                            employeeSize++;
-                        }
-                    }
-                }
-            }
-            else{
-                employeeSize = listEmployee.size();
-            }
+            // So luong nhan vien chinh thuc hoac thu viec theo orgId, levelId, titleId, positionId
+            Integer employeeSize = executeHcmService.sumEmployeeHcm(uId, cId, onboardEm).getData();
             // So luong can tuyen YCTD trang thai moi, da duyet
             Integer sumRecruitment = 0;
             List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStateAndStatus(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.INIT.name(), 1);

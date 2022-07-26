@@ -288,20 +288,23 @@ public class CandidateApi {
         }
     }
 
-//    @PostMapping("/uploadFile")
-//    @ActionMapping(action = Permission.UPDATE)
-//    public void uploadFile(
-//            @Parameter(description = "Id of Company") @RequestHeader Long cid
-//            , @Parameter(description = "Id of User") @RequestHeader String uid
-//            , @RequestParam("file") MultipartFile file){
-//        try {
-//
-//              _service.uploadFile(uid,cid,file);
-//
-//        } catch (Exception ex) {
-//             ResponseUtils.handlerException(ex);
-//        }
-//    }
+    @PostMapping("/updateCv")
+    @Operation(description = "Api Update CV to Job Application")
+    @ActionMapping(action = Permission.UPDATE)
+    public ResponseEntity updateCvToJob(
+            @Parameter(description = "Id of Company") @RequestHeader Long cid
+            , @Parameter(description = "Id of User") @RequestHeader String uid
+            , @RequestBody Long[] ids
+            , @RequestParam("requestId") Long requestId
+            , @RequestParam("planId") Long planId
+            ){
+        try {
+            _service.updateCvToJob(ids, requestId, planId);
+            return ResponseUtils.handlerSuccess();
+        } catch (Exception ex) {
+            return ResponseUtils.handlerException(ex);
+        }
+    }
 
 
     @PostMapping("/filter")

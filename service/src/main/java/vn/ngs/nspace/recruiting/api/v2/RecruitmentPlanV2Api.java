@@ -53,15 +53,19 @@ public class RecruitmentPlanV2Api {
         }
     }
 
-    @PostMapping("{id}")
+    @GetMapping("{id}")
     @ActionMapping(action = Permission.VIEW)
     public ResponseEntity getById(
             @RequestHeader("cid") long cid
             , @RequestHeader("uid") String uid
             , @PathVariable("id") Long id
-            , @RequestBody PlantRequestFilter filter
+            , @RequestParam("size") Integer size
+            , @RequestParam("page") Integer page
             ) {
         try {
+            PlantRequestFilter filter = new PlantRequestFilter();
+            filter.setSize(size);
+            filter.setPage(page);
             RecruitmentPlanDTO recruitmentPlanDTO = planV2Service.getById(cid, uid, id, filter);
             return ResponseUtils.handlerSuccess(recruitmentPlanDTO);
         } catch (Exception e) {

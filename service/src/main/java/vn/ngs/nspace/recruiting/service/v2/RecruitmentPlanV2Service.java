@@ -157,9 +157,9 @@ public class RecruitmentPlanV2Service {
         for(RecruitmentPlanRequestDTO planRequestDTO : planRequestDTOS){
             sumQuanity += planRequestDTO.getRequestDTO().getQuantity();
             // số lượng ứng tuyển
-            sumCandidateRecruited += candidateRepo.sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(planRequestDTO.getRequestId(), planRequestDTO.getRecruitmentPlanId());
+            sumCandidateRecruited += candidateRepo.sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(planRequestDTO.getRequestId(), planRequestDTO.getRequestDTO().getRecruitmentPlanId());
             // số lượng đã tuyển
-            recruited += jobApplicationRepo.sumEmployeeByPlant(planRequestDTO.getRecruitmentPlanId(), planRequestDTO.getRequestId());
+            recruited += jobApplicationRepo.sumEmployeeByPlant(planRequestDTO.getRequestDTO().getRecruitmentPlanId(), planRequestDTO.getRequestId());
         }
 
         RecruitmentPlanDTO dto = MapperUtils.map(plan,RecruitmentPlanDTO.class);
@@ -173,16 +173,16 @@ public class RecruitmentPlanV2Service {
     }
 
     private RecruitmentPlanDTO toDTO(Long cid, RecruitmentPlan plan, PlantRequestFilter filter) {
-        List<RecruitmentPlanRequest> recruitmentPlanRequests =
-                planRequestRepo.getByPlanIdAndFilter(cid,plan.getId(), filter.getType(), filter.getTypeRequest(),filter.getSearch(),filter.getState(),filter.getPicId(),filter.getPositionId(),filter.getOrgId(),filter.getLevelId(),filter.getDeadlineFrom(),filter.getDeadlineTo());
+        List<RecruitmentPlanRequest> recruitmentPlanRequests =  planRequestRepo.getByPlanId(cid,plan.getId());
+//                planRequestRepo.getByPlanIdAndFilter(cid,plan.getId(), filter.getType(), filter.getTypeRequest(),filter.getSearch(),filter.getState(),filter.getPicId(),filter.getPositionId(),filter.getOrgId(),filter.getLevelId(),filter.getDeadlineFrom(),filter.getDeadlineTo());
         List<RecruitmentPlanRequestDTO> planRequestDTOS = recruitmentPlanRequests.stream()
             .map(e -> {
                 RecruitmentPlanRequestDTO planRequestDTO = new RecruitmentPlanRequestDTO();
                 RecruitmentRequest recruitmentRequest = requestRepo.findById(e.getRecruitmentRequestId())
                         .orElseThrow(() ->  new EntityNotFoundException(RecruitmentRequest.class,e.getRecruitmentRequestId()));
                 RecruitmentRequestDTO recruitmentRequestDTO = toRequestDto(recruitmentRequest);
-                recruitmentRequestDTO.setCandidateRecruited(candidateRepo.sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(recruitmentRequest.getId(), planRequestDTO.getRecruitmentPlanId()));
-                recruitmentRequestDTO.setRecruited(jobApplicationRepo.sumEmployeeByPlant(planRequestDTO.getRecruitmentPlanId(), recruitmentRequest.getId()));
+                recruitmentRequestDTO.setCandidateRecruited(candidateRepo.sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(recruitmentRequest.getId(), recruitmentRequestDTO.getRecruitmentPlanId()));
+                recruitmentRequestDTO.setRecruited(jobApplicationRepo.sumEmployeeByPlant(recruitmentRequestDTO.getRecruitmentPlanId(), recruitmentRequest.getId()));
                 planRequestDTO.setRequestDTO(recruitmentRequestDTO);
                 planRequestDTO.setDeadline(e.getDeadline());
                 planRequestDTO.setPicId(e.getPicId());

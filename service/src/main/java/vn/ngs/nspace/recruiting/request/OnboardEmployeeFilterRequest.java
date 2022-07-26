@@ -15,6 +15,7 @@ public class OnboardEmployeeFilterRequest {
     private Long jobApplicationId = -1L;
     private Long positionId = -1L;
     private Long employeeId = -1L;
+    private Long levelId = -1L;
     List<String> states = new ArrayList<>();
     String startDateFrom = "1999-01-01T00:00:00+0700";
     String startDateTo = "3000-01-01T00:00:00+0700";

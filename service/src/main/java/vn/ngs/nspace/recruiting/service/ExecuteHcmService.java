@@ -334,5 +334,46 @@ public class ExecuteHcmService {
         }
     }
 
+    public BaseResponse<Integer> sumEmployeeHcm(String requestUserId, Long companyId, OnboardEmployeeFilterRequest filterRequest) {
+        try {
+            URI uri = new URI(HcmServiceURL + "/generic/employee-profile/get-total-employe");
+            HttpMethod method = HttpMethod.POST;
+            RestTemplate restTemplate = new RestTemplate();
+            List<Long> positionIds = new ArrayList<>();
+            List<Long> orgId = new ArrayList<>();
+            List<Long> levelId = new ArrayList<>();
+            List<Long> titleId = new ArrayList<>();
+            List<String> states = filterRequest.getStates();
+            if (filterRequest.getPositionId() != -1L && filterRequest.getPositionId() != 0)
+                positionIds.add(filterRequest.getPositionId());
+            if (filterRequest.getOrgId() != -1L && filterRequest.getOrgId() != 0)
+                orgId.add(filterRequest.getOrgId());
+            if (filterRequest.getLevelId() != -1L && filterRequest.getLevelId() != 0)
+                levelId.add(filterRequest.getLevelId());
+            if (filterRequest.getTitleId() != -1L && filterRequest.getTitleId() != 0)
+                titleId.add(filterRequest.getTitleId());
+
+            HttpHeaders headers = createHeader(requestUserId, companyId);
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("positionIds", positionIds);
+            payload.put("orgIds", positionIds);
+            payload.put("levelIds", positionIds);
+            payload.put("titleIds", positionIds);
+            payload.put("states", states);
+
+
+            HttpEntity request = new HttpEntity<>(payload, headers);
+
+            ParameterizedTypeReference<BaseResponse<Integer>> responeType = new ParameterizedTypeReference<BaseResponse<Integer>>() {
+            };
+            ResponseEntity response = restTemplate.exchange(uri, method, request, responeType);
+            BaseResponse<Integer> resp = (BaseResponse<Integer>) response.getBody();
+            return resp;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

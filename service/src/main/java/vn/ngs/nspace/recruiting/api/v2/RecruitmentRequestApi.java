@@ -78,6 +78,24 @@ public class RecruitmentRequestApi {
         }
     }
 
+    @PutMapping("/updateState")
+    @ActionMapping(action = Permission.UPDATE)
+    @Operation(summary = "Update recruitment request",
+            description = "Update recruitment request",
+            tags = {"Recruitment request"})
+    @Parameter(in = ParameterIn.HEADER, description = "Addition Key to bypass authen", name = "key",
+            schema = @Schema(implementation = String.class))
+    public ResponseEntity updateState(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
+            , @RequestBody RecruitmentRequestDTO dto
+    ) {
+        try {
+            return ResponseUtils.handlerSuccess(recruitmentRequestService.updateStateRecruitmentRequest(cid, dto));
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
     @PutMapping("/{id}")
     @ActionMapping(action = Permission.DELETE)
     @Operation(summary = "Update recruitment request",

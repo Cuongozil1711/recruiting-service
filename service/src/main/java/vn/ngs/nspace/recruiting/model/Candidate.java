@@ -139,6 +139,8 @@ public class Candidate extends PersistableEntity<Long> {
                 .offerSalary(dto.getOfferSalary())
                 .titleId(dto.getTitleId())
                 .isBlacklist(dto.getIsBlacklist())
+                .recruitmentRequestId(dto.getRecruitmentRequestId())
+                .recruitmentPlanId(dto.getRecruitmentPlanId())
                 .build();
         candidate.setCompanyId(cid);
         candidate.setUpdateBy(uid);

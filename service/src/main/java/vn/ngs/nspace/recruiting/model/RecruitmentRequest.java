@@ -36,7 +36,6 @@ public class RecruitmentRequest extends PersistableEntity<Long> {
     private Long orgDeptId;
     private Long groupId;
     private Long contractTypeId;
-    private Long recruitmentPlanId;
     private Date startDate;
     private Date endDate;
     private String workType;

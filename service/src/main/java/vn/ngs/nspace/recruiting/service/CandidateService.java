@@ -120,6 +120,20 @@ public class CandidateService {
         return toDTO(candidate);
     }
 
+    public void updateCvToJob(Long[] ids, Long requestId, Long planId){
+        try {
+            for(int i=0; i < ids.length; i++){
+                Candidate candidate = repo.findById(ids[i]).get();
+                candidate.setRecruitmentPlanId(planId);
+                candidate.setRecruitmentRequestId(requestId);
+                repo.save(candidate);
+            }
+        }
+        catch (Exception ex){
+            throw new BusinessException(ex.getMessage());
+        }
+    }
+
     /* update by id object */
     public CandidateDTO update(Long cid, String uid, Long id, CandidateDTO dto) throws Exception {
         valid(dto);

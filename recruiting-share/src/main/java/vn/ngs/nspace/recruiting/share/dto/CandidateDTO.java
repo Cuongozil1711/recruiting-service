@@ -75,4 +75,7 @@ public class CandidateDTO {
     private List<Map<String, Object>> CountPositionApply;
     private InterviewResultDTO interviewResultDTO;
     private Long interviewResultId; // kết quả đánh giá
+
+    private Long recruitmentRequestId;
+    private Long recruitmentPlanId;
 }
