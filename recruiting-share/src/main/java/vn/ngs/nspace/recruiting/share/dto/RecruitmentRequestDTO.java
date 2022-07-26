@@ -24,6 +24,8 @@ public class RecruitmentRequestDTO {
     private String type; //trong kế hoạch ngoài kế hoạch
     private String typeRequest; //loại yêu cầu
     private Integer quantity;
+    private Integer candidateRecruited; // số lượng ứng tuyển dùng cho quản lý kế hoạch
+    private Integer recruited; // số lượng đã tuyển dùng cho quản lý kế hoạch
     private String name;
     //// TODO: new
     private String code;

@@ -124,5 +124,8 @@ public interface JobApplicationRepo extends TaskRepo<JobApplication>, BaseRepo<J
     @Modifying
     @Query(value = "update JobApplication j set j.status = 0, j.updateBy = :uid where j.companyId = :cid and j.id in :ids")
     void removeAllBy(Long cid, String uid, List<Long> ids);
+
+    @Query(value = "select count(j) from JobApplication j where j.planningId = :plantId and j.requestId = :requestId and j.employeeId <> null")
+    Integer sumEmployeeByPlant(Long plantId, Long requestId);
 }
 
