@@ -22,7 +22,9 @@ public class RecruitmentPlanDTO {
     private String createBy;
     private Date create_date;
     private Object creatByObj;
+    private Integer sumQuanity; // tổng số lượng cần tuyển
+    private Integer sumCandidateRecruited; // số lượng ứng tuyển
+    private Integer recruited; // số lượng đã tuyển
     private CustomPage<RecruitmentPlanRequestDTO> requestDTOCustomPage;
     private List<RecruitmentPlanRequestDTO> requestDTOList;
-
 }

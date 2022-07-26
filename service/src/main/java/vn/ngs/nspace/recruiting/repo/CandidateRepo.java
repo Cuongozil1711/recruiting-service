@@ -234,5 +234,8 @@ public interface CandidateRepo extends BaseRepo<Candidate, Long> {
     Map<String, Object> countAll(@Param("companyId") Long companyId);
 
     List<Candidate> findAllByRecruitmentRequestId(Long recruimentRequestId);
+
+    @Query(value = "select count(c) from Candidate c where c.recruitmentRequestId = :recruimentRequestId and c.recruitmentPlanId = :recruitmentPlantId")
+    Integer sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(Long recruimentRequestId, Long recruitmentPlantId);
 }
 

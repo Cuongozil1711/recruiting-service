@@ -2,21 +2,14 @@ package vn.ngs.nspace.recruiting.service.v2;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.ngs.nspace.lib.exceptions.BusinessException;
 import vn.ngs.nspace.lib.exceptions.EntityNotFoundException;
 import vn.ngs.nspace.lib.utils.Constants;
 import vn.ngs.nspace.lib.utils.MapperUtils;
-import vn.ngs.nspace.recruiting.model.RecruitmentNews;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlan;
-import vn.ngs.nspace.recruiting.model.RecruitmentPlanRequest;
-import vn.ngs.nspace.recruiting.model.RecruitmentRequest;
-import vn.ngs.nspace.recruiting.repo.RecruitmentNewsRepo;
-import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRepo;
-import vn.ngs.nspace.recruiting.repo.RecruitmentPlanRequestRepo;
-import vn.ngs.nspace.recruiting.repo.RecruitmentRequestRepo;
+import vn.ngs.nspace.recruiting.model.*;
+import vn.ngs.nspace.recruiting.repo.*;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentPlanRequestDTO;
 import vn.ngs.nspace.recruiting.share.dto.RecruitmentRequestDTO;
@@ -36,12 +29,14 @@ public class RecruitmentPlanV2Service {
     private final RecruitmentPlanRequestRepo planRequestRepo;
     private final RecruitmentNewsRepo newsRepo;
     private final RecruitmentRequestRepo requestRepo;
+    private final CandidateRepo candidateRepo;
 
-    public RecruitmentPlanV2Service(RecruitmentPlanRepo planRepo, RecruitmentPlanRequestRepo planRequestRepo, RecruitmentNewsRepo newsRepo, RecruitmentRequestRepo requestRepo) {
+    public RecruitmentPlanV2Service(RecruitmentPlanRepo planRepo, RecruitmentPlanRequestRepo planRequestRepo, RecruitmentNewsRepo newsRepo, RecruitmentRequestRepo requestRepo, CandidateRepo candidateRepo) {
         this.planRepo = planRepo;
         this.planRequestRepo = planRequestRepo;
         this.newsRepo = newsRepo;
         this.requestRepo = requestRepo;
+        this.candidateRepo = candidateRepo;
     }
 
     public RecruitmentPlanDTO create(Long cid, String uid, RecruitmentPlanDTO dto) {
@@ -154,9 +149,20 @@ public class RecruitmentPlanV2Service {
 
                     return planRequestDTO;
                 }).collect(Collectors.toList());
-        RecruitmentPlanDTO dto = MapperUtils.map(plan,RecruitmentPlanDTO.class);
+        Integer sumQuanity = 0; // tổng số lượng cần tuyển
+        Integer sumCandidateRecruited = 0; // số lượng ứng tuyển
+        Integer recruited = 0; // số lượng đã tuyển
+        for(RecruitmentPlanRequestDTO planRequestDTO : planRequestDTOS){
+            sumQuanity += planRequestDTO.getRequestDTO().getQuantity();
+            // số lượng ứng tuyển
+            sumCandidateRecruited += candidateRepo.sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(planRequestDTO.getRequestId(), planRequestDTO.getRecruitmentPlanId());
+        }
 
-//        dto.setRequestDTOS(planRequestDTOS);
+        RecruitmentPlanDTO dto = MapperUtils.map(plan,RecruitmentPlanDTO.class);
+        dto.setSumQuanity(sumQuanity);
+        dto.setSumCandidateRecruited(sumCandidateRecruited);
+
+
 
         return  dto;
     }
