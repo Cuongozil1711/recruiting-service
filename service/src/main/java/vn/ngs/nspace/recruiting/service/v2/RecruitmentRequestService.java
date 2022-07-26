@@ -468,13 +468,8 @@ public class RecruitmentRequestService {
             }
 
             int result = sumDemarcation - employeeSize - sumRecruitment - totalMissing;
-            // trừ số lượng của phiếu đang sửa
-            if(result == 0 && sumDemarcation > 0){
-                return sumRequestDemarcation;
-            }
 
             return result;
-
         }
         catch (Exception ex){
             throw new BusinessException(ex.getMessage());
