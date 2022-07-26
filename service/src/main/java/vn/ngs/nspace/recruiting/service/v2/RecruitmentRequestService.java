@@ -450,12 +450,11 @@ public class RecruitmentRequestService {
             }
             // So luong can tuyen YCTD trang thai moi, da duyet
             Integer sumRecruitment = 0;
-            List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.INIT.name());
+            List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStateAndStatus(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.INIT.name(), 1);
             for(RecruitmentRequest recruitmentRequest : recruitmentRequestListInit) sumRecruitment += recruitmentRequest.getQuantity();
-            List<RecruitmentRequest> recruitmentRequestListApproved = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.DONE.name());
+            List<RecruitmentRequest> recruitmentRequestListApproved = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStateAndStatus(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.DONE.name(), 1);
             for(RecruitmentRequest recruitmentRequest : recruitmentRequestListApproved) sumRecruitment += recruitmentRequest.getQuantity();
-            List<RecruitmentRequest> recruitmentRequestListProcess= recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.PROCESSING.name());
-
+            List<RecruitmentRequest> recruitmentRequestListProcess= recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStateAndStatus(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.PROCESSING.name(), 1);
 
             // So luong con thieu trong ke hoach tuyen dung
             Integer totalMissing = 0;
@@ -505,11 +504,11 @@ public class RecruitmentRequestService {
             }
             // So luong can tuyen YCTD trang thai moi, da duyet
             Integer sumRecruitment = 0;
-            List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.INIT.name());
+            List<RecruitmentRequest> recruitmentRequestListInit = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStateAndStatus(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.INIT.name(), 1);
             for(RecruitmentRequest recruitmentRequest : recruitmentRequestListInit) sumRecruitment += recruitmentRequest.getQuantity();
-            List<RecruitmentRequest> recruitmentRequestListApproved = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.DONE.name());
+            List<RecruitmentRequest> recruitmentRequestListApproved = recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStateAndStatus(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.DONE.name(), 1);
             for(RecruitmentRequest recruitmentRequest : recruitmentRequestListApproved) sumRecruitment += recruitmentRequest.getQuantity();
-            List<RecruitmentRequest> recruitmentRequestListProcess= recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.PROCESSING.name());
+            List<RecruitmentRequest> recruitmentRequestListProcess= recruitmentRequestRepo.findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStateAndStatus(orgId, levelId, titleId, positionId, Constants.RECRUITMENT_NEWS_STATE.PROCESSING.name(), 1);
 
 
             // So luong con thieu trong ke hoach tuyen dung

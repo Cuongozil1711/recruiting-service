@@ -21,7 +21,7 @@ public interface RecruitmentRequestRepo extends BaseRepo<RecruitmentRequest, Lon
             " and ( r.state in (:statuses) or ( '' in (:statuses)) )" +
             " and ( lower( r.code ) like :search or r.quantity = :quantity )" +
             " and ( cast(:type as text ) is null or r.type = cast(:type as text )) "+
-            " and r.start_Date > :fromDate", nativeQuery = true)
+            " and r.start_Date > :fromDate order by r.id desc", nativeQuery = true)
     Page<RecruitmentRequest> filterAllByPage(@Param("cid") long cid, @Param("orgIds") List<Long> orgIds, @Param("positionIds") List<Long> positionIds,
                                              @Param("createByUIds") List<String> createByUIds, @Param("statuses")   List<String> statuses,
                                              @Param("search")  String search, @Param("quantity") Integer quantity,
@@ -40,5 +40,5 @@ public interface RecruitmentRequestRepo extends BaseRepo<RecruitmentRequest, Lon
     @Query("select rr from RecruitmentRequest rr inner join RecruitmentPlanRequest  rpr on rpr.recruitmentRequestId = rr.id where rr.status =1 and rr.companyId = :cid and rr.state in :state")
     List<RecruitmentRequest> getAllByStateAndNews(Long cid, List<String> state);
 
-    List<RecruitmentRequest> findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndState(Long orgId, Long levelId, Long titleId, Long positionId, String sate);
+    List<RecruitmentRequest> findAllByOrgIdAndLevelIdAndTitleIdAndPositionIdAndStateAndStatus(Long orgId, Long levelId, Long titleId, Long positionId, String sate, Integer status);
 }
