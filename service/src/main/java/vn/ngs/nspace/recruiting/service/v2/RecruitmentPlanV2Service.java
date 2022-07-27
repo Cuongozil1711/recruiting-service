@@ -18,7 +18,7 @@ import vn.ngs.nspace.recruiting.share.request.PlantRequestFilter;
 import vn.ngs.nspace.recruiting.share.request.RecruitmentFilterRequest;
 
 import javax.transaction.Transactional;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -157,9 +157,9 @@ public class RecruitmentPlanV2Service {
         for(RecruitmentPlanRequestDTO planRequestDTO : planRequestDTOS){
             sumQuanity += planRequestDTO.getRequestDTO().getQuantity();
             // số lượng ứng tuyển
-            sumCandidateRecruited += candidateRepo.sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(planRequestDTO.getRequestId(), planRequestDTO.getRequestDTO().getRecruitmentPlanId());
+            sumCandidateRecruited += candidateRepo.sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(planRequestDTO.getRequestDTO().getId(), planRequestDTO.getRequestDTO().getRecruitmentPlanId());
             // số lượng đã tuyển
-            recruited += jobApplicationRepo.sumEmployeeByPlant(planRequestDTO.getRequestDTO().getRecruitmentPlanId(), planRequestDTO.getRequestId());
+            recruited += jobApplicationRepo.sumEmployeeByPlant(planRequestDTO.getRequestDTO().getRecruitmentPlanId(), planRequestDTO.getRequestDTO().getId());
         }
 
         RecruitmentPlanDTO dto = MapperUtils.map(plan,RecruitmentPlanDTO.class);
@@ -172,9 +172,39 @@ public class RecruitmentPlanV2Service {
         return  dto;
     }
 
+    public Map<String, Integer> getSumAll(Long cid){
+        List<RecruitmentPlanRequest> recruitmentPlanRequests =  planRequestRepo.getAllByCompanyIdAndStatus(cid, Constants.ENTITY_ACTIVE);
+        Integer sumQuanity = 0;
+        Integer sumCandidateRecruited = 0;
+        Integer recruited = 0;
+        for(RecruitmentPlanRequest recruitmentPlanRequest : recruitmentPlanRequests){
+            if(recruitmentPlanRequest.getRecruitmentPlanId() != null){
+                RecruitmentPlan recruitmentPlan = planRepo.findById(recruitmentPlanRequest.getRecruitmentPlanId()).orElse(new RecruitmentPlan());
+                Calendar calendarRecruitment = new GregorianCalendar();
+                calendarRecruitment.setTime(recruitmentPlan.getStartDate());
+                Calendar calendarNow = new GregorianCalendar();
+                calendarNow.setTime(new Date());
+                if(calendarRecruitment.get(Calendar.YEAR) == calendarNow.get(Calendar.YEAR)){
+                    RecruitmentRequest recruitmentRequest = requestRepo.findById(recruitmentPlanRequest.getRecruitmentRequestId()).get();
+                    sumQuanity += recruitmentRequest.getQuantity();
+                    // số lượng ứng tuyển
+                    sumCandidateRecruited += candidateRepo.sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(recruitmentRequest.getId(), recruitmentPlanRequest.getRecruitmentPlanId());
+                    // số lượng đã tuyển
+                    recruited += jobApplicationRepo.sumEmployeeByPlant(recruitmentPlanRequest.getRecruitmentPlanId(), recruitmentRequest.getId());
+                }
+            }
+        }
+
+        Map<String, Integer> result = new HashMap<>();
+        result.put("totalSumQuanity", sumQuanity);
+        result.put("totalSumRecrutingAll", sumCandidateRecruited);
+        result.put("totalRecruted", recruited);
+        return result;
+    }
+
     private RecruitmentPlanDTO toDTO(Long cid, RecruitmentPlan plan, PlantRequestFilter filter) {
-        List<RecruitmentPlanRequest> recruitmentPlanRequests =  planRequestRepo.getByPlanId(cid,plan.getId());
-//                planRequestRepo.getByPlanIdAndFilter(cid,plan.getId(), filter.getType(), filter.getTypeRequest(),filter.getSearch(),filter.getState(),filter.getPicId(),filter.getPositionId(),filter.getOrgId(),filter.getLevelId(),filter.getDeadlineFrom(),filter.getDeadlineTo());
+        List<RecruitmentPlanRequest> recruitmentPlanRequests =
+                planRequestRepo.getByPlanIdAndFilter(cid,plan.getId(), filter.getType(), filter.getTypeRequest(),filter.getSearch(),filter.getState(),filter.getPicId(),filter.getPositionId(),filter.getOrgId(),filter.getLevelId());
         List<RecruitmentPlanRequestDTO> planRequestDTOS = recruitmentPlanRequests.stream()
             .map(e -> {
                 RecruitmentPlanRequestDTO planRequestDTO = new RecruitmentPlanRequestDTO();
@@ -191,9 +221,22 @@ public class RecruitmentPlanV2Service {
             }).skip(filter.getSize()*filter.getPage()).limit(filter.getSize()).collect(Collectors.toList());
         RecruitmentPlanDTO dto = MapperUtils.map(plan,RecruitmentPlanDTO.class);
 
+        Integer sumQuanity = 0; // tổng số lượng cần tuyển
+        Integer sumCandidateRecruited = 0; // số lượng ứng tuyển
+        Integer recruited = 0; // số lượng đã tuyển
+        for(RecruitmentPlanRequestDTO planRequestDTO : planRequestDTOS){
+            sumQuanity += planRequestDTO.getRequestDTO().getQuantity();
+            // số lượng ứng tuyển
+            sumCandidateRecruited += candidateRepo.sumCandidateRecruitmentRequestIdAndRecruitmentPlanId(planRequestDTO.getRequestDTO().getId(), planRequestDTO.getRequestDTO().getRecruitmentPlanId());
+            // số lượng đã tuyển
+            recruited += jobApplicationRepo.sumEmployeeByPlant(planRequestDTO.getRequestDTO().getRecruitmentPlanId(),planRequestDTO.getRequestDTO().getId());
+        }
+
         CustomPage<RecruitmentPlanRequestDTO> customPage = new CustomPage<RecruitmentPlanRequestDTO>(filter.getSize(), filter.getPage(), recruitmentPlanRequests.size(),planRequestDTOS);
         dto.setRequestDTOCustomPage(customPage);
-
+        dto.setSumQuanity(sumQuanity);
+        dto.setSumCandidateRecruited(sumCandidateRecruited);
+        dto.setRecruited(recruited);
         return  dto;
     }
 

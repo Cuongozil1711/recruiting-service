@@ -1,5 +1,6 @@
 package vn.ngs.nspace.recruiting.api.v2;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,17 +54,17 @@ public class RecruitmentPlanV2Api {
         }
     }
 
-    @GetMapping("{id}")
+    @PostMapping("{id}")
     @ActionMapping(action = Permission.VIEW)
     public ResponseEntity getById(
-            @RequestHeader("cid") long cid
+            @RequestHeader("cid") Long cid
             , @RequestHeader("uid") String uid
             , @PathVariable("id") Long id
             , @RequestParam("size") Integer size
             , @RequestParam("page") Integer page
+            , @RequestBody PlantRequestFilter filter
             ) {
         try {
-            PlantRequestFilter filter = new PlantRequestFilter();
             filter.setSize(size);
             filter.setPage(page);
             RecruitmentPlanDTO recruitmentPlanDTO = planV2Service.getById(cid, uid, id, filter);
@@ -99,6 +100,20 @@ public class RecruitmentPlanV2Api {
         try {
             planV2Service.delete(cid, uid, ids);
             return ResponseUtils.handlerSuccess();
+        } catch (Exception e) {
+            return ResponseUtils.handlerException(e);
+        }
+    }
+
+
+    @GetMapping("sumAll")
+    @ActionMapping(action = Permission.VIEW)
+    public ResponseEntity getList(
+            @Parameter(description = "Id of Company") @RequestHeader("cid") long cid
+            , @Parameter(description = "Id of User") @RequestHeader("uid") String uid
+    ) {
+        try {
+            return ResponseUtils.handlerSuccess(planV2Service.getSumAll(cid));
         } catch (Exception e) {
             return ResponseUtils.handlerException(e);
         }
